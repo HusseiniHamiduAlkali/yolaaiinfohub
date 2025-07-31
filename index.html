@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yola AI Info Hub</title>
+  <link rel="stylesheet" href="styles/global.css">
+  <link rel="stylesheet" href="styles/navbar.css">
+  <link rel="stylesheet" href="styles/home.css">
+  <link rel="stylesheet" href="styles/eduinfo.css">
+  <link rel="stylesheet" href="styles/agroinfo.css">
+  <link rel="stylesheet" href="styles/mediinfo.css">
+  <link rel="stylesheet" href="styles/naviinfo.css">
+  <link rel="stylesheet" href="styles/ecoinfo.css">
+  <link rel="stylesheet" href="styles/serviinfo.css">
+  <link rel="stylesheet" href="styles/communityinfo.css">
+  <link rel="stylesheet" href="styles/aboutinfo.css">
+  <link rel="stylesheet" href="styles/auth.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="styles/ecoAI.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <div id="main-content"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+  <script src="components/navbar.js"></script>
+  <script src="components/auth.js"></script>
+  <script src="components/authpages.js"></script>
+  <script src="components/home.js"></script>
+  <script src="components/eduinfo.js"></script>
+  <script src="components/agroinfo.js"></script>
+  <script src="components/mediinfo.js"></script>
+  <script src="components/naviinfo.js"></script>
+  <script src="components/ecoinfo.js"></script>
+  <script src="components/serviinfo.js"></script>
+  <script src="components/communityinfo.js"></script>
+  <script src="components/aboutinfo.js"></script>
+  <script src="components/ecoClassifier.js"></script>
+  <script src="components/ecoAI.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Section loader for auth and main pages
+    window.loadSection = async function(section) {
+      // Auth pages: hide full navbar, show minimal appbar
+      const navbarDiv = document.getElementById('navbar');
+      const minimalAppbar = `<div class="minimal-appbar"><span class="appname">Yola AI Info Hub</span></div>`;
+      
+      // Handle section-specific styles
+      const sections = ['home', 'eduinfo', 'agroinfo', 'mediinfo', 'naviinfo', 'ecoinfo', 'serviinfo', 'communityinfo', 'aboutinfo'];
+      sections.forEach(s => {
+        document.body.classList.remove(`${s}-section`);
+      });
+      if (sections.includes(section)) {
+        document.body.classList.add(`${section}-section`);
+      }
+
+      if (window.AuthSections && window.AuthSections[section]) {
+        navbarDiv.innerHTML = minimalAppbar;
+        const page = window.AuthSections[section];
+        document.getElementById('main-content').innerHTML = page.render();
+        if (page.mount) page.mount();
+        return;
+      } else {
+        // Restore full navbar if it was replaced by minimal appbar
+        if (!navbarDiv.querySelector('.navbar')) {
+          navbarDiv.innerHTML = Navbar.render();
+          if (window.updateAuthUI) window.updateAuthUI(null);
+        }
+      }
+      // Remove any previously loaded section script
+      document.querySelectorAll('script[data-section-script]').forEach(s => s.remove());
+      document.getElementById('main-content').innerHTML = '';
+      delete window.renderSection;
+      const routes = {
+        home: 'components/home.js',
+        eduinfo: 'components/eduinfo.js',
+        agroinfo: 'components/agroinfo.js',
+        mediinfo: 'components/mediinfo.js',
+        naviinfo: 'components/naviinfo.js',
+        communityinfo: 'components/communityinfo.js',
+        aboutinfo: 'components/aboutinfo.js',
+        ecoinfo: 'components/ecoinfo.js',
+        serviinfo: 'components/serviinfo.js',
+      };
+      const script = document.createElement('script');
+      script.src = routes[section] || routes['home'];
+      script.setAttribute('data-section-script', 'true');
+      script.onload = () => {
+        if (window.renderSection) {
+          window.renderSection();
+        }
+        window.highlightActiveNav?.(section);
+      };
+      document.body.appendChild(script);
+    };
+    // Render the navbar only once on initial load
+    document.getElementById('navbar').innerHTML = Navbar.render();
+    if (window.updateAuthUI) window.updateAuthUI(null);
+    // Load the home section by default
+    window.loadSection('home');
+  </script>
+</body>
+</html>

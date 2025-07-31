@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaviInfo - Navigation Information</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/naviinfo.css">
+    <style>
+        .info-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            padding: 1.5rem;
+        }
+        .chat-header {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .input-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .map-container {
+            height: 400px;
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .directions-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            padding: 1.5rem;
+        }
+        .faq-list {
+            margin-top: 2rem;
+        }
+        .faq-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .faq-list li {
+            margin: 0.5rem 0;
+        }
+        .faq-link {
+            color: #3182ce;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .route-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .route-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .route-info {
+            padding: 1.5rem;
+        }
+        .route-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .route-details {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+        .route-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #3182ce;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .route-link:hover {
+            background: #2c5282;
+        }
+    </style>
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main id="main-content">
+        <section class="info-section">
+            <h2>NaviInfo - Navigation Information</h2>
+            <p>Get directions and transportation information in Yola.</p>
+            
+            <div class="chat-container">
+                <div class="chat-header">NaviInfo AI Chat</div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendNaviMessage();">
+                    <div id="chat-preview" class="chat-preview"></div>
+                    <input type="text" id="chat-input" placeholder="Ask for directions..." required />
+                    <button type="submit">Send</button>
+                    <button type="button" class="stop-btn" onclick="window.stopNaviResponse()" style="display:none">Stop</button>
+                </form>
+                <div class="input-options">
+                    <button type="button" onclick="window.captureImage('navi')" title="Capture Image"><span>📷</span></button>
+                    <button type="button" onclick="window.recordAudio('navi')" title="Record Audio"><span>🎤</span></button>
+                    <label class="file-upload-btn" title="Upload File">
+                        <span>📁</span>
+                        <input type="file" style="display:none" onchange="window.uploadFile(event, 'navi')" />
+                    </label>
+                </div>
+                <div class="faq-list">
+                    <h3>Navigation FAQs</h3>
+                    <ul>
+                        <li><a class="faq-link" onclick="window.sendNaviMessage('How to get to Modibbo Adama University')">How to get to Modibbo Adama University</a></li>
+                        <li><a class="faq-link" onclick="window.sendNaviMessage('Public transportation options')">Public transportation options</a></li>
+                        <li><a class="faq-link" onclick="window.sendNaviMessage('Major bus stations')">Major bus stations</a></li>
+                        <li><a class="faq-link" onclick="window.sendNaviMessage('Taxi services')">Taxi services</a></li>
+                        <li><a class="faq-link" onclick="window.sendNaviMessage('Best routes during rush hour')">Best routes during rush hour</a></li>
+                        <li><a class="faq-link" onclick="window.sendNaviMessage('Parking locations')">Parking locations</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="map" class="map-container"></div>
+            <div id="directions-panel" class="directions-panel"></div>
+
+            <div class="routes-section">
+                <h2>Popular Routes</h2>
+                <div class="routes-grid">
+                    <!-- Airport Route -->
+                    <div class="route-card">
+                        <img src="../Data/Images/NaviInfo/airport.jpg" alt="Airport Route" class="route-img">
+                        <div class="route-info">
+                            <h3 class="route-name">Airport Route</h3>
+                            <p class="route-details">Route to Yola International Airport with multiple transport options.</p>
+                            <a href="#" onclick="window.sendNaviMessage('How to get to Yola Airport')" class="route-link">Get Directions</a>
+                        </div>
+                    </div>
+
+                    <!-- University Route -->
+                    <div class="route-card">
+                        <img src="../Data/Images/NaviInfo/university.jpg" alt="University Route" class="route-img">
+                        <div class="route-info">
+                            <h3 class="route-name">University Route</h3>
+                            <p class="route-details">Navigate to Modibbo Adama University and American University of Nigeria.</p>
+                            <a href="#" onclick="window.sendNaviMessage('University routes in Yola')" class="route-link">Get Directions</a>
+                        </div>
+                    </div>
+
+                    <!-- Market Route -->
+                    <div class="route-card">
+                        <img src="../Data/Images/NaviInfo/market.jpg" alt="Market Route" class="route-img">
+                        <div class="route-info">
+                            <h3 class="route-name">Market Route</h3>
+                            <p class="route-details">Best routes to major markets and shopping centers in Yola.</p>
+                            <a href="#" onclick="window.sendNaviMessage('Routes to main markets in Yola')" class="route-link">Get Directions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+    <script src="../components/navbar.js"></script>
+    <script src="../components/naviinfo.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/navbar.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-logo-area">
+                <div class="navbar-logo-placeholder"><img src="../Data/Images/jippujam.jpg"></div>
+                <div class="navbar-appname">Yola AI Info Hub</div>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="navbar-auth" id="navbar-auth">
+                <button id="signin-btn" class="auth-btn" type="button">Sign in</button>
+                <button id="signup-btn" class="auth-btn" type="button">Sign up</button>
+                <button id="logout-btn" class="auth-btn" style="display:none" onclick="window.logoutUser()">Logout</button>
+                <span id="user-avatar" class="user-avatar" style="display:none"><img src="https://ui-avatars.com/api/?name=User" alt="User"/></span>
+            </div>
+            <ul class="navbar-links">
+                <li><button onclick="window.loadSection('home')">Home</button></li>
+                <li><button onclick="window.loadSection('eduinfo')">EduInfo</button></li>
+                <li><button onclick="window.loadSection('ecoinfo')">EcoInfo</button></li>
+                <li><button onclick="window.loadSection('agroinfo')">AgroInfo</button></li>
+                <li><button onclick="window.loadSection('mediinfo')">MediInfo</button></li>
+                <li><button onclick="window.loadSection('naviinfo')">NaviInfo</button></li>
+                <li><button onclick="window.loadSection('communityinfo')">CommunityInfo</button></li>
+                <li><button onclick="window.loadSection('serviinfo')">ServiInfo</button></li>
+                <li><button onclick="window.loadSection('aboutinfo')">About</button></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-menu">
+        <ul class="mobile-links">
+            <li><button onclick="window.loadSection('home'); mobileMenu.classList.remove('show');">Home</button></li>
+            <li><button onclick="window.loadSection('eduinfo'); mobileMenu.classList.remove('show');">EduInfo</button></li>
+            <li><button onclick="window.loadSection('ecoinfo'); mobileMenu.classList.remove('show');">EcoInfo</button></li>
+            <li><button onclick="window.loadSection('agroinfo'); mobileMenu.classList.remove('show');">AgroInfo</button></li>
+            <li><button onclick="window.loadSection('mediinfo'); mobileMenu.classList.remove('show');">MediInfo</button></li>
+            <li><button onclick="window.loadSection('naviinfo'); mobileMenu.classList.remove('show');">NaviInfo</button></li>
+            <li><button onclick="window.loadSection('communityinfo'); mobileMenu.classList.remove('show');">CommunityInfo</button></li>
+            <li><button onclick="window.loadSection('serviinfo'); mobileMenu.classList.remove('show');">ServiInfo</button></li>
+            <li><button onclick="window.loadSection('aboutinfo'); mobileMenu.classList.remove('show');">About</button></li>
+        </ul>
+    </div>
+
+    <script src="../components/navbar.js"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+AI
+
+chat padding on mobile screen
+Home Chat AI response criterion
+Harmbuger styling
+// I want the stop button to replace the sending button
+
+Section's AI prompts check.
+EduInfo data check
+EduInfo assignment help
+ 
+
+1. Navbar is not defined after signin on mobile screen.
+
+2. pls add state handling option i.e add remove the 'sending...' on the send button during loading and add a spanner instead in a smaller button for better UI and add another button which when clicked will stop the request from processing, and revert to the previous state, also make the spanner stop spinning when the stop button is cliked or the AI responded. and the styles are there in the global.css just add the classes/IDs
+3. let the AI prompt be visible for me to edit like that of ecoinfo.js
+4. 
+
+
+1. home, edu, agro, servi sections has no visible spinner and stop button when loading responses like the other sections
+2. Agroinfo message send button doesn't work.
+3. home section's AI response conatins 
+
+3. style the AI message to be left-aligned and not alwaya centrealised like  how it is.
+
+
+1. Add read aloud option to community info
+2. put the .section4 image of every section into a div having class=.section4img-placeholder
+
+1. Input all the states and their local government area accordingly
+2. Add tick box for if the user registering is a resident of Yola. if yes automatically chose state as adamawa and hide the option for state and the LGA options beetween Yola North or Yola South only should be available, if no show drop down options each of state and localgovernment and update the local government dropdown options to include only those of the choosen state in nigeria.
+3. display a message (with the problem associated e.g password must contain atleast one digit) if the password entered in the confirm password and input password forms did not match or did not meet the password criteria wriiten.
+
+1. I WANT HOME TOBE LOADED AS DEFAULT AFTER REFRESH
+2. I WANT YOU TO CUSTOMIZE THE MINIMAL NAVBAR ON TABLET SCREEN TO BE INVOLVING THE APP LOGO ON ONE SIDE (AS IT IS PRESENTLY IS), AND THE OTHER SIDE SHOULD BE TWO ROWS OF ITEMS, THE UPPER ROW SHOULD BE THE APPNAME (REDUCED SIZE) AND THE AUTH BUTTONS ALL ARRANGED IN LINE, WHILE THE LOWER ROW SHOULD BE THE NAV LINKS AS USUAL
+
+1. still the items in the pharmacies in mediinfo are arranged in a column and not a row of three.
+
+STYLE : camra capture & stop recording button (onCapture)
+        make Send btn color same as NavBar
+
+Add information for Pharmacies in Yola.
+
+
+add information onhover for some contentparts
+
+TEXT FORMATTING
+
+EduInfo - good - centrralized
+CommunityInfo - good but centrralized
+EcoInfo - good but centrralized
+Agro - good but centrralized
+MapsInfo - good centrralized
+MediInfo - good centrralized
+
+
+3. Harmbuger styling :
+        1. make the Harmbuger menu close when a section is choosed (when link is clicked).
+        2. make the section choosen presently to have the same color with the NavBar.
+        3. make the rest to have on hover the color that the choosen section (section displaying presently on the screen) has now.
+        4. make not the cancel button to be displaying over anything on the Harmbuger menu.
+        5. make the Harmbuger scrollable to display TravelInfo and JobsconnectInfo (also get them there pls).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1. Add sections under home, edu, eco, medi, servi, navi, agro, community sections for with a div tag and class=section2 for home it should be History of Yola, with a placeholder for an image of the yola kingdom palace (large as the yola map in navi info) and some text (berief history) then a link for redirection to continue exploring.
+2. Do same for all the sections For edu it should be Schools in Yola (class=section2) with sections for universitites, secondary/primary schools, colleges, and polytechnics (class=section3) arranged in column and div again for each individual school (class=section4) say school A, B, C... in each section (three for universties, colleges ...) with a place holder for each school's image and little information on it then a link to continue exploring about that school.
+3. And  for medi it should be Medical instituitions in Yola (class=section2 ) and sections for PHCC, secondary, tertiary hospitals and pharmacies (class=section3) arranged in column like the universities, colleges... then atleast three hospitals (class=section4) in each section with a place holder image for the hospital and link to explore more about that particular hospital and the pharmacies same like the hospitals.
+4. for Navi Add another section (class=section2) for places of attraction in yola below the yola maps, with sections (class=section3) for parks, markets, hotels, and other places of interest  then atleast three places in each section (class=section4) with a place holder image for the place and link to explore more about that particular place.
+5. For Servi it should be Professionals in yola (class=section2) then sections for elctricians, freelancers, plumbers, carpenters e.tc. (class=section3), then section (class=section4) with information on atleast three poeple in eaach profession with plceholders for thier images with lik to explore more about each person.
+6. Do same for eco, and agro sections with your suggestions.
+
+
+
+
+2. make the maps be with labels in default
+4. want my leaflet maps design to be in the satellite format (i.e like blakish showing roof top)
+
+1. Pls make the AI promp more visible as the guide for the Ai so i can edit as i want.
+
+2. make a button/link visible on the signin and signup pages for returning home when the user desires not to log in.
+
+
+1. Highlight the current section on the navbar
+
+
+1. Add FAQs below the chatarea of any section and make the FAQ to be send directky to the ai on clik and not to the input area.
+2. Add a Feature that enable the user to stop response before completing loading the response by the AI.
+3. Make the send button color faint when submitting and disabled
+
+
+
+
+1. I get this error when ever any section is loaded Uncaught ReferenceError: Navbar is not defined <anonymous> http://127.0.0.1:5500/:22   127.0.0.1:5500:22:14
+3. Stop button for Naviibfo and serviinfo
+4. i think there is an error in the console for the hiding of the spinner in the NaviInfo and ServiInfo the error : 
+Uncaught SyntaxError: redeclaration of let serviAbortController
+    <anonymous> http://127.0.0.1:5500/components/serviinfo.js:1
+serviinfo.js:1:1
+Uncaught SyntaxError: redeclaration of let naviAbortController
+    <anonymous> http://127.0.0.1:5500/components/naviinfo.js:1
+naviinfo.js:1:1
+1. the FAQs for EduInfo doesn't send to the AI on click.
+2. Add sending spinner to NaviInfo and ServiInfo. 
+3. Add FAQs for ServiInfo.
+1. there is no stop button in Home, NaviInfo and ServiInfo. And the sending button in Home, EduInfo and NaviInfo doesn't have sending spinner like the EcoInfo.
+2. No FAQs, stop button and signspinner in ServiInfo
+3. Remove FAQs in About section
+
+
+1. Add stop button to any other section like how it is now in the EduInfo and let any style to be only in the global.css and not in the Javascript
+2. Add the styles of the buttons in the EduInfo to any section but only injected from global.css
+3. CORS failed in EduInfo Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U. (Reason: CORS request did not succeed). Status code: (null). 2
+5. Add FAQs to any section and make it to be send directly as user message to the AI on click and not to the message input section. also make them in two columns.
+
+
+Uncaught TypeError: window.sendEduFAQ is not a function
+    onclick http://127.0.0.1:5500/:1
+127.0.0.1:5500:1:8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Add <div> under the sections' chatarea
+        for EduInfo name it Schools in Yola.
+        for MediInfo name it Hospitals in Yola.
+        for NaviInfo name it Yola Map. and load leaflet maps or any other type whic can show distances when user requested in the chat area.
+        for the rest choose what you want for
+
+
+
+1. The send buuton is not working for any section and there is no error message in the console.
+2. Remove TravelInfo completely and all its files and style sheets.
+3. Change section Names, classes and IDs:
+        MapsInfo to NaviInfo
+        JobsconnectInfo to ServiInfo
+
+
+1. I want the AI to switch from Gemini 2.5 Flash to 1.5 Flash when it is not available.
+2. Make NavBar stable/fixed at the page top on scroll
+
+
+SECTIONS TO ADD
+TravelInfo
+JobsInfo
+
+
+
+
+LOCAL DATA
+
+agro - paste - good 
+Maps - paste - good object
+Eco - paste - good
+Community - paste - No
+EduInfo - paste - No

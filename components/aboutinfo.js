@@ -1,0 +1,128 @@
+window.renderSection = function() {
+  // Always load and render the navbar
+  function ensureNavbarLoaded(cb) {
+    if (typeof window.renderNavbar === 'function') {
+      window.renderNavbar();
+      if (cb) cb();
+    } else {
+      if (!document.getElementById('navbar-js')) {
+        const script = document.createElement('script');
+        script.src = 'components/navbar.js';
+        script.id = 'navbar-js';
+        script.onload = function() {
+          if (typeof window.renderNavbar === 'function') window.renderNavbar();
+          if (cb) cb();
+        };
+        document.body.appendChild(script);
+      } else {
+        let tries = 0;
+        (function waitForNavbar() {
+          if (typeof window.renderNavbar === 'function') {
+            window.renderNavbar();
+            if (cb) cb();
+          } else if (tries < 30) {
+            tries++;
+            setTimeout(waitForNavbar, 100);
+          }
+        })();
+      }
+    }
+  }
+  ensureNavbarLoaded();
+  document.getElementById('main-content').innerHTML = `
+    <section class="info-section">
+      <div class="about-container">
+        <div class="about-header">About Yola AI Info Hub</div>
+        <div class="about-content">
+          <p><strong>Yola AI Info Hub</strong> is a modern, responsive web app that provides AI-powered information and assistance for education, agriculture, environment, health, community, and general inquiries in Yola, Adamawa State, Nigeria. Our goal is to make essential information accessible and easy to find for residents and visitors alike.</p>
+          <h3>Key Features:</h3>
+          <ul>
+            <li><strong>AI-Powered Chat:</strong> Get instant answers to your questions across various categories.</li>
+            <li><strong>Section-Specific Information:</strong> Dedicated sections for EduInfo, AgroInfo, EcoInfo, MediInfo, NaviInfo, and ServiInfo.</li>
+            <li><strong>User-Friendly Interface:</strong> A clean, intuitive design for seamless navigation on any device.</li>
+            <li><strong>Image & Audio Input:</strong> Interact with the AI using images and voice messages for a richer experience.</li>
+            <li><strong>Local Focus:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
+          </ul>
+          <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better.</p>
+        </div>
+      </div>
+    </section>
+  `;
+  window.handleMessage = async function(msg) {
+    const chat = document.getElementById('chat-messages');
+    const input = document.getElementById('chat-input');
+    const preview = document.getElementById('chat-preview');
+    const msgGroup = document.createElement('div');
+    msgGroup.classList.add('ai-msg');
+    msgGroup.innerHTML = `<span class='ai-msg-text'>...</span>`;
+    chat.appendChild(msgGroup);
+    chat.scrollTop = chat.scrollHeight;
+
+    if (!msg) return;
+
+    if (/about|info|hub|platform|what is this/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'Yola AI Info Hub is a modern, responsive web app that provides AI-powered information and assistance for various categories in Yola, Adamawa State, Nigeria.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    } else if (/contact|support|help/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'For support, please visit our contact page or email us at support@yolainfohub.com.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    } else if (/edu|school|education/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'For education info, check the EduInfo section.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    } else if (/eco|environ|waste/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'For environmental info, check the EcoInfo section.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    } else if (/navi|map|direction/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'For navigation info, check the NaviInfo section.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    } else if (/servi|professional|service/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'For professional services, check the ServiInfo section.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    } else if (/agro|farm|crop|soil/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'For agriculture info, check the AgroInfo section.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    } else if (/medi|health|doctor|hospital/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'For medical info, check the MediInfo section.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    } else if (/community|event|group/i.test(msg)) {
+      msgGroup.querySelector('.ai-msg-text').innerHTML = 'For community info, check the CommunityInfo section.';
+      chat.scrollTop = chat.scrollHeight;
+      input.value = '';
+      return;
+    }
+    // Call Gemini API
+    try {
+      const res = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + GEMINI_API_KEY, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: msg }] }]
+        })
+      });
+      const data = await res.json();
+      let aiText = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
+      msgGroup.querySelector('.ai-msg-text').innerHTML = aiText;
+    } catch (error) {
+      console.error('Error calling Gemini API:', error);
+      msgGroup.querySelector('.ai-msg-text').innerHTML = "Sorry, there was an error connecting to the AI. Please try again later.";
+    }
+    chat.scrollTop = chat.scrollHeight;
+    input.value = '';
+  };
+};

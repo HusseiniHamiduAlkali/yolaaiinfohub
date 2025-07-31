@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommunityInfo - Community Information</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/communityinfo.css">
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main id="main-content">
+        <section class="info-section">
+            <h2>CommunityInfo - Local Community</h2>
+            
+            <p>Connect with your local community in Yola.</p>
+            <div class="chat-container">
+                <div class="chat-header">CommunityInfo AI Chat</div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendCommunityMessage();">
+                    <div id="community-chat-preview" class="chat-preview"></div>
+                    <input type="text" id="community-chat-input" placeholder="Ask about community activities..." required />
+                    <div class="send-button-group">
+                        <button type="submit" class="send-button">
+                            <span class="send-text">Send</span>
+                            <span class="spinner"></span>
+                        </button>
+                        <button type="button" class="stop-button" style="display:none" onclick="window.stopCommunityResponse()">Stop</button>
+                    </div>
+                </form>
+                <div class="input-options">
+                    <button type="button" onclick="window.captureImage('community')" title="Capture Image"><span>📷</span></button>
+                    <button type="button" onclick="window.recordAudio('community')" title="Record Audio"><span>🎤</span></button>
+                    <label class="file-upload-btn" title="Upload File">
+                        <span>📁</span>
+                        <input type="file" style="display:none" onchange="window.uploadFile(event, 'community')" />
+                    </label>
+                </div>
+
+                <div class="faq-list">
+                    <h3>CommunityInfo FAQs</h3>
+                    <ul>
+                        <li><a class="faq-link" onclick="window.sendCommunityMessage('What community events are happening this week?')">What events are happening this week?</a></li>
+                        <li><a class="faq-link" onclick="window.sendCommunityMessage('How can I join local volunteer groups?')">How can I join volunteer groups?</a></li>
+                        <li><a class="faq-link" onclick="window.sendCommunityMessage('Where are the community centers in Yola?')">Where are the community centers?</a></li>
+                        <li><a class="faq-link" onclick="window.sendCommunityMessage('What youth programs are available?')">What youth programs are available?</a></li>
+                        <li><a class="faq-link" onclick="window.sendCommunityMessage('How can I start a community project?')">How can I start a community project?</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="community-grid">
+                <div class="community-category">
+                    <h3>Community Events</h3>
+                    <div class="event-cards">
+                        <div class="event-card">
+                            <img src="../Data/Images/CommunityInfo/festival.jpg" alt="Cultural Festival">
+                            <h4>Cultural Festival</h4>
+                            <p>Annual celebration of local culture</p>
+                            <div class="event-details">
+                                <span>📅 August 15-17, 2025</span>
+                                <a href="#festival">Learn More →</a>
+                            </div>
+                        </div>
+                        <div class="event-card">
+                            <img src="../Data/Images/CommunityInfo/market.jpg" alt="Community Market">
+                            <h4>Community Market</h4>
+                            <p>Weekly local produce and crafts</p>
+                            <div class="event-details">
+                                <span>📅 Every Saturday</span>
+                                <a href="#market">Learn More →</a>
+                            </div>
+                        </div>
+                        <div class="event-card">
+                            <img src="../Data/Images/CommunityInfo/workshop.jpg" alt="Skills Workshop">
+                            <h4>Skills Workshop</h4>
+                            <p>Free community training sessions</p>
+                            <div class="event-details">
+                                <span>📅 Monthly</span>
+                                <a href="#workshop">Learn More →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="community-category">
+                    <h3>Local Organizations</h3>
+                    <div class="org-cards">
+                        <div class="org-card">
+                            <img src="../Data/Images/CommunityInfo/youth.jpg" alt="Youth Association">
+                            <h4>Youth Association</h4>
+                            <p>Programs for young people</p>
+                            <a href="#youth">Join Now →</a>
+                        </div>
+                        <div class="org-card">
+                            <img src="../Data/Images/CommunityInfo/women.jpg" alt="Women's Group">
+                            <h4>Women's Group</h4>
+                            <p>Empowerment and support</p>
+                            <a href="#women">Join Now →</a>
+                        </div>
+                        <div class="org-card">
+                            <img src="../Data/Images/CommunityInfo/elderly.jpg" alt="Elderly Care">
+                            <h4>Elderly Care Network</h4>
+                            <p>Support for senior citizens</p>
+                            <a href="#elderly">Join Now →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="community-category">
+                    <h3>Volunteer Opportunities</h3>
+                    <div class="volunteer-cards">
+                        <div class="volunteer-card">
+                            <img src="../Data/Images/CommunityInfo/education.jpg" alt="Education Support">
+                            <h4>Education Support</h4>
+                            <p>Help with local schools</p>
+                            <a href="#edu-volunteer">Volunteer →</a>
+                        </div>
+                        <div class="volunteer-card">
+                            <img src="../Data/Images/CommunityInfo/environment.jpg" alt="Environmental Projects">
+                            <h4>Environmental Projects</h4>
+                            <p>Join clean-up initiatives</p>
+                            <a href="#env-volunteer">Volunteer →</a>
+                        </div>
+                        <div class="volunteer-card">
+                            <img src="../Data/Images/CommunityInfo/health.jpg" alt="Health Outreach">
+                            <h4>Health Outreach</h4>
+                            <p>Community health programs</p>
+                            <a href="#health-volunteer">Volunteer →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../components/navbar.js"></script>
+    <script src="../components/communityinfo.js"></script>
+</body>
+</html>

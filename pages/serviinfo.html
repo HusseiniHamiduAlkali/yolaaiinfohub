@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServiInfo - Services Information</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/serviinfo.css">
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main id="main-content">
+        <section class="info-section">
+            <h2>ServiInfo - Local Services</h2>
+            
+            <p>Find essential services and utilities in Yola.</p>
+            <div class="chat-container">
+                <div class="chat-header">ServiInfo AI Chat</div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendServiMessage();">
+                    <div id="servi-chat-preview" class="chat-preview"></div>
+                    <input type="text" id="servi-chat-input" placeholder="Ask about local services..." required />
+                    <div class="send-button-group">
+                        <button type="submit" class="send-button">
+                            <span class="send-text">Send</span>
+                            <span class="spinner"></span>
+                        </button>
+                        <button type="button" class="stop-button" style="display:none" onclick="window.stopServiResponse()">Stop</button>
+                    </div>
+                </form>
+                <div class="input-options">
+                    <button type="button" onclick="window.captureImage('servi')" title="Capture Image"><span>📷</span></button>
+                    <button type="button" onclick="window.recordAudio('servi')" title="Record Audio"><span>🎤</span></button>
+                    <label class="file-upload-btn" title="Upload File">
+                        <span>📁</span>
+                        <input type="file" style="display:none" onchange="window.uploadFile(event, 'servi')" />
+                    </label>
+                </div>
+
+                <div class="faq-list">
+                    <h3>ServiInfo FAQs</h3>
+                    <ul>
+                        <li><a class="faq-link" onclick="window.sendServiMessage('How do I pay my electricity bill in Yola?')">How do I pay my electricity bill?</a></li>
+                        <li><a class="faq-link" onclick="window.sendServiMessage('Where can I get water utility services?')">Where can I get water utility services?</a></li>
+                        <li><a class="faq-link" onclick="window.sendServiMessage('What internet service providers are available in Yola?')">What internet providers are available?</a></li>
+                        <li><a class="faq-link" onclick="window.sendServiMessage('How do I report a power outage?')">How do I report a power outage?</a></li>
+                        <li><a class="faq-link" onclick="window.sendServiMessage('Where are the nearest postal services?')">Where are the nearest postal services?</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-category">
+                    <h3>Utility Services</h3>
+                    <div class="service-cards">
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/electric.jpg" alt="Electricity Services">
+                            <h4>Electricity Services</h4>
+                            <p>Bill payments, connections, and support</p>
+                            <a href="#electricity">Learn More →</a>
+                        </div>
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/water.jpg" alt="Water Services">
+                            <h4>Water Services</h4>
+                            <p>Water supply and sanitation services</p>
+                            <a href="#water">Learn More →</a>
+                        </div>
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/internet.jpg" alt="Internet Services">
+                            <h4>Internet Services</h4>
+                            <p>ISP options and connectivity solutions</p>
+                            <a href="#internet">Learn More →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-category">
+                    <h3>Emergency Services</h3>
+                    <div class="service-cards">
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/fire.jpg" alt="Fire Services">
+                            <h4>Fire Services</h4>
+                            <p>Emergency response and fire safety</p>
+                            <a href="#fire">Learn More →</a>
+                        </div>
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/police.jpg" alt="Police Services">
+                            <h4>Police Services</h4>
+                            <p>Law enforcement and security</p>
+                            <a href="#police">Learn More →</a>
+                        </div>
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/ambulance.jpg" alt="Ambulance Services">
+                            <h4>Ambulance Services</h4>
+                            <p>Emergency medical transport</p>
+                            <a href="#ambulance">Learn More →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-category">
+                    <h3>Municipal Services</h3>
+                    <div class="service-cards">
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/waste.jpg" alt="Waste Management">
+                            <h4>Waste Management</h4>
+                            <p>Collection and disposal services</p>
+                            <a href="#waste">Learn More →</a>
+                        </div>
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/postal.jpg" alt="Postal Services">
+                            <h4>Postal Services</h4>
+                            <p>Mail and package delivery</p>
+                            <a href="#postal">Learn More →</a>
+                        </div>
+                        <div class="service-card">
+                            <img src="../Data/Images/ServiInfo/roads.jpg" alt="Road Services">
+                            <h4>Road Services</h4>
+                            <p>Maintenance and infrastructure</p>
+                            <a href="#roads">Learn More →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../components/navbar.js"></script>
+    <script src="../components/serviinfo.js"></script>
+</body>
+</html>

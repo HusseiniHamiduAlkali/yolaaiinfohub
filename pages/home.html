@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Yola AI Info Hub</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/home.css">
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main id="main-content">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1>Welcome to Yola AI Info Hub</h1>
+                <p>Your digital guide to everything in Yola, Adamawa State</p>
+                <div class="hero-buttons">
+                    <button onclick="window.loadSection('eduinfo')">Education</button>
+                    <button onclick="window.loadSection('ecoinfo')">Economy</button>
+                    <button onclick="window.loadSection('agroinfo')">Agriculture</button>
+                    <button onclick="window.loadSection('mediinfo')">Healthcare</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="info-grid">
+            <div class="info-card" onclick="window.loadSection('eduinfo')">
+                <div class="card-icon">🎓</div>
+                <h3>EduInfo</h3>
+                <p>Find schools, universities, and educational resources</p>
+            </div>
+            
+            <div class="info-card" onclick="window.loadSection('ecoinfo')">
+                <div class="card-icon">💼</div>
+                <h3>EcoInfo</h3>
+                <p>Discover business and economic opportunities</p>
+            </div>
+            
+            <div class="info-card" onclick="window.loadSection('agroinfo')">
+                <div class="card-icon">🌾</div>
+                <h3>AgroInfo</h3>
+                <p>Learn about farming and agriculture</p>
+            </div>
+            
+            <div class="info-card" onclick="window.loadSection('mediinfo')">
+                <div class="card-icon">⚕️</div>
+                <h3>MediInfo</h3>
+                <p>Access healthcare information and services</p>
+            </div>
+            
+            <div class="info-card" onclick="window.loadSection('naviinfo')">
+                <div class="card-icon">🗺️</div>
+                <h3>NaviInfo</h3>
+                <p>Navigate around Yola with ease</p>
+            </div>
+            
+            <div class="info-card" onclick="window.loadSection('communityinfo')">
+                <div class="card-icon">👥</div>
+                <h3>CommunityInfo</h3>
+                <p>Connect with local community</p>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Assistance</h3>
+                    <p>Get instant answers to your questions about Yola</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Access information on any device</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Real-time Updates</h3>
+                    <p>Stay informed with latest information</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Local Context</h3>
+                    <p>Information specific to Yola region</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Choose a Service</h3>
+                    <p>Select from our range of information services</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Ask Questions</h3>
+                    <p>Use our AI chat to get specific information</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Get Answers</h3>
+                    <p>Receive accurate, locally-relevant information</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Ready to Explore Yola?</h2>
+            <p>Sign up now to get personalized recommendations and save your preferences</p>
+            <button onclick="window.loadSection('signup')">Get Started</button>
+        </section>
+    </main>
+
+    <script src="../components/navbar.js"></script>
+    <script src="../components/home.js"></script>
+</body>
+</html>

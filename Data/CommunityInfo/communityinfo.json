@@ -1,0 +1,52 @@
+  
+  {
+
+  "general": {
+    "city": "Yola",
+    "state": "Adamawa State",
+    "country": "Nigeria",
+    "description": "Yola is the capital of Adamawa State, Nigeria, located within the Yola South Local Government Area. It comprises the old town of Yola, where the Lamido of Adamawa resides, and the new city of Jimeta, which is the administrative and commercial centre.",
+    "climate": "Tropical savanna climate with a distinct dry season (November to April) and wet season (May to October). Highest temperatures occur in March and April. Average annual precipitation: 872.4 mm."
+  },
+
+
+    "local_council_office": {
+      "location": "Opposite the Yola Police Post, Yola.",
+      "services": [
+        "Birth Registration",
+        "Marriage Registration",
+        "Indigene/Resident Certificates",
+        "Community Development Permits",
+        "Collection of local levies and taxes"
+      ]
+    },
+
+    "voter_registration": {
+      "handled_by": "INEC officials",
+      "location": "Local Council Office or designated polling units during registration periods.",
+      "required_documents": "Proof of identity (e.g., National ID Card, driver's license)"
+    },
+
+    "nin_enrollment": {
+      "office": "Yola South Local Government Area",
+      "services": [
+        "NIN Enrollment",
+        "Retrieval",
+        "Modification/Update/Correction",
+        "Renewal"
+      ],
+      "contact": "07002255646 (NIMC General Enquiry)"
+    },
+    "passport_office": {
+      "location": "Kofare, Numan Road, Jimeta Yola, Adamawa State.",
+      "application": "Online via Nigeria Immigration Service website: https://portal.immigration.gov.ng/",
+      "services": [
+        "Application for standard or official passports",
+        "Biometric data capture",
+        "Collection"
+      ],
+      "processing_time": "6 weeks to 2 months, with express services available."
+    }
+  }
+
+

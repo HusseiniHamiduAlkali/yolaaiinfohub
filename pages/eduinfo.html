@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduInfo - Educational Information</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/eduinfo.css">
+    <style>
+        .info-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            padding: 1.5rem;
+        }
+        .chat-header {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .input-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .faq-list {
+            margin-top: 2rem;
+        }
+        .faq-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .faq-list li {
+            margin: 0.5rem 0;
+        }
+        .faq-link {
+            color: #3182ce;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .institutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .institution-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .institution-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .institution-info {
+            padding: 1.5rem;
+        }
+        .institution-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .institution-type {
+            color: #718096;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        .institution-description {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+        .institution-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .institution-link {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background: #3182ce;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .institution-link:hover {
+            background: #2c5282;
+        }
+    </style>
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main id="main-content">
+        <section class="info-section">
+            <h2>EduInfo - Educational Information</h2>
+            <p>Discover educational institutions and opportunities in Yola.</p>
+            
+            <div class="chat-container">
+                <div class="chat-header">EduInfo AI Chat</div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendEduMessage();">
+                    <div id="chat-preview" class="chat-preview"></div>
+                    <input type="text" id="chat-input" placeholder="Ask about education..." required />
+                    <button type="submit">Send</button>
+                    <button type="button" class="stop-btn" onclick="window.stopEduResponse()" style="display:none">Stop</button>
+                </form>
+                <div class="input-options">
+                    <button type="button" onclick="window.captureImage('edu')" title="Capture Image"><span>📷</span></button>
+                    <button type="button" onclick="window.recordAudio('edu')" title="Record Audio"><span>🎤</span></button>
+                    <label class="file-upload-btn" title="Upload File">
+                        <span>📁</span>
+                        <input type="file" style="display:none" onchange="window.uploadFile(event, 'edu')" />
+                    </label>
+                </div>
+                <div class="faq-list">
+                    <h3>Education FAQs</h3>
+                    <ul>
+                        <li><a class="faq-link" onclick="window.sendEduMessage('List of universities in Yola')">List of universities in Yola</a></li>
+                        <li><a class="faq-link" onclick="window.sendEduMessage('Secondary schools information')">Secondary schools information</a></li>
+                        <li><a class="faq-link" onclick="window.sendEduMessage('Technical colleges and vocational centers')">Technical colleges and vocational centers</a></li>
+                        <li><a class="faq-link" onclick="window.sendEduMessage('School admission process')">School admission process</a></li>
+                        <li><a class="faq-link" onclick="window.sendEduMessage('Educational requirements')">Educational requirements</a></li>
+                        <li><a class="faq-link" onclick="window.sendEduMessage('Available scholarships')">Available scholarships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="institutions-section">
+                <h2>Educational Institutions in Yola</h2>
+                <div class="institutions-grid">
+                    <!-- Universities -->
+                    <div class="institution-card">
+                        <img src="../Data/Images/EduInfo/mau.jpg" alt="Modibbo Adama University" class="institution-img">
+                        <div class="institution-info">
+                            <h3 class="institution-name">Modibbo Adama University</h3>
+                            <div class="institution-type">Federal University</div>
+                            <p class="institution-description">Premier university offering a wide range of undergraduate and postgraduate programs.</p>
+                            <div class="institution-links">
+                                <a href="https://mau.edu.ng" target="_blank" class="institution-link">Visit Website</a>
+                                <a href="#" onclick="window.sendEduMessage('Tell me about MAU admission')" class="institution-link">Admission Info</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="institution-card">
+                        <img src="../Data/Images/EduInfo/aun.jpg" alt="American University of Nigeria" class="institution-img">
+                        <div class="institution-info">
+                            <h3 class="institution-name">American University of Nigeria</h3>
+                            <div class="institution-type">Private University</div>
+                            <p class="institution-description">American-style university providing quality education with modern facilities.</p>
+                            <div class="institution-links">
+                                <a href="https://www.aun.edu.ng" target="_blank" class="institution-link">Visit Website</a>
+                                <a href="#" onclick="window.sendEduMessage('Tell me about AUN admission')" class="institution-link">Admission Info</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Schools -->
+                    <div class="institution-card">
+                        <img src="../Data/Images/EduInfo/fggc.jpg" alt="Federal Government Girls College" class="institution-img">
+                        <div class="institution-info">
+                            <h3 class="institution-name">Federal Government Girls College</h3>
+                            <div class="institution-type">Federal Secondary School</div>
+                            <p class="institution-description">Premier girls' secondary school with excellent academic standards.</p>
+                            <div class="institution-links">
+                                <a href="#" onclick="window.sendEduMessage('FGGC Yola admission process')" class="institution-link">Admission Info</a>
+                                <a href="#" onclick="window.sendEduMessage('FGGC Yola facilities')" class="institution-link">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scholarship Opportunities -->
+            <div class="scholarships-section">
+                <h2>Scholarship Opportunities</h2>
+                <div class="institutions-grid">
+                    <div class="institution-card">
+                        <img src="../Data/Images/EduInfo/scholarship1.jpg" alt="State Government Scholarship" class="institution-img">
+                        <div class="institution-info">
+                            <h3 class="institution-name">State Government Scholarship</h3>
+                            <div class="institution-type">Merit-based Scholarship</div>
+                            <p class="institution-description">Annual scholarship program for Adamawa State indigenes.</p>
+                            <div class="institution-links">
+                                <a href="#" onclick="window.sendEduMessage('State scholarship requirements')" class="institution-link">Requirements</a>
+                                <a href="#" onclick="window.sendEduMessage('How to apply for state scholarship')" class="institution-link">How to Apply</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="institution-card">
+                        <img src="../Data/Images/EduInfo/scholarship2.jpg" alt="Federal Scholarship" class="institution-img">
+                        <div class="institution-info">
+                            <h3 class="institution-name">Federal Scholarship Board</h3>
+                            <div class="institution-type">Federal Government Scholarship</div>
+                            <p class="institution-description">Nationwide scholarship opportunities for Nigerian students.</p>
+                            <div class="institution-links">
+                                <a href="#" onclick="window.sendEduMessage('Federal scholarship requirements')" class="institution-link">Requirements</a>
+                                <a href="#" onclick="window.sendEduMessage('Federal scholarship application')" class="institution-link">How to Apply</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../components/navbar.js"></script>
+    <script src="../components/eduinfo.js"></script>
+</body>
+</html>

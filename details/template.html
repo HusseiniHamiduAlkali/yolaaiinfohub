@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[Location Name] - Details</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <style>
+        .details-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        
+        .details-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .details-header h1 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .details-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        
+        .details-content {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        .details-section {
+            margin-bottom: 2rem;
+        }
+        
+        .details-section h2 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background: #3182ce;
+            color: #fff;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            transition: background 0.3s;
+        }
+        
+        .back-button:hover {
+            background: #2563eb;
+        }
+
+        @media (max-width: 768px) {
+            .details-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .details-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="details-container">
+        <div class="details-header">
+            <h1>[Location Name]</h1>
+        </div>
+        
+        <img src="../[Image Path]" alt="[Location Name]" class="details-image">
+        
+        <div class="details-content">
+            <div class="details-section">
+                <h2>About</h2>
+                <p>[Detailed description of the location]</p>
+            </div>
+            
+            <div class="details-section">
+                <h2>Features</h2>
+                <ul>
+                    <li>[Feature 1]</li>
+                    <li>[Feature 2]</li>
+                    <li>[Feature 3]</li>
+                </ul>
+            </div>
+            
+            <div class="details-section">
+                <h2>Location & Access</h2>
+                <p>[Address and how to get there]</p>
+                <p>[Opening hours if applicable]</p>
+            </div>
+            
+            <div class="details-section">
+                <h2>Contact Information</h2>
+                <p>[Contact details if applicable]</p>
+            </div>
+        </div>
+        
+        <a href="javascript:history.back()" class="back-button">← Back to Places</a>
+    </div>
+</body>
+</html>

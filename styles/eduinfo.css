@@ -1,0 +1,40 @@
+/* EduInfo specific styles */
+.edu-section .section4 {
+  background: linear-gradient(to bottom, #ffffff, #f0f8ff);
+}
+
+/* Chat message styles */
+
+.msg-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 1.2em;
+  gap: 0.2em;
+  clear: both;
+}
+
+.msg-group .user-msg {
+  align-self: flex-end;
+  margin-bottom: 0.1em;
+}
+
+.msg-group .ai-msg {
+  align-self: flex-start;
+  margin-top: 0.2em;
+}
+
+@media (max-width: 1024px) {
+  .section4 {
+    flex: 0 0 calc(50% - 1rem);
+    max-width: calc(50% - 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .section4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+  }
+}

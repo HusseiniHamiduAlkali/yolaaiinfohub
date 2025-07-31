@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoInfo - Environmental Information</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/ecoinfo.css">
+    <style>
+        .info-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            padding: 1.5rem;
+        }
+        .chat-header {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .input-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .faq-list {
+            margin-top: 2rem;
+        }
+        .faq-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .faq-list li {
+            margin: 0.5rem 0;
+        }
+        .faq-link {
+            color: #3182ce;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .initiatives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .initiative-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .initiative-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .initiative-info {
+            padding: 1.5rem;
+        }
+        .initiative-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .initiative-description {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+        .initiative-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #3182ce;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .initiative-link:hover {
+            background: #2c5282;
+        }
+        .eco-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+        .metric-label {
+            color: #4a5568;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main id="main-content">
+        <section class="info-section">
+            <h2>EcoInfo - Environmental Information</h2>
+            <p>Learn about environmental initiatives and sustainability in Yola.</p>
+            
+            <div class="chat-container">
+                <div class="chat-header">EcoInfo AI Chat</div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendEcoMessage();">
+                    <div id="chat-preview" class="chat-preview"></div>
+                    <input type="text" id="chat-input" placeholder="Ask about environment..." required />
+                    <button type="submit">Send</button>
+                    <button type="button" class="stop-btn" onclick="window.stopEcoResponse()" style="display:none">Stop</button>
+                </form>
+                <div class="input-options">
+                    <button type="button" onclick="window.captureImage('eco')" title="Capture Image"><span>📷</span></button>
+                    <button type="button" onclick="window.recordAudio('eco')" title="Record Audio"><span>🎤</span></button>
+                    <label class="file-upload-btn" title="Upload File">
+                        <span>📁</span>
+                        <input type="file" style="display:none" onchange="window.uploadFile(event, 'eco')" />
+                    </label>
+                </div>
+                <div class="faq-list">
+                    <h3>Environmental FAQs</h3>
+                    <ul>
+                        <li><a class="faq-link" onclick="window.sendEcoMessage('Current air quality in Yola')">Current air quality in Yola</a></li>
+                        <li><a class="faq-link" onclick="window.sendEcoMessage('Recycling programs')">Recycling programs</a></li>
+                        <li><a class="faq-link" onclick="window.sendEcoMessage('Water conservation tips')">Water conservation tips</a></li>
+                        <li><a class="faq-link" onclick="window.sendEcoMessage('Green initiatives')">Green initiatives</a></li>
+                        <li><a class="faq-link" onclick="window.sendEcoMessage('Environmental regulations')">Environmental regulations</a></li>
+                        <li><a class="faq-link" onclick="window.sendEcoMessage('Waste management')">Waste management</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="eco-metrics">
+                <div class="metric-card">
+                    <div class="metric-value">85%</div>
+                    <div class="metric-label">Air Quality Index</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">72%</div>
+                    <div class="metric-label">Water Quality Index</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">45%</div>
+                    <div class="metric-label">Waste Recycling Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">28°C</div>
+                    <div class="metric-label">Average Temperature</div>
+                </div>
+            </div>
+
+            <div class="initiatives-section">
+                <h2>Environmental Initiatives</h2>
+                <div class="initiatives-grid">
+                    <!-- Green Spaces Initiative -->
+                    <div class="initiative-card">
+                        <img src="../Data/Images/EcoInfo/green-spaces.jpg" alt="Green Spaces Project" class="initiative-img">
+                        <div class="initiative-info">
+                            <h3 class="initiative-name">Green Spaces Project</h3>
+                            <p class="initiative-description">Urban greening initiative to create more parks and gardens in Yola.</p>
+                            <a href="#" onclick="window.sendEcoMessage('Tell me about the Green Spaces Project')" class="initiative-link">Learn More</a>
+                        </div>
+                    </div>
+
+                    <!-- Recycling Program -->
+                    <div class="initiative-card">
+                        <img src="../Data/Images/EcoInfo/recycling.jpg" alt="Recycling Program" class="initiative-img">
+                        <div class="initiative-info">
+                            <h3 class="initiative-name">Yola Recycles</h3>
+                            <p class="initiative-description">Community recycling program with collection points throughout the city.</p>
+                            <a href="#" onclick="window.sendEcoMessage('How does Yola Recycles work')" class="initiative-link">Learn More</a>
+                        </div>
+                    </div>
+
+                    <!-- Water Conservation -->
+                    <div class="initiative-card">
+                        <img src="../Data/Images/EcoInfo/water.jpg" alt="Water Conservation" class="initiative-img">
+                        <div class="initiative-info">
+                            <h3 class="initiative-name">Water Conservation</h3>
+                            <p class="initiative-description">Programs and tips for conserving water in homes and businesses.</p>
+                            <a href="#" onclick="window.sendEcoMessage('Water conservation programs in Yola')" class="initiative-link">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Environmental Calendar -->
+            <div class="events-section">
+                <h2>Environmental Events Calendar</h2>
+                <div class="initiatives-grid">
+                    <div class="initiative-card">
+                        <img src="../Data/Images/EcoInfo/cleanup.jpg" alt="Community Cleanup" class="initiative-img">
+                        <div class="initiative-info">
+                            <h3 class="initiative-name">Monthly Community Cleanup</h3>
+                            <p class="initiative-description">Join us every last Saturday of the month for community cleanup activities.</p>
+                            <a href="#" onclick="window.sendEcoMessage('How to join community cleanup')" class="initiative-link">Participate</a>
+                        </div>
+                    </div>
+
+                    <div class="initiative-card">
+                        <img src="../Data/Images/EcoInfo/workshop.jpg" alt="Environmental Workshop" class="initiative-img">
+                        <div class="initiative-info">
+                            <h3 class="initiative-name">Environmental Workshops</h3>
+                            <p class="initiative-description">Weekly workshops on environmental conservation and sustainable practices.</p>
+                            <a href="#" onclick="window.sendEcoMessage('Environmental workshop schedule')" class="initiative-link">View Schedule</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../components/navbar.js"></script>
+    <script src="../components/ecoinfo.js"></script>
+</body>
+</html>

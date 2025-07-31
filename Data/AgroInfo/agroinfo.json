@@ -1,0 +1,39 @@
+{
+  "common_crops": [
+    "Maize (corn)",
+    "Guinea Corn (sorghum)",
+    "Rice",
+    "Groundnuts (peanuts)",
+    "Soybeans",
+    "Cassava",
+    "Yam",
+    "Okra",
+    "Sorghum",
+    "Millet",
+    "Cotton",
+    "Cowpea",
+    "Bambara nuts",
+    "Tomatoes",
+    "Onions",
+    "Pepper",
+    "Sugarcane",
+    "Pawpaw",
+    "Guava",
+    "Cashew",
+    "Mango",
+    "Banana",
+    "Orange"
+  ],
+  "rainy_season_planting": "May - July/August. Ideal for maize, guinea corn, rice, groundnuts, soybeans, and most staple crops.",
+  "dry_season_farming": "November - February. Requires irrigation. Suitable for vegetables like tomatoes, peppers, onions, garden eggs, and leafy greens.",
+  "soil_fertility": "Practice crop rotation, use organic fertilizers like compost or well-rotted animal manure. Regenerative agriculture practices are promoted.",
+  "pest_disease_control": "Consult local agricultural extension workers at the Adamawa State Ministry of Agriculture office in Yola.",
+  "best_practices": [
+    "Early planting",
+    "Use of improved seed varieties",
+    "Proper spacing",
+    "Timely weeding"
+  ],
+  "regenerative_agriculture": "Over 20,000 farmers in Yola North, Girei, and Yola South LGAs trained as of June 2024.",
+  "adasp": "Adamawa State Agricultural Development and Services Programme (ADAS-P) empowers farmers by boosting productivity, strengthening market access, enhancing financial stability, and promoting sustainable practices."
+}

@@ -1,0 +1,64 @@
+.password-requirements {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background-color: #f8fafc;
+  font-size: 0.9em;
+}
+
+.password-requirements ul {
+  list-style: none;
+  padding-left: 20px;
+  margin: 5px 0;
+}
+
+.password-requirements li {
+  margin: 5px 0;
+  position: relative;
+}
+
+.password-requirements li:before {
+  content: '✕';
+  color: #e53e3e;
+  margin-right: 8px;
+}
+
+.password-requirements li.met:before {
+  content: '✓';
+  color: #38a169;
+}
+
+.password-requirements li.not-met {
+  color: #e53e3e;
+}
+
+.password-requirements li.met {
+  color: #38a169;
+}
+
+#password-match-status {
+  margin-top: 5px;
+  font-size: 0.9em;
+}
+
+#password-match-status.match {
+  color: #38a169;
+}
+
+#password-match-status.no-match {
+  color: #e53e3e;
+}
+
+.password-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+#signup-error {
+  color: #e53e3e;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: rgba(229, 62, 62, 0.1);
+}

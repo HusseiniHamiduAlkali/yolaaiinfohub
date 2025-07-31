@@ -1,0 +1,551 @@
+/*Navbar.css
+
+Wednesday, July 30, 2025
+6:37 AM
+*/
+
+/* Navbar layout and auth buttons */
+nav.navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  background: #2d3748;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 0;
+  z-index: 3000;
+  width: 99%;
+  min-height: 64px; /* Merged from previous definition */
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+  height: 100%;
+  margin-left: 5px;
+  margin-right: 20px;
+}
+
+.navbar-logo-area {
+  display: block;
+  align-items: center;
+  gap: 1rem;
+  flex-direction: row; /* Merged from previous definition */
+  height: 100%; /* Merged from previous definition */
+  gap: 1.2rem; /* Merged from previous definition */
+}
+
+.navbar-logo-placeholder {
+  width: 74px; /* Merged from previous definition */
+  height: 84px; /* Merged from previous definition */
+  background: #e4e4e4ff; /* Merged from previous definition */
+  border-radius: 12px; /* Merged from previous definition */
+  margin-right: 0.5rem; /* Merged from previous definition */
+  display: flex; /* Merged from previous definition */
+  align-items: center; /* Merged from previous definition */
+  justify-content: center; /* Merged from previous definition */
+  font-size: 2rem; /* Merged from previous definition */
+  color: #2d3748; /* Merged from previous definition */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Merged from previous definition */
+  overflow: hidden; /* Merged from previous definition */
+}
+
+.navbar-logo-placeholder img {
+  height: 40px; /* Original definition */
+  width: 40px; /* Original definition */
+  border-radius: 0; /* Original definition */
+  width: 100%; /* Merged from previous definition */
+  height: auto; /* Merged from previous definition */
+  display: block; /* Merged from previous definition */
+}
+
+.navbar-appname {
+  font-weight: bold;
+  font-size: 2.2rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  align-content: center;
+  display: block;
+  margin-left: 10px;
+}
+
+/* Tablet-specific classes will be defined in media query */
+
+.navbar-right {
+  display: flex;
+  
+  gap: 2rem;
+  flex-direction: column; /* Merged from previous definition */
+  align-items: flex-end; /* Merged from previous definition */
+  justify-content: flex-start; /* Merged from previous definition */
+  flex: 1; /* Merged from previous definition */
+  gap: 0.7rem; /* Merged from previous definition */
+}
+
+.navbar-links {
+  display: flex;
+  
+  list-style: none;
+  margin: 0;
+  
+  padding-left: 10px;
+}
+
+.navbar-links li button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.navbar-links li button:hover {
+  background: #4a5568;
+}
+
+.navbar-auth {
+  display: inline-flex;
+  flex-direction: row; /* Merged from previous definition */
+  margin-right: 15px; /* Merged from previous definition */
+  gap: 0.7rem; /* Merged from previous definition */
+  align-items: left; /* Merged from previous definition */
+  margin-bottom: 0.5rem; /* Merged from previous definition */
+}
+
+.auth-btn {
+  border-color: #cbd5e1 ; /* Merged from previous definition */
+  border:double; /* Merged from previous definition */
+  background: #2d3748;
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.3rem 1.1rem; /* Merged from previous definition */
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  min-width: 80px; /* Merged from previous definition */
+  font-weight: 500; /* Merged from previous definition */
+}
+
+.auth-btn:hover {
+  background: #cbd5e1; /* Merged from previous definition */
+  color: black; /* Merged from previous definition */
+}
+
+#logout-btn {
+  background: #e53e3e;
+}
+
+#logout-btn:hover {
+  background: #c53030;
+}
+
+.user-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff;
+  margin-left: 0.2rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 4px;
+  padding: 8px;
+  background: #2d3748;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.hamburger:hover {
+  background: #4a5568;
+}
+
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease;
+}
+
+.hamburger.active span {
+  background: #cbd5e1;
+}
+
+/* Hamburger Animation */
+.hamburger.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.mobile-menu {
+  display: none; /* Original definition */
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 70vw;
+  max-width: 320px;
+  height: 100vh;
+  background: #2d3748;
+  border-radius: 0 0 0 16px;
+  box-shadow: -2px 0 16px rgba(0,0,0,0.18); /* Original definition */
+  padding: 2rem 1rem 1rem 1.5rem;
+  z-index: 9999;
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  transform: translateX(100%);
+  box-shadow: -2px 0 16px rgba(0,0,0,0.3); /* Merged from previous definition */
+  overflow-y: auto; /* Merged from previous definition */
+  max-height: 100vh; /* Merged from previous definition */
+}
+
+.mobile-menu.show {
+  display: flex;
+  transform: translateX(0);
+}
+
+.mobile-menu li {
+  margin-bottom: 1.2rem;
+}
+
+.mobile-menu li button {
+  width: 100%;
+  text-align: left;
+  padding: 0.9rem 1.2rem;
+  font-size: 1.1rem;
+  background: #4a5568;
+  border: none;
+  color: #fff;
+  border-radius: 8px;
+  margin-bottom: 0.7rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  transition: background 0.2s, color 0.2s;
+}
+
+.mobile-menu li button:hover {
+  background: #cbd5e1;
+  color: #2d3748;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  position: absolute;
+  top: 1rem;
+  right: 1.2rem;
+  cursor: pointer;
+  z-index: 10001;
+  padding: 0.2rem 0.7rem;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mobile-menu-close:hover {
+  background: #4a5568;
+  color: #cbd5e1;
+}
+
+/* Highlight for active nav button */
+.navbar-links button.active, .mobile-menu button.active {
+  background: #e4e4e4ff !important; /* Match navbar color */
+  color: black !important;
+  box-shadow: 0 2px 8px 0 rgba(43,108,176,0.10);
+  font-weight: 500;
+  border-radius: 8px;
+  z-index: 2;
+  position: relative;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Hover color for non-active */
+.navbar-links button:not(.active):hover,
+.mobile-menu button:not(.active):hover {
+  background: #cbd5e1;
+  color: black;
+}
+
+/* Minimal appbar for auth pages (moved from global.css) */
+.minimal-appbar {
+  width: 100vw;
+  background: #2d3748;
+  color: #fff;
+  padding: 1.1rem 0 1.1rem 0;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 3000;
+}
+
+.minimal-appbar .appname {
+  font-family: inherit;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Responsive Navbar Styles */
+/* PC Screens (>=1151px) */
+@media screen and (min-width: 1151px) {
+  .navbar {
+    flex-direction: row;
+  }
+  .navbar-right {
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .navbar-links {
+    display: flex;
+    flex-direction: row;
+  }
+  .hamburger {
+    display: none;
+  }
+  .navbar-auth {
+    margin: 0 1rem;
+  }
+  /* On PC, navbar-left stays in its original position */
+  .navbar > .navbar-left {
+    display: flex;
+  }
+  .tablet-navbar-upper .navbar-left {
+    display: none;
+  }
+}
+
+/* Tablet Screens (701px to 1150px) */
+@media screen and (min-width: 701px) and (max-width: 1150px) {
+  .navbar {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  /* Ensure tablet-navbar-upper is always visible and properly laid out */
+  .tablet-navbar-upper {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+  }
+
+  /* Hide the original navbar-left */
+  .navbar > .navbar-left {
+    display: none !important;
+  }
+  
+  /* Style the navbar-left inside tablet-navbar-upper */
+  .tablet-navbar-upper .navbar-left {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 1rem;
+  }
+  
+  /* Ensure logo and app name are visible in tablet-navbar-upper */
+  .tablet-navbar-upper .navbar-logo-placeholder {
+    width: 60px;
+    height: 60px;
+    margin-right: 0.5rem;
+  }
+  
+  .tablet-navbar-upper .navbar-appname {
+    font-size: 1.8rem;
+    white-space: nowrap;
+  }
+  
+  .navbar-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    gap: 1rem;
+  }
+  
+  .hamburger {
+    display: none;
+  }
+  
+  /* Ensure proper spacing */
+  .navbar-right {
+    margin-top: 0.5rem;
+  }
+}
+  
+  /* Tablet right section */
+  .navbar-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Navigation links in tablet */
+  .navbar-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0rem;
+  }
+  
+  /* Hide hamburger in tablet view */
+  .hamburger {
+    display: none;
+  }
+  
+  /* Auth buttons in tablet */
+  .navbar-auth {
+    margin: 0.5rem 0;
+    justify-content: center;
+  }
+
+/* Tablets (768px to 799px) */
+@media screen and (min-width: 768px) and (max-width: 799px) {
+  .navbar {
+    flex-direction: column;
+    padding: 0.5rem;
+  }
+  .navbar-left {
+    width: 100%;
+    align-items: center;
+  }
+  .navbar-right {
+    width: 100%;
+    align-items: center;
+  }
+  .navbar-links {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+    position: absolute;
+    top: 1.5rem;
+    right: 1rem;
+  }
+  .navbar-auth {
+    margin: 0.5rem 0;
+    order: 1;
+  }
+  .mobile-menu.show {
+    display: flex;
+  }
+}
+
+/* Mobile Screens (<=700px) */
+@media screen and (max-width: 700px) {
+  .navbar {
+    flex-direction: column;
+    padding: 0.3rem;
+  }
+
+  /* Create tablet-navbar-upper for mobile too */
+  .tablet-navbar-upper {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  /* Hide the original navbar-left */
+  .navbar > .navbar-left {
+    display: none !important;
+  }
+  
+  /* Style the navbar-left inside tablet-navbar-upper */
+  .tablet-navbar-upper .navbar-left {
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  /* Adjust logo and app name sizes for mobile */
+  .tablet-navbar-upper .navbar-logo-placeholder {
+    width: 50px;
+    height: 50px;
+    margin-right: 0.5rem;
+  }
+  
+  .tablet-navbar-upper .navbar-appname {
+    font-size: 1.2rem;
+    white-space: nowrap;
+  }
+  
+  /* Only hide navlinks and show hamburger on mobile */
+  .navbar-links {
+    display: none;
+  }
+  
+  .hamburger {
+    display: flex;
+    position: absolute;
+    top: 1rem;
+    right: 0.8rem;
+  }
+  
+  /* Adjust sizes for better mobile viewing */
+  .navbar-logo-placeholder {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .navbar-appname {
+    font-size: 1.2rem;
+  }
+  
+  .mobile-menu.show {
+    display: flex;
+  }
+}
+
+/* Font size and padding adjustments */
+@media (max-width: 900px) {
+  .navbar, .minimal-appbar {
+    font-size: 1.05rem;
+    padding: 0.7rem 0.5rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .navbar, .minimal-appbar {
+    font-size: 0.98rem;
+    padding: 0.6rem 0.2rem;
+  }
+}
+
+

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroInfo - Agriculture Help</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/agroinfo.css">
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main id="main-content">
+        <section class="info-section">
+            <h2>AgroInfo - Agriculture Help</h2>
+            <p>Ask about farming, crops, livestock, or agricultural services in Yola.</p>
+            <div class="chat-container">
+                <div class="chat-header">AgroInfo AI Chat</div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendAgroMessage();">
+                    <div id="chat-preview" class="chat-preview"></div>
+                    <input type="text" id="chat-input" placeholder="Ask about agriculture..." required />
+                    <div class="send-button-group">
+                        <button type="submit" class="send-button">
+                            <span class="send-text">Send</span>
+                            <span class="spinner"></span>
+                        </button>
+                        <button type="button" class="stop-button" style="display:none" onclick="window.stopAgroResponse()">Stop</button>
+                    </div>
+                </form>
+                <div class="input-options">
+                    <button type="button" onclick="captureImage()" title="Capture Image"><span>📷</span></button>
+                    <button type="button" onclick="recordAudio()" title="Record Audio"><span>🎤</span></button>
+                    <label class="file-upload-btn" title="Upload File">
+                        <span>📁</span>
+                        <input type="file" style="display:none" onchange="uploadFile(event, 'agro')" />
+                    </label>
+                </div>
+                <div class="faq-list">
+                    <h3>AgroInfo FAQs</h3>
+                    <ul>
+                        <li><a class="faq-link" onclick="window.sendAgroMessage('What are the main crops grown in Yola?')">What are the main crops grown in Yola?</a></li>
+                        <li><a class="faq-link" onclick="window.sendAgroMessage('Where can I buy farm inputs in Yola?')">Where can I buy farm inputs in Yola?</a></li>
+                        <li><a class="faq-link" onclick="window.sendAgroMessage('How do I access agricultural extension services?')">How do I access agricultural extension services?</a></li>
+                        <li><a class="faq-link" onclick="window.sendAgroMessage('What are common livestock diseases in Yola?')">What are common livestock diseases in Yola?</a></li>
+                        <li><a class="faq-link" onclick="window.sendAgroMessage('Information on irrigation methods suitable for Yola')">Information on irrigation methods suitable for Yola</a></li>
+                        <li><a class="faq-link" onclick="window.sendAgroMessage('What government programs support farmers in Adamawa State?')">What government programs support farmers in Adamawa State?</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="section2">
+                <h2>Agricultural Services in Yola</h2>
+                
+                <div class="section3">
+                    <h3 class="section3-title">Farm Input Suppliers</h3>
+                    <div class="section4-container">
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/supplier1.jpg" alt="Yola Agro Supplies">
+                            </div>
+                            <h3>Yola Agro Supplies</h3>
+                            <p>Complete range of seeds, fertilizers, and farming equipment for all agricultural needs.</p>
+                            <a href="../details/yola-agro-supplies.html">Learn more →</a>
+                        </div>
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/supplier2.jpg" alt="Farm Solutions">
+                            </div>
+                            <h3>Farm Solutions</h3>
+                            <p>Quality agricultural inputs and expert farming consultancy services.</p>
+                            <a href="../details/farm-solutions.html">Learn more →</a>
+                        </div>
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/supplier3.jpg" alt="Green Harvest">
+                            </div>
+                            <h3>Green Harvest Supplies</h3>
+                            <p>Specialized in organic farming inputs and sustainable agriculture solutions.</p>
+                            <a href="../details/green-harvest-supplies.html">Learn more →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section3">
+                    <h3 class="section3-title">Extension Services</h3>
+                    <div class="section4-container">
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/extension1.jpg" alt="Agric Extension Office">
+                            </div>
+                            <h3>Agricultural Extension Office</h3>
+                            <p>Government agricultural extension services and farmer support programs.</p>
+                            <a href="../details/agricultural-extension-office.html">Learn more →</a>
+                        </div>
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/extension2.jpg" alt="Farmers Support">
+                            </div>
+                            <h3>Farmers Support Center</h3>
+                            <p>Training and technical assistance for local farmers.</p>
+                            <a href="../details/farmers-support-center.html">Learn more →</a>
+                        </div>
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/extension3.jpg" alt="Research Station">
+                            </div>
+                            <h3>Agricultural Research Station</h3>
+                            <p>Research and development center for improved farming practices.</p>
+                            <a href="../details/agricultural-research-station.html">Learn more →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section3">
+                    <h3 class="section3-title">Livestock Services</h3>
+                    <div class="section4">
+                        <img src="../Data/Images/AgroInfo/livestock1.jpg" alt="Veterinary Center">
+                        <h3>Yola Veterinary Center</h3>
+                        <p>Complete veterinary care and livestock health services.</p>
+                        <a href="../details/yola-veterinary-center.html">Learn more →</a>
+                    </div>
+                    <div class="section4">
+                        <img src="../Data/Images/AgroInfo/livestock2.jpg" alt="Animal Feed">
+                        <h3>Quality Feed Mills</h3>
+                        <p>Premium animal feed production and supply services.</p>
+                        <a href="../details/quality-feed-mills.html">Learn more →</a>
+                    </div>
+                    <div class="section4">
+                        <img src="../Data/Images/AgroInfo/livestock3.jpg" alt="Livestock Market">
+                        <h3>Central Livestock Market</h3>
+                        <p>Major marketplace for livestock trading and related services.</p>
+                        <a href="../details/central-livestock-market.html">Learn more →</a>
+                    </div>
+                </div>
+
+                <div class="section3">
+                    <h3 class="section3-title">Processing Centers</h3>
+                    <div class="section4-container">
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/processing1.jpg" alt="Grain Processing">
+                            </div>
+                            <h3>Grain Processing Center</h3>
+                            <p>Modern grain processing and storage facilities.</p>
+                            <a href="../details/grain-processing-center.html">Learn more →</a>
+                        </div>
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/processing2.jpg" alt="Cold Storage">
+                            </div>
+                            <h3>Cold Storage Facility</h3>
+                            <p>Temperature-controlled storage for agricultural products.</p>
+                            <a href="../details/cold-storage-facility.html">Learn more →</a>
+                        </div>
+                        <div class="section4">
+                            <div class="img-placeholder">
+                                <img src="../Data/Images/AgroInfo/processing3.jpg" alt="Value Addition">
+                            </div>
+                            <h3>Agricultural Value Addition Center</h3>
+                            <p>Facilities for processing and packaging agricultural products.</p>
+                            <a href="../details/agricultural-value-addition-center.html">Learn more →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="../components/navbar.js"></script>
+    <script src="../components/agroinfo.js"></script>
+</body>
+</html>

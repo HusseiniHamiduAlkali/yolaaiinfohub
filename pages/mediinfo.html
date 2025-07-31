@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediInfo - Healthcare Information</title>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/mediinfo.css">
+    <style>
+        .info-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            padding: 1.5rem;
+        }
+        .chat-header {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .input-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .faq-list {
+            margin-top: 2rem;
+        }
+        .faq-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .faq-list li {
+            margin: 0.5rem 0;
+        }
+        .faq-link {
+            color: #3182ce;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .hospital-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .hospital-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .hospital-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .hospital-info {
+            padding: 1.5rem;
+        }
+        .hospital-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .hospital-contact {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .contact-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background: #3182ce;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .contact-btn:hover {
+            background: #2c5282;
+        }
+    </style>
+</head>
+<body>
+    <nav id="navbar"></nav>
+    <main id="main-content">
+        <section class="info-section">
+            <h2>MediInfo - Healthcare Information</h2>
+            <p>Get information about healthcare services, hospitals, and medical facilities in Yola.</p>
+            
+            <div class="chat-container">
+                <div class="chat-header">MediInfo AI Chat</div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendMediMessage();">
+                    <div id="chat-preview" class="chat-preview"></div>
+                    <input type="text" id="chat-input" placeholder="Ask about healthcare..." required />
+                    <button type="submit">Send</button>
+                    <button type="button" class="stop-btn" onclick="window.stopMediResponse()" style="display:none">Stop</button>
+                </form>
+                <div class="input-options">
+                    <button type="button" onclick="window.captureImage('medi')" title="Capture Image"><span>📷</span></button>
+                    <button type="button" onclick="window.recordAudio('medi')" title="Record Audio"><span>🎤</span></button>
+                    <label class="file-upload-btn" title="Upload File">
+                        <span>📁</span>
+                        <input type="file" style="display:none" onchange="window.uploadFile(event, 'medi')" />
+                    </label>
+                </div>
+                <div class="faq-list">
+                    <h3>Healthcare FAQs</h3>
+                    <ul>
+                        <li><a class="faq-link" onclick="window.sendMediMessage('List of hospitals in Yola')">List of hospitals in Yola</a></li>
+                        <li><a class="faq-link" onclick="window.sendMediMessage('Emergency medical services')">Emergency medical services</a></li>
+                        <li><a class="faq-link" onclick="window.sendMediMessage('Common health issues in Yola')">Common health issues in Yola</a></li>
+                        <li><a class="faq-link" onclick="window.sendMediMessage('Healthcare facilities and specialists')">Healthcare facilities and specialists</a></li>
+                        <li><a class="faq-link" onclick="window.sendMediMessage('Health insurance options')">Health insurance options</a></li>
+                        <li><a class="faq-link" onclick="window.sendMediMessage('Vaccination centers')">Vaccination centers</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Major Hospitals in Yola</h2>
+            <div class="hospital-grid">
+                <div class="hospital-card">
+                    <img src="../Data/Images/MediInfo/hospital1.jpg" alt="Federal Medical Center" class="hospital-img">
+                    <div class="hospital-info">
+                        <h3 class="hospital-name">Federal Medical Center</h3>
+                        <p>Comprehensive medical services and specialist care</p>
+                        <div class="hospital-contact">
+                            <a href="tel:+2348012345678" class="contact-btn">Call</a>
+                            <a href="https://maps.google.com" target="_blank" class="contact-btn">Directions</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hospital-card">
+                    <img src="../Data/Images/MediInfo/hospital2.jpg" alt="Yola Specialist Hospital" class="hospital-img">
+                    <div class="hospital-info">
+                        <h3 class="hospital-name">Yola Specialist Hospital</h3>
+                        <p>Specialized medical care and emergency services</p>
+                        <div class="hospital-contact">
+                            <a href="tel:+2348023456789" class="contact-btn">Call</a>
+                            <a href="https://maps.google.com" target="_blank" class="contact-btn">Directions</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hospital-card">
+                    <img src="../Data/Images/MediInfo/hospital3.jpg" alt="Peace Hospital" class="hospital-img">
+                    <div class="hospital-info">
+                        <h3 class="hospital-name">Peace Hospital</h3>
+                        <p>Private healthcare facility with modern equipment</p>
+                        <div class="hospital-contact">
+                            <a href="tel:+2348034567890" class="contact-btn">Call</a>
+                            <a href="https://maps.google.com" target="_blank" class="contact-btn">Directions</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../components/navbar.js"></script>
+    <script src="../components/mediinfo.js"></script>
+</body>
+</html>
