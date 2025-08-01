@@ -251,8 +251,8 @@ window.sendMessage = async function(section, faqText = '') {
   const input = document.getElementById(`${section}-chat-input`);
   const chat = document.getElementById(`${section}-chat-messages`);
   const preview = document.getElementById(`${section}-chat-preview`);
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
+  const sendBtn = document.querySelector(`#${section}-chat-container .send-button`);
+  const stopBtn = document.querySelector(`#${section}-chat-container .stop-button`);
   
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;

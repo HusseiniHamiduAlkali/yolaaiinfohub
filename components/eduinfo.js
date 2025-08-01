@@ -20,11 +20,70 @@ if (typeof window.useGemini25 === 'undefined') {
     window.useGemini25 = storedPreference === '2.5';
 }
 
+// Function to initialize EduInfo section
+window.initEduInfo = () => {
+    const eduSection = document.getElementById('eduinfo-content');
+    if (!eduSection) return;
+    
+    // Create section content if it doesn't exist
+    if (!eduSection.querySelector('.section-content')) {
+        eduSection.innerHTML = `
+            <div class="section-content">
+                <h1>Education Information</h1>
+                <p>Get information about schools, universities, and education services in Yola, Adamawa State.</p>
+                
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="model-switch">
+                            <span class="model-label">Using Gemini 1.5</span>
+                            <label class="switch">
+                                <input type="checkbox" onchange="window.toggleGeminiModel('eduinfo', this.checked)">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="chat-output" class="chat-messages"></div>
+                    <div class="chat-input-area">
+                        <input type="text" id="user-input" placeholder="Ask about education in Yola...">
+                        <button onclick="sendMessage('eduinfo')">Send</button>
+                    </div>
+                </div>
+
+                <div class="faq-list">
+                    <h3>Frequently Asked Questions</h3>
+                    <ul>
+                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">What universities are in Yola</a></li>
+                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">List of secondary schools in Yola</a></li>
+                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">School admission periods</a></li>
+                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">Education requirements</a></li>
+                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">School fees and costs</a></li>
+                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">Available scholarships</a></li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+};
+
 window.EDU_AI_PROMPT = `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and enquire on how to help the user with information on education in Yola.
-Answer the user's question using the information provided below, and the internet. But only those regarding education.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help."
-And if a user clearly requests information on health, navigation, community, environment, jobs, or agriculture, refer them to either of MediInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
+Respond to greetings politely, and help users with information on education in Yola.
+Answer questions using the available information and focus only on education-related topics.
+
+If specific information is not available, say: "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help."
+
+For non-education queries about health, navigation, community, environment, jobs, or agriculture, refer users to MediInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo respectively.`;
+
+// Register the section initialization
+if (typeof window.registerSectionInit === 'function' && typeof window.initEduInfo === 'function') {
+    window.registerSectionInit('eduinfo', window.initEduInfo);
+} else {
+    // If registration function isn't available yet, wait for it
+    window.addEventListener('load', () => {
+        if (typeof window.registerSectionInit === 'function' && typeof window.initEduInfo === 'function') {
+            window.registerSectionInit('eduinfo', window.initEduInfo);
+        }
+    });
+}
 
 window.eduAbortController = null;
 
@@ -154,11 +213,16 @@ window.renderSection = function() {
     <section class="info-section">
       <h2>EduInfo - Education Help</h2>
       <p>Ask about schools, universities, courses, or educational services in Yola.</p>
-      <div class="chat-container">
+      <div id="eduinfo-chat-container" class="chat-container">
         <div class="chat-header">EduInfo AI Chat</div>
-        <div class="chat-messages" id="edu-chat-messages"></div>
-        <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendMessage('edu');">
-          <div id="edu-chat-preview" class="chat-preview"></div>
+        <div id="eduinfo-chat-messages" class="chat-messages"></div>
+        <div id="eduinfo-chat-preview" class="chat-preview"></div>
+        <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendMessage('eduinfo');">
+          <input type="text" id="eduinfo-chat-input" placeholder="Ask about education in Yola...">
+          <div class="send-button-group">
+            <button type="submit" class="send-button">Send</button>
+            <button type="button" class="stop-button" style="display: none;">Stop</button>
+          </div>
           <input type="text" id="edu-chat-input" placeholder="Ask about education..." required />
           <div class="send-button-group">
             <button type="submit" class="send-button">

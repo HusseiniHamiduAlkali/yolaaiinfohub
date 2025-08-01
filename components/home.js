@@ -129,8 +129,9 @@ window.renderSection = function() {
       
       <div class="section2">
         <h2>History of Yola</h2>
-        <div style="width: 100px; height: 450px; overflow: hidden; border-radius: 12px;">
-        <img src="Data/Images/palace3.1.jpg" alt="Yola Palace" style="width: 100%; height:100%; object-fit: cover; border-radius: 12px;">
+        <div style="width: 1191px; height: 680px; overflow: hidden; border-radius: 12px; display:flex; gap:0.5rem;">
+        <img src="Data/Images/palace3.1.jpg" alt="Yola Palace" style="width: 50%; height:50%; object-fit: cover; border-radius: 12px;">
+        <img src="Data/Images/palace.jpg" alt="Yola Palace" style="width: 50%; height:50%; object-fit: cover; border-radius: 12px;">
         </div>
         <p style="margin-top: 1.5rem; line-height: 1.6; color: #2d3748;">
           Yola, the capital city of Adamawa State, has a rich history dating back to its establishment as the capital of the Fulani state of Adamawa in 1841. 

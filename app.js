@@ -37,6 +37,53 @@ function ensureGlobalStyles() {
   }
 }
 
+// Section initialization registry
+window.sectionInitializers = window.sectionInitializers || {};
+
+// Register a section initializer
+window.registerSectionInit = window.registerSectionInit || function(sectionName, initFunction) {
+    if (typeof initFunction === 'function') {
+        window.sectionInitializers[sectionName] = initFunction;
+        console.log(`Registered initializer for section: ${sectionName}`);
+    } else {
+        console.warn(`Invalid initializer provided for section: ${sectionName}`);
+    }
+};
+
+// Initialize a specific section
+window.initializeSection = window.initializeSection || function(sectionName) {
+    const initializer = window.sectionInitializers[sectionName];
+    if (typeof initializer === 'function') {
+        initializer();
+    }
+};
+
+// Load section content and initialize it
+window.loadSection = function(section) {
+    // Hide all sections first
+    document.querySelectorAll('[id$="-content"]').forEach(el => {
+        el.style.display = 'none';
+    });
+
+    // Show the selected section
+    const sectionEl = document.getElementById(section + '-content');
+    if (sectionEl) {
+        sectionEl.style.display = 'block';
+        // Initialize the section
+        window.initializeSection(section);
+        // Update URL without reload
+        history.pushState({section}, '', '/' + (section === 'home' ? '' : section));
+    }
+
+    // Update navbar active state
+    document.querySelectorAll('.navbar-links button').forEach(btn => {
+        btn.classList.remove('active');
+        if (section === btn.onclick.toString().match(/loadSection\('(.+?)'\)/)[1]) {
+            btn.classList.add('active');
+        }
+    });
+};
+
 // Initialize app
 async function initializeApp() {
   try {
@@ -84,17 +131,20 @@ window.addEventListener('load', () => {
     window.updateAuthUI(null);
   });
 
-  // Load Home as default if no hash/section is set
-  const hash = window.location.hash.replace('#', '');
-  if (!hash && (!window.currentSection || window.currentSection === '')) {
-    if (typeof window.loadSection === 'function') {
-      window.loadSection('home');
-    } else {
-      // fallback: reload after scripts
-      setTimeout(() => {
-        if (typeof window.loadSection === 'function') window.loadSection('home');
-      }, 500);
-    }
+  // Register section initializers
+  if (window.initNaviInfo) window.registerSectionInit('naviinfo', window.initNaviInfo);
+  if (window.initEduInfo) window.registerSectionInit('eduinfo', window.initEduInfo);
+
+  // Load section from URL or default to home
+  const path = window.location.pathname.substring(1);
+  const section = path || 'home';
+  if (typeof window.loadSection === 'function') {
+    window.loadSection(section);
+  } else {
+    // fallback: reload after scripts
+    setTimeout(() => {
+      if (typeof window.loadSection === 'function') window.loadSection(section);
+    }, 500);
   }
 });
 

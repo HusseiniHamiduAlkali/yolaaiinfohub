@@ -20,20 +20,14 @@ function renderNavbar() {
   `;
 
   nav.innerHTML = `
-    <div class="navbar-container">
-      <div class="navbar-left">
-        ${logoHTML}
-      </div>
-      <div class="hamburger" id="hamburger">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </div>
-      <div class="navbar-right">
-        <div class="navbar-top-section">
-          ${authButtonsHTML}
+    <div class="navbar-right">
+      <div class="navbar-top-section">
+        <div class="navbar-left">
+          ${logoHTML}
         </div>
-        <ul class="navbar-links">
+        ${authButtonsHTML}
+      </div>
+      <ul class="navbar-links">
           <li><button onclick="window.loadSection('home')">Home</button></li>
           <li><button onclick="window.loadSection('eduinfo')">EduInfo</button></li>
           <li><button onclick="window.loadSection('ecoinfo')">EcoInfo</button></li>
@@ -44,6 +38,11 @@ function renderNavbar() {
           <li><button onclick="window.loadSection('serviinfo')">ServiInfo</button></li>
           <li><button onclick="window.loadSection('aboutinfo')">About</button></li>
         </ul>
+      </div>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
     </div>
   `;
@@ -158,40 +157,7 @@ function renderNavbar() {
   };
 }
 
-// Handle hamburger menu
-const setupHamburgerMenu = () => {
-  const hamburger = document.getElementById('hamburger');
-  const navbarRight = document.querySelector('.navbar-right');
-  const navLinks = document.querySelectorAll('.navbar-links button');
-
-  if (hamburger && navbarRight) {
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('active');
-      navbarRight.classList.toggle('active');
-    });
-
-    // Close menu when a link is clicked
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navbarRight.classList.remove('active');
-      });
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!navbarRight.contains(e.target) && !hamburger.contains(e.target) && navbarRight.classList.contains('active')) {
-        hamburger.classList.remove('active');
-        navbarRight.classList.remove('active');
-      }
-    });
-  }
-};
-
 // Export as Navbar global for compatibility with index.html
 window.Navbar = {
-  render: () => {
-    renderNavbar();
-    setupHamburgerMenu();
-  }
+  render: renderNavbar
 };

@@ -1,10 +1,127 @@
 
 window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 
+// Function to initialize the NaviInfo section
+window.initNaviInfo = async function() {
+    const naviSection = document.getElementById('naviinfo-content');
+    if (!naviSection) return;
+
+    // Create section content if it doesn't exist
+    if (!naviSection.querySelector('.section-content')) {
+        naviSection.innerHTML = `
+            <div class="section-content">
+                <h1>Navigation Information</h1>
+                <p>Get directions, distances, and transportation information for Yola, Adamawa State.</p>
+                
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="model-switch">
+                            <span class="model-label">Using Gemini 1.5</span>
+                            <label class="switch">
+                                <input type="checkbox" onchange="window.toggleGeminiModel('naviinfo', this.checked)">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="chat-output" class="chat-messages"></div>
+                    <div class="chat-input-area">
+                        <input type="text" id="user-input" placeholder="Ask for directions, locations, or transport info...">
+                        <button onclick="sendMessage('naviinfo')">Send</button>
+                    </div>
+                </div>
+
+                <div id="map-section">
+                    <div id="map"></div>
+                    <div class="map-controls">
+                        <button onclick="window.map.setZoom(window.map.getZoom() + 1)">Zoom In</button>
+                        <button onclick="window.map.setZoom(window.map.getZoom() - 1)">Zoom Out</button>
+                        <button onclick="window.map.setCenter([9.2182, 12.4818])">Center on Yola</button>
+                    </div>
+                    <div class="map-info"></div>
+                    <div class="route-info"></div>
+                </div>
+            </div>
+        `;
+
+        // Load leaflet resources
+        if (!document.querySelector('link[href*="leaflet.css"]')) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://unpkg.com/leaflet/dist/leaflet.css';
+            document.head.appendChild(link);
+        }
+
+        // Load Leaflet Routing Machine CSS
+        if (!document.querySelector('link[href*="leaflet-routing-machine.css"]')) {
+            const routingLink = document.createElement('link');
+            routingLink.rel = 'stylesheet';
+            routingLink.href = 'https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css';
+            document.head.appendChild(routingLink);
+        }
+
+        // Load JS if not already loaded
+        await loadScripts();
+        initMap();
+    }
+};
+
+// Function to initialize NaviInfo section
+window.initNaviInfo = () => {
+    const naviSection = document.getElementById('naviinfo-content');
+    if (!naviSection) return;
+    
+    // Create section content if it doesn't exist
+    if (!naviSection.querySelector('.section-content')) {
+        naviSection.innerHTML = `
+            <div class="section-content">
+                <h1>Navigation Information</h1>
+                <p>Get directions, distances, and transportation information for Yola, Adamawa State.</p>
+                
+                <div id="naviinfo-chat-container" class="chat-container">
+                    <div id="naviinfo-chat-messages" class="chat-messages"></div>
+                    <div id="naviinfo-chat-preview"></div>
+                    <div class="chat-input-area">
+                        <input type="text" id="naviinfo-chat-input" placeholder="Ask for directions, locations, or transport info...">
+                        <div class="send-button-group">
+                            <button type="submit" class="send-button" onclick="sendMessage('naviinfo')">Send</button>
+                            <button type="button" class="stop-button" style="display: none;">Stop</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="map-section">
+                    <div id="map"></div>
+                    <div class="map-controls">
+                        <button onclick="window.map.setZoom(window.map.getZoom() + 1)">Zoom In</button>
+                        <button onclick="window.map.setZoom(window.map.getZoom() - 1)">Zoom Out</button>
+                        <button onclick="window.map.setCenter({lat: 9.2182, lng: 12.4818})">Center on Yola</button>
+                    </div>
+                    <div class="map-info"></div>
+                    <div class="route-info"></div>
+                </div>
+            </div>
+        `;
+        
+        // Once content is added, load the maps API
+        loadGoogleMapsAPI();
+    }
+};
+
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
 
-// Function to toggle between Gemini models
+// Register the section initialization
+if (typeof window.registerSectionInit === 'function' && typeof window.initNaviInfo === 'function') {
+    window.registerSectionInit('naviinfo', window.initNaviInfo);
+} else {
+    // If registration function isn't available yet, wait for it
+    window.addEventListener('load', () => {
+        if (typeof window.registerSectionInit === 'function' && typeof window.initNaviInfo === 'function') {
+            window.registerSectionInit('naviinfo', window.initNaviInfo);
+        }
+    });
+}
+
 window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
     const label = document.querySelector('.model-label');
@@ -73,11 +190,247 @@ window.speakText = window.speakText || function(text) {
 };
 
 // Edit this prompt to instruct the AI on how to answer user messages for NaviInfo
-window.NAVI_AI_PROMPT = window.NAVI_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and enquire on how to help the user with information on navigation, directions, and transportation in Yola.
-Answer the user's question using the information provided below, and the internet. But only those regarding navigation and directions.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local transport authority for further help."
-And if a user clearly requests information on health, education, community, environment, jobs, or agriculture, refer them to either of MediInfo, EduInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
+window.NAVI_AI_PROMPT = window.NAVI_AI_PROMPT || `You are an AI navigation assistant for Yola, Adamawa State, Nigeria.
+Respond to greetings politely, and help users with navigation, directions, and transportation in Yola.
+
+Key Capabilities:
+1. You can show locations on the map using the showLocation() function
+2. You can draw routes between points using the drawRoute() function
+3. You can calculate distances using the calculateDistance() function
+4. You can display travel time estimates using the estimateTravelTime() function
+
+When users ask for:
+- Locations: Use showLocation() to display it on the map
+- Directions: Use drawRoute() to show the path
+- Distances: Use calculateDistance() to compute and share the distance
+- Travel time: Use estimateTravelTime() to provide estimates
+
+Sample responses:
+- For locations: "Let me show you that on the map" followed by showLocation()
+- For directions: "I'll draw the route for you" followed by drawRoute()
+- For distances: "The distance is [result from calculateDistance()]"
+- For travel times: "Estimated travel time is [result from estimateTravelTime()]"
+
+If information is not available, say: "Sorry, I do not have that specific information in my local database. Please contact a local transport authority for further help."
+
+For non-navigation queries about health, education, community, environment, jobs, or agriculture, refer users to MediInfo, EduInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo respectively.`;
+
+// Function to load required scripts
+async function loadScripts() {
+    const scripts = [
+        'https://unpkg.com/leaflet/dist/leaflet.js',
+        'https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js'
+    ];
+
+    for (const src of scripts) {
+        if (!document.querySelector(`script[src="${src}"]`)) {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+    }
+}
+
+// Initialize Leaflet map
+window.initMap = function() {
+    const mapDiv = document.getElementById('map');
+    if (!mapDiv || !window.L) return;
+
+    // Create the map centered on Yola
+    window.map = L.map('map').setView([9.2182, 12.4818], 13);
+
+    // Add satellite layer (ESRI World Imagery)
+    window.satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        maxZoom: 18
+    }).addTo(window.map);
+
+    // Add OpenStreetMap layer for labels and roads
+    window.osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 18
+    });
+
+    // Add layer control
+    L.control.layers({
+        "Satellite": window.satelliteLayer,
+        "Streets": window.osmLayer
+    }).addTo(window.map);
+
+    // Initialize route control for directions
+    window.routeControl = L.Routing.control({
+        waypoints: [],
+        router: L.Routing.osrm({
+            serviceUrl: 'https://router.project-osrm.org/route/v1'
+        }),
+        lineOptions: {
+            styles: [{color: '#0066CC', weight: 4}]
+        },
+        show: false,
+        addWaypoints: false,
+        draggableWaypoints: false,
+        fitSelectedRoutes: true
+    }).addTo(window.map);
+
+    // Initialize markers array
+    window.markers = [];
+};
+
+// Function to show location on map
+window.showLocation = async function(locationName) {
+    if (!window.map) return;
+    
+    // Add "Yola" to the search if not present
+    if (!locationName.toLowerCase().includes('yola')) {
+        locationName += ' Yola, Nigeria';
+    }
+
+    try {
+        // Use OpenStreetMap Nominatim for geocoding
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName)}`);
+        const data = await response.json();
+
+        if (data && data[0]) {
+            // Clear previous markers
+            window.markers.forEach(marker => window.map.removeLayer(marker));
+            window.markers = [];
+
+            // Add new marker
+            const marker = L.marker([data[0].lat, data[0].lon], {
+                title: locationName
+            }).addTo(window.map);
+            window.markers.push(marker);
+
+            // Center map on location
+            window.map.setView([data[0].lat, data[0].lon], 15);
+            
+            // Show the map section
+            const mapSection = document.getElementById('map-section');
+            if (mapSection) {
+                mapSection.style.display = 'block';
+                mapSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Geocoding failed:', error);
+        return false;
+    }
+};
+
+// Function to draw route between two points
+window.drawRoute = async function(origin, destination) {
+    if (!window.map || !window.routeControl) return;
+    
+    try {
+        // Add "Yola" to searches if not present
+        if (!origin.toLowerCase().includes('yola')) origin += ' Yola, Nigeria';
+        if (!destination.toLowerCase().includes('yola')) destination += ' Yola, Nigeria';
+
+        // Geocode both points
+        const [originData, destData] = await Promise.all([
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(origin)}`).then(r => r.json()),
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`).then(r => r.json())
+        ]);
+
+        if (originData[0] && destData[0]) {
+            // Set waypoints and display route
+            window.routeControl.setWaypoints([
+                L.latLng(originData[0].lat, originData[0].lon),
+                L.latLng(destData[0].lat, destData[0].lon)
+            ]);
+
+            // Show the map section
+            const mapSection = document.getElementById('map-section');
+            if (mapSection) {
+                mapSection.style.display = 'block';
+                mapSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Routing failed:', error);
+        return false;
+    }
+};
+
+// Function to calculate distance between points
+window.calculateDistance = async function(origin, destination) {
+    if (!window.map) {
+        throw new Error('Map not initialized');
+    }
+
+    try {
+        // Add "Yola" to searches if not present
+        if (!origin.toLowerCase().includes('yola')) origin += ' Yola, Nigeria';
+        if (!destination.toLowerCase().includes('yola')) destination += ' Yola, Nigeria';
+
+        // Geocode both points
+        const [originData, destData] = await Promise.all([
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(origin)}`).then(r => r.json()),
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`).then(r => r.json())
+        ]);
+
+        if (originData[0] && destData[0]) {
+            const route = await fetch(`https://router.project-osrm.org/route/v1/driving/${originData[0].lon},${originData[0].lat};${destData[0].lon},${destData[0].lat}?overview=false`).then(r => r.json());
+            
+            if (route.routes && route.routes[0]) {
+                const distanceKm = (route.routes[0].distance / 1000).toFixed(1);
+                return `${distanceKm} km`;
+            }
+        }
+        throw new Error('Could not calculate distance');
+    } catch (error) {
+        console.error('Distance calculation failed:', error);
+        throw error;
+    }
+};
+
+// Function to estimate travel time
+window.estimateTravelTime = async function(origin, destination) {
+    if (!window.map) {
+        throw new Error('Map not initialized');
+    }
+
+    try {
+        // Add "Yola" to searches if not present
+        if (!origin.toLowerCase().includes('yola')) origin += ' Yola, Nigeria';
+        if (!destination.toLowerCase().includes('yola')) destination += ' Yola, Nigeria';
+
+        // Geocode both points
+        const [originData, destData] = await Promise.all([
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(origin)}`).then(r => r.json()),
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`).then(r => r.json())
+        ]);
+
+        if (originData[0] && destData[0]) {
+            const route = await fetch(`https://router.project-osrm.org/route/v1/driving/${originData[0].lon},${originData[0].lat};${destData[0].lon},${destData[0].lat}?overview=false`).then(r => r.json());
+            
+            if (route.routes && route.routes[0]) {
+                const minutes = Math.round(route.routes[0].duration / 60);
+                if (minutes < 60) {
+                    return `${minutes} minutes`;
+                } else {
+                    const hours = Math.floor(minutes / 60);
+                    const remainingMinutes = minutes % 60;
+                    return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
+                }
+            }
+        }
+        throw new Error('Could not estimate travel time');
+    } catch (error) {
+        console.error('Travel time estimation failed:', error);
+        throw error;
+    }
+};
 
 window.naviAbortController = window.naviAbortController || null;
 

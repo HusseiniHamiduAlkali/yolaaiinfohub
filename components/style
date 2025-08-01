@@ -59,3 +59,16 @@ This information provides a good foundation for your chatbot to understand the c
 
 
 Gemini can make mistakes, so double-check it
+
+
+
+
+
+
+
+
+1. PC Screen : Applogo on the left side, app name next to it in-line , then navlinks (aligned to the right side) and auth buttons above the navlinks and aligned to the right side also.(ie. navlinks and authbuttons are two rows one over the other and both aligned to the right side).
+2. Tablet Screen : two rows, let the first be .nav-links (below) and the second (above) be the : ".navbar-left" (containig applogo and appname) and the .navbar-right (containing auth buttons) (with the two contents of the above row in line i.e .navbar-left in leftside and auth button in rightside).
+3. Mobile Screen : Applogo on the leftside then appname with auth buttons below it next to the applogo, after the applogo, the appname with the authbuttons below, then comes the harmbuger span. therefore we should have three items arranged in line applogo, appname with authbuttons below and then harmbuger span.
+USE JAVASCRIPT DOM FOR ALL THESE AND REMOVE ALL THE STYLES PRESENTLY DOING THAT IN THE CSS FILE
+RETAIN ALL THE PRESENT STYLES LIKE COLOR, PAADING, MARGIN, AND  THE REST .EXCEPT IF IT CAN CONFLICT WITH OUR NEW ADJUSTMENTS.

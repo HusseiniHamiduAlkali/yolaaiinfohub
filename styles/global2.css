@@ -111,31 +111,32 @@ Wednesday, July 30, 2025
 }
 
 .section3 {
-  margin: 2.5rem 0 3rem 0;
+  margin: 2.5rem 0;
+  margin-bottom: 3rem; /* Merged from previous definition */
 }
 
 .section3-title {
-  font-size: 1.6rem;
-  color: #4a5568;
-  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
   padding-left: 0.5rem;
   border-left: 4px solid #2d3748;
-  width: 100%;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 0.8rem;
-  text-align: center;
+  width: 100%; /* Merged from previous definition */
+  color: #4a5568; /* Merged from previous definition */
+  font-size: 1.6rem; /* Merged from previous definition */
+  margin-bottom: 2rem; /* Merged from previous definition */
+  border-bottom: 2px solid #e2e8f0; /* Merged from previous definition */
+  padding-bottom: 0.8rem; /* Merged from previous definition */
+  text-align: center; /* Merged from previous definition */
 }
 
 .section4-container {
-  display: flex;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
   width: 100%;
-  margin: 2rem auto;
+  margin: 0 auto;
   padding: 0 1rem;
-  max-width: 1400px;
-  box-sizing: border-box;
-  flex-direction: row;
 }
 
 .section4 {
@@ -147,12 +148,9 @@ Wednesday, July 30, 2025
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 350px;
-  width: 300px;
-  overflow: hidden;
-  position: relative;
-  box-sizing: border-box;
-  margin: 0;
+  width: 100%; /* Merged from previous definition */
+  overflow: hidden; /* Merged from previous definition */
+  position: relative; /* Merged from previous definition */
 }
 
 .section4:hover {
@@ -162,24 +160,27 @@ Wednesday, July 30, 2025
 
 .section4 .img-placeholder {
   width: 100%;
+  height: 200px; /* Original definition */
   overflow: hidden;
   border-radius: 8px;
   margin-bottom: 1rem;
-  height: auto;
-  min-height: 200px;
-  max-height: 250px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: auto; /* Merged from previous definition */
+  min-height: 200px; /* Merged from previous definition */
+  max-height: 250px; /* Merged from previous definition */
+  position: relative; /* Merged from previous definition */
+  display: flex; /* Merged from previous definition */
+  align-items: center; /* Merged from previous definition */
+  justify-content: center; /* Merged from previous definition */
 }
 
 .section4 .img-placeholder img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
   transition: transform 0.3s ease;
-  height: auto;
-  max-height: 100%;
-  object-fit: contain;
+  height: auto; /* Merged from previous definition */
+  max-height: 100%; /* Merged from previous definition */
+  object-fit: contain; /* Merged from previous definition */
 }
 
 .section4:hover .img-placeholder img {
@@ -201,31 +202,6 @@ Wednesday, July 30, 2025
   flex-grow: 1;
 }
 
-/* Grid layout responsive adjustments */
-@media screen and (min-width: 1200px) {
-  .section4-container {
-    grid-template-columns: repeat(4, 1fr); /* 4 items per row on large screens */
-  }
-}
-
-@media screen and (min-width: 768px) and (max-width: 1199px) {
-  .section4-container {
-    grid-template-columns: repeat(3, 1fr); /* 3 items per row on medium screens */
-  }
-}
-
-@media screen and (min-width: 480px) and (max-width: 767px) {
-  .section4-container {
-    grid-template-columns: repeat(2, 1fr); /* 2 items per row on small screens */
-  }
-}
-
-@media screen and (max-width: 479px) {
-  .section4-container {
-    grid-template-columns: 1fr; /* 1 item per row on very small screens */
-  }
-}
-
 .section4 a {
   display: inline-block;
   background: #3182ce;
@@ -237,7 +213,8 @@ Wednesday, July 30, 2025
   font-weight: 500;
   transition: all 0.3s ease;
   text-align: center;
-  width: 80%;
+  width: 100%;
+  width: 80%; /* Merged from previous definition */
 }
 
 .section4 a:hover {
@@ -288,11 +265,12 @@ Wednesday, July 30, 2025
   margin: 2rem auto;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 1.5rem; /* Merged from previous definition */
+  display: flex; /* Merged from previous definition */
+  flex-direction: column; /* Merged from previous definition */
+  gap: 1rem; /* Merged from previous definition */
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4); /* Merged from previous definition */
 }
 
 .chat-header {
@@ -313,42 +291,51 @@ Wednesday, July 30, 2025
 
 /* Chat message bubbles */
 .user-msg, .ai-msg {
+  background: #e5e5e6d6;
+  border: 1px solid #e0e0e0;
   display: block;
   margin: 8px 0;
+  padding: 10px 16px;
+  border-radius: 18px;
   max-width: 80%;
   word-break: break-word;
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04);
   font-weight: 400;
   font-size: 1rem;
 }
 
 .user-msg {
-  background: #e3f0fc;
-  border: 1px solid #b6d4f7;
-  color: #2b6cb0;
-  align-self: flex-end;
-  padding: 0.8rem 1.2rem;
-  border-radius: 1.2rem 1.2rem 0 1.2rem;
-  margin-left: auto;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  position: relative;
-  text-align: right;
-  margin-bottom: 0.3rem;
+  align-self: flex-end; /* Merged from previous definition */
+  background-color: #3182ce; /* Merged from previous definition */
+  color: white; /* Merged from previous definition */
+  padding: 0.8rem 1.2rem; /* Merged from previous definition */
+  border-radius: 1.2rem 1.2rem 0 1.2rem; /* Merged from previous definition */
+  margin-left: auto; /* Merged from previous definition */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Merged from previous definition */
+  position: relative; /* Merged from previous definition */
+  text-align: right; /* Merged from previous definition */
+  color: #2b6cb0; /* Merged from previous definition */
+  margin-bottom: 0.3rem; /* Merged from previous definition */
+  background: #e3f0fc; /* Merged from previous definition */
+  border: 1px solid #b6d4f7; /* Merged from previous definition */
 }
 
 .ai-msg {
-  background: #f6f8fa;
-  border: 1px solid #d1e7dd;
-  color: #222;
-  align-self: flex-start;
-  padding: 1rem 1.2rem;
-  border-radius: 1.2rem 1.2rem 1.2rem 0;
-  margin-right: auto;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  max-width: 100%;
-  position: relative;
-  text-align: left;
-  margin-bottom: 0.7rem;
-  box-sizing: border-box;
+  align-self: flex-start; /* Merged from previous definition */
+  background-color: #f0f2f5; /* Merged from previous definition */
+  color: #2d3748; /* Merged from previous definition */
+  padding: 1rem 1.2rem; /* Merged from previous definition */
+  border-radius: 1.2rem 1.2rem 1.2rem 0; /* Merged from previous definition */
+  margin-right: auto; /* Merged from previous definition */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Merged from previous definition */
+  max-width: 100%; /* Merged from previous definition */
+  position: relative; /* Merged from previous definition */
+  text-align: left; /* Merged from previous definition */
+  color: #222; /* Merged from previous definition */
+  margin-bottom: 0.7rem; /* Merged from previous definition */
+  background: #f6f8fa; /* Merged from previous definition */
+  border: 1px solid #d1e7dd; /* Merged from previous definition */
+  box-sizing: border-box; /* Merged from previous definition */
 }
 
 .ai-msg .read-aloud-btn {
@@ -500,21 +487,13 @@ main {
   min-height: 80vh;
 }
 
-#main-content {
-  margin-top: 64px; /* Height of the navbar */
-  min-height: calc(100vh - 64px);
-  background-color: #e4e4e4ff;
-}
-
 .info-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2rem;
-  padding: 2rem 1rem;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
+  margin-top: 2rem;
+  padding-top: 1px;
   background-color: #e4e4e4ff;
 }
 
@@ -533,10 +512,10 @@ main {
   background: #f1f3f6;
   border-radius: 12px;
   padding: 1rem 1.5rem;
-  max-width: 900px;
-  width: 100%;
-  margin: 2rem auto;
-  text-align: center;
+  max-width: 900px; /* Merged from previous definition */
+  width: 100%; /* Merged from previous definition */
+  margin: 2rem auto; /* Merged from previous definition */
+  text-align: center; /* Merged from previous definition */
 }
 
 .faq-list h3 {
@@ -937,3 +916,5 @@ main {
   min-height: 1.2em;
   text-align: center;
 }
+
+

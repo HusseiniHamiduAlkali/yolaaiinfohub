@@ -17,7 +17,7 @@ nav.navbar {
   top: 0;
   z-index: 3000;
   width: 99%;
-  min-height: 64px; /* Merged from previous definition */
+  min-height: 64px;
 }
 
 .navbar-left {
@@ -26,8 +26,10 @@ nav.navbar {
   flex-direction: row;
   justify-content: flex-start;
   height: 100%;
-  margin-left: 5px;
-  margin-right: 20px;
+  margin: 0 20px 0 5px;
+  width: auto;
+  padding: 0.5rem;
+  gap: 1rem;
 }
 
 .navbar-logo-area {
@@ -55,12 +57,10 @@ nav.navbar {
 }
 
 .navbar-logo-placeholder img {
-  height: 40px; /* Original definition */
-  width: 40px; /* Original definition */
-  border-radius: 0; /* Original definition */
-  width: 100%; /* Merged from previous definition */
-  height: auto; /* Merged from previous definition */
-  display: block; /* Merged from previous definition */
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  display: block;
 }
 
 .navbar-appname {
@@ -77,13 +77,12 @@ nav.navbar {
 
 .navbar-right {
   display: flex;
-  
-  gap: 2rem;
-  flex-direction: column; /* Merged from previous definition */
-  align-items: flex-end; /* Merged from previous definition */
-  justify-content: flex-start; /* Merged from previous definition */
-  flex: 1; /* Merged from previous definition */
-  gap: 0.7rem; /* Merged from previous definition */
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  flex: 1;
+  gap: 0.7rem;
+  width: 100%;
 }
 
 .navbar-links {
@@ -167,26 +166,28 @@ nav.navbar {
 
 .hamburger {
   display: none;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
   flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  gap: 4px;
-  padding: 8px;
-  background: #2d3748;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-.hamburger:hover {
-  background: #4a5568;
+  padding: 5px;
 }
 
 .hamburger span {
-  display: block;
-  width: 25px;
+  display: none;
+  width: 30px;
   height: 3px;
-  background: #fff;
-  border-radius: 2px;
-  transition: transform 0.3s ease-in-out, background-color 0.3s ease;
+  background: white;
+  border-radius: 3px;
+  transition: all 0.3s ease;
 }
 
 .hamburger.active span {
@@ -206,74 +207,88 @@ nav.navbar {
   transform: translateY(-7px) rotate(-45deg);
 }
 
+.hamburger:hover {
+  background: #4a5568;
+}
+
 .mobile-menu {
-  display: none; /* Original definition */
+  display: none;
   flex-direction: column;
   position: fixed;
   top: 0;
   right: 0;
-  width: 70vw;
-  max-width: 320px;
+  width: 75%;
   height: 100vh;
   background: #2d3748;
   border-radius: 0 0 0 16px;
-  box-shadow: -2px 0 16px rgba(0,0,0,0.18); /* Original definition */
-  padding: 2rem 1rem 1rem 1.5rem;
+  box-shadow: -2px 0 16px rgba(0,0,0,0.3);
+  padding: 4rem 1rem 2rem 1rem;
   z-index: 9999;
   transition: transform 0.3s cubic-bezier(.4,0,.2,1);
   transform: translateX(100%);
-  box-shadow: -2px 0 16px rgba(0,0,0,0.3); /* Merged from previous definition */
-  overflow-y: auto; /* Merged from previous definition */
-  max-height: 100vh; /* Merged from previous definition */
+  overflow-y: auto;
 }
 
 .mobile-menu.show {
-  display: flex;
   transform: translateX(0);
+  display: flex;
+}
+
+.mobile-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
 }
 
 .mobile-menu li {
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.8rem;
+  width: 100%;
+  padding: 0 0.5rem;
 }
 
 .mobile-menu li button {
   width: 100%;
-  text-align: left;
-  padding: 0.9rem 1.2rem;
-  font-size: 1.1rem;
-  background: #4a5568;
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.2rem;
+  background: #2d3748;
   border: none;
   color: #fff;
   border-radius: 8px;
-  margin-bottom: 0.7rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  transition: background 0.2s, color 0.2s;
+  margin-bottom: 0.8rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  display: block;
+  text-decoration: none;
 }
 
 .mobile-menu li button:hover {
-  background: #cbd5e1;
-  color: #2d3748;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: #4a5568;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
 .mobile-menu-close {
-  background: none;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: #fff;
-  font-size: 2rem;
+  font-size: 2.2rem;
   position: absolute;
   top: 1rem;
   right: 1.2rem;
   cursor: pointer;
   z-index: 10001;
-  padding: 0.2rem 0.7rem;
-  border-radius: 6px;
-  transition: background 0.2s, color 0.2s;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
 }
 
 .mobile-menu-close:hover {
-  background: #4a5568;
-  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: scale(1.05);
 }
 
 /* Highlight for active nav button */
@@ -292,7 +307,7 @@ nav.navbar {
 .navbar-links button:not(.active):hover,
 .mobile-menu button:not(.active):hover {
   background: #cbd5e1;
-  color: black;
+  color: #000000;
 }
 
 /* Minimal appbar for auth pages (moved from global.css) */
@@ -320,59 +335,86 @@ nav.navbar {
 @media screen and (min-width: 1151px) {
   .navbar {
     flex-direction: row;
+    padding: 0.5rem 1rem;
+    justify-content: space-between;
+    gap: 1rem;
   }
-  .navbar-right {
+
+  .navbar > .navbar-left {
+    order: 1;
+    margin-right: 0;
+    padding: 0;
+  }
+
+  .navbar > .navbar-right {
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    align-items: flex-end;
+    margin-right: 1rem;
+    order: 3;
   }
+
   .navbar-links {
     display: flex;
     flex-direction: row;
+    margin-top: 0.5rem;
+  }
+
+  .navbar-right .navbar-auth {
+    display: flex !important;
+    margin-bottom: 0.5rem;
+    justify-content: flex-end;
+  }
+
+  /* Hide mobile/tablet elements */
+  .tablet-navbar-upper {
+    display: none !important;
   }
   .hamburger {
     display: none;
   }
-  .navbar-auth {
-    margin: 0 1rem;
+
+  /* PC-specific sizes */
+  .navbar-logo-placeholder {
+    width: 74px;
+    height: 84px;
   }
-  /* On PC, navbar-left stays in its original position */
-  .navbar > .navbar-left {
-    display: flex;
-  }
-  .tablet-navbar-upper .navbar-left {
-    display: none;
+
+  .navbar-appname {
+    font-size: 2.2rem;
   }
 }
 
 /* Tablet Screens (701px to 1150px) */
 @media screen and (min-width: 701px) and (max-width: 1150px) {
   .navbar {
-    flex-direction: column;
-    padding: 1rem;
-  }
-  
-  /* Ensure tablet-navbar-upper is always visible and properly laid out */
-  .tablet-navbar-upper {
-    display: flex !important;
     flex-direction: row;
-    align-items: center;
+    padding: 1rem;
     justify-content: space-between;
-    width: 100%;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
   }
 
-  /* Hide the original navbar-left */
-  .navbar > .navbar-left {
-    display: none !important;
+  .navbar-left {
+    margin: 0 1rem;
   }
   
-  /* Style the navbar-left inside tablet-navbar-upper */
-  .tablet-navbar-upper .navbar-left {
+  /* Style the navbar-right for tablet */
+  .navbar-right {
     display: flex !important;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-end;
     margin-right: 1rem;
+  }
+
+  /* Place auth buttons above nav links in tablet */
+  .navbar-right .navbar-auth {
+    display: flex !important;
+    margin-bottom: 0.8rem;
+    justify-content: flex-end;
+  }
+
+  /* Hide the content-section auth buttons on tablet */
+  .tablet-navbar-upper .navbar-left .content-section .navbar-auth {
+    display: none !important;
   }
   
   /* Ensure logo and app name are visible in tablet-navbar-upper */
@@ -405,43 +447,19 @@ nav.navbar {
   }
 }
   
-  /* Tablet right section */
-  .navbar-right {
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  /* Navigation links in tablet */
-  .navbar-links {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 0rem;
-  }
-  
-  /* Hide hamburger in tablet view */
-  .hamburger {
-    display: none;
-  }
-  
-  /* Auth buttons in tablet */
-  .navbar-auth {
-    margin: 0.5rem 0;
-    justify-content: center;
-  }
+
 
 /* Tablets (768px to 799px) */
 @media screen and (min-width: 768px) and (max-width: 799px) {
   .navbar {
     flex-direction: column;
     padding: 0.5rem;
+    min-height: 60px;
   }
   .navbar-left {
     width: 100%;
     align-items: center;
+    padding: 0.5rem;
   }
   .navbar-right {
     width: 100%;
@@ -451,10 +469,20 @@ nav.navbar {
     display: none;
   }
   .hamburger {
-    display: flex;
-    position: absolute;
-    top: 1.5rem;
+    display: flex !important;
+    position: fixed;
+    top: 1.2rem;
     right: 1rem;
+    z-index: 10000;
+    background: transparent;
+  }
+  .hamburger span {
+    width: 25px;
+    height: 3px;
+    background: #fff;
+    margin: 2px 0;
+    display: block;
+    border-radius: 3px;
   }
   .navbar-auth {
     margin: 0.5rem 0;
@@ -467,46 +495,130 @@ nav.navbar {
 
 /* Mobile Screens (<=700px) */
 @media screen and (max-width: 700px) {
+  .auth-btn {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+  }
   .navbar {
     flex-direction: column;
-    padding: 0.3rem;
+    padding: 0.5rem;
+    min-height: 60px;
   }
-
-  /* Create tablet-navbar-upper for mobile too */
-  .tablet-navbar-upper {
-    display: flex !important;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+  
+  .navbar-left {
     width: 100%;
+    margin: 0;
     padding: 0.5rem;
   }
 
-  /* Hide the original navbar-left */
-  .navbar > .navbar-left {
-    display: none !important;
-  }
-  
-  /* Style the navbar-left inside tablet-navbar-upper */
-  .tablet-navbar-upper .navbar-left {
-    display: flex !important;
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  /* Adjust logo and app name sizes for mobile */
-  .tablet-navbar-upper .navbar-logo-placeholder {
+  .navbar-logo-placeholder {
     width: 50px;
     height: 50px;
     margin-right: 0.5rem;
   }
-  
-  .tablet-navbar-upper .navbar-appname {
+
+  .navbar-appname {
     font-size: 1.2rem;
-    white-space: nowrap;
+    margin-right: auto;
+  }
+
+  .navbar-auth {
+    display: flex !important;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    justify-content: flex-start;
+    padding-left: 0.5rem;
+  }
+
+  .navbar-right {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    padding: 0 0.5rem;
+  }
+
+  .navbar-links {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
   }
   
-  /* Only hide navlinks and show hamburger on mobile */
+  .hamburger span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background: #fff;
+    border-radius: 2px;
+    margin: 2px 0;
+  }
+  
+  /* Mobile navbar-left styles */
+  .navbar-left {
+    margin: 5px 6px;
+    flex: 1;
+    gap: 10px;
+  }
+
+  /* Create two sections within navbar-left */
+  .navbar-left .logo-section {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .navbar-left .content-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex-grow: 1;
+  }
+
+  /* Mobile navbar auth buttons */
+  .tablet-navbar-upper .navbar-left .content-section .navbar-auth {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .tablet-navbar-upper .navbar-left .content-section .navbar-auth .auth-btn {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.9rem;
+    min-width: 60px;
+  }
+  
+  /* Adjust logo and app name sizes for mobile */
+  .tablet-navbar-upper .navbar-logo-placeholder {
+    width: 65px;
+    height: 65px;
+    margin-right: 0;
+  }
+  
+  .tablet-navbar-upper .navbar-logo-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .tablet-navbar-upper .navbar-appname {
+    font-size: 1.5rem;
+    white-space: nowrap;
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  /* Mobile navigation elements */
   .navbar-links {
     display: none;
   }
@@ -515,10 +627,10 @@ nav.navbar {
     display: flex;
     position: absolute;
     top: 1rem;
-    right: 0.8rem;
+    right: 3.1rem;
   }
   
-  /* Adjust sizes for better mobile viewing */
+  /* Mobile logo and app name adjustments */
   .navbar-logo-placeholder {
     width: 50px;
     height: 50px;
@@ -530,6 +642,11 @@ nav.navbar {
   
   .mobile-menu.show {
     display: flex;
+  }
+
+  /* Hide the original navbar-auth in the default view */
+  .navbar > .navbar-left > .navbar-auth {
+    display: none;
   }
 }
 
@@ -548,4 +665,333 @@ nav.navbar {
   }
 }
 
+/* Tablet Screens (701px to 1150px) */
+@media screen and (min-width: 701px) and (max-width: 1150px) {
+  .navbar {
+    flex-direction: column;
+    padding: 0.8rem;
+  }
 
+  /* Top section with logo and auth */
+  .navbar-top-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+  }
+
+  .navbar-logo-placeholder {
+    width: 60px;
+    height: 60px;
+  }
+
+  .navbar-appname {
+    font-size: 1.8rem;
+  }
+
+  /* Navigation and auth container */
+  .navbar-right {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Auth buttons and links */
+  .navbar-auth {
+    display: flex !important;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+    justify-content: center;
+  }
+
+  .navbar-links {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}
+/*Navbar.css
+
+Wednesday, July 30, 2025
+6:37 AM
+*/
+
+/* Navbar layout and auth buttons */
+nav.navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  background: #2d3748;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 0;
+  z-index: 3000;
+  width: 99%;
+  min-height: 64px;
+}
+
+/* Base navbar-left styles */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+  height: 100%;
+  margin: 0;
+  padding: 0.5rem;
+  gap: 1rem;
+  width: auto;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+  z-index: 3001;
+  position: absolute;
+  top: 1.2rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.hamburger-line {
+  width: 100%;
+  height: 3px;
+  background-color: white;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+  display: block;
+}
+
+.hamburger.active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+@media screen and (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .navbar-right {
+    position: fixed;
+    right: -100%;
+    top: 64px;
+    width: 100%;
+    height: calc(100vh - 64px);
+    background: #2d3748;
+    flex-direction: column;
+    transition: 0.3s;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+
+  .navbar-right.active {
+    right: 0;
+  }
+}
+
+
+
+
+
+
+
+/* Navbar layout and auth buttons */
+nav.navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  background: #2d3748;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 0;
+  z-index: 3000;
+  width: 99%;
+  min-height: 64px;
+}
+
+.navbar-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
+  height: 100%;
+  margin: 0 20px 0 5px;
+  width: auto;
+  padding: 0.5rem;
+  gap: 1rem;
+}
+
+.navbar-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  height: 100%;
+}
+
+.navbar-logo-placeholder {
+  width: 74px;
+  height: 84px;
+  background: #e4e4e4;
+  border-radius: 12px;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.navbar-logo-placeholder img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.navbar-right {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1;
+}
+
+.navbar-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1rem;
+}
+
+.navbar-links button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.navbar-links button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+  z-index: 3001;
+  margin-right: 1rem;
+}
+
+.hamburger-line {
+  width: 100%;
+  height: 3px;
+  background-color: white;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+/* Hamburger Menu Animation Classes */
+.hamburger.active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+@media screen and (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .navbar-right {
+    position: fixed;
+    right: -100%;
+    top: 64px;
+    width: 100%;
+    height: calc(100vh - 64px);
+    background: #2d3748;
+    flex-direction: column;
+    transition: 0.3s;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+
+  .navbar-right.active {
+    right: 0;
+  }
+
+  .navbar-links {
+    flex-direction: column !important;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .navbar-links li {
+    width: 100%;
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+
+  .navbar-links button {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .navbar-auth {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .auth-btn {
+    width: 100%;
+  }
+}
