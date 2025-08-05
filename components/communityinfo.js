@@ -166,12 +166,409 @@ window.renderSection = function() {
       </div>
       </div>
       
-      <div class="section-extra" id="events-section">
-        <h3>Events in Yola</h3>
-        <div style="font-size:0.95em;color:#666;">See upcoming events, festivals, and community gatherings in Yola.</div>
-      </div>
       
       <div class=section2>
+
+        <div class="section3">
+          <h3 class="section3-title">Community Bulletin (Top Stories this week in Yola).</h3>
+          <div class="section4-container">
+          
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/flood2.jpg" alt="flood Yola.">
+              </div>
+              <h3>The Ever-devastating Flood Experienced in Yola.</h3>
+              <p></p>
+              <a href="details/flood.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/lawstudents.jpg" alt=" Yola.">
+              </div>
+              <h3>Six Nigerian Law School Students Kidnapped En Route To Yola Campus.</h3>
+              <p>Six students of the Nigerian Law School have been reportedly abducted by suspected armed bandits
+                 while travelling to resume at the school's...</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/blackout.jpg" alt="">
+              </div>
+              <h3>Total blackout hits Yola, Jalingo as TCN begins repair</h3>
+              <p>The residents of Yola and Jalingo, the capitals of Adamawa and Taraba States, 
+                have been hit by a five-day darkness.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/waterboard2.jpg" alt="waterboard">
+              </div>
+              <h3>Relief after 15 years as Yola Town water scheme gets facelift</h3>
+              <p>Residents of Yola Town in Yola South Local Government Area of Adamawa State have been relieved of an acute shortage of water.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/conference2.png" alt="">
+              </div>
+              <h3>Fintiri flags off N18.9b international conference centre in Yola</h3>
+              <p>Governor Ahmadu Fintiri, on Thursday, May 29, 2025, performed the groundbreaking ceremony for the construction of an ultramodern International Conference and...</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/cng.jpg" alt=" Yola">
+              </div>
+              <h3>Nigerian govt commissions LCNG fuelling station in Yola, 1st in Northeast</h3>
+              <p>The Nigerian government has commissioned an LCNG refuelling and conversion centre in the Adamawa State capital, Yola It is coming as the...</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/yedc3.jpg" alt="">
+              </div>
+              <h3>Meters theft rampant in Adamawa as Yola Electric Company cautions customers</h3>
+              <p>The Yola Electricity Distribution Company (YEDC) has issued a stern warning to customers against buying meters from any source other than designated purchasing...</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/atikuaun.jpg" alt="">
+              </div>
+              <h3>Atiku preaches patience, courage at AUN, Yola graduation ceremony</h3>
+              <p>Former Vice President Atiku Abubakar has urged young people to embrace patience and courage, which he described as virtues that pay off in life.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/yolamarket.jpg" alt="">
+              </div>
+              <h3>Adamawa government okays N2.9Bn to rebuild Yola town market</h3>
+              <p>The Adamawa State Govt approved N2,937, 217120.45 k for the reconstruction of the Yola town market, destroyed by fire about five months ago.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="section3">
+          <h3 class="section3-title">Community Organizations</h3>
+          <div class="section4-container">
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/redcross3.jpg" alt="Red Cross">
+              </div>
+              <h3>Nigerian Red Cross Society - Yola Branch</h3>
+              <p>Humanitarian organization providing emergency services and community support.</p>
+              <a href="details/redcross.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/yolarflogo.jpg" alt="Youth Organization">
+              </div>
+              <h3>Yola Renewal Foundation</h3>
+              <p>Empowering young people through education and skill development.</p>
+              <a href="details/youthdev.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/womensupport.png" alt="Women Support">
+              </div>
+              <h3>Youth And Women Empowerment Foundation (YAWEF),Yola</h3>
+              <p>Supporting women through education, business, and social programs.</p>
+              <a href="details/womensupport.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/byda.jpg" alt="Women Support">
+              </div>
+              <h3>Bako Youth Organisation Yola</h3>
+              <p>Supporting youth through education, business, and social programs.</p>
+              <a href="details/womensupport.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/toungo.jpg" alt="Women Support">
+              </div>
+              <h3>Universal Youth Development Initiative Yola</h3>
+              <p>Supporting youth through education, business, and social programs.</p>
+              <a href="details/womensupport.html">Learn more →</a>
+            </div>
+
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/adamawaunited.jpg" alt="Adamawa United">
+              </div>
+              <h3>Adamawa United Football Club, Association.</h3>
+              <p>Supporting youth through education, business, and social programs.</p>
+              <a href="details/womensupport.html">Learn more →</a>
+            </div>
+
+          </div>
+        </div>
+
+
+        <div class="section3">
+          <h3 class="section3-title">Community Activities and Programs</h3>
+          
+          <div class="section4-container">
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/undp1.png" alt="UNDP vocational training">
+              </div>
+              <h3>UNDP Vocational Training Program</h3>
+              <p></p>
+              <a href="details/programs.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/lgi.png" alt="(LGI) Workshop">
+              </div>
+              <h3>Lead Generation Initiative (LGI) Workshop</h3>
+              <p>LGI Organises leadership training for 500 youth in Yola.</p>
+              <a href="details/youthdev.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/auncommunity2.jpg" alt="AUN Class of 2K26">
+              </div>
+              <h3>AUN Class of 2K26 Community Service</h3>
+              <p>The AUN class of 2026 embarked on inaugral community service in Yola local primary schools.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/auntownhall.jpg" alt="AUN townhall meeting">
+              </div>
+              <h3>AUN Townhall Meeting, Yola</h3>
+              <p></p>
+              <a href="details/womensupport.html">Learn more →</a>
+            </div>
+
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/aungraduation.jpg" alt=" (AUN) graduation">
+              </div>
+              <h3>American University of Nigeria, (AUN) Graduation Ceremony</h3>
+              <p>Supporting youth through education, business, and social programs.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/fintiriwallet.jpg" alt="Fintiri wallet program">
+              </div>
+              <h3>Fintiri Wallet Program</h3>
+              <p>Conditional cash transfer for the less previllaged in the society</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/fcea.png" alt="">
+              </div>
+              <h3>Female child Education Awareness Program</h3>
+              <p>Conditional cash transfer for the less previllaged in the society</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/govcup.jpg" alt="Governor's Cup Football">
+              </div>
+              <h3>Governor's Cup Football Competition</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/cleaningday.png" alt="Community Cleaning Day">
+              </div>
+              <h3>Community Cleaning Day</h3>
+              <p>Monthly community cleaning and beautification program.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+          </div>
+        </div>
+
+        
+        <div class="section3">
+        <h3 class="section3-title">Events in Yola</h3>
+          
+          <div class="section4-container">
+
+          <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/wbfw.png" alt="World Breastfeeding Week">
+              </div>
+              <h3>World Breastfeeding Week in Yola</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+          
+          
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/childday2.png" alt="Childrens' Day">
+              </div>
+              <h3>Childrens' Day in Yola</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+          
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/aunwomen.jpg" alt="">
+              </div>
+              <h3>International Women's Day</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+          
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/eduday.jpg" alt="">
+              </div>
+              <h3>International Day of Education.</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+                      
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/independence.jpg" alt="">
+              </div>
+              <h3>National Independence Day in Yola.</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+          
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/malariaday.png" alt="">
+              </div>
+              <h3>World Malaria Day in Yola.</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+        </div>
+        </div>
+
+        <div class="section3">
+        
+        <h3 class="section3-title">Community Centers</h3>
+
+          <div class="section4-container">
+          
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/ribadusquare.jpg" alt="Cultural Center">
+            </div>
+            <h3>Mahmudu Ribadu Square, Yola</h3>
+            <p>Venue for cultural events, exhibitions, and traditional performances.</p>
+            <a href="details/ribadu-square.html">Learn more →</a>
+          </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/digitalhall.jpg" alt="">
+              </div>
+              <h3>Digital Multipurpose Hall Yola</h3>
+              <p>.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/aunhall.png" alt="Sports Complex">
+              </div>
+              <h3>AUN Community Hall, Yola</h3>
+              <p>.</p>
+              <a href="details.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/banquethall.jpg" alt="Sports Complex">
+              </div>
+              <h3>Banquet Hall, Government House Yola</h3>
+              <p>.</p>
+              <a href="details.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/crystalpalace.jpg" alt="">
+              </div>
+              <h3>Crystal Palace Event Center, Yola.</h3>
+              <p>.</p>
+              <a href="details.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/fcehall.jpg" alt="">
+              </div>
+              <h3>Federal Collece Of Education (FCE) Yola, Multipurpose hall</h3>
+              <p>.</p>
+              <a href="details.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/amchall.jpg" alt="">
+              </div>
+              <h3>Aliyu Musdafa College (AMC) Yola, Multipurpose hall.</h3>
+              <p>.</p>
+              <a href="details.html">Learn more →</a>
+            </div>
+
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/fastnet.jpg" alt="">
+              </div>
+              <h3>Fastnet Movie Theatre, Yola.</h3>
+              <p>.</p>
+              <a href="details.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/lamidocinema.jpg" alt="">
+              </div>
+              <h3>Lamido Cinema, Yola.</h3>
+              <p>.</p>
+              <a href="details.html">Learn more →</a>
+            </div>
+
+
+          </div>
+        </div>
 
         <div class="section3">
           <h3 class="section3-title">Radio and TV stations</h3>
@@ -220,6 +617,15 @@ window.renderSection = function() {
               <p>A private radio station broadcasting news, advertisement e.tc.</p>
               <a href="details/nasfm.html">Learn more →</a>
             </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/usaku.png" alt="Usaku FM Yola">
+              </div>
+              <h3>Usaku FM Yola.</h3>
+              <p>A private radio station broadcasting news, advertisement e.tc.</p>
+              <a href="details/nasfm.html">Learn more →</a>
+            </div>
             
             <div class="section4">
               <div class="img-placeholder">
@@ -251,59 +657,6 @@ window.renderSection = function() {
           </div>
         </div>
 
-        <div class="section3">
-          <h3 class="section3-title">Community Organizations</h3>
-          <div class="section4-container">
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/redcross3.jpg" alt="Red Cross">
-              </div>
-              <h3>Nigerian Red Cross Society - Yola Branch</h3>
-              <p>Humanitarian organization providing emergency services and community support.</p>
-              <a href="details/redcross.html">Learn more →</a>
-            </div>
-
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/yolarflogo.jpg" alt="Youth Organization">
-              </div>
-              <h3>Yola Renewal Foundation</h3>
-              <p>Empowering young people through education and skill development.</p>
-              <a href="details/youthdev.html">Learn more →</a>
-            </div>
-
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/womensupport.jpg" alt="Women Support">
-              </div>
-              <h3>Women Support Initiative Yola</h3>
-              <p>Supporting women through education, business, and social programs.</p>
-              <a href="details/womensupport.html">Learn more →</a>
-            </div>
-
-            
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/byda.jpg" alt="Women Support">
-              </div>
-              <h3>Bako Youth Organisation Yola</h3>
-              <p>Supporting youth through education, business, and social programs.</p>
-              <a href="details/womensupport.html">Learn more →</a>
-            </div>
-
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/toungo.jpg" alt="Women Support">
-              </div>
-              <h3>Universal Youth Development Initiative Yola</h3>
-              <p>Supporting youth through education, business, and social programs.</p>
-              <a href="details/womensupport.html">Learn more →</a>
-            </div>
-
-          </div>
-        </div>
-
-        
     </div>
 
     </section>

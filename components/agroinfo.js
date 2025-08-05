@@ -203,6 +203,17 @@ window.renderSection = function() {
         <div class="section3">
           <h3 class="section3-title">Extension Services</h3>
           <div class="section4-container">
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/toungo.jpg" alt="Women Support">
+              </div>
+              <h3>All Farmers Association of Nigeria (AFAN)</h3>
+              <p></p>
+              <a href="details/organisations.html">Learn more →</a>
+            </div>
+          
+          
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/AgroInfo/extension1.jpg" alt="Agric Extension Office">
@@ -211,6 +222,7 @@ window.renderSection = function() {
               <p>Government agricultural extension services and farmer support programs.</p>
               <a href="details/agricultural-extension-office.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/AgroInfo/extension2.jpg" alt="Farmers Support">

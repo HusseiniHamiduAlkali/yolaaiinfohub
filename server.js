@@ -11,8 +11,17 @@ const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 const validator = require('express-validator');
 const helmet = require('helmet');
-require('dotenv').config();
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
+});
+
 const app = express();
+
+// Environment-specific configuration
+const isProduction = process.env.NODE_ENV === 'production';
+const RESET_URL_BASE = isProduction 
+  ? 'https://yolainfohub.netlify.app/reset-password'
+  : 'http://localhost:4000/reset-password';
 
 // Security middleware
 app.use(helmet({
@@ -32,7 +41,8 @@ const corsOptions = {
       'http://127.0.0.1:3000',
       'http://localhost:3000',
       'http://localhost:8080',
-      'http://127.0.0.1:8080'
+      'http://127.0.0.1:8080',
+      'https://yolainfohub.netlify.app'  // Add your Netlify domain
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -110,7 +120,15 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URI, { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true 
+})
+.then(() => console.log('Successfully connected to MongoDB.'))
+.catch(err => {
+  console.error('MongoDB connection error:', err);
+  process.exit(1);
+});
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },

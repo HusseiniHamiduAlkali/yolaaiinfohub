@@ -241,7 +241,9 @@ window.renderSection = function() {
             <a href="details/greencycle-solutions.html">Learn more →</a>
           </div>
           <div class="section4">
-            <img src="Data/Images/EcoInfo/recycling3.jpg" alt="EcoWaste Management">
+            <div class="img-placeholder">
+              <img src="Data/Images/EcoInfo/recycling3.jpg" alt="EcoWaste Management">
+            </div>
             <h3>EcoWaste Management</h3>
             <p>Industrial and commercial recycling services with eco-friendly practices.</p>
             <a href="details/ecowaste-management.html">Learn more →</a>
@@ -261,9 +263,9 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/org2.jpg" alt="Eco Warriors">
+                <img src="Data/Images/gesollogo.png" alt="Eco Warriors">
               </div>
-              <h3>Eco Warriors</h3>
+              <h3>Green Environment Solutons Initiative, Yola.</h3>
               <p>Community-based organization working on environmental protection and awareness.</p>
               <a href="details/eco-warriors.html">Learn more →</a>
             </div>
@@ -283,7 +285,7 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/park1.jpg" alt="Community Garden">
+                <img src="Data/Images/wetlands2.jpeg" alt="Community Garden">
               </div>
               <h3>Yola Community Garden</h3>
               <p>Public garden space for community farming and environmental education.</p>
@@ -291,7 +293,7 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/park2.jpg" alt="Eco Park">
+                <img src="Data/Images/wetlands6.jpeg" alt="Eco Park">
               </div>
               <h3>Yola Eco Park</h3>
               <p>Sustainable park featuring native plants and environmental exhibits.</p>
@@ -313,7 +315,7 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/initiative1.jpg" alt="Solar Power">
+                <img src="Data/Images/solar.jpg" alt="Solar Power">
               </div>
               <h3>Yola Solar Initiative</h3>
               <p>Promoting solar energy adoption and renewable power solutions.</p>
@@ -329,10 +331,10 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/initiative3.jpg" alt="Green Transport">
+                <img src="Data/Images/gesol4.jpg" alt="Green Transport">
               </div>
-              <h3>Green Transport Network</h3>
-              <p>Promoting eco-friendly transportation options in Yola.</p>
+              <h3>Yola Tree Planting Project.</h3>
+              <p>Promoting eco-friendly activities in Yola.</p>
               <a href="details/green-transport-network.html">Learn more →</a>
             </div>
           </div>

@@ -22,5 +22,8 @@ This project is a responsive web application built with HTML, CSS, and JavaScrip
 - MapsInfo: Google Maps directions
 - FAQ lists in info sections
 
+## Deploy to Render
+This project is automatically deployed to Render when changes are pushed to the main branch.
+
 ---
 Replace placeholder API keys and data as needed.

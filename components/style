@@ -65,7 +65,7 @@ Gemini can make mistakes, so double-check it
 
 
 
-
+STYLE THE NAVBAR 
 
 1. PC Screen : Applogo on the left side, app name next to it in-line , then navlinks (aligned to the right side) and auth buttons above the navlinks and aligned to the right side also.(ie. navlinks and authbuttons are two rows one over the other and both aligned to the right side).
 2. Tablet Screen : two rows, let the first be .nav-links (below) and the second (above) be the : ".navbar-left" (containig applogo and appname) and the .navbar-right (containing auth buttons) (with the two contents of the above row in line i.e .navbar-left in leftside and auth button in rightside).

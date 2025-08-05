@@ -71,6 +71,14 @@ window.loadSection = function(section) {
         sectionEl.style.display = 'block';
         // Initialize the section
         window.initializeSection(section);
+
+        // Directly initialize EduInfo section
+        if (section === 'eduinfo') {
+            if (typeof window.initEduInfo === 'function') {
+                window.initEduInfo();
+            }
+        }
+
         // Update URL without reload
         history.pushState({section}, '', '/' + (section === 'home' ? '' : section));
     }
@@ -118,6 +126,11 @@ async function initializeApp() {
     } else {
       window.updateAuthUI(null);
     }
+
+    // Determine the section to load based on the URL path
+    const path = window.location.pathname.split('/').pop();
+    const section = path === '' || path === 'index.html' ? 'home' : path.replace('.html', '');
+    window.loadSection(section);
   } catch (error) {
     console.error('Error initializing app:', error);
     window.updateAuthUI(null);

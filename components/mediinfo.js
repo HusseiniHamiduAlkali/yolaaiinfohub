@@ -228,18 +228,27 @@ window.renderSection = function() {
         </div>
 
         <div class="section3">
-          <h3 class="section3-title">Tertiary Hospitals</h3>
-          <div class="section4">
-            <img src="Data/Images/mauthlogo.png" alt="Teaching Hospital">
-            <h3>MAU Teaching Hospital</h3>
-            <p>University teaching hospital providing advanced medical care and training.</p>
-            <a href="details/mau-teaching-hospital.html">Learn more →</a>
+          <h3 class="section3-title">The Tertiary Hospital in Yola.</h3>
+          <div class="section4-container">
+            <div class="section4" style="width: 1160px; height: 450px;">
+              <div class="mauth-placeholder" style="display:flex; flex-direction: row; overflow:hidden; gap:1rem;">
+                <img src="Data/Images/mauthlogo.png" alt="Teaching Hospital" style="object-fit: fill;width: 30%;border-radius: 10px;">
+                <img class="img2" src="Data/Images/mauthgate.jpg" alt="Teaching Hospital" style="object-fit: fill;width: 70%;border-radius: 10px;">
+              </div>
+            
+              <h3>MAU Teaching Hospital</h3>
+              <p>University teaching hospital providing advanced medical care and training.</p>
+              <a href="details/mau-teaching-hospital.html">Learn more →</a>
+            
+            </div>
           </div>
 
         <div class="section3">
           <h3 class="section3-title">Pharmacies</h3>
+
           <div class="section4-container">
-            <div class="section4">
+            
+          <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/meddypharmacy.jpg" alt="Meddy Pharmacy">
               </div>
@@ -247,6 +256,7 @@ window.renderSection = function() {
               <p>24/7 pharmacy with extensive stock of medicines and medical supplies.</p>
               <a href="details/meddy-pharmacy.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/shekinahpharmacy.jpg" alt="Shekinah Pharmacy">
@@ -255,17 +265,111 @@ window.renderSection = function() {
               <p>Modern pharmacy chain offering quality medications and healthcare products.</p>
               <a href="details/shekinah-pharmacy.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/MediInfo/pharmacy3.jpg" alt="Community Pharmacy">
+                <img src="Data/Images/kingblaise.png" alt="Community Pharmacy">
               </div>
-              <h3>Community Pharmacy</h3>
+              <h3>Kingblaise Pharmacy, Yola.</h3>
               <p>Local pharmacy providing affordable medications and healthcare advice.</p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/strongate.jpg" alt="Community Pharmacy">
+              </div>
+              <h3>Strongate Pharmacy, Yola.</h3>
+              <p></p>
+              <a href="details/community-pharmacy.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/jds.png" alt="Community Pharmacy">
+              </div>
+              <h3>JDS Pharmacy, Yola.</h3>
+              <p></p>
+              <a href="details/community-pharmacy.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/aayola.jpg" alt="Community Pharmacy">
+              </div>
+              <h3>A.A Yola  Pharmacy Store.</h3>
+              <p></p>
+              <a href="details/community-pharmacy.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/jasar.png" alt="Community Pharmacy">
+              </div>
+              <h3>Jasar Pharmacy, Yola.</h3>
+              <p></p>
+              <a href="details/community-pharmacy.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/kerion.png" alt="Community Pharmacy">
+              </div>
+              <h3>Kerion Pharmacy, Yola.</h3>
+              <p></p>
+              <a href="details/community-pharmacy.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/lekki.jpg" alt="Community Pharmacy">
+              </div>
+              <h3>Lekki Pharmacy and Pharmaceuticals, Yola.</h3>
+              <p></p>
+              <a href="details/community-pharmacy.html">Learn more →</a>
+            </div>
+
           </div>
         </div>
       </div>
+
+
+      <div class="section3">
+        <h3 class="section3-title">Community Health Services</h3>
+        
+        <div class="section4-container">
+
+        <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/.jpg" alt="">
+            </div>
+            <h3>Polio Immunization at Community PHCCs.</h3>
+            <p></p>
+            <a href="details/.html">Learn more →</a>
+          </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/.jpg" alt="">
+            </div>
+            <h3></h3>
+            <p></p>
+            <a href="details/.html">Learn more →</a>
+          </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/.jpg" alt="">
+            </div>
+            <h3></h3>
+            <p></p>
+            <a href="details/.html">Learn more →</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
       
     </section>
   `;

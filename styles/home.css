@@ -1,0 +1,37 @@
+.section2-home {
+    
+  width: 100%;
+  max-width: 1200px;
+  margin:auto;
+  padding: 0 ;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+.section4-home {
+    
+    border-radius: 15px;
+
+    border: solid;
+}
+.section4-home-container {
+    display:block;
+    margin: 50px 20px;
+}
+.section4-home-img-container {
+    display: flex;
+    flex-direction: row;
+    
+}
+.section4-home-img-placeholder {
+    padding: 12px;
+}
+.section4-home-img-container h4 {
+   text-align: center;
+}
+.section4-home-img-placeholder img {
+    width: 100%; 
+    height:100%; 
+    object-fit: fill; 
+    border-radius: 12px;
+    }

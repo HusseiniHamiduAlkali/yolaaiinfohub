@@ -1,3 +1,6 @@
+// A global variable to store the original PC layout HTML for reliable reversion.
+let originalPCLayout = null;
+
 function renderNavbar() {
   const nav = document.createElement('nav');
   nav.className = 'navbar';
@@ -20,14 +23,20 @@ function renderNavbar() {
   `;
 
   nav.innerHTML = `
-    <div class="navbar-right">
-      <div class="navbar-top-section">
-        <div class="navbar-left">
-          ${logoHTML}
-        </div>
-        ${authButtonsHTML}
+    <div class="navbar-container">
+      <div class="navbar-left">
+        ${logoHTML}
       </div>
-      <ul class="navbar-links">
+      <div class="hamburger" id="hamburger">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </div>
+      <div class="navbar-right">
+        <div class="navbar-top-section">
+          ${authButtonsHTML}
+        </div>
+        <ul class="navbar-links">
           <li><button onclick="window.loadSection('home')">Home</button></li>
           <li><button onclick="window.loadSection('eduinfo')">EduInfo</button></li>
           <li><button onclick="window.loadSection('ecoinfo')">EcoInfo</button></li>
@@ -38,11 +47,6 @@ function renderNavbar() {
           <li><button onclick="window.loadSection('serviinfo')">ServiInfo</button></li>
           <li><button onclick="window.loadSection('aboutinfo')">About</button></li>
         </ul>
-      </div>
-      <div class="hamburger" id="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
       </div>
     </div>
   `;
@@ -56,8 +60,10 @@ function renderNavbar() {
   document.getElementById('navbar').innerHTML = ''; // Clear existing content
   document.getElementById('navbar').appendChild(nav);
 
-  // No longer need handleResponsiveNavbar since we're using CSS media queries
+  // Store the original PC layout HTML to revert to it later
+  originalPCLayout = nav.innerHTML;
 
+  // Handle mobile menu logic
   const mobileMenu = document.createElement('div');
   mobileMenu.className = 'mobile-menu';
   mobileMenu.innerHTML = `
@@ -76,15 +82,6 @@ function renderNavbar() {
   document.getElementById('navbar').appendChild(mobileMenu);
 
   const hamburger = document.getElementById('hamburger');
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'mobile-menu-close';
-  closeBtn.innerHTML = '&times;';
-  closeBtn.onclick = (e) => {
-    e.stopPropagation();
-    mobileMenu.classList.remove('show');
-  };
-  mobileMenu.insertBefore(closeBtn, mobileMenu.firstChild);
-
   hamburger.onclick = (e) => {
     e.stopPropagation();
     mobileMenu.classList.toggle('show');
@@ -110,41 +107,108 @@ function renderNavbar() {
     }
   });
 
-  // Handle tablet layout
-  function handleTabletLayout() {
-    const navbar = document.querySelector('.navbar');
-    const navbarRight = navbar.querySelector('.navbar-right');
-    const navbarTopSection = navbar.querySelector('.navbar-top-section');
+  // Main function to handle all responsive layouts
+  function handleResponsiveLayout() {
     const windowWidth = window.innerWidth;
+    const navbarContainer = document.querySelector('.navbar-container');
+    const navbarRight = document.querySelector('.navbar-right');
+    const hamburger = document.getElementById('hamburger');
 
-    if (windowWidth >= 701 && windowWidth <= 1150) {
-      // Tablet view
-      navbarTopSection.style.display = 'flex';
-      navbarTopSection.style.justifyContent = 'space-between';
-      navbarTopSection.style.width = '100%';
-      navbarTopSection.style.marginBottom = '1rem';
-      navbarRight.style.flexDirection = 'column';
+    // Restore to original PC layout before making any changes
+    nav.innerHTML = originalPCLayout;
+
+    // Re-select elements after innerHTML change
+    const newNavbarContainer = document.querySelector('.navbar-container');
+    const newNavbarLeft = document.querySelector('.navbar-left');
+    const newNavbarRight = document.querySelector('.navbar-right');
+    const newNavbarAuth = document.querySelector('.navbar-auth');
+    const newNavbarLinks = document.querySelector('.navbar-links');
+    const newHamburger = document.getElementById('hamburger');
+    
+    // Apply common styles to all views using JS
+    newNavbarContainer.style.display = 'flex';
+    newNavbarContainer.style.alignItems = 'center';
+    newNavbarContainer.style.padding = '10px';
+    
+    newNavbarLeft.style.display = 'flex';
+    newNavbarLeft.style.alignItems = 'center';
+    
+    newNavbarRight.style.display = 'flex';
+    newNavbarRight.style.alignItems = 'center';
+    newNavbarRight.style.listStyle = 'none';
+    
+    newNavbarLinks.style.display = 'flex';
+    newNavbarLinks.style.listStyle = 'none';
+
+    // Logic for different screen sizes
+    if (windowWidth >= 901) {
+      // PC View
+      newNavbarContainer.style.justifyContent = 'space-between';
+      newHamburger.style.display = 'none';
+
+    } else if (windowWidth >= 701 && windowWidth <= 900) {
+      // Tablet View
+      newNavbarContainer.style.flexDirection = 'column';
+      newNavbarContainer.style.justifyContent = 'flex-start';
+      newNavbarContainer.style.alignItems = 'flex-start';
+      
+      const topRow = document.createElement('div');
+      topRow.style.display = 'flex';
+      topRow.style.justifyContent = 'space-between';
+      topRow.style.width = '100%';
+      topRow.style.marginBottom = '1rem';
+      
+      // Move logo and app name to the top row
+      topRow.appendChild(newNavbarLeft);
+      // Move auth buttons to the top row
+      topRow.appendChild(newNavbarAuth);
+      
+      // The newNavbarLinks element is now the bottom row
+      newNavbarLinks.style.width = '100%';
+      newNavbarLinks.style.justifyContent = 'space-around';
+      
+      // Rebuild the container with the two rows
+      newNavbarContainer.innerHTML = '';
+      newNavbarContainer.appendChild(topRow);
+      newNavbarContainer.appendChild(newNavbarLinks);
+      
+      newHamburger.style.display = 'none';
+      
     } else {
-      // Reset styles for other views
-      navbarTopSection.style.display = '';
-      navbarTopSection.style.justifyContent = '';
-      navbarTopSection.style.width = '';
-      navbarTopSection.style.marginBottom = '';
-      navbarRight.style.flexDirection = '';
+      // Mobile View
+      newNavbarContainer.style.justifyContent = 'space-between';
+      newNavbarLeft.style.display = 'flex';
+      newNavbarLeft.style.alignItems = 'center';
+      
+      newNavbarRight.style.display = 'none'; // Hide the entire right section
+      
+      newHamburger.style.display = 'flex';
+      newHamburger.style.marginLeft = 'auto'; // Align to the right
+      newHamburger.style.cursor = 'pointer';
+
+      // Style the hamburger lines
+      const lines = newHamburger.querySelectorAll('.hamburger-line');
+      lines.forEach(line => {
+          line.style.display = 'block';
+          line.style.height = '3px';
+          line.style.width = '30px';
+          line.style.background = '#333';
+          line.style.borderRadius = '5px';
+          line.style.margin = '3px 0';
+      });
     }
   }
 
-  // Initial call
-  handleTabletLayout();
+  // Initial call to set the layout on page load
+  handleResponsiveLayout();
 
-  // Listen for window resize
-  window.addEventListener('resize', handleTabletLayout);
+  // Listen for window resize events
+  window.addEventListener('resize', handleResponsiveLayout);
 
   // Highlight active section
   window.highlightActiveNav = function(section) {
     document.querySelectorAll('.navbar-links button, .mobile-menu button').forEach(btn => {
       btn.classList.remove('active');
-      // Match by section key (e.g. 'eduinfo', 'agroinfo', etc.)
       const btnSection = btn.textContent.trim().toLowerCase() + (btn.textContent.trim().toLowerCase().endsWith('info') ? '' : 'info');
       if (
         (section === 'aboutinfo' && btn.textContent.trim() === 'About') ||
@@ -157,7 +221,9 @@ function renderNavbar() {
   };
 }
 
-// Export as Navbar global for compatibility with index.html
+// Export as Navbar global for compatibility
 window.Navbar = {
-  render: renderNavbar
+  render: () => {
+    renderNavbar();
+  }
 };

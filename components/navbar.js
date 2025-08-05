@@ -1,3 +1,6 @@
+// A global variable to store the original PC layout HTML for reliable reversion.
+let originalPCLayout = null;
+
 function renderNavbar() {
   const nav = document.createElement('nav');
   nav.className = 'navbar';
@@ -47,6 +50,7 @@ function renderNavbar() {
       </div>
     </div>
   `;
+  
   // Wire up auth button events after DOM is in place
   setTimeout(() => {
     const signinBtn = document.getElementById('signin-btn');
@@ -54,98 +58,160 @@ function renderNavbar() {
     if (signinBtn) signinBtn.onclick = () => window.loadSection('signin');
     if (signupBtn) signupBtn.onclick = () => window.loadSection('signup');
   }, 0);
+
   document.getElementById('navbar').innerHTML = ''; // Clear existing content
   document.getElementById('navbar').appendChild(nav);
 
-  // No longer need handleResponsiveNavbar since we're using CSS media queries
+  // Store the original PC layout HTML to revert to it later
+  originalPCLayout = nav.innerHTML;
 
-  const mobileMenu = document.createElement('div');
-  mobileMenu.className = 'mobile-menu';
-  mobileMenu.innerHTML = `
-    <ul class="mobile-links">
-      <li><button onclick="window.loadSection('home'); mobileMenu.classList.remove('show');">Home</button></li>
-      <li><button onclick="window.loadSection('eduinfo'); mobileMenu.classList.remove('show');">EduInfo</button></li>
-      <li><button onclick="window.loadSection('ecoinfo'); mobileMenu.classList.remove('show');">EcoInfo</button></li>
-      <li><button onclick="window.loadSection('agroinfo'); mobileMenu.classList.remove('show');">AgroInfo</button></li>
-      <li><button onclick="window.loadSection('mediinfo'); mobileMenu.classList.remove('show');">MediInfo</button></li>
-      <li><button onclick="window.loadSection('naviinfo'); mobileMenu.classList.remove('show');">NaviInfo</button></li>
-      <li><button onclick="window.loadSection('communityinfo'); mobileMenu.classList.remove('show');">CommunityInfo</button></li>
-      <li><button onclick="window.loadSection('serviinfo'); mobileMenu.classList.remove('show');">ServiInfo</button></li>
-      <li><button onclick="window.loadSection('aboutinfo'); mobileMenu.classList.remove('show');">About</button></li>
-    </ul>
-  `;
-  document.getElementById('navbar').appendChild(mobileMenu);
-
-  const hamburger = document.getElementById('hamburger');
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'mobile-menu-close';
-  closeBtn.innerHTML = '&times;';
-  closeBtn.onclick = (e) => {
-    e.stopPropagation();
-    mobileMenu.classList.remove('show');
-  };
-  mobileMenu.insertBefore(closeBtn, mobileMenu.firstChild);
-
-  hamburger.onclick = (e) => {
-    e.stopPropagation();
-    mobileMenu.classList.toggle('show');
-    hamburger.classList.toggle('active');
-  };
-
-  // Close mobile menu when a section is loaded
-  window.loadSection = (function() {
-    const originalLoadSection = window.loadSection;
-    return function(section) {
-      if (mobileMenu.classList.contains('show')) {
-        mobileMenu.classList.remove('show');
-        hamburger.classList.remove('active');
-      }
-      return originalLoadSection(section);
-    };
-  })();
-  // Close menu when clicking outside
-  document.addEventListener('click', (e) => {
-    if (mobileMenu.classList.contains('show') && !mobileMenu.contains(e.target) && e.target !== hamburger) {
-      mobileMenu.classList.remove('show');
-      hamburger.classList.remove('active');
-    }
-  });
-
-  // Handle tablet layout
-  function handleTabletLayout() {
-    const navbar = document.querySelector('.navbar');
-    const navbarRight = navbar.querySelector('.navbar-right');
-    const navbarTopSection = navbar.querySelector('.navbar-top-section');
+  // Main function to handle all responsive layouts
+  function handleResponsiveLayout() {
     const windowWidth = window.innerWidth;
-
-    if (windowWidth >= 701 && windowWidth <= 1150) {
-      // Tablet view
-      navbarTopSection.style.display = 'flex';
-      navbarTopSection.style.justifyContent = 'space-between';
-      navbarTopSection.style.width = '100%';
-      navbarTopSection.style.marginBottom = '1rem';
-      navbarRight.style.flexDirection = 'column';
-    } else {
-      // Reset styles for other views
-      navbarTopSection.style.display = '';
-      navbarTopSection.style.justifyContent = '';
-      navbarTopSection.style.width = '';
-      navbarTopSection.style.marginBottom = '';
-      navbarRight.style.flexDirection = '';
+    const navbarContainer = document.querySelector('.navbar-container');
+    
+    // Restore to original PC layout before making any changes
+    if (originalPCLayout) {
+      document.querySelector('.navbar').innerHTML = originalPCLayout;
     }
+
+    // Re-select elements after innerHTML change
+    const newNavbarContainer = document.querySelector('.navbar-container');
+    const newNavbarLeft = document.querySelector('.navbar-left');
+    const newNavbarRight = document.querySelector('.navbar-right');
+    const newNavbarAuth = document.querySelector('.navbar-auth');
+    const newNavbarLinks = document.querySelector('.navbar-links');
+    const newHamburger = document.getElementById('hamburger');
+    
+    // Apply common styles using JS
+    newNavbarContainer.style.display = 'flex';
+    newNavbarContainer.style.alignItems = 'center';
+    newNavbarContainer.style.padding = '0px';
+    
+    newNavbarLeft.style.display = 'flex';
+    newNavbarLeft.style.alignItems = 'center';
+    
+    newNavbarRight.style.display = 'flex';
+    newNavbarRight.style.alignItems = 'center';
+    newNavbarLinks.style.display = 'flex';
+
+    // Logic for different screen sizes
+    if (windowWidth > 1150) {
+      // PC View
+      newNavbarContainer.style.justifyContent = 'space-between';
+      newHamburger.style.display = 'none';
+      newNavbarRight.style.display = 'flex'; 
+
+    } else if (windowWidth >= 701 && windowWidth <= 1150) {
+      // Tablet View
+      newNavbarContainer.style.flexDirection = 'column';
+      newNavbarContainer.style.justifyContent = 'flex-start';
+      newNavbarContainer.style.alignItems = 'flex-start';
+      
+      const topRow = document.createElement('div');
+      topRow.style.display = 'flex';
+      topRow.style.justifyContent = 'space-between';
+      topRow.style.width = '100%';
+      topRow.style.marginBottom = '1rem';
+      
+      // Move logo and app name to the top row
+      topRow.appendChild(newNavbarLeft);
+      // Move auth buttons to the top row
+      topRow.appendChild(newNavbarAuth);
+      
+      // The newNavbarLinks element is now the bottom row
+      newNavbarLinks.style.width = '100%';
+      newNavbarLinks.style.justifyContent = 'space-around';
+      
+      // Rebuild the container with the two rows
+      newNavbarContainer.innerHTML = '';
+      newNavbarContainer.appendChild(topRow);
+      newNavbarContainer.appendChild(newNavbarLinks);
+      
+      newHamburger.style.display = 'none';
+      
+    } else {
+      // Mobile View
+      newNavbarContainer.style.justifyContent = 'space-between';
+      newNavbarContainer.style.flexDirection = 'row'; // Ensure row layout
+      newNavbarContainer.style.alignItems = 'center';
+
+      newNavbarLeft.style.display = 'flex';
+      newNavbarLeft.style.alignItems = 'center';
+
+      newNavbarRight.style.display = 'flex';
+      newNavbarRight.style.flexDirection = 'column';
+      newNavbarRight.style.alignItems = 'flex-end';
+
+      newNavbarLinks.style.display = 'none'; // Hide navbar links
+
+      // Adjust auth buttons
+      newNavbarAuth.style.display = 'flex';
+      newNavbarAuth.style.flexDirection = 'row';
+      newNavbarAuth.style.alignItems = 'center';
+      newNavbarAuth.style.marginRight = '10px';
+
+      // Place hamburger spans below auth buttons
+      newHamburger.style.display = 'flex';
+      newHamburger.style.flexDirection = 'column'; // Ensure spans are stacked vertically
+      newHamburger.style.alignItems = 'center';
+      newHamburger.style.marginTop = '5px';
+      newHamburger.style.marginLeft = 'auto';
+
+      // Style the hamburger lines
+      const lines = newHamburger.querySelectorAll('.hamburger-line');
+      lines.forEach(line => {
+          line.style.display = 'block';
+          line.style.height = '3px';
+          line.style.width = '30px';
+          line.style.background = '#333';
+          line.style.borderRadius = '5px';
+          line.style.margin = '3px 0';
+      });
+
+      // Clear and rebuild the navbar container
+      newNavbarContainer.innerHTML = '';
+      newNavbarContainer.appendChild(newNavbarLeft); // Add logo and app name
+      const rightContainer = document.createElement('div');
+      rightContainer.style.display = 'flex';
+      rightContainer.style.flexDirection = 'column';
+      rightContainer.style.alignItems = 'flex-end';
+      rightContainer.appendChild(newNavbarAuth); // Add auth buttons
+      rightContainer.appendChild(newHamburger); // Add hamburger spans
+      newNavbarContainer.appendChild(rightContainer);
+    }
+
+    // Add event listener for the hamburger menu toggle
+    newHamburger.onclick = (e) => {
+        e.stopPropagation();
+        const currentDisplay = newNavbarRight.style.display;
+        if (currentDisplay === 'none' || currentDisplay === '') {
+            newNavbarRight.style.display = 'flex';
+            newNavbarRight.style.flexDirection = 'column';
+            newNavbarRight.style.position = 'absolute';
+            newNavbarRight.style.top = '60px'; // Adjust based on your navbar height
+            newNavbarRight.style.right = '10px';
+            newNavbarRight.style.backgroundColor = '#fff';
+            newNavbarRight.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            newNavbarRight.style.padding = '1rem';
+            newNavbarLinks.style.flexDirection = 'column';
+        } else {
+            newNavbarRight.style.display = 'none';
+        }
+    };
+    
   }
 
-  // Initial call
-  handleTabletLayout();
+  // Initial call to set the layout on page load
+  handleResponsiveLayout();
 
-  // Listen for window resize
-  window.addEventListener('resize', handleTabletLayout);
+  // Listen for window resize events
+  window.addEventListener('resize', handleResponsiveLayout);
 
   // Highlight active section
   window.highlightActiveNav = function(section) {
-    document.querySelectorAll('.navbar-links button, .mobile-menu button').forEach(btn => {
+    document.querySelectorAll('.navbar-links button, .mobile-links button').forEach(btn => {
       btn.classList.remove('active');
-      // Match by section key (e.g. 'eduinfo', 'agroinfo', etc.)
       const btnSection = btn.textContent.trim().toLowerCase() + (btn.textContent.trim().toLowerCase().endsWith('info') ? '' : 'info');
       if (
         (section === 'aboutinfo' && btn.textContent.trim() === 'About') ||
@@ -158,40 +224,9 @@ function renderNavbar() {
   };
 }
 
-// Handle hamburger menu
-const setupHamburgerMenu = () => {
-  const hamburger = document.getElementById('hamburger');
-  const navbarRight = document.querySelector('.navbar-right');
-  const navLinks = document.querySelectorAll('.navbar-links button');
-
-  if (hamburger && navbarRight) {
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('active');
-      navbarRight.classList.toggle('active');
-    });
-
-    // Close menu when a link is clicked
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navbarRight.classList.remove('active');
-      });
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!navbarRight.contains(e.target) && !hamburger.contains(e.target) && navbarRight.classList.contains('active')) {
-        hamburger.classList.remove('active');
-        navbarRight.classList.remove('active');
-      }
-    });
-  }
-};
-
-// Export as Navbar global for compatibility with index.html
+// Export as Navbar global for compatibility
 window.Navbar = {
   render: () => {
     renderNavbar();
-    setupHamburgerMenu();
   }
 };

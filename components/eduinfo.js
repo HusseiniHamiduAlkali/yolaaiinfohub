@@ -22,6 +22,22 @@ if (typeof window.useGemini25 === 'undefined') {
 
 // Function to initialize EduInfo section
 window.initEduInfo = () => {
+    console.log('initEduInfo function is being executed.');
+
+    const eduInfoContent = document.getElementById('eduinfo-content');
+    if (!eduInfoContent) {
+        console.error('eduinfo-content div not found.');
+        return;
+    }
+
+    console.log('Populating eduinfo-content div.');
+    eduInfoContent.innerHTML = `
+        <div class="info-section">
+            <h2>Welcome to EduInfo</h2>
+            <p>Explore educational opportunities in Yola.</p>
+        </div>
+    `;
+    
     const eduSection = document.getElementById('eduinfo-content');
     if (!eduSection) return;
     
@@ -362,6 +378,15 @@ window.renderSection = function() {
           </div>
 
           <div class="section4-container">
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/library.jpg" alt="Public Library">
+              </div>
+              <h3>Yola Public Library</h3>
+              <p>Public library and educational resource center.</p>
+              <a href="details/library.html">Learn more →</a>
+            </div>
             
           </div>
         </div>

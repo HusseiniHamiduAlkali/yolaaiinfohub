@@ -527,8 +527,70 @@ window.renderSection = function() {
       </div>
 
       <div class="section2">
-        <h2>Places of Attraction in Yola</h2>
+        <h2></h2>
         
+        
+        <div class="section3">
+          <h3 class="section3-title">Transport Agents and Motor Parks</h3>
+        
+          <div class="section4-container">
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/aluta.jpg" alt="">
+              </div>
+              <h3>Fresh Air Mass Transit Buses.</h3>
+              <p></p>
+              <a href="details/lamido-palace.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/napep.png" alt="">
+              </div>
+              <h3>Keke Napep (Tricycle).</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/adamawasunshine.jpg" alt="">
+              </div>
+              <h3>Adamawa Sunshine Motor Park.</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/sauki.jpg" alt="">
+              </div>
+              <h3>Sauki< Motor Park, jimeta Yola./h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/jambutumotorpark.jpg" alt="">
+              </div>
+              <h3>Jamubutu Motor Park, Yola.</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/airport.jpg" alt="Airport">
+              </div>
+              <h3>Lamido Aliyu Musdafa Int'l Airport, Yola.</h3>
+              <p>An international airport with many airlines offering trips to any destinations.</p>
+              <a href="details/yola-airport.html">Learn more →</a>
+            </div>
+
+          </div
+
+
         <div class="section3">
           <h3 class="section3-title">Parks and Recreation</h3>
           <div class="section4-container">
@@ -549,15 +611,6 @@ window.renderSection = function() {
               <h3>Gorilla Park</h3>
               <p>A beautiful recreational park with green spaces, walking trails, and children's play areas.</p>
               <a href="details/peace-park.html">Learn more →</a>
-            </div>
-
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/NaviInfo/riverside-park.jpg" alt="Riverside Park">
-              </div>
-              <h3>Riverside Park</h3>
-              <p>Scenic park along the Benue River offering beautiful views and picnic spots.</p>
-              <a href="details/riverside-park.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -593,7 +646,7 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/sanhusein.jpg" alt="Upper Market">
+                <img src="Data/Images/sanhusein.png" alt="Upper Market">
               </div>
               <h3>SanHusein Shopping Mall</h3>
               <p>Popular shopping destination for textile and household items.</p>
@@ -607,7 +660,7 @@ window.renderSection = function() {
               <p>Popular shopping destination for electronic products and household items.</p>
               <a href="details/jabbama-plaza.html">Learn more →</a>
             </div>
-            
+        <!--    
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/yakubu.jpeg" alt="Upper Market">
@@ -616,17 +669,36 @@ window.renderSection = function() {
               <p>Popular shopping destination for drinks and provisions.</p>
               <a href="details/shopping.html">Learn more →</a>
             </div>
+        -->    
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/top10.png" alt="Top10 Yola">
+              </div>
+              <h3>Top10 Plaza, Yola.</h3>
+              <p>.</p>
+              <a href="details/restaurant.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/jumia.jpg" alt="Jumia Yola">
+              </div>
+              <h3>Jumia Black friday Shop, Yola.</h3>
+              <p>.</p>
+              <a href="details/restaurant.html">Learn more →</a>
+            </div>
+
           </div>
         </div>
 
         <div class="section3">
-          <h3 class="section3-title">Hotels</h3>
+          <h3 class="section3-title">Hotels and Restaurants</h3>
 
           <div class="section4-container">
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/muna.jpg" alt="Muna Hotel">
+                <img src="Data/Images/muna2.jpg" alt="Muna Hotel">
               </div>
               <h3>Muna Hotel</h3>
               <p>Luxury hotel offering comfortable accommodations and modern amenities.</p>
@@ -635,7 +707,7 @@ window.renderSection = function() {
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/citygreenhotel.png" alt="City  Green">
+                <img src="Data/Images/citygreen.jpg" alt="City  Green">
               </div>
               <h3>City Green Hotels</h3>
               <p>Premium hotel with conference facilities and restaurant services.</p>
@@ -656,6 +728,51 @@ window.renderSection = function() {
                 <img src="Data/Images/aunhotel2.jpg" alt="AUN Hotel">
               </div>
               <h3>AUN Hotel</h3>
+              <p>Luxury hotel offering comfortable accommodations and modern amenities.</p>
+              <a href="details/hotel.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/vortex.jpg" alt="AUN Hotel">
+              </div>
+              <h3>Vortex Hotels</h3>
+              <p>Luxury hotel offering comfortable accommodations and modern amenities.</p>
+              <a href="details/hotel.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/madugu.jpg" alt="AUN Hotel">
+              </div>
+              <h3>Madugu Rockview Hotel</h3>
+              <p>Luxury hotel offering comfortable accommodations and modern amenities.</p>
+              <a href="details/hotel.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/mammachare.jpg" alt="AUN Hotel">
+              </div>
+              <h3>Mamma-chare Hotel, Yola</h3>
+              <p>Luxury hotel offering comfortable accommodations and modern amenities.</p>
+              <a href="details/hotel.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/goldenalphine.jpg" alt="AUN Hotel">
+              </div>
+              <h3>Golden-alpihne Hotels, Yola</h3>
+              <p>Luxury hotel offering comfortable accommodations and modern amenities.</p>
+              <a href="details/hotel.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/duragi.jpg" alt="AUN Hotel">
+              </div>
+              <h3>Duragi Hotels Yola</h3>
               <p>Luxury hotel offering comfortable accommodations and modern amenities.</p>
               <a href="details/hotel.html">Learn more →</a>
             </div>
@@ -732,15 +849,15 @@ window.renderSection = function() {
               <a href="details/restaurant.html">Learn more →</a>
             </div>
 
+            
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/yahuza.png" alt="OASIS Yola">
+                <img src="Data/Images/icecreamplanet.png" alt="Icecream Planet, Yola">
               </div>
-              <h3>Yahuza Suya Spot, Yola.</h3>
+              <h3>Icecream Planet, Yola</h3>
               <p>.</p>
               <a href="details/restaurant.html">Learn more →</a>
             </div>
-
 
           </div>
         </div>
@@ -785,6 +902,51 @@ window.renderSection = function() {
               <a href="details/central-park.html">Learn more →</a>
             </div>
             
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/ammi.png" alt="Central Park">
+              </div>
+              <h3>Hajja Ammi Jumma'at Mosque, Yola.</h3>
+              <p>Popular urban park with gardens, events space, and recreational facilities.</p>
+              <a href="details/central-park.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/alibaba.png" alt="Central Park">
+              </div>
+              <h3>Alibaba Jumma'at Mosque.</h3>
+              <p>Popular urban park with gardens, events space, and recreational facilities.</p>
+              <a href="details/central-park.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/catholic.jpg" alt="">
+              </div>
+              <h3>Catholic Secreteriat, Yola.</h3>
+              <p></p>
+              <a href="details/banks.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/lccn.jpg" alt="">
+              </div>
+              <h3>Lutheran Church Of Christ (LCCN) No 1, Yola</h3>
+              <p></p>
+              <a href="details/banks.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/eyn.jpg" alt="">
+              </div>
+              <h3>EYN Church Yola.</h3>
+              <p></p>
+              <a href="details/banks.html">Learn more →</a>
+            </div>
+
           </div>
         </div>
 
@@ -804,7 +966,7 @@ window.renderSection = function() {
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/zenithlogo.png" alt="Zenith Bank">
+                <img src="Data/Images/zenithgate.jpg" alt="Zenith Bank">
               </div>
               <h3>Zenith Bank</h3>
               <p></p>
@@ -813,7 +975,7 @@ window.renderSection = function() {
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/fidelity2.jpg" alt="Fidelity Bank">
+                <img src="Data/Images/fidelitygate.jpg" alt="Fidelity Bank">
               </div>
               <h3>Fidelity Bank</h3>
               <p></p>
@@ -824,7 +986,25 @@ window.renderSection = function() {
               <div class="img-placeholder">
                 <img src="Data/Images/stanbic.jpg" alt="Stanbic IBTC">
               </div>
-              <h3>Stanbic IBTC</h3>
+              <h3>Stanbic IBTC Bank, Yola Branch.</h3>
+              <p></p>
+              <a href="details/banks.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/access.png" alt="">
+              </div>
+              <h3>Access Bank, Yola Branch.</h3>
+              <p></p>
+              <a href="details/banks.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/sterling.jpg" alt="">
+              </div>
+              <h3>Sterling Bank, Yola Branch.</h3>
               <p></p>
               <a href="details/banks.html">Learn more →</a>
             </div>
@@ -835,44 +1015,64 @@ window.renderSection = function() {
 
         <div class="section3">
         
-        <h3 class="section3-title">Community Centers</h3>
-        
+        <h3 class="section3-title">Sports centers & SPA</h3>
+
+          <div class="section4-container">
+         
+
           <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/ribadusquare.jpg" alt="Cultural Center">
+              <img src="Data/Images/mausports.jpg" alt="">
             </div>
-            <h3>Mahmudu Ribadu Square, Yola</h3>
-            <p>Venue for cultural events, exhibitions, and traditional performances.</p>
+            <h3>MAU Yola sports center.</h3>
+            <p></p>
             <a href="details/ribadu-square.html">Learn more →</a>
           </div>
 
-          <div class="section4-container">
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/community/culturalcenter.jpg" alt="Cultural Center">
-              </div>
-              <h3>Yola Cultural Center</h3>
-              <p>Promoting local arts, culture, and traditional events.</p>
-              <a href="details/culturalcenter.html">Learn more →</a>
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/ffitness.jpg" alt="">
             </div>
+            <h3>F - Fitness Gymnastics & Spa, Yola.</h3>
+            <p></p>
+            <a href="details/ribadu-square.html">Learn more →</a>
+          </div>
 
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/community/sportscenter.jpg" alt="Sports Complex">
-              </div>
-              <h3>Yola Sports Complex</h3>
-              <p>Sports facilities and youth development programs.</p>
-              <a href="details/sportscomplex.html">Learn more →</a>
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/beastfitness.jpg" alt="">
             </div>
+            <h3>Beast Fitness Arena, Yola.</h3>
+            <p></p>
+            <a href="details/ribadu-square.html">Learn more →</a>
+          </div>
 
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/library.jpg" alt="Public Library">
-              </div>
-              <h3>Yola Public Library</h3>
-              <p>Public library and educational resource center.</p>
-              <a href="details/library.html">Learn more →</a>
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/gauniarena.jpg" alt="">
             </div>
+            <h3>Gauni Sports Arena, Yola.</h3>
+            <p></p>
+            <a href="details/ribadu-square.html">Learn more →</a>
+          </div>
+
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/fcepitch.jpg" alt="">
+            </div>
+            <h3>Federal College of Education (FCE) Yola, Footbal Pitch</h3>
+            <p></p>
+            <a href="details/ribadu-square.html">Learn more →</a>
+          </div>
+
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/polo2.jpg" alt="">
+            </div>
+            <h3>International Polo Ground, Yola</h3>
+            <p></p>
+            <a href="details/ribadu-square.html">Learn more →</a>
+          </div>
 
           </div>
         </div>
@@ -894,7 +1094,7 @@ window.renderSection = function() {
               <div class="img-placeholder">
                 <img src="Data/Images/flyover.jpg" alt="Police roundabout">
               </div>
-              <h3>Police Roundabout Flyover, Jimeta Yola. </h3>
+              <h3>Police Roundabout Flyover, Jimeta Yola.</h3>
               <p>.</p>
               <a href="details/flyover.html">Learn more →</a>
             </div>
@@ -910,76 +1110,33 @@ window.renderSection = function() {
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/welcometoyola.jpeg" alt="welcome to yola">
+                <img src="Data/Images/jambutu.jpg" alt="welcome to yola">
               </div>
-              <h3>Yola main entrance gate</h3>
+              <h3>Jambutu Flyover, Jimeta Yola.</h3>
               <p></p>
               <a href="details/roundabout.html">Learn more →</a>
             </div>
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/welcometoyola.jpeg" alt="welcome to yola">
+                <img src="Data/Images/underpass.jpg" alt="welcome to yola">
               </div>
-              <h3>Yola main entrance gate</h3>
+              <h3>Ongoing Construction of Underpass at Fire Service Roundabout, Jimeta Yola.</h3>
+              <p></p>
+              <a href="details/roundabout.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/maishanu.jpg" alt="welcome to yola">
+              </div>
+              <h3>Roundabout Maishanu Jimeta, Yola.</h3>
               <p></p>
               <a href="details/roundabout.html">Learn more →</a>
             </div>
 
           </div>
         </div>
-
-        <div class="section3">
-          <h3 class="section3-title">Other Places of Interest</h3>
-        
-          <div class="section4-container">
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/palace2.jpg" alt="Lamido Palace">
-              </div>
-              <h3>Lamido Palace</h3>
-              <p>Historic palace showcasing traditional architecture and cultural heritage.</p>
-              <a href="details/lamido-palace.html">Learn more →</a>
-            </div>
-    
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/airport.jpg" alt="Airport">
-              </div>
-              <h3>Lamido Aliyu Musdafa Int'l Airport, Yola.</h3>
-              <p>An international airport with many airlines offering trips to any destinations.</p>
-              <a href="details/yola-airport.html">Learn more →</a>
-            </div>
-            
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/polologo.jpg" alt="Polo Ground">
-              </div>
-              <h3>Yola Polo ground</h3>
-              <p>Venue for polo and horse racing performances.</p>
-              <a href="details/polo-ground.html">Learn more →</a>
-            </div>
-            
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/polologo.jpg" alt="Polo Ground">
-              </div>
-              <h3>Yola Polo ground</h3>
-              <p>Venue for polo and horse racing performances.</p>
-              <a href="details/polo-ground.html">Learn more →</a>
-            </div>
-            
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/polologo.jpg" alt="Polo Ground">
-              </div>
-              <h3>Yola Polo ground</h3>
-              <p>Venue for polo and horse racing performances.</p>
-              <a href="details/polo-ground.html">Learn more →</a>
-            </div>
-          </div>
-
-
         
 
         </div>

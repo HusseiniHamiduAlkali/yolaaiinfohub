@@ -1,5 +1,4 @@
 /* Global.css
-
 Wednesday, July 30, 2025
 6:38 AM
 */
@@ -10,6 +9,9 @@ Wednesday, July 30, 2025
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 1rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
 }
 
 .model-switch {
@@ -46,6 +48,7 @@ Wednesday, July 30, 2025
     bottom: 0;
     background-color: #ccc;
     transition: .4s;
+    border-radius: 24px;
 }
 
 .slider:before {
@@ -57,6 +60,7 @@ Wednesday, July 30, 2025
     bottom: 4px;
     background-color: white;
     transition: .4s;
+    border-radius: 50%;
 }
 
 .switch input:checked + .slider {
@@ -65,14 +69,6 @@ Wednesday, July 30, 2025
 
 .switch input:checked + .slider:before {
     transform: translateX(26px);
-}
-
-.slider.round {
-    border-radius: 24px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
 }
 
 .navi-map-styled {
@@ -88,7 +84,6 @@ Wednesday, July 30, 2025
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* border: 2px solid #3182ce; */
   position: relative;
 }
 
@@ -116,18 +111,15 @@ Wednesday, July 30, 2025
 
 .section3-title {
   font-size: 1.6rem;
-  color: #4a5568;
   margin-bottom: 2rem;
-  padding-left: 0.5rem;
-  border-left: 4px solid #2d3748;
+  padding: 0.1rem;
   width: 100%;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 0.8rem;
+  border-radius: 10px;
   text-align: center;
 }
 
 .section4-container {
-  display: flex;
+  display:  grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   width: 100%;
@@ -136,23 +128,28 @@ Wednesday, July 30, 2025
   max-width: 1400px;
   box-sizing: border-box;
   flex-direction: row;
+  border: 2px solid  #4a5568;
+  border-radius: 25px;
 }
 
 .section4 {
-  background: #fff;
+  background: #dddada;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 1.5rem;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 350px;
-  width: 300px;
+  height: 500px;
+  width: 366px;
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
   margin: 0;
+  border: 2px solid  #c6c8cc;
+  border-radius: 10px;
+  margin-top: 35px;
+  margin-bottom:35px;
 }
 
 .section4:hover {
@@ -161,13 +158,11 @@ Wednesday, July 30, 2025
 }
 
 .section4 .img-placeholder {
-  width: 100%;
+  border-radius: 10px;
   overflow: hidden;
-  border-radius: 8px;
   margin-bottom: 1rem;
-  height: auto;
-  min-height: 200px;
-  max-height: 250px;
+  width: 100%;
+  height: 180px;
   position: relative;
   display: flex;
   align-items: center;
@@ -177,9 +172,9 @@ Wednesday, July 30, 2025
 .section4 .img-placeholder img {
   width: 100%;
   transition: transform 0.3s ease;
-  height: auto;
+  height: 100%;
   max-height: 100%;
-  object-fit: contain;
+  object-fit: fill;
 }
 
 .section4:hover .img-placeholder img {
@@ -191,6 +186,7 @@ Wednesday, July 30, 2025
   font-size: 1.3rem;
   margin: 0.8rem 0;
   font-weight: 600;
+  text-align: center;
 }
 
 .section4 p {
@@ -199,31 +195,6 @@ Wednesday, July 30, 2025
   line-height: 1.6;
   margin: 0.8rem 0;
   flex-grow: 1;
-}
-
-/* Grid layout responsive adjustments */
-@media screen and (min-width: 1200px) {
-  .section4-container {
-    grid-template-columns: repeat(4, 1fr); /* 4 items per row on large screens */
-  }
-}
-
-@media screen and (min-width: 768px) and (max-width: 1199px) {
-  .section4-container {
-    grid-template-columns: repeat(3, 1fr); /* 3 items per row on medium screens */
-  }
-}
-
-@media screen and (min-width: 480px) and (max-width: 767px) {
-  .section4-container {
-    grid-template-columns: repeat(2, 1fr); /* 2 items per row on small screens */
-  }
-}
-
-@media screen and (max-width: 479px) {
-  .section4-container {
-    grid-template-columns: 1fr; /* 1 item per row on very small screens */
-  }
 }
 
 .section4 a {
@@ -238,6 +209,7 @@ Wednesday, July 30, 2025
   transition: all 0.3s ease;
   text-align: center;
   width: 80%;
+  align-self: center;
 }
 
 .section4 a:hover {
@@ -293,12 +265,6 @@ Wednesday, July 30, 2025
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.chat-header {
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
 }
 
 .chat-messages {
@@ -519,7 +485,7 @@ main {
 }
 
 .info-section h2 {
-  padding-top: 90px;
+  padding-top: 35px;
 }
 
 .info-section h2, p {
@@ -545,7 +511,6 @@ main {
   margin-bottom: 0.7rem;
 }
 
-/* FAQ list: two columns on desktop, block on mobile */
 .faq-list li {
   margin-bottom: 0.5rem;
 }
@@ -615,7 +580,6 @@ main {
   align-items: center;
   align-content: center;
   align-self: center;
-  display: flex;
   flex-direction: column;
   gap: 1rem;
 }
@@ -638,84 +602,14 @@ main {
 }
 
 /* Responsive Layouts */
-@media screen and (min-width: 1200px) {
-  .section4-container {
-    max-width: 1200px;
-  }
-  .chat-container {
-    padding: 2rem;
-  }
-}
-
-@media screen and (min-width: 992px) and (max-width: 1199px) {
-  .section4-container {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-  .chat-container {
-    padding: 1.5rem;
-    margin: 1.5rem auto;
-  }
-  .section2 {
-    padding: 0 1.5rem;
-  }
-}
-
-@media screen and (min-width: 768px) and (max-width: 991px) {
-  .section4-container {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
-  .chat-container {
-    padding: 1rem;
-    margin: 1rem auto;
-  }
-  .section2 {
-    padding: 0 1rem;
-  }
-  .section3 {
-    margin-bottom: 2rem;
-  }
-}
-
-@media screen and (max-width: 991px) {
-  .section4-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-  }
-}
-
-@media screen and (max-width: 767px) {
-  .section4-container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  .chat-container {
-    padding: 0.8rem;
-    margin: 0.8rem auto;
-    border-radius: 8px;
-  }
-  .section2 {
-    padding: 0 0.8rem;
-  }
-  .section3 {
-    margin-bottom: 1.5rem;
-  }
-  .section3-title {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-  }
-}
-
-/* Responsive grid breakpoints */
-@media (max-width: 1200px) {
+@media screen and (max-width: 1200px) {
   .section4-container {
     padding: 1.5rem;
     gap: 1.8rem;
   }
 }
 
-@media (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
   .section4-container {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 1.5rem;
@@ -726,52 +620,44 @@ main {
   }
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .section2 {
     padding: 1.2rem;
     margin: 1.5rem auto;
   }
-
   .section3 {
     margin: 1.5rem 0;
   }
-
   .section3-title {
     font-size: 1.3rem;
     margin-bottom: 1.5rem;
   }
-
   .section4-container {
     grid-template-columns: 1fr !important;
     gap: 1rem;
     padding: 0.8rem;
   }
-
   .section4 {
     padding: 1.2rem;
   }
-
   .section4 .img-placeholder {
     height: 180px;
   }
-
   .section4 h3 {
     font-size: 1.2rem;
     margin: 0.6rem 0;
   }
-
   .section4 p {
     font-size: 0.95rem;
     margin: 0.6rem 0;
   }
-
   .section4 a {
     padding: 0.7rem 1.2rem;
     font-size: 0.95rem;
   }
 }
 
-@media (max-width: 600px) {
+@media screen and (max-width: 600px) {
   .section4-container {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -787,11 +673,10 @@ main {
     padding: 0.5rem 0.2rem;
   }
   .faq-list ul {
-    grid-template-columns: 1fr !important;
+    columns: 1 !important;
+    display: block;
+    text-align: center;
   }
-}
-
-@media (max-width: 600px) {
   .info-section {
     margin-top: 1rem;
   }
@@ -799,13 +684,19 @@ main {
     max-width: 98vw;
     padding: 1rem;
   }
-  .chat-input-row { flex-direction: column; gap: 0.3rem; }
-  .chat-tools-row { gap: 0.7rem; }
-  .faq-list ul { display: block; text-align: center; }
-  .faq-link { text-align: center; }
+  .chat-input-row {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .chat-tools-row {
+    gap: 0.7rem;
+  }
+  .faq-link {
+    text-align: center;
+  }
 }
 
-@media (min-width: 600px) and (max-width: 899px) {
+@media screen and (min-width: 600px) and (max-width: 899px) {
   .chat-container {
     max-width: 540px;
     min-width: 340px;
@@ -936,4 +827,9 @@ main {
   font-size: 1rem;
   min-height: 1.2em;
   text-align: center;
+}
+@media (max-width: 700px)  {
+  .mauth-placeholder .img2 {
+    display: none;
+  }
 }

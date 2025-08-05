@@ -70,7 +70,7 @@ nav.navbar {
   white-space: nowrap;
   align-content: center;
   display: block;
-  margin-left: 10px;
+  margin-left: 0px;
 }
 
 /* Tablet-specific classes will be defined in media query */
@@ -116,6 +116,7 @@ nav.navbar {
   gap: 0.7rem; /* Merged from previous definition */
   align-items: left; /* Merged from previous definition */
   margin-bottom: 0.5rem; /* Merged from previous definition */
+  height: fit-content;
 }
 
 .auth-btn {
@@ -130,6 +131,7 @@ nav.navbar {
   transition: background 0.2s;
   min-width: 80px; /* Merged from previous definition */
   font-weight: 500; /* Merged from previous definition */
+  height: fit-content;
 }
 
 .auth-btn:hover {
@@ -894,9 +896,10 @@ nav.navbar {
 .navbar-links {
   display: flex;
   list-style: none;
-  margin: 0;
+  margin-right: 15px;
   padding: 0;
-  gap: 1rem;
+  gap: 0.5rem;
+  justify-content: flex-end;
 }
 
 .navbar-links button {
@@ -994,4 +997,7 @@ nav.navbar {
   .auth-btn {
     width: 100%;
   }
+}
+.navbar-top-section{
+  align-self: flex-end;
 }

@@ -127,11 +127,11 @@ window.renderSection = function() {
       </div>
       </div>
       
-      <div class="section2">
-        <h2>History of Yola</h2>
-        <div style="width: 1191px; height: 680px; overflow: hidden; border-radius: 12px; display:flex; gap:0.5rem;">
-        <img src="Data/Images/palace3.1.jpg" alt="Yola Palace" style="width: 50%; height:50%; object-fit: cover; border-radius: 12px;">
-        <img src="Data/Images/palace.jpg" alt="Yola Palace" style="width: 50%; height:50%; object-fit: cover; border-radius: 12px;">
+      <div class="section2" style="height: 630px;">
+        <h2 style="margin-bottom: 25px;" >History of Yola</h2>
+        <div style="width: 1191px; height: 340px; overflow: hidden; border-radius: 12px; display:flex; gap:0.5rem;">
+        <img src="Data/Images/palace3.1.jpg" alt="Yola Palace" style="width: 50%; height:99%; object-fit: cover; border-radius: 12px;">
+        <img src="Data/Images/palace.jpg" alt="Yola Palace" style="width: 50%; height:99%; object-fit: cover; border-radius: 12px;">
         </div>
         <p style="margin-top: 1.5rem; line-height: 1.6; color: #2d3748;">
           Yola, the capital city of Adamawa State, has a rich history dating back to its establishment as the capital of the Fulani state of Adamawa in 1841. 
@@ -139,8 +139,42 @@ window.renderSection = function() {
           made it a vital commercial hub. Today, Yola continues to be a significant cultural and administrative center, blending its historical heritage 
           with modern development.
         </p>
-          <a href="details/yolaadamawa.html">Continue exploring Yola's history →</a>
+          <a href="details/yolaadamawa.html"  style="align-text: center;" >Continue exploring Yola's history →</a>
         </a>
+      </div>
+
+      <div class="section2-home">
+
+        <div class="section4-home-container">
+          <div class="section4-home">
+            <div class="section4-home-img-container">
+
+              <div class="section4-home-img-placeholder">
+                <img src="Data/Images/lamido.png" alt="" >
+              </div>
+
+             
+            <h4> hi there<h4>
+            </div>
+             
+          </div>
+        </div>
+
+        <div class="section4-home-container">
+          <div class="section4-home">
+
+            <div class="section4-home-img-container">
+
+              <div class="section4-home-img-placeholder">
+                <img src="Data/Images/fintiri.png" alt="" >
+              </div>
+
+              <h4> hi there<h4>
+              
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   `;
