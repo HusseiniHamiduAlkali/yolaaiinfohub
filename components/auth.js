@@ -1,6 +1,19 @@
 
 // Frontend logic for login/signup/logout modals and API, plus password reset
 
+// Function to toggle password visibility
+window.togglePasswordVisibility = function(inputId) {
+  const input = document.getElementById(inputId);
+  const icon = input.parentElement.querySelector('.password-toggle i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'far fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'far fa-eye';
+  }
+};
+
 window.updateAuthUI = function(user) {
   const authButtons = document.getElementById('auth-buttons');
   const userInfo = document.getElementById('user-info');
@@ -155,7 +168,12 @@ function showAuthModal(type) {
           <input type="email" id="auth-email" placeholder="Email" required autocomplete="email" />
           <input type="text" id="auth-name" placeholder="Full Name" required autocomplete="name" />
           <input type="text" id="auth-nin" placeholder="NIN (11 digits)" required pattern="\\d{11}" maxlength="11" />
-          <input type="password" id="auth-password" placeholder="Password" required autocomplete="new-password" />
+          <div class="password-field">
+            <input type="password" id="auth-password" placeholder="Password" required autocomplete="new-password" />
+            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('auth-password')">
+              <i class="far fa-eye"></i>
+            </button>
+          </div>
           <button type="submit">Sign Up</button>
         </form>
         <div class="auth-error" id="auth-error"></div>
@@ -168,7 +186,12 @@ function showAuthModal(type) {
         <h2>Sign In</h2>
         <form id="auth-form">
           <input type="text" id="auth-username" placeholder="Username or Email" required autocomplete="username" />
-          <input type="password" id="auth-password" placeholder="Password" required autocomplete="current-password" />
+          <div class="password-field">
+            <input type="password" id="auth-password" placeholder="Password" required autocomplete="current-password" />
+            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('auth-password')">
+              <i class="far fa-eye"></i>
+            </button>
+          </div>
           <button type="submit">Sign In</button>
         </form>
         <div style="margin-top:0.7em;text-align:center;">

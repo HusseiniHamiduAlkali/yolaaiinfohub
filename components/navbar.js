@@ -6,14 +6,21 @@ function renderNavbar() {
   nav.className = 'navbar';
 
   // Create the auth buttons container that will be reused
-  const authButtonsHTML = `
+  let authButtonsHTML = `
     <div class="navbar-auth" id="navbar-auth">
       <button id="signin-btn" class="auth-btn" type="button">Sign in</button>
       <button id="signup-btn" class="auth-btn" type="button">Sign up</button>
-      <button id="logout-btn" class="auth-btn" style="display:none" onclick="window.logoutUser()">Logout</button>
-      <span id="user-avatar" class="user-avatar" style="display:none"><img src="https://ui-avatars.com/api/?name=User" alt="User"/></span>
     </div>
   `;
+  // If user is signed in, show username and logout button
+  if (window.currentUser && window.currentUser.username) {
+    authButtonsHTML = `
+      <div class="navbar-auth" id="navbar-auth" style="display:flex;align-items:center;gap:0.7rem;">
+        <span class="navbar-username" style="font-weight:600;color:#205080;font-size:1.08rem;">${window.currentUser.username}</span>
+        <button id="logout-btn" class="auth-btn" onclick="window.logoutUser()">Logout</button>
+      </div>
+    `;
+  }
 
   const logoHTML = `
     <div class="navbar-logo-area">
@@ -55,8 +62,8 @@ function renderNavbar() {
   setTimeout(() => {
     const signinBtn = document.getElementById('signin-btn');
     const signupBtn = document.getElementById('signup-btn');
-    if (signinBtn) signinBtn.onclick = () => window.loadSection('signin');
-    if (signupBtn) signupBtn.onclick = () => window.loadSection('signup');
+    if (signinBtn) signinBtn.onclick = () => window.location.href = '/pages/signin.html';
+    if (signupBtn) signupBtn.onclick = () => window.location.href = '/pages/signup.html';
   }, 0);
 
   document.getElementById('navbar').innerHTML = ''; // Clear existing content
@@ -100,35 +107,46 @@ function renderNavbar() {
       // PC View
       newNavbarContainer.style.justifyContent = 'space-between';
       newHamburger.style.display = 'none';
-      newNavbarRight.style.display = 'flex'; 
+      newNavbarRight.style.display = 'flex';
+      // If user is signed in, show only username and logout button
+      if (window.currentUser && window.currentUser.username) {
+        const navbarAuth = document.getElementById('navbar-auth');
+        if (navbarAuth) {
+          navbarAuth.style.display = 'flex';
+          navbarAuth.style.alignItems = 'center';
+        }
+      }
 
     } else if (windowWidth >= 701 && windowWidth <= 1150) {
       // Tablet View
       newNavbarContainer.style.flexDirection = 'column';
       newNavbarContainer.style.justifyContent = 'flex-start';
       newNavbarContainer.style.alignItems = 'flex-start';
-      
       const topRow = document.createElement('div');
       topRow.style.display = 'flex';
       topRow.style.justifyContent = 'space-between';
       topRow.style.width = '100%';
       topRow.style.marginBottom = '0.5rem';
-      
       // Move logo and app name to the top row
       topRow.appendChild(newNavbarLeft);
       // Move auth buttons to the top row
       topRow.appendChild(newNavbarAuth);
-      
       // The newNavbarLinks element is now the bottom row
       newNavbarLinks.style.width = '100%';
       newNavbarLinks.style.justifyContent = 'space-around';
-      
       // Rebuild the container with the two rows
       newNavbarContainer.innerHTML = '';
       newNavbarContainer.appendChild(topRow);
       newNavbarContainer.appendChild(newNavbarLinks);
-      
       newHamburger.style.display = 'none';
+      // If user is signed in, show only username and logout button
+      if (window.currentUser && window.currentUser.username) {
+        const navbarAuth = document.getElementById('navbar-auth');
+        if (navbarAuth) {
+          navbarAuth.style.display = 'flex';
+          navbarAuth.style.alignItems = 'center';
+        }
+      }
       
     } else {
       // Mobile View
