@@ -1,12 +1,29 @@
 [build]
-  base = "/"
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "."
   functions = "netlify/functions"
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF . ../api/"
 
 [build.environment]
   NODE_VERSION = "16"
+
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 [build.processing]
   skip_processing = false

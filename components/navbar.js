@@ -92,7 +92,7 @@ function renderNavbar() {
     newNavbarLeft.style.alignItems = 'center';
     
     newNavbarRight.style.display = 'flex';
-    newNavbarRight.style.alignItems = 'center';
+    newNavbarRight.style.alignItems = 'flex-end';
     newNavbarLinks.style.display = 'flex';
 
     // Logic for different screen sizes
@@ -112,7 +112,7 @@ function renderNavbar() {
       topRow.style.display = 'flex';
       topRow.style.justifyContent = 'space-between';
       topRow.style.width = '100%';
-      topRow.style.marginBottom = '1rem';
+      topRow.style.marginBottom = '0.5rem';
       
       // Move logo and app name to the top row
       topRow.appendChild(newNavbarLeft);

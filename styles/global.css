@@ -261,7 +261,7 @@ Wednesday, July 30, 2025
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-  padding: 1.5rem;
+  padding: 1.5rem; 
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -670,7 +670,7 @@ main {
   .chat-container {
     min-width: 0;
     width: 100%;
-    padding: 0.5rem 0.2rem;
+    padding: 0.5rem 0.2rem; 
   }
   .faq-list ul {
     columns: 1 !important;
@@ -682,7 +682,7 @@ main {
   }
   .chat-container, .faq-list {
     max-width: 98vw;
-    padding: 1rem;
+    
   }
   .chat-input-row {
     flex-direction: column;
