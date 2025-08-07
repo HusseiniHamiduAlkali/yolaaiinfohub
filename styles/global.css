@@ -197,6 +197,21 @@ Wednesday, July 30, 2025
   flex-grow: 1;
 }
 
+.section4-home a {
+  display: inline-block;
+  background: #3182ce;
+  color: #fff;
+  text-decoration: none;
+  margin-top: auto;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+  align-self: center;
+}
+
 .section4 a {
   display: inline-block;
   background: #3182ce;
@@ -619,8 +634,15 @@ main {
     height: 200px;
   }
 }
+/* Responsive Layouts: Only three breakpoints (PC, Tablet, Mobile) */
 
-@media screen and (max-width: 768px) {
+@media screen and (min-width: 1151px) {
+  /* PC styles: default, so only override if needed */
+  /* Example: .section4-container { ... } */
+}
+
+@media screen and (min-width: 700px) and (max-width: 1150px) {
+  /* Tablet styles */
   .section2 {
     padding: 1.2rem;
     margin: 1.5rem auto;
@@ -633,11 +655,8 @@ main {
     margin-bottom: 1.5rem;
   }
   .section4-container {
-    grid-template-columns: 1fr !important;
-    gap: 1rem;
-    padding: 0.8rem;
-  }
-  .section4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.5rem;
     padding: 1.2rem;
   }
   .section4 .img-placeholder {
@@ -655,34 +674,70 @@ main {
     padding: 0.7rem 1.2rem;
     font-size: 0.95rem;
   }
+  .chat-container {
+    max-width: 700px;
+    min-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
+  /* Mobile styles */
+  .section2 {
+    padding: 0.8rem;
+    margin: 1rem auto;
+  }
+  .section3 {
+    margin: 1rem 0;
+  }
+  .section3-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
   .section4-container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: 1fr !important;
+    gap: 0.7rem;
     padding: 0.5rem;
   }
+  .section4 {
+    padding: 0.7rem;
+  }
   .section4 .img-placeholder {
-    min-height: 160px;
-    max-height: 200px;
+    min-height: 140px;
+    max-height: 180px;
+  }
+  .section4 h3 {
+    font-size: 1rem;
+    margin: 0.4rem 0;
+  }
+  .section4 p {
+    font-size: 0.9rem;
+    margin: 0.4rem 0;
+  }
+  .section4 a {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
   }
   .chat-container {
     min-width: 0;
     width: 100%;
     padding: 0.5rem 0.2rem; 
+    max-width: 98vw;
+    margin-left: auto;
+    margin-right: auto;
   }
   .faq-list ul {
     columns: 1 !important;
     display: block;
     text-align: center;
   }
+  .faq-list {
+    width:80%;
+    max-width: 98vw;
+  }
   .info-section {
     margin-top: 1rem;
-  }
-  .chat-container, .faq-list {
-    max-width: 98vw;
-    
   }
   .chat-input-row {
     flex-direction: column;
@@ -694,43 +749,10 @@ main {
   .faq-link {
     text-align: center;
   }
-}
-
-@media screen and (min-width: 600px) and (max-width: 899px) {
-  .chat-container {
-    max-width: 540px;
-    min-width: 340px;
-    margin-left: auto;
-    margin-right: auto;
+  .mauth-placeholder .img2 {
+    display: none;
   }
 }
-
-/* Auth page styles (page-based signin/signup/forgot) */
-.auth-page-container {
-  max-width: 400px;
-  margin: 3.5rem auto 0 auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.13);
-  padding: 2.2rem 2.5rem 2rem 2.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.auth-page-container h2 {
-  margin-top: 0;
-  margin-bottom: 1.2rem;
-  color: #2d3748;
-  font-size: 1.4rem;
-}
-.auth-page-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-}
-.auth-page-form input[type="text"],
-.auth-page-form input[type="password"],
 .auth-page-form input[type="email"] {
   padding: 0.7rem 1rem;
   border-radius: 7px;

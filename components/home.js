@@ -127,11 +127,11 @@ window.renderSection = function() {
       </div>
       </div>
       
-      <div class="section2" style="height: 630px;">
+      <div class="section2" style="">
         <h2 style="margin-bottom: 25px;" >History of Yola</h2>
-        <div style="width: 1191px; height: 340px; overflow: hidden; border-radius: 12px; display:flex; gap:0.5rem;">
-        <img src="Data/Images/palace3.1.jpg" alt="Yola Palace" style="width: 50%; height:99%; object-fit: cover; border-radius: 12px;">
-        <img src="Data/Images/palace.jpg" alt="Yola Palace" style="width: 50%; height:99%; object-fit: cover; border-radius: 12px;">
+        <div style="width: ; height: ; overflow: hidden; border-radius: 12px; display:flex; gap:0.5rem;">
+        <img src="Data/Images/palace3.1.jpg" alt="Yola Palace" style="width:100% ; height:auto; object-fit: fill; border-radius: 12px;">
+        <img src="Data/Images/palace.jpg" alt="Yola Palace" style="width:100% ; height:auto; object-fit: fill; border-radius: 12px;">
         </div>
         <p style="margin-top: 1.5rem; line-height: 1.6; color: #2d3748;">
           Yola, the capital city of Adamawa State, has a rich history dating back to its establishment as the capital of the Fulani state of Adamawa in 1841. 
@@ -153,8 +153,11 @@ window.renderSection = function() {
                 <img src="Data/Images/lamido.png" alt="" >
               </div>
 
-             
-            <h4> hi there<h4>
+              <div style="display:flex; flex-direction: column;">
+                <h4> hi there<h4>
+                <a href="details/yola-recycling-center.html" class="">Explore more →</a>
+              </div>
+              
             </div>
              
           </div>
@@ -169,7 +172,11 @@ window.renderSection = function() {
                 <img src="Data/Images/fintiri.png" alt="" >
               </div>
 
-              <h4> hi there<h4>
+              <div style=" display:flex; flex-direction: column;">
+                <h4> hi there<h4>
+                <a href="details/yola-recycling-center.html" class="">Explore more →</a>
+              </div>
+              
               
             </div>
           </div>

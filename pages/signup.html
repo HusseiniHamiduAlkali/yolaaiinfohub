@@ -98,7 +98,7 @@
     }
     .form-group input, .form-group select {
       width: 100%;
-      padding: 0.7rem 1rem;
+      padding: 0.7rem 0rem;
       border: 1.5px solid #cbd5e1;
       border-radius: 6px;
       font-size: 1.05rem;
@@ -109,6 +109,11 @@
       border: 1.5px solid #3182ce;
       outline: none;
       background: #fff;
+    }
+    
+    .form-group.checkbox-group {
+      display:flex;
+      flex-direction: row;
     }
     .password-field {
       position: relative;
@@ -211,10 +216,7 @@
     <div class="auth-box">
       <h2>Create Account</h2>
       <form id="signup-form" class="auth-form">
-        <div class="form-group checkbox-group">
-          <input type="checkbox" id="yola-resident" name="yolaResident" onchange="handleYolaResident()">
-          <label for="yola-resident">Resident of Yola?</label>
-        </div>
+        
         <div class="form-group">
           <label for="username">Username*</label>
           <input type="text" id="username" name="username" required>
@@ -234,6 +236,10 @@
         <div class="form-group">
           <label for="nin">NIN (11 digits)*</label>
           <input type="text" id="nin" name="nin" required pattern="[0-9]{11}" maxlength="11">
+        </div>
+        <div class="form-group checkbox-group">
+          <label for="yola-resident">Resident of Yola?</label>
+          <input type="checkbox" id="yola-resident" name="yolaResident" onchange="handleYolaResident()" style="width: fit-content;">
         </div>
         <div class="form-group">
           <label for="address">Address*</label>
@@ -272,8 +278,8 @@
           </div>
         </div>
         <div class="form-group checkbox-group">
-          <input type="checkbox" id="terms" name="termsAccepted" required>
           <label for="terms">I accept the Terms and Conditions*</label>
+          <input type="checkbox" id="terms" name="termsAccepted" required style="width: fit-content;">
         </div>
         <button type="submit" class="auth-submit">Create Account</button>
         <div class="auth-links">

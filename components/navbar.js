@@ -24,7 +24,7 @@ function renderNavbar() {
 
   const logoHTML = `
     <div class="navbar-logo-area">
-      <div class="navbar-logo-placeholder"><img src=Data/Images/jippujam.jpg></div>
+      <div class="navbar-logo-placeholder"><img src=Data/Images/jippujam.jpg style="overflow: hidden;object-fit: fill;width: 100%;height: 100%; border-radius:12px;"></div>
     </div>
     <span class="navbar-appname">Yola AI Info Hub</span>
   `;
@@ -91,9 +91,9 @@ function renderNavbar() {
     const newHamburger = document.getElementById('hamburger');
     
     // Apply common styles using JS
-    newNavbarContainer.style.display = 'flex';
-    newNavbarContainer.style.alignItems = 'center';
-    newNavbarContainer.style.padding = '0px';
+    newNavbarContainer.style.display = '';
+    newNavbarContainer.style.alignItems = '';
+    newNavbarContainer.style.padding = '';
     
     newNavbarLeft.style.display = 'flex';
     newNavbarLeft.style.alignItems = 'center';
@@ -105,7 +105,7 @@ function renderNavbar() {
     // Logic for different screen sizes
     if (windowWidth > 1150) {
       // PC View
-      newNavbarContainer.style.justifyContent = 'space-between';
+      newNavbarContainer.style.justifyContent = '';
       newHamburger.style.display = 'none';
       newNavbarRight.style.display = 'flex';
       // If user is signed in, show only username and logout button
@@ -133,7 +133,7 @@ function renderNavbar() {
       topRow.appendChild(newNavbarAuth);
       // The newNavbarLinks element is now the bottom row
       newNavbarLinks.style.width = '100%';
-      newNavbarLinks.style.justifyContent = 'space-around';
+      newNavbarLinks.style.justifyContent = 'flex-end';
       // Rebuild the container with the two rows
       newNavbarContainer.innerHTML = '';
       newNavbarContainer.appendChild(topRow);
@@ -150,9 +150,9 @@ function renderNavbar() {
       
     } else {
       // Mobile View
-      newNavbarContainer.style.justifyContent = 'space-between';
-      newNavbarContainer.style.flexDirection = 'row'; // Ensure row layout
-      newNavbarContainer.style.alignItems = 'center';
+      newNavbarContainer.style.justifyContent = '';
+      newNavbarContainer.style.flexDirection = ''; // Ensure row layout
+      newNavbarContainer.style.alignItems = '';
 
       newNavbarLeft.style.display = 'flex';
       newNavbarLeft.style.alignItems = 'center';
@@ -164,17 +164,17 @@ function renderNavbar() {
       newNavbarLinks.style.display = 'none'; // Hide navbar links
 
       // Adjust auth buttons
-      newNavbarAuth.style.display = 'flex';
-      newNavbarAuth.style.flexDirection = 'row';
-      newNavbarAuth.style.alignItems = 'center';
-      newNavbarAuth.style.marginRight = '10px';
+      newNavbarAuth.style.display = '';
+      newNavbarAuth.style.flexDirection = '';
+      newNavbarAuth.style.alignItems = '';
+      newNavbarAuth.style.marginRight = '';
 
       // Place hamburger spans below auth buttons
-      newHamburger.style.display = 'flex';
-      newHamburger.style.flexDirection = 'column'; // Ensure spans are stacked vertically
-      newHamburger.style.alignItems = 'center';
-      newHamburger.style.marginTop = '5px';
-      newHamburger.style.marginLeft = 'auto';
+      newHamburger.style.display = '';
+      newHamburger.style.flexDirection = ''; // Ensure spans are stacked vertically
+      newHamburger.style.alignItems = '';
+      newHamburger.style.marginTop = '';
+      newHamburger.style.marginLeft = '';
 
       // Style the hamburger lines
       const lines = newHamburger.querySelectorAll('.hamburger-line');
@@ -182,9 +182,9 @@ function renderNavbar() {
           line.style.display = 'block';
           line.style.height = '3px';
           line.style.width = '30px';
-          line.style.background = '#333';
+          line.style.background = '#fff';
           line.style.borderRadius = '5px';
-          line.style.margin = '3px 0';
+          line.style.margin = '0';
       });
 
       // Clear and rebuild the navbar container
