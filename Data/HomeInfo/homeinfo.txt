@@ -1,0 +1,3 @@
+Welcome to Yola Info Hub Home Section!
+
+This file contains local information about Yola, Adamawa State, Nigeria, for the Home AI chat. You can add more facts, history, or FAQs here to improve the AI's answers.

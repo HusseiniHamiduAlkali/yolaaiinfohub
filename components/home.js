@@ -3,6 +3,11 @@ window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
 
+// Home AI prompt for Gemini API
+
+
+window.HOME_AI_PROMPT = window.HOME_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.\nRespond to greetings politely, and offer to help the user with any information about Yola, Adamawa State, Nigeria.\nAnswer the user's question using the information provided below, and the internet. If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local authority for further help."\nIf a user clearly requests information on agriculture, education, navigation, community, health, jobs, or environment, refer them to AgroInfo, EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo, as the case may be.`;
+
 // Function to toggle between Gemini models
 window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
@@ -96,7 +101,7 @@ window.renderSection = function() {
               <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('home', this.checked)">
               <span class="slider round"></span>
             </label>
-            <span class="model-label">Using Gemini 1.5</span>
+            <span class="model-label">Using Gemini 1.5 Flash</span>
           </div>
         </div>
         <div class="chat-messages" id="home-chat-messages"></div>
@@ -139,7 +144,9 @@ window.renderSection = function() {
           made it a vital commercial hub. Today, Yola continues to be a significant cultural and administrative center, blending its historical heritage 
           with modern development.
         </p>
-          <a href="details/yolaadamawa.html"  style="align-text: center;" >Continue exploring Yola's history →</a>
+          <div style="display:flex;">
+            <a href="details/adamawaemiratecouncil.html" class="section4-home-a">Explore more →</a>
+          </div>
         </a>
       </div>
 
@@ -154,8 +161,8 @@ window.renderSection = function() {
               </div>
 
               <div style="display:flex; flex-direction: column;">
-                <h4> hi there<h4>
-                <a href="details/yola-recycling-center.html" class="">Explore more →</a>
+                <h4>Explore the mysterious and ground-breaking emirate council and the kingdom of the 12th Lamido Fombina. His royal highness Alh. (Dr.) Muhammad Barkindo Aliyu Musdafa PhD. CFR. The primere ruler of Adamawa and the grand patron of Tabital Pulaaku International.<h4>
+                <a href="details/adamawaemiratecouncil.html" class="">Explore more →</a>
               </div>
               
             </div>
@@ -173,8 +180,8 @@ window.renderSection = function() {
               </div>
 
               <div style=" display:flex; flex-direction: column;">
-                <h4> hi there<h4>
-                <a href="details/yola-recycling-center.html" class="">Explore more →</a>
+                <h4>Meet the cabinet of the Executive governor of Adamawa state, His excellency Rt. Hon. Ahmadu Umaru Fintiri OON. And the state executive council (ADSEC).<h4>
+                <a href="details/adamawaexecutivecouncil.html" class="">Explore more →</a>
               </div>
               
               
@@ -189,6 +196,7 @@ window.renderSection = function() {
 
 // Common helper for Gemini API call
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+  let modelVersion;
   try {
     const contents = {
       parts: []
@@ -210,25 +218,25 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
 
     // Choose model based on user preference and image presence
-    const modelVersion = imageData ? 'gemini-pro-vision' : 
+    modelVersion = imageData ? 'gemini-pro-vision' : 
                         (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
-    
-    let url = `https://generativelanguage.googleapis.com/v1/models/${modelVersion}:generateContent?key=${apiKey}`;
-    let body = JSON.stringify({ contents: [contents] });
-    
+
+    // Use backend proxy instead of direct Gemini API
+    let url = '/api/gemini';
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-    
+
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
-    
+
     let data = await res.json();
     if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
       return data.candidates[0].content.parts[0].text;
     }
     throw new Error('Invalid response format');
   } catch (error) {
-    console.error(`Error with ${modelVersion}:`, error);
+    console.error(`Error with ${modelVersion || 'unknown modelVersion'}:`, error);
     throw error;
   }
 }
@@ -245,7 +253,7 @@ async function tryGeminiAPI(msg, localData, imageData) {
       return "Sorry, I'm having trouble connecting to the AI at the moment. Please try again later.";
     }
   }
-
+}
 
 // Common function to format AI responses
 function formatAIResponse(text) {
@@ -389,7 +397,7 @@ window.uploadFile = function(e, section) {
 
 window.homeAbortController = window.homeAbortController || null;
 
-window.sendHomeMessage = async function(faqText = '') {
+window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   const input = document.getElementById('home-chat-input');
   const chat = document.getElementById('home-chat-messages');
   const preview = document.getElementById('home-chat-preview');
@@ -447,4 +455,9 @@ window.sendHomeMessage = async function(faqText = '') {
   
   // Reset abort controller
   abortController = null;
-}};
+};
+
+// Ensure sendHomeMessage is always attached to window (last line)
+if (typeof window.sendHomeMessage !== 'function') {
+  window.sendHomeMessage = sendHomeMessage;
+}

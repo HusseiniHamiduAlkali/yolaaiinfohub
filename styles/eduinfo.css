@@ -1,10 +1,11 @@
 /* EduInfo specific styles */
+/*
 .edu-section .section4 {
   background: linear-gradient(to bottom, #ffffff, #f0f8ff);
-}
+}*/
 
 /* Chat message styles */
-
+/*
 .msg-group {
   display: flex;
   flex-direction: column;
@@ -38,3 +39,4 @@
     margin-bottom: 1.5rem;
   }
 }
+*/

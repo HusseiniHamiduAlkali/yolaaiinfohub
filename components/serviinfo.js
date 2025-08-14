@@ -171,7 +171,7 @@ window.renderSection = function() {
         <h2>Professionals in Yola</h2>
         
         <div class="section3">
-          <h3 class="section3-title">Electricians</h3>
+          <h3 class="section3-title">Solar And Electricians</h3>
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
@@ -185,8 +185,8 @@ window.renderSection = function() {
               <div class="img-placeholder">
                 <img src="Data/Images/ServiInfo/electrician2.jpg" alt="Yola Power Services">
               </div>
-              <h3>Yola Power Services</h3>
-              <p>Certified electrical contractors specializing in residential and commercial installations.</p>
+              <h3>Yola Solar and Electronics Services</h3>
+              <p>Certified solar and electrical contractors specializing in residential and commercial installations.</p>
               <a href="details/yola-power-services.html">Learn more →</a>
             </div>
             <div class="section4">
@@ -290,6 +290,68 @@ window.renderSection = function() {
         </div>
       </div>
       
+        <h2>Jobs Concerned Authorities</h2>
+
+        <div class="section3">
+          <h3 class="section3-title">Government Agencies/Offices.</h3>
+          <div class="section4-container">
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/nde.jpg" alt="Master Woodworks">
+              </div>
+              <h3>National Directorate Of Employment (NDE), Yola Office.</h3>
+              <p>Custom furniture and carpentry services with attention to detail and quality craftsmanship.</p>
+              <a href="details/master-woodworks.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/ServiInfo/carpenter2.jpg" alt="Yola Furniture">
+              </div>
+              <h3></h3>
+              <p>Specialized in custom furniture making and wooden interior solutions.</p>
+              <a href="details/yola-furniture.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/ServiInfo/carpenter3.jpg" alt="Creative Carpentry">
+              </div>
+              <h3></h3>
+              <p>Modern and traditional carpentry services for homes and offices.</p>
+              <a href="details/creative-carpentry.html">Learn more →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="section3">
+          <h3 class="section3-title">NGOs And Community Organisations.</h3>
+          <div class="section4-container">
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/.jpg" alt="Tech Solutions">
+              </div>
+              <h3></h3>
+              <p>IT services, web development, and digital marketing solutions.</p>
+              <a href="details/tech-solutions-hub.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/ServiInfo/freelancer2.jpg" alt="Creative Studio">
+              </div>
+              <h3></h3>
+              <p>Graphic design, content creation, and branding services.</p>
+              <a href="details/creative-studio.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/ServiInfo/freelancer3.jpg" alt="Education Experts">
+              </div>
+              <h3>Education Experts</h3>
+            <p>Professional tutoring and educational consultation services.</p>
+            <a href="details/education-experts.html">Learn more →</a>
+          </div>
+        </div>
+      </div>
+      
     </section>
   `;
 };
@@ -315,44 +377,31 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     const contents = {
       parts: []
     };
-
     if (imageData) {
       contents.parts.push({
         inlineData: {
           mimeType: "image/jpeg",
-          data: imageData.split(',')[1] // Remove data URL prefix
+          data: imageData.split(',')[1]
         }
       });
     }
-
-    // Use the editable prompt from localStorage or fallback
     const promptGuide = localStorage.getItem('servi_ai_prompt') || SERVI_AI_PROMPT;
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-
-    // Choose model based on user preference and image presence
-    const modelVersion = imageData ? 'gemini-pro-vision' : 
-                        (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
-    
-    let url = `https://generativelanguage.googleapis.com/v1/models/${modelVersion}:generateContent?key=${apiKey}`;
-    let body = JSON.stringify({ contents: [contents] });
-    
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-    let responseData = await res.json();
-    
-    // If 2.5 fails, fallback to 1.5
-    if (responseData.error && window.useGemini25 && !imageData) {
-      console.log('Falling back to Gemini 1.5');
-      url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + apiKey;
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-      responseData = await res.json();
+    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    let data = await res.json();
+    if (data.error && window.useGemini25 && !imageData) {
+      // fallback to 1.5
+      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
+      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      data = await res.json();
     }
-    return (responseData.candidates && responseData.candidates[0] && responseData.candidates[0].content && responseData.candidates[0].content.parts && responseData.candidates[0].content.parts.length > 0) ?
-      responseData.candidates[0].content.parts[0].text : "No answer from AI.";
-  } catch (error) {
-    console.error("Gemini API error:", error);
-    return "Sorry, I'm having trouble connecting to the AI at the moment.";
+    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
+  } catch (err) {
+    return "Sorry, there was an error contacting the AI service.";
   }
 }
 

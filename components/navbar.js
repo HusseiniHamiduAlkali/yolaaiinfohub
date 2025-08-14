@@ -132,8 +132,8 @@ function renderNavbar() {
       // Move auth buttons to the top row
       topRow.appendChild(newNavbarAuth);
       // The newNavbarLinks element is now the bottom row
-      newNavbarLinks.style.width = '100%';
-      newNavbarLinks.style.justifyContent = 'flex-end';
+      newNavbarLinks.style.width = '';
+      newNavbarLinks.style.justifyContent = '';
       // Rebuild the container with the two rows
       newNavbarContainer.innerHTML = '';
       newNavbarContainer.appendChild(topRow);

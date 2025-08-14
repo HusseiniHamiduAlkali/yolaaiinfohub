@@ -67,6 +67,7 @@ nav.navbar {
   padding: 0;
   gap: 0rem;
   justify-content: flex-end;
+  width: 100%;
 }
 
 .navbar-links li button {
@@ -90,7 +91,7 @@ nav.navbar {
   flex-direction: row;
   align-items: left;
   height: fit-content;
-  margin-right: 10px;
+  margin-right: 20px;
   gap: 0.7rem;
   margin-bottom: 0.5rem;
 }
@@ -381,6 +382,7 @@ nav.navbar {
     display: flex;
     flex-direction: row;
     margin-top: 0.5rem;
+    margin-right: 1rem;
   }
 
   .navbar-right .navbar-auth {

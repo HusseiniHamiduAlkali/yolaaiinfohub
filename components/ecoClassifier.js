@@ -1,4 +1,6 @@
 // Image Classification for Recyclables
+// Only define EcoClassifier if not already defined on window
+if (!window.EcoClassifier) {
 class EcoClassifier {
     constructor() {
         this.model = null;
@@ -167,6 +169,7 @@ class CarbonCalculator {
     }
 }
 
-// Export the classes
-window.EcoClassifier = EcoClassifier;
-window.CarbonCalculator = CarbonCalculator;
+    // Export the classes
+    window.EcoClassifier = EcoClassifier;
+    window.CarbonCalculator = CarbonCalculator;
+}

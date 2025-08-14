@@ -14,20 +14,42 @@
 
     border: solid;
 }
+
+.section4-home-a {
+ 
+ 
+  display: inline-block;
+  background: #3182ce;
+  color: #fff;
+  text-decoration: none;
+  margin-top: 1rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+  align-self: center;
+  margin-bottom: 1rem;
+  margin-left: 6rem;
+  margin-right: 6rem;
+}
+
 .section4-home-container {
     display:block;
     margin: 50px 20px;
 }
 .section4-home-img-container {
-    display: flex;
-    flex-direction: row;
-    
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));   
+ 
 }
 .section4-home-img-placeholder {
     padding: 12px;
 }
 .section4-home-img-container h4 {
    text-align: center;
+   height: 100%;
 }
 .section4-home-img-placeholder img {
     width: 100%; 

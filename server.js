@@ -30,27 +30,19 @@ app.use(helmet({
 
 // CORS configuration
 const corsOptions = {
-  origin: function(origin, callback) {
-    const allowedOrigins = [
-      'http://127.0.0.1:5500',
-      'http://localhost:5500',
-      'http://127.0.0.1:5502',
-      'http://localhost:5502',
-      'http://127.0.0.1:4000',
-      'http://localhost:4000',
-      'http://127.0.0.1:3000',
-      'http://localhost:3000',
-      'http://localhost:8080',
-      'http://127.0.0.1:8080',
-      'https://yolainfohub.netlify.app'  // Add your Netlify domain
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('Origin not allowed by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'http://127.0.0.1:5500',
+    'http://localhost:5500',
+    'http://127.0.0.1:5502',
+    'http://localhost:5502',
+    'http://127.0.0.1:4000',
+    'http://localhost:4000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+    'https://yolainfohub.netlify.app'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],

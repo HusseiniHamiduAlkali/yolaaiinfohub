@@ -8,7 +8,7 @@ window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
     const label = document.querySelector('.model-label');
     if (label) {
-        label.textContent = useGemini25 ? 'Using Gemini 2.5' : 'Using Gemini 1.5';
+        label.textContent = useGemini25 ? 'Using Gemini 2.5 Flash' : 'Using Gemini 1.5 Flash';
     }
     // Store preference
     localStorage.setItem('gemini_model_preference', useGemini25 ? '2.5' : '1.5');
@@ -130,7 +130,7 @@ window.renderSection = function() {
               <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('community', this.checked)">
               <span class="slider round"></span>
             </label>
-            <span class="model-label">Using Gemini 1.5</span>
+            <span class="model-label">Using Gemini 1.5 Flash</span>
           </div>
         </div>
         <div class="chat-messages" id="chat-messages"></div>
@@ -857,42 +857,30 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     const contents = {
       parts: []
     };
-
     if (imageData) {
       contents.parts.push({
         inlineData: {
           mimeType: "image/jpeg",
-          data: imageData.split(',')[1] // Remove data URL prefix
+          data: imageData.split(',')[1]
         }
       });
     }
-
-    // Use the editable prompt from localStorage or fallback
     const promptGuide = localStorage.getItem('community_ai_prompt') || COMMUNITY_AI_PROMPT;
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-
-    // Choose model based on user preference and image presence
-    const modelVersion = imageData ? 'gemini-pro-vision' : 
-                        (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
-    
-    let url = `https://generativelanguage.googleapis.com/v1/models/${modelVersion}:generateContent?key=${apiKey}`;
-    let body = JSON.stringify({ contents: [contents] });
-    
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
     let data = await res.json();
-
-    // If 2.5 fails, fallback to 1.5
     if (data.error && window.useGemini25 && !imageData) {
-      console.log('Falling back to Gemini 1.5');
-      url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + apiKey;
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      // fallback to 1.5
+      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
+      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
       data = await res.json();
     }
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
-    console.error('Error in getGeminiAnswer:', err);
     return "Sorry, there was an error contacting the AI service.";
   }
 }

@@ -39,11 +39,34 @@ window.renderSection = function() {
           <ul>
             <li><strong>AI-Powered Chat:</strong> Get instant answers to your questions across various categories.</li>
             <li><strong>Section-Specific Information:</strong> Dedicated sections for EduInfo, AgroInfo, EcoInfo, MediInfo, NaviInfo, and ServiInfo.</li>
-            <li><strong>User-Friendly Interface:</strong> A clean, intuitive design for seamless navigation on any device.</li>
+            <li><strong>User-Friendly Interface and Responsiveness:</strong> A clean, intuitive design for seamless navigation on different devices (PC >= 1150px, Tab <= 1150px >= 900px, Mobile < 900px),<br>with Hamburger Menu on Mobile Screen. </li>
             <li><strong>Image & Audio Input:</strong> Interact with the AI using images and voice messages for a richer experience.</li>
+            <li><strong>Text-To-Speech:</strong> A text-to-speech option to listen to the AI's response in any section.</li>
             <li><strong>Local Focus:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
+            <li><strong>Multi Modality:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
           </ul>
           <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better.</p>
+          <h3>Section-specific Features:</h3>
+          <ul>
+            <li><strong>NaviInfo:</strong> Maps For Directions and Navigation.</li>
+            <li><strong>EcoInfo:</strong>Carbon Calculator and an Eco Classifier, which is able to classify objects (images) as recylable or not.</li>
+          </ul>
+          <h3>Contents of the Environment Variable (.env):</h3>
+          <ul>
+            <li>1. Google Gemini API KEY.</li>
+            <li>2. Google Maps API KEY.</li>
+            <li>3. Mongodb URI For User Authentication.</li>
+            <li>4. Dedicated e-mail Adress.</li>
+            <li>5. E-mail. Adress 'App Password' For Password Reset Route.</li>
+            
+          </ul>
+          <h3>Major Challenges:</h3>
+          <ul>
+            <li>Power/Electricity.</li>
+            <li>Internet Acces (Thanks to the Weekly Reflection Data Reward, It Has Really Cushioned This Effect).</li>
+            
+          </ul>
+          <strong>I am Husseini Hamidu Alkali the Chief Pilot, Together With GitCopilot We Are Able To Land Unto This Robust Project For My July 3MTT Knowledge Showcase.</strong>
         </div>
       </div>
     </section>

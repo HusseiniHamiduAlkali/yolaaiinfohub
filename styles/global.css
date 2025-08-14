@@ -208,10 +208,25 @@ Wednesday, July 30, 2025
   font-weight: 500;
   transition: all 0.3s ease;
   text-align: center;
+  width: 80%;
+  align-self: center;
+}
+/*
+.section4-home a {
+  display: inline-block;
+  background: #3182ce;
+  color: #fff;
+  text-decoration: none;
+  margin-top: auto;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: center;
   width: 100%;
   align-self: center;
 }
-
+*/
 .section4 a {
   display: inline-block;
   background: #3182ce;
@@ -643,9 +658,13 @@ main {
 
 @media screen and (min-width: 700px) and (max-width: 1150px) {
   /* Tablet styles */
+  .faq-list {
+    width: 94%;
+  }
   .section2 {
     padding: 1.2rem;
     margin: 1.5rem auto;
+    width: auto;
   }
   .section3 {
     margin: 1.5rem 0;
@@ -658,6 +677,9 @@ main {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 1.5rem;
     padding: 1.2rem;
+  }
+  .section4{
+    max-width: calc(100% - 1rem);
   }
   .section4 .img-placeholder {
     height: 180px;
@@ -702,6 +724,11 @@ main {
   }
   .section4 {
     padding: 0.7rem;
+    width:auto;
+    max-width: 350px;
+  }
+  .section4-home-img-container {
+  display: block;
   }
   .section4 .img-placeholder {
     min-height: 140px;

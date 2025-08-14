@@ -1,0 +1,25 @@
+
+.mauthgate, .mauthlogo {
+    object-fit: fill;
+    
+    border-radius: 10px;
+}
+.mauthgate {
+    width: 70%;
+}
+.mauthlogo {
+    width: 30%;
+}
+@media screen and (min-width: 701px) and (max-width: 1150px) {
+.section4-mau-container {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+}
+@media screen and (max-width: 700px) {
+    .mauthgate {
+        display: none;
+    }
+    .mauthlogo {
+        width: 100%;
+    }
+}

@@ -1,86 +1,26 @@
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
+// eduinfo.js
 
-// Gemini model preference
+// API Key and Model Preference
+window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 window.useGemini25 = window.useGemini25 || false;
 
-// Function to toggle between Gemini models
+// Toggle Gemini Model
 window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
     const label = document.querySelector('.model-label');
     if (label) {
         label.textContent = useGemini25 ? 'Using Gemini 2.5' : 'Using Gemini 1.5';
     }
-    // Store preference
     localStorage.setItem('gemini_model_preference', useGemini25 ? '2.5' : '1.5');
 };
 
-// Initialize model preference from storage
+// Initialize Model Preference from Storage
 if (typeof window.useGemini25 === 'undefined') {
     const storedPreference = localStorage.getItem('gemini_model_preference');
     window.useGemini25 = storedPreference === '2.5';
 }
 
-// Function to initialize EduInfo section
-window.initEduInfo = () => {
-    console.log('initEduInfo function is being executed.');
-
-    const eduInfoContent = document.getElementById('eduinfo-content');
-    if (!eduInfoContent) {
-        console.error('eduinfo-content div not found.');
-        return;
-    }
-
-    console.log('Populating eduinfo-content div.');
-    eduInfoContent.innerHTML = `
-        <div class="info-section">
-            <h2>Welcome to EduInfo</h2>
-            <p>Explore educational opportunities in Yola.</p>
-        </div>
-    `;
-    
-    const eduSection = document.getElementById('eduinfo-content');
-    if (!eduSection) return;
-    
-    // Create section content if it doesn't exist
-    if (!eduSection.querySelector('.section-content')) {
-        eduSection.innerHTML = `
-            <div class="section-content">
-                <h1>Education Information</h1>
-                <p>Get information about schools, universities, and education services in Yola, Adamawa State.</p>
-                
-                <div class="chat-container">
-                    <div class="chat-header">
-                        <div class="model-switch">
-                            <span class="model-label">Using Gemini 1.5</span>
-                            <label class="switch">
-                                <input type="checkbox" onchange="window.toggleGeminiModel('eduinfo', this.checked)">
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                    </div>
-                    <div id="chat-output" class="chat-messages"></div>
-                    <div class="chat-input-area">
-                        <input type="text" id="user-input" placeholder="Ask about education in Yola...">
-                        <button onclick="sendMessage('eduinfo')">Send</button>
-                    </div>
-                </div>
-
-                <div class="faq-list">
-                    <h3>Frequently Asked Questions</h3>
-                    <ul>
-                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">What universities are in Yola</a></li>
-                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">List of secondary schools in Yola</a></li>
-                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">School admission periods</a></li>
-                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">Education requirements</a></li>
-                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">School fees and costs</a></li>
-                        <li><a href="#" class="faq-link" onclick="askQuestion(this.textContent)">Available scholarships</a></li>
-                    </ul>
-                </div>
-            </div>
-        `;
-    }
-};
-
+// AI Prompt for EduInfo
 window.EDU_AI_PROMPT = `You are an AI assistant for Yola, Adamawa State, Nigeria.
 Respond to greetings politely, and help users with information on education in Yola.
 Answer questions using the available information and focus only on education-related topics.
@@ -89,143 +29,18 @@ If specific information is not available, say: "Sorry, I do not have that specif
 
 For non-education queries about health, navigation, community, environment, jobs, or agriculture, refer users to MediInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo respectively.`;
 
-// Register the section initialization
-if (typeof window.registerSectionInit === 'function' && typeof window.initEduInfo === 'function') {
-    window.registerSectionInit('eduinfo', window.initEduInfo);
-} else {
-    // If registration function isn't available yet, wait for it
-    window.addEventListener('load', () => {
-        if (typeof window.registerSectionInit === 'function' && typeof window.initEduInfo === 'function') {
-            window.registerSectionInit('eduinfo', window.initEduInfo);
-        }
-    });
-}
-
+// Abort controller for fetch requests
 window.eduAbortController = null;
 
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
-  // Removed stray try { that caused syntax error
-    const contents = {
-      parts: []
-    };
-
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1] // Remove data URL prefix
-        }
-      });
+// Initialize EduInfo Section
+window.initEduInfo = () => {
+    const eduInfoContent = document.getElementById('eduinfo-content');
+    if (!eduInfoContent) {
+        console.error('eduinfo-content div not found.');
+        return;
     }
 
-    // Use the editable prompt from localStorage or fallback
-    const promptGuide = localStorage.getItem('edu_ai_prompt') || EDU_AI_PROMPT;
-    contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
-    });
-
-    // Choose model based on user preference and image presence
-    const modelVersion = imageData ? 'gemini-pro-vision' : 
-                        (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
-    
-    let url = `https://generativelanguage.googleapis.com/v1/models/${modelVersion}:generateContent?key=${apiKey}`;
-    let body = JSON.stringify({ contents: [contents] });
-    
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-    let data = await res.json();
-    
-    // If 2.5 fails, fallback to 1.5
-    if (data.error && window.useGemini25 && !imageData) {
-      console.log('Falling back to Gemini 1.5');
-      url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + apiKey;
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-      data = await res.json();
-    }
-    try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `Given the following local information: ${localData}\n\nAnswer the user's question: ${msg}` }] }]
-        })
-      });
-      
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      
-      const data = await res.json();
-      if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        return data.candidates[0].content.parts[0].text;
-      }
-      throw new Error('Invalid response format');
-    } catch (error) {
-      console.error(`Error with ${modelVersion}:`, error);
-      throw error;
-    }
-  }
-
-async function tryGeminiAPI(msg, localData, imageData) {
-  try {
-    return await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
-  } catch (error) {
-    console.log('Falling back to Gemini 1.5...');
-    try {
-      return await tryGeminiModel('gemini-1.5-flash');
-    } catch (error2) {
-      console.error('Both Gemini models failed:', error2);
-      return "Sorry, I'm having trouble connecting to the AI at the moment. Please try again later.";
-    }
-  }
-
-window.stopSpeaking = window.stopSpeaking || function() {
-  if (window.currentSpeech) {
-    speechSynthesis.cancel();
-    window.currentSpeech = null;
-  }
-};
-
-window.speakText = window.speakText || function(text) {
-  window.stopSpeaking();
-  
-  // Remove HTML tags and convert breaks to spaces
-  const cleanText = text.replace(/<[^>]*>/g, '').replace(/<br>/g, ' ');
-  
-  const utterance = new SpeechSynthesisUtterance(cleanText);
-  window.currentSpeech = utterance;
-  speechSynthesis.speak(utterance);
-  
-  utterance.onend = () => {
-    window.currentSpeech = null;
-  };
-};
-
-// Edit this prompt to instruct the AI on how to answer user messages for EduInfo
-window.EDU_AI_PROMPT = window.EDU_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and enquire on how to help the user with information on education in Yola.
-Answer the user's question using the information provided below, and the internet. But only those regarding education.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help."
-And if a user clearly requests information on health, navigation, community, environment, jobs, or agriculture, refer them to either of MediInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
-
-window.eduAbortController = window.eduAbortController || null;
-
-window.renderSection = function() {
-  if (!document.getElementById('global-css')) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'styles/global.css';
-    link.id = 'global-css';
-    document.head.appendChild(link);
-  }
-
-  if (!document.getElementById('chat-handler-js')) {
-    const script = document.createElement('script');
-    script.src = 'components/chatHandler.js';
-    script.id = 'chat-handler-js';
-    document.body.appendChild(script);
-  }
-
-  document.getElementById('main-content').innerHTML = `
+    eduInfoContent.innerHTML = `
     <section class="info-section">
       <h2>EduInfo - Education Help</h2>
       <p>Ask about schools, universities, courses, or educational services in Yola.</p>
@@ -233,12 +48,7 @@ window.renderSection = function() {
         <div class="chat-header">EduInfo AI Chat</div>
         <div id="eduinfo-chat-messages" class="chat-messages"></div>
         <div id="eduinfo-chat-preview" class="chat-preview"></div>
-        <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendMessage('eduinfo');">
-          <input type="text" id="eduinfo-chat-input" placeholder="Ask about education in Yola...">
-          <div class="send-button-group">
-            <button type="submit" class="send-button">Send</button>
-            <button type="button" class="stop-button" style="display: none;">Stop</button>
-          </div>
+        <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendEduMessage();">
           <input type="text" id="edu-chat-input" placeholder="Ask about education..." required />
           <div class="send-button-group">
             <button type="submit" class="send-button">
@@ -256,14 +66,6 @@ window.renderSection = function() {
             </label>
           </div>
         </form>
-        <div class="input-options">
-          <button type="button" onclick="window.captureImage('edu')" title="Capture Image"><span>📷</span></button>
-          <button type="button" onclick="window.recordAudio('edu')" title="Record Audio"><span>🎤</span></button>
-          <label class="file-upload-btn" title="Upload File">
-            <span>📁</span>
-            <input type="file" style="display:none" onchange="window.uploadFile(event, 'edu')" />
-          </label>
-        </div>
         <div class="faq-list">
         <h3>EduInfo FAQs</h3>
         <ul>
@@ -391,96 +193,107 @@ window.renderSection = function() {
           </div>
         </div>
       </div>
-      
     </section>
   `;
 };
 
-window.stopEduResponse = function() {
-  if (eduAbortController) {
-    eduAbortController.abort();
-    eduAbortController = null;
+// Register Section Initialization
+function ensureEduSectionInit() {
+  if (typeof window.registerSectionInit === 'function' && typeof window.initEduInfo === 'function') {
+    window.registerSectionInit('eduinfo', window.initEduInfo);
+  } else {
+    setTimeout(ensureEduSectionInit, 100);
   }
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
-  if (sendBtn) {
-    sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
-    sendBtn.disabled = false;
-  }
-  if (stopBtn) stopBtn.style.display = 'none';
-};
+}
+ensureEduSectionInit();
 
+// Send Message to AI
 window.sendEduMessage = async function(faqText = '') {
-  const input = document.getElementById('edu-chat-input');
-  const chat = document.getElementById('edu-chat-messages');
-  const preview = document.getElementById('edu-chat-preview');
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
-  
-  let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
-  if (!msg && !attach) return;
+    const input = document.getElementById('edu-chat-input');
+    const chat = document.getElementById('eduinfo-chat-messages');
+    const preview = document.getElementById('eduinfo-chat-preview');
+    const sendBtn = document.querySelector('#eduinfo-chat-container .send-button');
+    const stopBtn = document.querySelector('#eduinfo-chat-container .stop-button');
 
-  if (window.eduAbortController) {
-    window.eduAbortController.abort();
-  }
-  window.eduAbortController = new AbortController();
+    let msg = faqText || input.value.trim();
+    let attach = preview.innerHTML;
+    if (!msg && !attach) return;
 
-  if (sendBtn) {
-    sendBtn.disabled = true;
-    sendBtn.classList.add('sending');
-    sendBtn.querySelector('.send-text').textContent = '';
-  }
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
+    if (window.eduAbortController) {
+        window.eduAbortController.abort();
+    }
+    window.eduAbortController = new AbortController();
 
-  const msgGroup = document.createElement('div');
-  msgGroup.className = 'chat-message-group';
-  msgGroup.innerHTML = `
+    if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.classList.add('sending');
+        sendBtn.querySelector('.send-text').textContent = '';
+    }
+    if (stopBtn) stopBtn.style.display = 'inline-flex';
+
+    const msgGroup = document.createElement('div');
+    msgGroup.className = 'chat-message-group';
+    msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
     <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
   `;
-  chat.appendChild(msgGroup);
-  preview.innerHTML = '';
-  if (!faqText) input.value = '';
+    chat.appendChild(msgGroup);
+    const imageData = preview.querySelector('img') ? preview.querySelector('img').src : null;
+    preview.innerHTML = '';
+    if (!faqText) input.value = '';
 
-  let finalAnswer = "";
-  try {
-    const localData = await fetch('Data/EduInfo/eduinfo.txt').then(r => r.text());
-    finalAnswer = await getGeminiAnswer(EDU_AI_PROMPT + "\n\n" + localData, msg, window.GEMINI_API_KEY);
-  } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
-  }
+    let finalAnswer = "";
+    try {
+        const localData = await fetch('Data/EduInfo/eduinfo.txt').then(r => r.text());
+        finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
+    } catch (e) {
+        console.error("Error fetching local data or Gemini API call:", e);
+        finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    }
 
-  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
-  chat.scrollTop = chat.scrollHeight;
+    msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+    chat.scrollTop = chat.scrollHeight;
 
-  if (sendBtn) {
-    sendBtn.disabled = false;
-    sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
-  }
-  if (stopBtn) stopBtn.style.display = 'none';
-  window.eduAbortController = null;
+    if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.classList.remove('sending');
+        sendBtn.querySelector('.send-text').textContent = 'Send';
+    }
+    if (stopBtn) stopBtn.style.display = 'none';
+    window.eduAbortController = null;
 };
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey) {
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
   try {
-    const res = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + apiKey, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: `${localData}\n\nUser question: ${msg}` }] }]
-      })
+    const contents = {
+      parts: []
+    };
+    if (imageData) {
+      contents.parts.push({
+        inlineData: {
+          mimeType: "image/jpeg",
+          data: imageData.split(',')[1]
+        }
+      });
+    }
+    const promptGuide = localStorage.getItem('edu_ai_prompt') || EDU_AI_PROMPT;
+    contents.parts.push({
+      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-    const data = await res.json();
-    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) ?
-      data.candidates[0].content.parts[0].text : "No answer from AI.";
-  } catch (error) {
-    console.error("Gemini API error:", error);
-    return "Sorry, I'm having trouble connecting to the AI at the moment.";
+    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    let data = await res.json();
+    if (data.error && window.useGemini25 && !imageData) {
+      // fallback to 1.5
+      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
+      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      data = await res.json();
+    }
+    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
+  } catch (err) {
+    return "Sorry, there was an error contacting the AI service.";
   }
 }
 
@@ -488,8 +301,7 @@ async function getGeminiAnswer(localData, msg, apiKey) {
 function formatAIResponse(text) {
   let formatted = text
     .replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>') // Bold
-    .replace(/\n/g, '<br>'); // Line breaks
-  
+    .replace(/\n/g, '<br>'); // Line breaks  
   return `
     <div class="ai-response">
       ${formatted}
@@ -498,9 +310,27 @@ function formatAIResponse(text) {
       </button>
     </div>
   `;
-}}
+}
 
-// Common image capture function
+// Common media functions
+window.stopSpeaking = window.stopSpeaking || function() {
+  if (window.currentSpeech) {
+    speechSynthesis.cancel();
+    window.currentSpeech = null;
+  }
+};
+
+window.speakText = window.speakText || function(text) {
+  window.stopSpeaking();
+  const cleanText = text.replace(/<[^>]*>/g, '').replace(/<br>/g, ' ');
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  window.currentSpeech = utterance;
+  speechSynthesis.speak(utterance);
+  utterance.onend = () => {
+    window.currentSpeech = null;
+  };
+};
+
 window.captureImage = function(section) {
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -535,7 +365,7 @@ window.captureImage = function(section) {
     canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageDataURL = canvas.toDataURL('image/png');
-    document.getElementById(section + '-chat-preview').innerHTML = `<img src='${imageDataURL}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Captured Image' />`;
+    document.getElementById(section + 'info-chat-preview').innerHTML = `<img src='${imageDataURL}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Captured Image' />`;
     overlay.remove();
     if (stream) stream.getTracks().forEach(t => t.stop());
   };
@@ -546,7 +376,6 @@ window.captureImage = function(section) {
   };
 };
 
-// Common audio recording function
 window.recordAudio = function(section) {
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -575,7 +404,7 @@ window.recordAudio = function(section) {
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         const audioURL = URL.createObjectURL(audioBlob);
-        document.getElementById(section + '-chat-preview').innerHTML = `<audio src='${audioURL}' controls style='max-width:120px;vertical-align:middle;margin:4px 0;'></audio>`;
+        document.getElementById(section + 'info-chat-preview').innerHTML = `<audio src='${audioURL}' controls style='max-width:120px;vertical-align:middle;margin:4px 0;'></audio>`;
         overlay.remove();
         if (stream) stream.getTracks().forEach(t => t.stop());
       };
@@ -599,13 +428,12 @@ window.recordAudio = function(section) {
   };
 };
 
-// Common file upload function
 window.uploadFile = function(e, section) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(ev) {
-    const preview = document.getElementById(section + '-chat-preview');
+    const preview = document.getElementById(section + 'info-chat-preview');
     let html = '';
     if (file.type.startsWith('image/')) {
       html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Uploaded Image' />`;
@@ -621,47 +449,4 @@ window.uploadFile = function(e, section) {
     preview.innerHTML = html;
   };
   reader.readAsDataURL(file);
-};
-
-window.sendEduMessage = async function(faqText = '') {
-  const input = document.getElementById('edu-chat-input');
-  const chat = document.getElementById('edu-chat-messages');
-  const preview = document.getElementById('edu-chat-preview');
-  const submitBtn = document.querySelector('#edu-chat-input + button[type="submit"]');
-
-  let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
-  if (!msg && !attach) return;
-
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Sending...";
-  }
-
-  const msgGroup = document.createElement('div');
-  msgGroup.className = 'chat-message-group';
-  msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
-  `;
-  chat.appendChild(msgGroup);
-  preview.innerHTML = '';
-  if (!faqText) input.value = '';
-
-  let finalAnswer = "";
-  try {
-    const localData = await fetch('Data/EduInfo/eduinfo.txt').then(r => r.text()); // Assuming a local data file for EduInfo
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY);
-  } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
-  }
-
-  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
-  chat.scrollTop = chat.scrollHeight;
-
-  if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Send";
-  }
 };

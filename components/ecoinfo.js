@@ -1,6 +1,23 @@
-// Import required scripts
-document.write('<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>');
-document.write('<script src="components/ecoClassifier.js"></script>');
+// Dynamically load required scripts if not already loaded
+function loadEcoScripts(cb) {
+  function loadScript(src, onload) {
+    if ([...document.scripts].some(s => s.src.includes(src))) { onload(); return; }
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = onload;
+    document.head.appendChild(script);
+  }
+  loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js', () => {
+    loadScript('components/ecoClassifier.js', cb || (() => {}));
+  });
+}
+
+// Call this when the section loads
+window.renderEcoSection = function() {
+  loadEcoScripts(() => {
+    if (typeof window.initEcoFeatures === 'function') window.initEcoFeatures();
+  });
+};
 
 window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 
@@ -78,7 +95,7 @@ window.initEcoFeatures = function() {
     if (!window.carbonCalculator) {
         window.carbonCalculator = new CarbonCalculator();
     }
-};
+
 
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
@@ -271,9 +288,9 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/org3.jpg" alt="Clean Yola Project">
+                <img src="Data/Images/nesrea.jpg" alt="Clean Yola Project">
               </div>
-              <h3>Clean Yola Project</h3>
+              <h3>National Environmental Standards And Regulations Enforcement Agency, Yola.</h3>
               <p>Focused on city cleanliness and sustainable urban development.</p>
               <a href="details/clean-yola-project.html">Learn more →</a>
             </div>
@@ -346,177 +363,83 @@ window.renderSection = function() {
 
 
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+  // (Removed duplicate/old getGeminiAnswer function. Only the correct proxy-based version remains.)
   try {
-    const contents = {
-      parts: []
-    };
-
+    let contents = { parts: [] };
     if (imageData) {
       contents.parts.push({
         inlineData: {
           mimeType: "image/jpeg",
-          data: imageData.split(',')[1] // Remove data URL prefix
+          data: imageData.split(',')[1]
         }
       });
     }
-
-    // Use the editable prompt from localStorage or fallback
     const promptGuide = localStorage.getItem('eco_ai_prompt') || ECO_AI_PROMPT;
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-
-    // End of try block for the outer try
-  } catch (e) {
-    return "Sorry, I could not access local information at this time. Try checking your internet connection.";
-  }
-
-  // Choose model based on user preference and image presence
-  const modelVersion = imageData ? 'gemini-pro-vision' : 
-                      (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
-  
-  let url = `https://generativelanguage.googleapis.com/v1/models/${modelVersion}:generateContent?key=${apiKey}`;
-  let body = JSON.stringify({ contents: [contents] });
-  let finalAnswer = "";
-  
-  try {
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
     let data = await res.json();
-    // If 2.5 fails, fallback to 1.5
     if (data.error && window.useGemini25 && !imageData) {
-      console.log('Falling back to Gemini 1.5');
-      url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + apiKey;
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      // fallback to 1.5
+      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
+      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
       data = await res.json();
     }
-    finalAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text ||
-                  data.candidates?.[0]?.content?.text || data.candidates?.[0]?.content || data.candidates?.[0]?.text || data.text || "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help.";
-  } catch (e) {
-    finalAnswer = "Sorry, I could not access local information at this time. Try checking your internet connection.";
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
+  } catch (err) {
+    return "Sorry, there was an error contacting the AI service.";
   }
-  return finalAnswer;
-} // <-- This closes the async function getGeminiAnswer
-
-window.stopEcoResponse = function() {
-  if (ecoAbortController) {
-    ecoAbortController.abort();
-    ecoAbortController = null;
-  }
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
-  if (sendBtn) {
-    sendBtn.disabled = false;
-    sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
-  }
-  if (stopBtn) stopBtn.style.display = 'none';
-};
-
-window.sendEcoMessage = async function(faqText = '') {
-  const input = document.getElementById('eco-chat-input');
-  const chat = document.getElementById('chat-messages');
-  const preview = document.getElementById('eco-chat-preview');
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
-
-  // Extract image data if present in preview
-  let imageData = null;
-  const previewImg = preview.querySelector('img');
-  if (previewImg) {
-    imageData = previewImg.src;
-    msg = (msg || '') + "\nPlease analyze this image and provide relevant environmental information, identify environmental issues, or suggest eco-friendly practices.";
-  }
-  
-  let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
-  if (!msg && !attach) return;
-
-  if (window.ecoAbortController) {
-    window.ecoAbortController.abort();
-  }
-  window.ecoAbortController = new AbortController();
-
-  if (sendBtn) {
-    sendBtn.disabled = true;
-    sendBtn.classList.add('sending');
-    sendBtn.querySelector('.send-text').textContent = '';
-  }
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
-
-  const msgGroup = document.createElement('div');
-  msgGroup.className = 'chat-message-group';
-  msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
-  `;
-  chat.appendChild(msgGroup);
-  preview.innerHTML = '';
-  if (!faqText) input.value = '';
-
-  let finalAnswer = "";
-  try {
-    const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
-  } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
-  }
-
-  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
-  
-  // Add speech button if supported
-  if ('speechSynthesis' in window) {
-    const speechBtn = document.createElement('button');
-    speechBtn.className = 'speech-btn';
-    speechBtn.innerHTML = '🔊';
-    speechBtn.title = 'Read aloud';
-    speechBtn.onclick = () => readAloud(finalAnswer, 'eco');
-    msgGroup.querySelector('.ai-msg-text').appendChild(speechBtn);
-  }
-
-  chat.scrollTop = chat.scrollHeight;
-
-  if (sendBtn) {
-    sendBtn.disabled = false;
-    sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
-  }
-  if (stopBtn) stopBtn.style.display = 'none';
-  window.ecoAbortController = null;
-};
-
-async function getGeminiAnswer(localData, msg, apiKey) {
-  const prompt = `
-You are an AI assistant for Yola, Adamawa State, Nigeria.
-
-Answer the user's question using the information provided below, and the internet. But only those regarding eco and environments.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local environmental authority for further help."
-And if a user  clearly requests information on health, education, community, maps/directions, transportation or jobs, refer them to either of MediInfo, EduInfo, NaviInfo, ServiInfo, AgroInfo and CommunityInfo, as the case may be.
-
---- LOCAL DATA START ---
-${localData}
---- LOCAL DATA END ---
-
-User question: ${msg}
-  `;
-  let url = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=' + apiKey;
-  let body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] });
-  let finalAnswer = "";
-  try {
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-    let data = await res.json();
-    if (data.error && data.error.message && data.error.message.includes('not found')) {
-      url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + apiKey;
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-      data = await res.json();
-    }
-    finalAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text ||
-                  data.candidates?.[0]?.content?.text || data.candidates?.[0]?.content || data.candidates?.[0]?.text || data.text || "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help.";
-  } catch (e) {
-    finalAnswer = "Sorry, I could not access local information at this time. Try checking your internet connection.";
-  }
-  return finalAnswer;
 }
+
+  // The following code should be outside the getGeminiAnswer function
+  async function handleEcoChatMessage(msg, attach, chat, preview, faqText, input, sendBtn, stopBtn, imageData) {
+    const msgGroup = document.createElement('div');
+    msgGroup.className = 'chat-message-group';
+    msgGroup.innerHTML = `
+      <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
+      <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    `;
+    chat.appendChild(msgGroup);
+    preview.innerHTML = '';
+    if (!faqText) input.value = '';
+  
+    let finalAnswer = "";
+    try {
+      const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
+      finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
+    } catch (e) {
+      console.error("Error fetching local data or Gemini API call:", e);
+      finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    }
+  
+    msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+    
+    // Add speech button if supported
+    if ('speechSynthesis' in window) {
+      const speechBtn = document.createElement('button');
+      speechBtn.className = 'speech-btn';
+      speechBtn.innerHTML = '🔊';
+      speechBtn.title = 'Read aloud';
+      speechBtn.onclick = () => readAloud(finalAnswer, 'eco');
+      msgGroup.querySelector('.ai-msg-text').appendChild(speechBtn);
+    }
+  
+    chat.scrollTop = chat.scrollHeight;
+  
+    if (sendBtn) {
+      sendBtn.disabled = false;
+      sendBtn.classList.remove('sending');
+      sendBtn.querySelector('.send-text').textContent = 'Send';
+    }
+    if (stopBtn) stopBtn.style.display = 'none';
+    window.ecoAbortController = null;
+  }
+
+
+
 
 function formatAIResponse(text) {
   let formatted = text
@@ -699,4 +622,4 @@ function uploadFile(e, section = 'medi') {
     preview.innerHTML = html;
   };
   reader.readAsDataURL(file);
-}
+}}

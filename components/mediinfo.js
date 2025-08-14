@@ -175,25 +175,25 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/MediInfo/phc1.jpg" alt="Jimeta PHC">
+                <img src="Data/Images/valli.jpg" alt="Jimeta PHC">
               </div>
-              <h3>Jimeta Primary Health Center</h3>
+              <h3>Valli clinic jimeta, Yola.</h3>
               <p>Community health center providing essential healthcare services and preventive care.</p>
               <a href="details/jimeta-phc.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/MediInfo/phc2.jpg" alt="Yola PHC">
+                <img src="Data/Images/malamre.png" alt="Yola PHC">
               </div>
-              <h3>Yola South PHC</h3>
+              <h3>Malamre PHCC, Yola.</h3>
               <p>Modern facility offering primary healthcare services and maternal care.</p>
               <a href="details/yola-south-phc.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/MediInfo/phc3.jpg" alt="Modibbo Adama PHC">
+                <img src="Data/Images/dispensary.jpg" alt="Modibbo Adama PHC">
               </div>
-              <h3>Modibbo Adama PHC</h3>
+              <h3>Yola Central Dispensary.</h3>
               <p>Well-equipped center providing comprehensive primary healthcare services.</p>
               <a href="details/modibbo-adama-phc.html">Learn more →</a>
             </div>
@@ -203,40 +203,74 @@ window.renderSection = function() {
         <div class="section3">
           <h3 class="section3-title">Secondary Hospitals</h3>
           <div class="section4-container">
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/specialistlogo.jpg" alt="Specialist Hospital">
+
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/specialistgate.jpg" alt="Specialist Hospital">
+                </div>
+                <h3>Specialist Hospital Yola</h3>
+                <p>Major secondary healthcare facility with specialized departments and services.</p>
+                <a href="details/specialist-hospital.html">Learn more →</a>
               </div>
-              <h3>Specialist Hospital Yola</h3>
-              <p>Major secondary healthcare facility with specialized departments and services.</p>
-              <a href="details/specialist-hospital.html">Learn more →</a>
+
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/germanlogo.png" alt="Adamawa-German Hospital">
+                </div>
+                <h3>Adamawa-German Hospital, Yola</h3>
+                <p>Public hospital providing comprehensive medical care and emergency services.</p>
+                <a href="details/german-hospital.html">Learn more →</a>
+              </div>
+
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/meddylogo.jpg" alt="Meddy Specialists">
+                </div>
+                <h3>Meddy Specialists' Clinic, Yola</h3>
+                <p>Private hospital offering quality healthcare services and specialized treatments.</p>
+                <a href="details/meddy-clinic.html">Learn more →</a>
+              </div>
+
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/fortland.jpg" alt="Specialist Hospital">
+                </div>
+                <h3>Fortland Bone Hospital Yola</h3>
+                <p></p>
+                <a href="details/specialist-hospital.html">Learn more →</a>
+              </div>
+
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/boshang.png" alt="Adamawa-German Hospital">
+                </div>
+                <h3>New Boshang Clinic, Yola</h3>
+                <p></p>
+                <a href="details/german-hospital.html">Learn more →</a>
+              </div>
+
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/galbose.png" alt="Meddy Specialists">
+                </div>
+                <h3>Galbose Specialists' Clinic, Yola</h3>
+                <p>Private hospital offering quality healthcare services and specialized treatments.</p>
+                <a href="details/meddy-clinic.html">Learn more →</a>
+              </div>
+
             </div>
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/germanlogo.png" alt="Adamawa-German Hospital">
-              </div>
-              <h3>Adamawa-German Hospital, Yola</h3>
-            <p>Public hospital providing comprehensive medical care and emergency services.</p>
-            <a href="details/german-hospital.html">Learn more →</a>
-          </div>
-          <div class="section4">
-            <img src="Data/Images/meddylogo.jpg" alt="Meddy Specialists">
-            <h3>Meddy Specialists' Clinic, Yola</h3>
-            <p>Private hospital offering quality healthcare services and specialized treatments.</p>
-            <a href="details/meddy-clinic.html">Learn more →</a>
-          </div>
         </div>
 
         <div class="section3">
           <h3 class="section3-title">The Tertiary Hospital in Yola.</h3>
-          <div class="section4-container">
+          <div class="section4-mau-container">
             <div class="section4" style="width: 1160px; height: 450px;">
-              <div class="mauth-placeholder" style="display:flex; flex-direction: row; overflow:hidden; gap:1rem;">
-                <img src="Data/Images/mauthlogo.png" alt="Teaching Hospital" style="object-fit: fill;width: 30%;border-radius: 10px;">
-                <img class="img2" src="Data/Images/mauthgate.jpg" alt="Teaching Hospital" style="object-fit: fill;width: 70%;border-radius: 10px;">
+              <div class="mauth-placeholder" style="display:flex; flex-direction: row; overflow:hidden; gap:1rem; width:100%;">
+                <img class="mauthlogo" src="Data/Images/mauthlogo.png" alt="Teaching Hospital" >
+                <img class="mauthgate" src="Data/Images/mauthgate.jpg" alt="Teaching Hospital" >
               </div>
             
-              <h3>MAU Teaching Hospital</h3>
+              <h3>Modibbo Adama Teaching Hospital (MAUTH), Yola.</h3>
               <p>University teaching hospital providing advanced medical care and training.</p>
               <a href="details/mau-teaching-hospital.html">Learn more →</a>
             
@@ -277,9 +311,9 @@ window.renderSection = function() {
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/strongate.jpg" alt="Community Pharmacy">
+                <img src="Data/Images/alfijr.png" alt="Community Pharmacy">
               </div>
-              <h3>Strongate Pharmacy, Yola.</h3>
+              <h3>Alfijr Pharmacy, Yola.</h3>
               <p></p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
@@ -295,9 +329,9 @@ window.renderSection = function() {
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/aayola.jpg" alt="Community Pharmacy">
+                <img src="Data/Images/mufami.jpg" alt="Community Pharmacy">
               </div>
-              <h3>A.A Yola  Pharmacy Store.</h3>
+              <h3>Mufami Pharmacy Store.</h3>
               <p></p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
@@ -341,7 +375,7 @@ window.renderSection = function() {
 
         <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/.jpg" alt="">
+              <img src="Data/Images/polio.jpg" alt="">
             </div>
             <h3>Polio Immunization at Community PHCCs.</h3>
             <p></p>
@@ -350,18 +384,18 @@ window.renderSection = function() {
 
         <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/.jpg" alt="">
+              <img src="Data/Images/mosquito.jpg" alt="">
             </div>
-            <h3></h3>
+            <h3>Mosquito nets distribution to resident of Yola.</h3>
             <p></p>
             <a href="details/.html">Learn more →</a>
           </div>
 
         <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/.jpg" alt="">
+              <img src="Data/Images/redcross.png" alt="">
             </div>
-            <h3></h3>
+            <h3>Redcross society awareness campaign in Yola.</h3>
             <p></p>
             <a href="details/.html">Learn more →</a>
           </div>
@@ -458,45 +492,31 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     const contents = {
       parts: []
     };
-
     if (imageData) {
       contents.parts.push({
         inlineData: {
           mimeType: "image/jpeg",
-          data: imageData.split(',')[1] // Remove data URL prefix
+          data: imageData.split(',')[1]
         }
       });
     }
-
-    // Use the editable prompt from localStorage or fallback
     const promptGuide = localStorage.getItem('medi_ai_prompt') || MEDI_AI_PROMPT;
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-
-    // Choose model based on user preference and image presence
-    const modelVersion = imageData ? 'gemini-pro-vision' : 
-                        (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
-    
-    let url = `https://generativelanguage.googleapis.com/v1/models/${modelVersion}:generateContent?key=${apiKey}`;
-    let body = JSON.stringify({ contents: [contents] });
-    let finalAnswer = "";
-    
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
     let data = await res.json();
-    
-    // If 2.5 fails, fallback to 1.5
     if (data.error && window.useGemini25 && !imageData) {
-      console.log('Falling back to Gemini 1.5');
-      url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + apiKey;
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      // fallback to 1.5
+      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
+      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
       data = await res.json();
     }
-    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) ?
-      data.candidates[0].content.parts[0].text : "No answer from AI.";
-  } catch (error) {
-    console.error("Gemini API error:", error);
-    return "Sorry, I'm having trouble connecting to the AI at the moment.";
+    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
+  } catch (err) {
+    return "Sorry, there was an error contacting the AI service.";
   }
 }
 
