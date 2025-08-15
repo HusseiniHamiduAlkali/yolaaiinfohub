@@ -32,7 +32,7 @@ window.renderSection = function() {
   document.getElementById('main-content').innerHTML = `
     <section class="info-section">
       <div class="about-container">
-        <div class="about-header">About Yola AI Info Hub</div>
+        <div class="about-header" style="text-align: center; margin-top: 20px; margin-bottom: 5px; font-size: 1.5rem;"><strong>About Yola AI Info Hub</strong></div>
         <div class="about-content">
           <p><strong>Yola AI Info Hub</strong> is a modern, responsive web app that provides AI-powered information and assistance for education, agriculture, environment, health, community, and general inquiries in Yola, Adamawa State, Nigeria. Our goal is to make essential information accessible and easy to find for residents and visitors alike.</p>
           <h3>Key Features:</h3>
@@ -43,21 +43,24 @@ window.renderSection = function() {
             <li><strong>Image & Audio Input:</strong> Interact with the AI using images and voice messages for a richer experience.</li>
             <li><strong>Text-To-Speech:</strong> A text-to-speech option to listen to the AI's response in any section.</li>
             <li><strong>Local Focus:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
-            <li><strong>Multi Modality:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
+            <li><strong>Multi Modality:</strong> A pecial functionality, enabling user to switch between two different Gemini models for their response.</li>
           </ul>
-          <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better.</p>
+          
           <h3>Section-specific Features:</h3>
           <ul>
             <li><strong>NaviInfo:</strong> Maps For Directions and Navigation.</li>
             <li><strong>EcoInfo:</strong>Carbon Calculator and an Eco Classifier, which is able to classify objects (images) as recylable or not.</li>
           </ul>
-          <h3>Contents of the Environment Variable (.env):</h3>
-          <ul>
+          <h3>Contents of the Environment Variable (.env file):</h3>
+          <ul style="list-style: none;">
             <li>1. Google Gemini API KEY.</li>
             <li>2. Google Maps API KEY.</li>
             <li>3. Mongodb URI For User Authentication.</li>
             <li>4. Dedicated e-mail Adress.</li>
             <li>5. E-mail. Adress 'App Password' For Password Reset Route.</li>
+            <li>6. Password reset URL base.</li>
+            <li>7. Front-end Netlify URL.</li>
+            <li>8. Back-end Render URL.</li>
             
           </ul>
           <h3>Major Challenges:</h3>
@@ -66,7 +69,11 @@ window.renderSection = function() {
             <li>Internet Acces (Thanks to the Weekly Reflection Data Reward, It Has Really Cushioned This Effect).</li>
             
           </ul>
-          <strong>I am Husseini Hamidu Alkali the Chief Pilot, Together With GitCopilot We Are Able To Land Unto This Robust Project For My July 3MTT Knowledge Showcase.</strong>
+
+          <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better.</p>
+          
+          <p><strong>I Husseini Hamidu Alkali the Chief Pilot, Together With GitCopilot We Are Able To Land Unto This Robust Project For My July 3MTT Knowledge Showcase.</strong><p>
+          
         </div>
       </div>
     </section>

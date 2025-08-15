@@ -131,7 +131,7 @@ window.renderSection = function() {
               <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('agro', this.checked)">
               <span class="slider round"></span>
             </label>
-            <span class="model-label">Using Gemini 1.5</span>
+            <span class="model-label">Using Gemini 1.5 Flash</span>
           </div>
         </div>
         <div class="chat-messages" id="agro-chat-messages"></div>
@@ -516,7 +516,7 @@ window.sendAgroMessage = async function(faqText = '') {
     <div class="ai-response">
       ${finalAnswer.replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>').replace(/\n/g, '<br>')}
       <button onclick="window.speakText(this.parentElement.textContent)" class="read-aloud-btn" title="Listen to Response">
-        🔊 Listen
+        🔊
       </button>
     </div>
   `;

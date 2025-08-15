@@ -215,7 +215,7 @@ window.renderSection = function() {
               <div class="img-placeholder">
                 <img src="Data/Images/conference2.png" alt="">
               </div>
-              <h3>Fintiri flags off N18.9b international conference centre in Yola</h3>
+              <h3>Gov. Fintiri flags off N18.9b international conference centre in Yola</h3>
               <p>Governor Ahmadu Fintiri, on Thursday, May 29, 2025, performed the groundbreaking ceremony for the construction of an ultramodern International Conference and...</p>
               <a href="details/.html">Learn more →</a>
             </div>
@@ -842,15 +842,23 @@ function uploadFile(e, section = 'medi') {
   reader.readAsDataURL(file);
 }
 
+
+// Common function to format AI responses
 function formatAIResponse(text) {
   let formatted = text
-    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>')
-    .replace(/\n{2,}/g, '</p><p>')
-    .replace(/\n/g, '<br>')
-    .replace(/^(<br>)+/, '')
-    .replace(/(<br>)+$/, '');
-  return `<p>${formatted}</p>`;
+    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>') // Bold
+    .replace(/\n/g, '<br>'); // Line breaks
+  
+  return `
+    <div class="ai-response">
+      ${formatted}
+      <button onclick="window.speakText(this.parentElement.textContent)" class="read-aloud-btn" title="Read Aloud">
+        🔊
+      </button>
+    </div>
+  `;
 }
+
 
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
   try {

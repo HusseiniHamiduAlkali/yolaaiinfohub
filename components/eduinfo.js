@@ -9,7 +9,7 @@ window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
     const label = document.querySelector('.model-label');
     if (label) {
-        label.textContent = useGemini25 ? 'Using Gemini 2.5' : 'Using Gemini 1.5';
+        label.textContent = useGemini25 ? 'Using Gemini 2.5 Flash' : 'Using Gemini 1.5 Flash';
     }
     localStorage.setItem('gemini_model_preference', useGemini25 ? '2.5' : '1.5');
 };
@@ -24,23 +24,15 @@ if (typeof window.useGemini25 === 'undefined') {
 window.EDU_AI_PROMPT = `You are an AI assistant for Yola, Adamawa State, Nigeria.
 Respond to greetings politely, and help users with information on education in Yola.
 Answer questions using the available information and focus only on education-related topics.
-
 If specific information is not available, say: "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help."
-
 For non-education queries about health, navigation, community, environment, jobs, or agriculture, refer users to MediInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo respectively.`;
 
 // Abort controller for fetch requests
 window.eduAbortController = null;
 
 // Initialize EduInfo Section
-window.initEduInfo = () => {
-    const eduInfoContent = document.getElementById('eduinfo-content');
-    if (!eduInfoContent) {
-        console.error('eduinfo-content div not found.');
-        return;
-    }
-
-    eduInfoContent.innerHTML = `
+window.renderSection = function() {
+  document.getElementById('main-content').innerHTML = `
     <section class="info-section">
       <h2>EduInfo - Education Help</h2>
       <p>Ask about schools, universities, courses, or educational services in Yola.</p>

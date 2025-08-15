@@ -8,7 +8,7 @@ window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
     const label = document.querySelector('.model-label');
     if (label) {
-        label.textContent = useGemini25 ? 'Using Gemini 2.5' : 'Using Gemini 1.5';
+        label.textContent = useGemini25 ? 'Using Gemini 2.5 Flash' : 'Using Gemini 1.5 Flash';
     }
     // Store preference
     localStorage.setItem('gemini_model_preference', useGemini25 ? '2.5' : '1.5');
@@ -131,7 +131,7 @@ window.renderSection = function() {
               <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('servi', this.checked)">
               <span class="slider round"></span>
             </label>
-            <span class="model-label">Using Gemini 1.5</span>
+            <span class="model-label">Using Gemini 1.5 Flash</span>
           </div>
         </div>
         <div class="chat-messages" id="servi-chat-messages"></div>

@@ -13,11 +13,109 @@ function loadEcoScripts(cb) {
 }
 
 // Call this when the section loads
-window.renderEcoSection = function() {
+window.renderSection = function() {
   loadEcoScripts(() => {
     if (typeof window.initEcoFeatures === 'function') window.initEcoFeatures();
   });
 };
+
+// Moved logic from window.renderEcoSection into window.renderSection
+loadEcoScripts(() => {
+  if (typeof window.initEcoFeatures === 'function') window.initEcoFeatures();
+});
+
+// Existing renderSection logic continues here
+if (!document.getElementById('global-css')) {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'styles/global.css';
+  link.id = 'global-css';
+  document.head.appendChild(link);
+}
+// No navbar rendering here; handled globally
+document.getElementById('main-content').innerHTML = `
+  <section class="info-section">
+    <h2>EcoInfo - Environmental Help</h2>
+    
+    <p>Ask about recycling, waste, or environmental services in Yola.</p>
+    <div class="chat-container">
+      <div class="chat-header">
+        <span>EcoInfo AI Chat</span>
+        <div class="model-switch">
+          <label class="switch">
+            <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('eco', this.checked)">
+            <span class="slider round"></span>
+          </label>
+          <span class="model-label">Using Gemini 1.5</span>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendEcoMessage();">
+        <div id="eco-chat-preview" class="chat-preview"></div>
+        <input type="text" id="eco-chat-input" placeholder="Ask about environment..." required />
+        <div class="send-button-group">
+          <button type="submit" class="send-button">
+            <span class="send-text">Send</span>
+            <span class="spinner"></span>
+          </button>
+          <button type="button" class="stop-button" style="display:none" onclick="window.stopEcoResponse()">Stop</button>
+        </div>
+      </form>
+      <div class="input-options">
+        <button type="button" onclick="window.captureImage('eco')" title="Capture Image"><span>📷</span></button>
+        <button type="button" onclick="window.recordAudio('eco')" title="Record Audio"><span>🎤</span></button>
+        <label class="file-upload-btn" title="Upload File">
+          <span>📁</span>
+          <input type="file" style="display:none" onchange="window.uploadFile(event, 'eco')" />
+        </label>
+      </div>
+      
+    <div class="faq-list">
+      <h3>EcoInfo FAQs</h3>
+      <ul>
+        <li><a class="faq-link" onclick="window.sendEcoMessage('How do I recycle waste in Yola?')">How do I recycle waste in Yola?</a></li>
+        <li><a class="faq-link" onclick="window.sendEcoMessage('Where are the nearest parks or green spaces?')">Where are the nearest parks or green spaces?</a></li>
+        <li><a class="faq-link" onclick="window.sendEcoMessage('How can I report illegal dumping?')">How can I report illegal dumping?</a></li>
+        <li><a class="faq-link" onclick="window.sendEcoMessage('What are the environmental organizations in Yola?')">What are the environmental organizations in Yola?</a></li>
+        <li><a class="faq-link" onclick="window.sendEcoMessage('How do I start a community garden?')">How do I start a community garden?</a></li>
+        <li><a class="faq-link" onclick="window.sendEcoMessage('What are the best practices for waste management?')">What are the best practices for waste management?</a></li>
+      </ul>
+    </div>
+    </div>
+    <div class="section2">
+      <h2>Environmental Services in Yola</h2>
+      
+      <div class="section3">
+        <h3 class="section3-title">Recycling Centers</h3>
+        <div class="section4-container">
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/EcoInfo/recycling1.jpg" alt="Yola Recycling Center">
+            </div>
+            <h3>Yola Recycling Center</h3>
+            <p>Comprehensive recycling facility handling paper, plastic, metal, and electronic waste.</p>
+            <a href="details/yola-recycling-center.html">Learn more →</a>
+          </div>
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/EcoInfo/recycling2.jpg" alt="GreenCycle Solutions">
+            </div>
+            <h3>GreenCycle Solutions</h3>
+            <p>Specialized in plastic recycling and sustainable waste management.</p>
+          <a href="details/greencycle-solutions.html">Learn more →</a>
+        </div>
+        <div class="section4">
+          <div class="img-placeholder">
+            <img src="Data/Images/EcoInfo/recycling3.jpg" alt="EcoWaste Management">
+          </div>
+          <h3>EcoWaste Management</h3>
+          <p>Industrial and commercial recycling services with eco-friendly practices.</p>
+          <a href="details/ecowaste-management.html">Learn more →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+`;
 
 window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 
@@ -105,7 +203,7 @@ window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
     const label = document.querySelector('.model-label');
     if (label) {
-        label.textContent = useGemini25 ? 'Using Gemini 2.5' : 'Using Gemini 1.5';
+        label.textContent = useGemini25 ? 'Using Gemini 2.5 Flash' : 'Using Gemini 1.5 Flash';
     }
     // Store preference
     localStorage.setItem('gemini_model_preference', useGemini25 ? '2.5' : '1.5');

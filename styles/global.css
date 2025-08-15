@@ -315,6 +315,7 @@ Wednesday, July 30, 2025
   word-break: break-word;
   font-weight: 400;
   font-size: 1rem;
+  width: fit-content;
 }
 
 .user-msg {
@@ -340,11 +341,12 @@ Wednesday, July 30, 2025
   border-radius: 1.2rem 1.2rem 1.2rem 0;
   margin-right: auto;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  max-width: 100%;
+  max-width: 85%;
   position: relative;
   text-align: left;
   margin-bottom: 0.7rem;
   box-sizing: border-box;
+  width: fit-content;
 }
 
 .ai-msg .read-aloud-btn {

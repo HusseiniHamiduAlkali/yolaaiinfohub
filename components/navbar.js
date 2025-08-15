@@ -199,23 +199,54 @@ function renderNavbar() {
       newNavbarContainer.appendChild(rightContainer);
     }
 
-    // Add event listener for the hamburger menu toggle
+    // Add event listener for the hamburger menu toggle (mobile)
     newHamburger.onclick = (e) => {
-        e.stopPropagation();
-        const currentDisplay = newNavbarRight.style.display;
-        if (currentDisplay === 'none' || currentDisplay === '') {
-            newNavbarRight.style.display = 'flex';
-            newNavbarRight.style.flexDirection = 'column';
-            newNavbarRight.style.position = 'absolute';
-            newNavbarRight.style.top = '60px'; // Adjust based on your navbar height
-            newNavbarRight.style.right = '10px';
-            newNavbarRight.style.backgroundColor = '#fff';
-            newNavbarRight.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-            newNavbarRight.style.padding = '1rem';
-            newNavbarLinks.style.flexDirection = 'column';
-        } else {
-            newNavbarRight.style.display = 'none';
-        }
+      e.stopPropagation();
+      let mobileMenu = document.querySelector('.mobile-menu');
+      if (!mobileMenu) {
+        // Create mobile menu overlay
+        mobileMenu = document.createElement('div');
+        mobileMenu.className = 'mobile-menu';
+        // Close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'mobile-menu-close';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.onclick = () => {
+          mobileMenu.classList.remove('show');
+          setTimeout(() => mobileMenu.remove(), 300);
+        };
+        mobileMenu.appendChild(closeBtn);
+        // Menu links
+        const linksList = document.createElement('ul');
+        linksList.className = 'mobile-links';
+        [
+          { name: 'Home', section: 'home' },
+          { name: 'EduInfo', section: 'eduinfo' },
+          { name: 'EcoInfo', section: 'ecoinfo' },
+          { name: 'AgroInfo', section: 'agroinfo' },
+          { name: 'MediInfo', section: 'mediinfo' },
+          { name: 'NaviInfo', section: 'naviinfo' },
+          { name: 'CommunityInfo', section: 'communityinfo' },
+          { name: 'ServiInfo', section: 'serviinfo' },
+          { name: 'About', section: 'aboutinfo' }
+        ].forEach(link => {
+          const li = document.createElement('li');
+          const btn = document.createElement('button');
+          btn.textContent = link.name;
+          btn.onclick = () => {
+            window.loadSection(link.section);
+            mobileMenu.classList.remove('show');
+            setTimeout(() => mobileMenu.remove(), 300);
+          };
+          li.appendChild(btn);
+          linksList.appendChild(li);
+        });
+        mobileMenu.appendChild(linksList);
+        document.body.appendChild(mobileMenu);
+        setTimeout(() => mobileMenu.classList.add('show'), 10);
+      } else {
+        mobileMenu.classList.add('show');
+      }
     };
     
   }

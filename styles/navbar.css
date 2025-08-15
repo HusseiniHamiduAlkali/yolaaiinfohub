@@ -91,7 +91,7 @@ nav.navbar {
   flex-direction: row;
   align-items: left;
   height: fit-content;
-  margin-right: 20px;
+  margin-right: 5px;
   gap: 0.7rem;
   margin-bottom: 0.5rem;
 }
@@ -582,7 +582,7 @@ nav.navbar {
     margin-top: 0rem;
     margin-bottom: 0rem;
     justify-content: flex-start;
-    padding-left: 0.5rem;
+    padding-left: 0rem;
     position: relative;
   }
 
