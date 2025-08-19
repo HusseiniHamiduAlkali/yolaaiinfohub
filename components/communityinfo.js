@@ -3,7 +3,7 @@ window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
 
-// Function to toggle between Gemini models
+// Function to toggle between Gemini 1.5 Flash and Gemini 2.5 Flash  
 window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
     const label = document.querySelector('.model-label');
@@ -21,6 +21,56 @@ if (typeof window.useGemini25 === 'undefined') {
 }
 
 // Global text-to-speech variables and functions
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+  try {
+    const contents = {
+      parts: []
+    };
+    if (imageData) {
+      contents.parts.push({
+        inlineData: {
+          mimeType: "image/jpeg",
+          data: imageData.split(',')[1]
+        }
+      });
+    }
+    const promptGuide = localStorage.getItem('community_ai_prompt') || COMMUNITY_AI_PROMPT;
+    contents.parts.push({
+      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+    });
+    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    
+    const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3001/api/gemini'
+      : '/api/gemini';
+      
+    let res = await fetch(apiUrl, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' },
+      body 
+    });
+    
+    let data = await res.json();
+    
+    if (data.error && window.useGemini25 && !imageData) {
+      // fallback to 1.5
+      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
+      res = await fetch(apiUrl, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body 
+      });
+      data = await res.json();
+    }
+    
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
+  } catch (err) {
+    console.error("Gemini API error:", err);
+    return "Sorry, there was an error contacting the AI service.";
+  }
+}
+
 window.currentSpeech = window.currentSpeech || null;
 
 window.stopSpeaking = window.stopSpeaking || function() {
@@ -73,7 +123,7 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for CommunityInfo
 window.COMMUNITY_AI_PROMPT = window.COMMUNITY_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and enquire on how to help the user with community information in Yola.
+Enquire on how to help the user with community information in Yola.
 Answer the user's question using the information provided below, and the internet. But only those regarding community events, organizations, and services.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local community authority for further help."
 And if a user clearly requests information on health, education, navigation, environment, jobs, or agriculture, refer them to either of MediInfo, EduInfo, NaviInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
@@ -165,12 +215,11 @@ window.renderSection = function() {
         </ul>
       </div>
       </div>
-      
-      
-      <div class=section2>
+
+        <div class=section2>
 
         <div class="section3">
-          <h3 class="section3-title">Community Bulletin (Top Stories this week in Yola).</h3>
+          <h3 class="section3-title">Community Bulletin <br> (Top Stories this week in Yola).</h3>
           <div class="section4-container">
           
             <div class="section4">
@@ -308,7 +357,6 @@ window.renderSection = function() {
               <a href="details/womensupport.html">Learn more →</a>
             </div>
 
-
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/adamawaunited.jpg" alt="Adamawa United">
@@ -356,10 +404,10 @@ window.renderSection = function() {
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/auntownhall.jpg" alt="AUN townhall meeting">
+                <img src="Data/Images/auntownhall.jpg" alt="AUN Townhall Meeting in Yola">
               </div>
               <h3>AUN Townhall Meeting, Yola</h3>
-              <p></p>
+              <p>Community engagement forum hosted by American University of Nigeria to discuss local issues and initiatives.</p>
               <a href="details/womensupport.html">Learn more →</a>
             </div>
 
@@ -394,10 +442,10 @@ window.renderSection = function() {
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/govcup.jpg" alt="Governor's Cup Football">
+                <img src="Data/Images/govcup.jpg" alt="Governor's Cup Football Competition in Yola">
               </div>
               <h3>Governor's Cup Football Competition</h3>
-              <p></p>
+              <p>Annual football tournament bringing together teams from across Yola and promoting sports development.</p>
               <a href="details/.html">Learn more →</a>
             </div>
 
@@ -421,57 +469,57 @@ window.renderSection = function() {
 
           <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/wbfw.png" alt="World Breastfeeding Week">
+                <img src="Data/Images/wbfw.png" alt="World Breastfeeding Week Celebration in Yola">
               </div>
               <h3>World Breastfeeding Week in Yola</h3>
-              <p></p>
+              <p>Global awareness week promoting the importance of breastfeeding and maternal health in Yola.</p>
               <a href="details/.html">Learn more →</a>
             </div>
           
           
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/childday2.png" alt="Childrens' Day">
+                <img src="Data/Images/childday2.png" alt="Children's Day Celebration in Yola">
               </div>
               <h3>Childrens' Day in Yola</h3>
-              <p></p>
+              <p>Annual celebration dedicated to children with fun activities, games and educational programs in Yola.</p>
               <a href="details/.html">Learn more →</a>
             </div>
           
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/aunwomen.jpg" alt="">
+                <img src="Data/Images/aunwomen.jpg" alt="International Women's Day Celebration">
               </div>
               <h3>International Women's Day</h3>
-              <p></p>
+              <p>Annual celebration recognizing women's achievements and promoting gender equality in Yola.</p>
               <a href="details/.html">Learn more →</a>
             </div>
           
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/eduday.jpg" alt="">
+                <img src="Data/Images/eduday.jpg" alt="International Day of Education Celebration">
               </div>
               <h3>International Day of Education.</h3>
-              <p></p>
+              <p>Global celebration highlighting the importance of education and learning opportunities in Yola.</p>
               <a href="details/.html">Learn more →</a>
             </div>
 
                       
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/independence.jpg" alt="">
+                <img src="Data/Images/independence.jpg" alt="National Independence Day Celebration in Yola">
               </div>
               <h3>National Independence Day in Yola.</h3>
-              <p></p>
+              <p>Celebration of Nigeria's independence with cultural displays, parades and festivities in Yola.</p>
               <a href="details/.html">Learn more →</a>
             </div>
           
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/malariaday.png" alt="">
+                <img src="Data/Images/malariaday.png" alt="World Malaria Day Event in Yola">
               </div>
               <h3>World Malaria Day in Yola.</h3>
-              <p></p>
+              <p>Annual awareness campaign promoting malaria prevention and treatment in Yola communities.</p>
               <a href="details/.html">Learn more →</a>
             </div>
 
@@ -479,9 +527,7 @@ window.renderSection = function() {
         </div>
 
         <div class="section3">
-        
         <h3 class="section3-title">Community Centers</h3>
-
           <div class="section4-container">
           
           <div class="section4">
@@ -828,7 +874,7 @@ function uploadFile(e, section = 'medi') {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(ev) {
-    const preview = document.getElementById(section + '-chat-preview');
+    const preview = document.getElementById('chat-preview');
     let html = '';
     if (file.type.startsWith('image/')) {
       html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Uploaded Image' />`;
@@ -879,27 +925,37 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
     const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    
+    const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000/api/gemini'
+      : 'https://yolainfohub.netlify.app/api/gemini';
+      
+    let res = await fetch(serverUrl, { 
+      method: 'POST', 
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      credentials: 'include',
+      mode: 'cors',
+      body 
+    });
     let data = await res.json();
+    
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      res = await fetch(apiUrl, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body 
+      });
       data = await res.json();
     }
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
+    console.error("Gemini API error:", err);
     return "Sorry, there was an error contacting the AI service.";
   }
 }
 
-/*
-// Edit this prompt to instruct the AI on how to answer user messages
-const SECTION_AI_PROMPT = `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and enquire on how to help the user with [SECTION] information in Yola.
-Answer the user's question using the information provided below, and the internet. But only those regarding [SECTION TOPIC].
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local [SECTION] authority for further help."
-And if a user clearly requests information about other topics, refer them to the appropriate section (MediInfo, EduInfo, NaviInfo, etc).`;
-
-//let sectionAbortController = null;
-*/

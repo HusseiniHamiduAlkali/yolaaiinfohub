@@ -73,7 +73,7 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for ServiInfo
 window.SERVI_AI_PROMPT = window.SERVI_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and enquire on how to help the user find professional services in Yola.
+Enquire on how to help the user find professional services in Yola.
 Answer the user's question using the information provided below, and the internet. But only those regarding professional services and service providers.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local service directory for further help."
 And if a user clearly requests information on health, education, community, environment, navigation, or agriculture, refer them to either of MediInfo, EduInfo, CommunityInfo, EcoInfo, NaviInfo, or AgroInfo, as the case may be.`;
@@ -175,7 +175,7 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/electrician1.jpg" alt="Ibrahim Electric">
+                <img src="Data/Images/ServiInfo/electrician1.jpg" alt="Ibrahim Electric Solutions">
               </div>
               <h3>Ibrahim Electric Solutions</h3>
               <p>Expert electrical installations and repairs with 15+ years experience. Available 24/7 for emergencies.</p>
@@ -183,7 +183,7 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/electrician2.jpg" alt="Yola Power Services">
+                <img src="Data/Images/ServiInfo/electrician2.jpg" alt="Yola Solar and Electronics Services">
               </div>
               <h3>Yola Solar and Electronics Services</h3>
               <p>Certified solar and electrical contractors specializing in residential and commercial installations.</p>
@@ -290,33 +290,33 @@ window.renderSection = function() {
         </div>
       </div>
       
-        <h2>Jobs Concerned Authorities</h2>
+        <h2>Concerned Authorities</h2>
 
         <div class="section3">
           <h3 class="section3-title">Government Agencies/Offices.</h3>
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/nde.jpg" alt="Master Woodworks">
+                <img src="Data/Images/nde.jpg" alt="National Directorate Of Employment (NDE), Yola Office">
               </div>
               <h3>National Directorate Of Employment (NDE), Yola Office.</h3>
-              <p>Custom furniture and carpentry services with attention to detail and quality craftsmanship.</p>
+              <p>Government agency responsible for employment generation, skills acquisition, and job creation programs in Yola.</p>
               <a href="details/master-woodworks.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/carpenter2.jpg" alt="Yola Furniture">
+                <img src="Data/Images/ServiInfo/carpenter2.jpg" alt="CAC Yola Office">
               </div>
-              <h3></h3>
-              <p>Specialized in custom furniture making and wooden interior solutions.</p>
+              <h3>Corporate Affairs Commission (CAC), Yola Office</h3>
+              <p>Government agency responsible for business registration and corporate regulations in Yola.</p>
               <a href="details/yola-furniture.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/carpenter3.jpg" alt="Creative Carpentry">
+                <img src="Data/Images/ServiInfo/carpenter3.jpg" alt="NIPOST Yola">
               </div>
-              <h3></h3>
-              <p>Modern and traditional carpentry services for homes and offices.</p>
+              <h3>Nigerian Postal Service (NIPOST), Yola</h3>
+              <p>Official postal service provider offering mail and package delivery services in Yola.</p>
               <a href="details/creative-carpentry.html">Learn more →</a>
             </div>
           </div>
@@ -327,18 +327,18 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/.jpg" alt="Tech Solutions">
+                <img src="Data/Images/.jpg" alt="Red Cross Society Yola">
               </div>
-              <h3></h3>
-              <p>IT services, web development, and digital marketing solutions.</p>
+              <h3>Red Cross Society Yola Branch</h3>
+              <p>International humanitarian organization providing emergency relief, healthcare services, and community support in Yola.</p>
               <a href="details/tech-solutions-hub.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/freelancer2.jpg" alt="Creative Studio">
+                <img src="Data/Images/ServiInfo/freelancer2.jpg" alt="YMCA Yola">
               </div>
-              <h3></h3>
-              <p>Graphic design, content creation, and branding services.</p>
+              <h3>YMCA Yola Chapter</h3>
+              <p>Youth development organization offering educational, recreational, and social programs for young people in Yola.</p>
               <a href="details/creative-studio.html">Learn more →</a>
             </div>
             <div class="section4">
@@ -391,7 +391,21 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
     const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    
+    const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000/api/gemini'
+      : 'https://yolainfohub.netlify.app/api/gemini';
+      
+    let res = await fetch(serverUrl, { 
+      method: 'POST', 
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      credentials: 'include',
+      mode: 'cors',
+      body 
+    });
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5

@@ -24,6 +24,149 @@ loadEcoScripts(() => {
   if (typeof window.initEcoFeatures === 'function') window.initEcoFeatures();
 });
 
+// Add sendEcoMessage function
+window.sendEcoMessage = async function(faqText = '') {
+  const input = document.getElementById('eco-chat-input');
+  const chat = document.getElementById('chat-messages');
+  const preview = document.getElementById('eco-chat-preview');
+  const sendBtn = document.querySelector('.send-button');
+  const stopBtn = document.querySelector('.stop-button');
+
+  // Get message from input or FAQ
+  let msg = faqText || input.value.trim();
+  let attach = preview.innerHTML;
+  if (!msg && !attach) return;
+
+  // Extract image data if present in preview
+  let imageData = null;
+  if (preview) {
+    const previewImg = preview.querySelector('img');
+    if (previewImg) {
+      imageData = previewImg.src;
+      msg = (msg || '') + "\nPlease analyze this image and provide relevant environmental information or recommendations.";
+    }
+  }
+
+  // Handle abort controller
+  if (window.ecoAbortController) {
+    window.ecoAbortController.abort();
+  }
+  window.ecoAbortController = new AbortController();
+
+  // Update UI state
+  if (sendBtn) {
+    sendBtn.disabled = true;
+    sendBtn.classList.add('sending');
+    sendBtn.querySelector('.send-text').textContent = '';
+  }
+  if (stopBtn) stopBtn.style.display = 'inline-flex';
+
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  msgGroup.innerHTML = `
+    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+  `;
+  chat.appendChild(msgGroup);
+  preview.innerHTML = '';
+  if (!faqText) input.value = '';
+
+  let finalAnswer = "";
+  try {
+    const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
+    
+    const contents = {
+      parts: []
+    };
+    if (imageData) {
+      contents.parts.push({
+        inlineData: {
+          mimeType: "image/jpeg",
+          data: imageData.split(',')[1]
+        }
+      });
+    }
+    
+    const promptGuide = localStorage.getItem('eco_ai_prompt') || ECO_AI_PROMPT;
+    contents.parts.push({
+      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+    });
+    
+    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    
+    // Determine the server URL based on the environment
+    const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000/api/gemini'
+      : 'https://yolainfohub.netlify.app/api/gemini';
+      
+    let res = await fetch(serverUrl, { 
+      method: 'POST', 
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      credentials: 'include',
+      mode: 'cors',
+      body 
+    });
+    
+    let data = await res.json();
+    
+    if (data.error && window.useGemini25 && !imageData) {
+      // fallback to 1.5
+      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
+      res = await fetch(serverUrl, { 
+        method: 'POST', 
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'include',
+        mode: 'cors',
+        body 
+      });
+      data = await res.json();
+    }
+    
+    finalAnswer = (data.candidates && data.candidates[0] && data.candidates[0].content && 
+                  data.candidates[0].content.parts && data.candidates[0].content.parts[0] && 
+                  data.candidates[0].content.parts[0].text) 
+                  ? data.candidates[0].content.parts[0].text 
+                  : "Sorry, I couldn't get a response from the AI.";
+  } catch (e) {
+    console.error("Error fetching local data or Gemini API call:", e);
+    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+  }
+
+  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+  chat.scrollTop = chat.scrollHeight;
+
+  if (sendBtn) {
+    sendBtn.disabled = false;
+    sendBtn.classList.remove('sending');
+    sendBtn.querySelector('.send-text').textContent = 'Send';
+  }
+  if (stopBtn) stopBtn.style.display = 'none';
+  window.ecoAbortController = null;
+};
+
+// Add stopEcoResponse function
+window.stopEcoResponse = function() {
+  if (window.ecoAbortController) {
+    window.ecoAbortController.abort();
+    window.ecoAbortController = null;
+  }
+  const sendBtn = document.querySelector('.send-button');
+  const stopBtn = document.querySelector('.stop-button');
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.disabled = false;
+  }
+  if (stopBtn) stopBtn.style.display = 'none';
+};
+
 // Existing renderSection logic continues here
 if (!document.getElementById('global-css')) {
   const link = document.createElement('link');
@@ -32,6 +175,7 @@ if (!document.getElementById('global-css')) {
   link.id = 'global-css';
   document.head.appendChild(link);
 }
+/*
 // No navbar rendering here; handled globally
 document.getElementById('main-content').innerHTML = `
   <section class="info-section">
@@ -116,7 +260,7 @@ document.getElementById('main-content').innerHTML = `
     </div>
   </section>
 `;
-
+*/
 window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 
 // Initialize classifiers
@@ -268,7 +412,6 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for EcoInfo
 window.ECO_AI_PROMPT = window.ECO_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-
 Answer the user's question using the information provided below, and the internet. But only those regarding environment and eco-friendly practices.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local environmental authority for further help."
 And if a user clearly requests information on health, education, community, navigation, jobs, or agriculture, refer them to either of MediInfo, EduInfo, CommunityInfo, NaviInfo, JobsConnect, or AgroInfo, as the case may be.`;
@@ -297,7 +440,7 @@ window.renderSection = function() {
               <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('eco', this.checked)">
               <span class="slider round"></span>
             </label>
-            <span class="model-label">Using Gemini 1.5</span>
+            <span class="model-label">Using Gemini 1.5 Flash</span>
           </div>
         </div>
         <div class="chat-messages" id="chat-messages"></div>
@@ -341,9 +484,9 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/recycling1.jpg" alt="Yola Recycling Center">
+                <img src="Data/Images/recyclelimited.jpg" alt="Yola Recycling Center">
               </div>
-              <h3>Yola Recycling Center</h3>
+              <h3>Adamawa Waste To Wealth Cyclers Limited, Yola.</h3>
               <p>Comprehensive recycling facility handling paper, plastic, metal, and electronic waste.</p>
               <a href="details/yola-recycling-center.html">Learn more →</a>
             </div>
@@ -351,7 +494,7 @@ window.renderSection = function() {
               <div class="img-placeholder">
                 <img src="Data/Images/EcoInfo/recycling2.jpg" alt="GreenCycle Solutions">
               </div>
-              <h3>GreenCycle Solutions</h3>
+              <h3>Yola Plastics and Polythenes Waste Collectors.</h3>
               <p>Specialized in plastic recycling and sustainable waste management.</p>
             <a href="details/greencycle-solutions.html">Learn more →</a>
           </div>
@@ -367,15 +510,9 @@ window.renderSection = function() {
 
         <div class="section3">
           <h3 class="section3-title">Environmental Organizations</h3>
+          
           <div class="section4-container">
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/org1.jpg" alt="Green Yola Initiative">
-              </div>
-              <h3>Green Yola Initiative</h3>
-              <p>Non-profit organization focused on environmental education and conservation.</p>
-              <a href="details/green-yola-initiative.html">Learn more →</a>
-            </div>
+            
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/gesollogo.png" alt="Eco Warriors">
@@ -392,37 +529,41 @@ window.renderSection = function() {
               <p>Focused on city cleanliness and sustainable urban development.</p>
               <a href="details/clean-yola-project.html">Learn more →</a>
             </div>
-          </div>
-        </div>
+        
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/ecoassociation1.png" alt="Green Yola Initiative">
+              </div>
+              <h3>Association Of Plastic Recyclers, Yola.</h3>
+              <p>Non-profit organization focused on environmental education and conservation.</p>
+              <a href="details/green-yola-initiative.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/EcoInfo/org1.jpg" alt="Green Yola Initiative">
+              </div>
+              <h3>Green Yola Initiative</h3>
+              <p>Non-profit organization focused on environmental education and conservation.</p>
+              <a href="details/green-yola-initiative.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/wapan.jpg" alt="Eco Warriors">
+              </div>
+              <h3>Waste Pickers Association Of Nigeria (WAPAN), Yola.</h3>
+              <p>Community-based organization working on environmental protection and awareness.</p>
+              <a href="details/eco-warriors.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/naswon.png" alt="Clean Yola Project">
+              </div>
+              <h3>National Asssociation OF Scraps And Wate Pickers Of Nigeria (NASWON), Yola.</h3>
+              <p>Focused on city cleanliness and sustainable urban development.</p>
+              <a href="details/clean-yola-project.html">Learn more →</a>
+            </div>
 
-        <div class="section3">
-          <h3 class="section3-title">Green Spaces</h3>
-          <div class="section4-container">
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/wetlands2.jpeg" alt="Community Garden">
-              </div>
-              <h3>Yola Community Garden</h3>
-              <p>Public garden space for community farming and environmental education.</p>
-              <a href="details/yola-community-garden.html">Learn more →</a>
             </div>
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/wetlands6.jpeg" alt="Eco Park">
-              </div>
-              <h3>Yola Eco Park</h3>
-              <p>Sustainable park featuring native plants and environmental exhibits.</p>
-              <a href="details/yola-eco-park.html">Learn more →</a>
-            </div>
-            <div class="section4">
-              <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/park3.jpg" alt="Nature Reserve">
-              </div>
-              <h3>Benue Valley Reserve</h3>
-              <p>Protected natural area with biodiversity conservation programs.</p>
-              <a href="details/benue-valley-reserve.html">Learn more →</a>
-            </div>
-          </div>
         </div>
 
         <div class="section3">
@@ -452,7 +593,64 @@ window.renderSection = function() {
               <p>Promoting eco-friendly activities in Yola.</p>
               <a href="details/green-transport-network.html">Learn more →</a>
             </div>
+
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/.jpg" alt="Solar Power">
+              </div>
+              <h3>Community-Led Environmental Conservation Project, Yola.</h3>
+              <p></p>
+              <a href="details/yola-solar-initiative.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/.jpg" alt="Water Conservation">
+              </div>
+              <h3>Yola 'Waste To Wealth' Initiative.</h3>
+              <p></p>
+              <a href="details/water-conservation-project.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/.jpg" alt="Green Transport">
+              </div>
+              <h3>'Trash To Treasure' Initiative, Yola.</h3>
+              <p></p>
+              <a href="details/green-transport-network.html">Learn more →</a>
+            </div>
+
           </div>
+          
+        <div class="section3">
+          <h3 class="section3-title">Green Spaces</h3>
+          <div class="section4-container">
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/wetlands2.jpeg" alt="Community Garden">
+              </div>
+              <h3>Yola Community Garden</h3>
+              <p>Public garden space for community farming and environmental education.</p>
+              <a href="details/yola-community-garden.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/wetlands6.jpeg" alt="Eco Park">
+              </div>
+              <h3>Yola Eco Park</h3>
+              <p>Sustainable park featuring native plants and environmental exhibits.</p>
+              <a href="details/yola-eco-park.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/riverbenuevalley.jpeg" alt="Nature Reserve">s
+              </div>
+              <h3>Benue Valley Reserve</h3>
+              <p>Protected natural area with biodiversity conservation programs.</p>
+              <a href="details/benue-valley-reserve.html">Learn more →</a>
+            </div>
+          </div>
+        </div>
+
         </div>
       </div>
     </section>
@@ -478,12 +676,15 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
     const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000/api/gemini'
+      : '/api/gemini';
+    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
       data = await res.json();
     }
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
@@ -545,6 +746,41 @@ function formatAIResponse(text) {
     .replace(/\n{2,}/g, '</p><p>')
     .replace(/\n/g, '<br>');
   return `<p>${formatted}</p>`;
+}
+
+// Helper function to format AI responses
+function formatAIResponse(text) {
+  let formatted = text
+    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>') // Bold text
+    .replace(/\n/g, '<br>'); // Line breaks
+  
+  return `
+    <div class="ai-response">
+      ${formatted}
+      <button onclick="window.speakText(this.parentElement.textContent)" class="read-aloud-btn" title="Listen to Response">
+        🔊
+      </button>
+      <style>
+        .read-aloud-btn {
+          background: transparent;
+          border: 1px solid #cbd5e0;
+          border-radius: 6px;
+          padding: 4px 8px;
+          margin-top: 8px;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.9em;
+        }
+        .read-aloud-btn:hover {
+          background: #e2e8f0;
+          transform: translateY(-1px);
+        }
+      </style>
+    </div>
+  `;
 }
 
 async function readAloud(text, section) {

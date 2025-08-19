@@ -73,7 +73,7 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for AgroInfo
 window.AGRO_AI_PROMPT = window.AGRO_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and enquire on how to help the user with agricultural information in Yola.
+Enquire on how to help the user with agricultural information in Yola.
 Answer the user's question using the information provided below, and the internet. But only those regarding agriculture and farming.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local agricultural authority for further help."
 And if a user clearly requests information on education, navigation, community, health, jobs, or environment, refer them to either of EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo, as the case may be.`;
@@ -176,56 +176,56 @@ window.renderSection = function() {
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/afanassociation.jpg" alt="">
+                <img src="Data/Images/afanassociation.jpg" alt="All Farmers Association of Nigeria (AFAN)">
               </div>
               <h3>All Farmers Association of Nigeria (AFAN)</h3>
-              <p></p>
+              <p>National umbrella organization representing farmers' interests, providing support, and promoting agricultural development in Nigeria.</p>
               <a href="details/organisations.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/rifanassociation.jpg" alt="Yola Agro Supplies">
+                <img src="Data/Images/rifanassociation.jpg" alt="Rice farmers association of Nigeria Adamawa state chapter, Yola">
               </div>
               <h3>Rice farmers association of Nigeria Adamawa state chapter, Yola.</h3>
-              <p></p>
-              <a href="details/yola-agro-supplies.html">Learn more →</a>
+              <p>State chapter organization supporting rice farmers through training, resources, and market access initiatives.</p>
+              <a href="details/rifan-adamawa.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/swofonassociation.png" alt="">
+                <img src="Data/Images/swofonassociation.png" alt="Small-scale Women Farmers Organisation in Nigeria (SWOFON), Yola">
               </div>
               <h3>Small-scale Women Farmers Organisation in Nigeria (SWOFON), Yola.</h3>
-              <p>Specialized in organic farming inputs and sustainable agriculture solutions.</p>
-              <a href="details/green-harvest-supplies.html">Learn more →</a>
+              <p>Organization empowering women farmers through capacity building, access to resources, and advocacy for gender-inclusive agricultural policies.</p>
+              <a href="details/swofon-yola.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/hyfassociation.jpg" alt="">
+                <img src="Data/Images/hyfassociation.jpg" alt="Himma Youth Farmers Association of Nigeria (HYFAN), Yola Chapter">
               </div>
               <h3>Himma Youth Farmers Association of Nigeria (HYFAN), Yola Chapter.</h3>
-              <p></p>
-              <a href="details/organisations.html">Learn more →</a>
+              <p>Youth-focused agricultural organization promoting farming among young people through training, mentorship, and support programs.</p>
+              <a href="details/hyfan-yola.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/smallholderassociation.png" alt="Yola Agro Supplies">
+                <img src="Data/Images/smallholderassociation.png" alt="Smallholder farmers association of Nigeria Adamawa state chapter, Yola">
               </div>
               <h3>Smallholder farmers association of Nigeria Adamawa state chapter, Yola.</h3>
-              <p></p>
-              <a href="details/yola-agro-supplies.html">Learn more →</a>
+              <p>Organization supporting small-scale farmers with resources, training, and market access to improve agricultural productivity and livelihoods.</p>
+              <a href="details/smallholder-farmers-yola.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/peasantfarmers.jpg" alt="">
+                <img src="Data/Images/peasantfarmers.jpg" alt="Peasant Farmers Association, Yola">
               </div>
               <h3>Peasant Farmers Association, Yola.</h3>
-              <p>Specialized in organic farming inputs and sustainable agriculture solutions.</p>
-              <a href="details/green-harvest-supplies.html">Learn more →</a>
+              <p>Community organization supporting small-scale farmers with sustainable farming practices, organic agriculture methods, and market access opportunities.</p>
+              <a href="details/peasant-farmers-yola.html">Learn more →</a>
             </div>
 
           </div>
@@ -237,19 +237,19 @@ window.renderSection = function() {
           
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/AgroInfo/extension1.jpg" alt="Agric Extension Office">
+                <img src="Data/Images/iita.png" alt="Agric Extension">
               </div>
-              <h3>Agricultural Extension Office, Adamawa state secreteriate.</h3>
-              <p>Government agricultural extension services and farmer support programs.</p>
+              <h3>IITA - The International Institute Of Tropical Agriculture, Training Scheme.</h3>
+              <p>IITA says it ahs trained 35,000 farmers on modern farming techniques in seven local governments in Adamawa state.</p>
               <a href="details/agricultural-extension-office.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/.jpg" alt="Farmers Support">
+                <img src="Data/Images/acresal.png" alt="Agric Extension">
               </div>
-              <h3>Farmers Support Center, Adamawa state ministry of agriculture.</h3>
-              <p>Training and technical assistance for local farmers.</p>
+              <h3>ACRESAL  Agro-Climatic Resilience In Semi-Arid Landscapes.</h3>
+              <p>State-run facility providing resources to support local farmers in improving agricultural productivity.</p>
               <a href="details/farmers-support-center.html">Learn more →</a>
             </div>
 
@@ -271,36 +271,54 @@ window.renderSection = function() {
 
           <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/yusashagro.jpg" alt="Animal Feed">
+              <img src="Data/Images/yusashagro.jpg" alt="Yusash Agro Chemicals">
             </div>
             <h3>Yusash Agro Chemicals.</h3>
-            <p></p>
-            <a href="details/quality-feed-mills.html">Learn more →</a>
+            <p>Leading supplier of agricultural chemicals, fertilizers, and farming inputs with expert guidance for optimal usage.</p>
+            <a href="details/yusash-agro.html">Learn more →</a>
           </div>
           <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/miaagro.jpg" alt="Livestock Market">
+              <img src="Data/Images/miaagro.jpg" alt="Mia Agro Chemicals, Yola">
             </div>
             <h3>Mia Agro Chemicals, Yola.</h3>
-            <p></p>
-            <a href="details/central-livestock-market.html">Learn more →</a>
+            <p>Comprehensive provider of agricultural chemicals, pesticides, and farming supplies serving the Yola farming community.</p>
+            <a href="details/mia-agro.html">Learn more →</a>
           </div>
            <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/comfortagro.png" alt="Livestock Market">
+              <img src="Data/Images/comfortagro.png" alt="Comfort Agro Chemicals, Yola">
             </div>
             <h3>Comfort Agro Chemicals, Yola.</h3>
-            <p></p>
-            <a href="details/central-livestock-market.html">Learn more →</a>
+            <p>Reliable supplier of quality agricultural inputs, chemicals, and farming supplies with professional advisory services.</p>
+            <a href="details/comfort-agro.html">Learn more →</a>
           </div>
           
            <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/goldenagro.png" alt="Livestock Market">
+              <img src="Data/Images/goldenagro.png" alt="Golden Agro Supply, Yola">
             </div>
             <h3>Golden Agro Supply, Yola.</h3>
+            <p>One-stop shop for agricultural supplies, equipment, and farming inputs with technical support services.</p>
+            <a href="details/golden-agro.html">Learn more →</a>
+          </div>
+          
+           <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/nazareth.png" alt="Golden Agro Supply, Yola">
+            </div>
+            <h3>Nazareth Farmers' Service Center, Yola.</h3>
             <p></p>
-            <a href="details/central-livestock-market.html">Learn more →</a>
+            <a href="details/golden-agro.html">Learn more →</a>
+          </div>
+          
+           <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/kandimi.png" alt="Golden Agro Supply, Yola">
+            </div>
+            <h3>Kandimi Agro Input Dealers, Yola.</h3>
+            <p></p>
+            <a href="details/golden-agro.html">Learn more →</a>
           </div>
         </div>
 
@@ -317,41 +335,75 @@ window.renderSection = function() {
                 <a href="details/central-livestock-market.html">Learn more →</a>
               </div>  
 
+              
               <div class="section4">
                 <div class="img-placeholder">
-                  <img src="Data/Images/agricfair.jpg" alt="Value Addition">
+                  <img src="Data/Images/jambutumarket1.png" alt="Chikun Chicks - Chicken">
                 </div>
-                <h3>Agricultural Inputs Trade Fair, Yola.</h3>
-                <p></p>
-                <a href="details/agricultural-value-addition-center.html">Learn more →</a>
-                </div>
-
-              <div class="section4">
-                <div class="img-placeholder">
-                  <img src="Data/Images/AgroInfo/processing3.jpg" alt="Value Addition">
-                </div>
-                <h3>Adamawa State Agricultural Value Addition Center</h3>
-                <p></p>
-                <a href="details/agricultural-value-addition-center.html">Learn more →</a>
+                <h3>Jambutu Vegetables and Fruits Market.</h3>
+                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
+                <a href="details/chikun-chicks.html">Learn more →</a>
               </div>
               
               <div class="section4">
                 <div class="img-placeholder">
-                  <img src="Data/Images/wakili.png" alt="Value Addition">
+                  <img src="Data/Images/jambutumarket2.png" alt="Chikun Chicks - Chicken">
                 </div>
-                <h3>Wakili (WK) Poultry Farms, Yola</h3>
-                <p></p>
-                <a href="details/agricultural-value-addition-center.html">Learn more →</a>
+                <h3>Jambutu Smoked Fish Market, Yola.</h3>
+                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
+                <a href="details/chikun-chicks.html">Learn more →</a>
               </div>
               <div class="section4">
                 <div class="img-placeholder">
-                  <img src="Data/Images/chikun.png" alt="Value Addition">
+                  <img src="Data/Images/agricfair.jpg" alt="Agricultural Inputs Trade Fair, Yola">
+                </div>
+                <h3>Agricultural Inputs Trade Fair, Yola.</h3>
+                <p>Annual trade fair showcasing agricultural inputs, machinery, and innovations to connect farmers with suppliers.</p>
+                <a href="details/agric-fair.html">Learn more →</a>
+                </div>
+                
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/sarekosam.png" alt="Chikun Chicks - Chicken">
+                </div>
+                <h3>Sare Kosam - Home Of Pure & Natural Milk.</h3>
+                <p></p>
+                <a href="details/chikun-chicks.html">Learn more →</a>
+              </div>
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/wakili.png" alt="Wakili (WK) Poultry Farms, Yola">
+                </div>
+                <h3>Wakili (WK) Poultry Farms, Yola</h3>
+                <p>Modern poultry farm specializing in chicken breeding, egg production, and poultry products.</p>
+                <a href="details/wakili-farms.html">Learn more →</a>
+              </div>
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/chikun.png" alt="Chikun Chicks - Chicken">
                 </div>
                 <h3>Chikun Chicks - Chicken</h3>
-                <p></p>
-                <a href="details/agricultural-value-addition-center.html">Learn more →</a>
+                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
+                <a href="details/chikun-chicks.html">Learn more →</a>
               </div>
 
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/lacrest.jpg" alt="Chikun Chicks - Chicken">
+                </div>
+                <h3>LA'CREST Frozens, Yola.</h3>
+                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
+                <a href="details/chikun-chicks.html">Learn more →</a>
+              </div>
+              <div class="section4">
+                <div class="img-placeholder">
+                  <img src="Data/Images/easylife.png" alt="Chikun Chicks - Chicken">
+                </div>
+                <h3>Easy Life Frozen Chicken.</h3>
+                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
+                <a href="details/chikun-chicks.html">Learn more →</a>
+              </div>
+              
             </div>
             </div>
 
@@ -394,29 +446,29 @@ window.renderSection = function() {
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/agro2.png" alt="">
+                <img src="Data/Images/agro2.png" alt="Distribution Of Farm Inputs To Residents By The Executive Governor">
               </div>
               <h3>Distribiution Of Farm Inputs To Residents By The Executive Governor</h3>
-              <p></p>
-              <a href="details/cold-storage-facility.html">Learn more →</a>
+              <p>Government initiative providing essential farming inputs, seeds, and agricultural supplies to support local farmers and boost agricultural production.</p>
+              <a href="details/farm-input-distribution.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/agro1.png" alt="">
+                <img src="Data/Images/agro1.png" alt="'Every Home A Garden' - Movement By The First Lady">
               </div>
               <h3>'Every Home A Garden' - Movement By The First Lady.</h3>
-              <p></p>
-              <a href="details/agricultural-value-addition-center.html">Learn more →</a>
+              <p>Initiative promoting urban agriculture and food security by encouraging household gardening and sustainable farming practices.</p>
+              <a href="details/every-home-garden.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/climatesmart.png" alt="">
+                <img src="Data/Images/climatesmart.png" alt="Climate-smart Seed Production Training">
               </div>
               <h3>Climate-smart Seed Production Training</h3>
-              <p></p>
-              <a href="details/grain-processing-center.html">Learn more →</a>
+              <p>Capacity building program teaching farmers climate-resilient seed production techniques and sustainable agricultural practices.</p>
+              <a href="details/climate-smart-training.html">Learn more →</a>
             </div>
 
           </div>
@@ -428,29 +480,29 @@ window.renderSection = function() {
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/divinepetvet.jpg" alt="">
+                <img src="Data/Images/divinepetvet.jpg" alt="Divine Pet Veterinary Clinic, Yola">
               </div>
               <h3>Divine Pet Veterinary Clinic, Yola.</h3>
-              <p></p>
-              <a href="details/cold-storage-facility.html">Learn more →</a>
+              <p>Professional veterinary clinic providing comprehensive medical care for pets and small animals in Yola.</p>
+              <a href="details/divine-pet-vet.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/hooflinevet.jpg" alt="">
+                <img src="Data/Images/hooflinevet.jpg" alt="Hoof - Line Veterinary, Yola">
               </div>
               <h3>Hoof - Line Veterinary, Yola.</h3>
-              <p></p>
-              <a href="details/agricultural-value-addition-center.html">Learn more →</a>
+              <p>Specialized veterinary practice focusing on livestock health, treatment, and preventive care services.</p>
+              <a href="details/hoofline-vet.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/crittersvet.png" alt="">
+                <img src="Data/Images/crittersvet.png" alt="Critters veterinary Center">
               </div>
               <h3>Critters veterinary Center.</h3>
-              <p></p>
-              <a href="details/grain-processing-center.html">Learn more →</a>
+              <p>Full-service veterinary center offering medical care, surgery, and health consultations for all types of animals.</p>
+              <a href="details/critters-vet.html">Learn more →</a>
             </div>
 
           </div>
@@ -670,12 +722,15 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
     const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000/api/gemini'
+      : '/api/gemini';
+    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
       data = await res.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";

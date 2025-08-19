@@ -1,70 +1,6 @@
 
 window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 
-// Function to initialize the NaviInfo section
-window.initNaviInfo = async function() {
-    const naviSection = document.getElementById('naviinfo-content');
-    if (!naviSection) return;
-
-    // Create section content if it doesn't exist
-    if (!naviSection.querySelector('.section-content')) {
-        naviSection.innerHTML = `
-            <div class="section-content">
-                <h1>Navigation Information</h1>
-                <p>Get directions, distances, and transportation information for Yola, Adamawa State.</p>
-                
-                <div class="chat-container">
-                    <div class="chat-header">
-                        <div class="model-switch">
-                            <span class="model-label">Using Gemini 1.5</span>
-                            <label class="switch">
-                                <input type="checkbox" onchange="window.toggleGeminiModel('naviinfo', this.checked)">
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-                    </div>
-                    <div id="chat-output" class="chat-messages"></div>
-                    <div class="chat-input-area">
-                        <input type="text" id="user-input" placeholder="Ask for directions, locations, or transport info...">
-                        <button onclick="sendMessage('naviinfo')">Send</button>
-                    </div>
-                </div>
-
-                <div id="map-section">
-                    <div id="map"></div>
-                    <div class="map-controls">
-                        <button onclick="window.map.setZoom(window.map.getZoom() + 1)">Zoom In</button>
-                        <button onclick="window.map.setZoom(window.map.getZoom() - 1)">Zoom Out</button>
-                        <button onclick="window.map.setCenter([9.2182, 12.4818])">Center on Yola</button>
-                    </div>
-                    <div class="map-info"></div>
-                    <div class="route-info"></div>
-                </div>
-            </div>
-        `;
-
-        // Load leaflet resources
-        if (!document.querySelector('link[href*="leaflet.css"]')) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://unpkg.com/leaflet/dist/leaflet.css';
-            document.head.appendChild(link);
-        }
-
-        // Load Leaflet Routing Machine CSS
-        if (!document.querySelector('link[href*="leaflet-routing-machine.css"]')) {
-            const routingLink = document.createElement('link');
-            routingLink.rel = 'stylesheet';
-            routingLink.href = 'https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css';
-            document.head.appendChild(routingLink);
-        }
-
-        // Load JS if not already loaded
-        await loadScripts();
-        initMap();
-    }
-};
-
 // Function to initialize NaviInfo section
 window.initNaviInfo = () => {
     const naviSection = document.getElementById('naviinfo-content');
@@ -191,7 +127,7 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for NaviInfo
 window.NAVI_AI_PROMPT = window.NAVI_AI_PROMPT || `You are an AI navigation assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and help users with navigation, directions, and transportation in Yola.
+Enquire and help users with navigation, directions, and transportation in Yola.
 
 Key Capabilities:
 1. You can show locations on the map using the showLocation() function
@@ -215,66 +151,25 @@ If information is not available, say: "Sorry, I do not have that specific inform
 
 For non-navigation queries about health, education, community, environment, jobs, or agriculture, refer users to MediInfo, EduInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo respectively.`;
 
-// Function to load required scripts
-async function loadScripts() {
-    const scripts = [
-        'https://unpkg.com/leaflet/dist/leaflet.js',
-        'https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js'
-    ];
-
-    for (const src of scripts) {
-        if (!document.querySelector(`script[src="${src}"]`)) {
-            await new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-    }
-}
-
-// Initialize Leaflet map
+// Initialize Google Maps instance
 window.initMap = function() {
-    const mapDiv = document.getElementById('map');
-    if (!mapDiv || !window.L) return;
+    const mapDiv = document.getElementById('navi-map');
+    if (!mapDiv || !window.google) return;
 
     // Create the map centered on Yola
-    window.map = L.map('map').setView([9.2182, 12.4818], 13);
-
-    // Add satellite layer (ESRI World Imagery)
-    window.satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-        maxZoom: 18
-    }).addTo(window.map);
-
-    // Add OpenStreetMap layer for labels and roads
-    window.osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 18
+    window.map = new google.maps.Map(mapDiv, {
+        center: { lat: 9.2182, lng: 12.4818 },
+        zoom: 13,
+        mapTypeId: 'hybrid'  // hybrid = satellite + labels
     });
 
-    // Add layer control
-    L.control.layers({
-        "Satellite": window.satelliteLayer,
-        "Streets": window.osmLayer
-    }).addTo(window.map);
-
-    // Initialize route control for directions
-    window.routeControl = L.Routing.control({
-        waypoints: [],
-        router: L.Routing.osrm({
-            serviceUrl: 'https://router.project-osrm.org/route/v1'
-        }),
-        lineOptions: {
-            styles: [{color: '#0066CC', weight: 4}]
-        },
-        show: false,
-        addWaypoints: false,
-        draggableWaypoints: false,
-        fitSelectedRoutes: true
-    }).addTo(window.map);
+    // Initialize directions service and renderer
+    window.directionsService = new google.maps.DirectionsService();
+    window.directionsRenderer = new google.maps.DirectionsRenderer({
+        map: window.map,
+        suppressMarkers: false,
+        preserveViewport: false
+    });
 
     // Initialize markers array
     window.markers = [];
@@ -324,38 +219,38 @@ window.showLocation = async function(locationName) {
     }
 };
 
-// Function to draw route between two points
+// Function to draw route between two points using Google Maps
 window.drawRoute = async function(origin, destination) {
-    if (!window.map || !window.routeControl) return;
+    if (!window.map || !window.directionsService || !window.directionsRenderer) return false;
     
     try {
         // Add "Yola" to searches if not present
         if (!origin.toLowerCase().includes('yola')) origin += ' Yola, Nigeria';
         if (!destination.toLowerCase().includes('yola')) destination += ' Yola, Nigeria';
 
-        // Geocode both points
-        const [originData, destData] = await Promise.all([
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(origin)}`).then(r => r.json()),
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`).then(r => r.json())
-        ]);
+        const request = {
+            origin: origin,
+            destination: destination,
+            travelMode: google.maps.TravelMode.DRIVING
+        };
 
-        if (originData[0] && destData[0]) {
-            // Set waypoints and display route
-            window.routeControl.setWaypoints([
-                L.latLng(originData[0].lat, originData[0].lon),
-                L.latLng(destData[0].lat, destData[0].lon)
-            ]);
+        const result = await new Promise((resolve, reject) => {
+            window.directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    resolve(result);
+                } else {
+                    reject(new Error('Directions request failed: ' + status));
+                }
+            });
+        });
 
-            // Show the map section
-            const mapSection = document.getElementById('map-section');
-            if (mapSection) {
-                mapSection.style.display = 'block';
-                mapSection.scrollIntoView({ behavior: 'smooth' });
-            }
-            
-            return true;
+        window.directionsRenderer.setDirections(result);
+        const mapSection = document.getElementById('navi-map');
+        if (mapSection) {
+            mapSection.style.display = 'block';
+            mapSection.scrollIntoView({ behavior: 'smooth' });
         }
-        return false;
+        return true;
     } catch (error) {
         console.error('Routing failed:', error);
         return false;
@@ -565,7 +460,7 @@ window.renderSection = function() {
               <div class="img-placeholder">
                 <img src="Data/Images/sauki.jpg" alt="">
               </div>
-              <h3>Sauki< Motor Park, jimeta Yola./h3>
+              <h3>Sauki Motor Park, jimeta Yola.</h3>
               <p></p>
               <a href="details/.html">Learn more →</a>
             </div>
@@ -1210,16 +1105,36 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
     const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    
+    // Determine the server URL based on the environment
+    const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000/api/gemini'
+      : 'https://yolainfohub.netlify.app/api/gemini';
+      
+    let res = await fetch(serverUrl, { 
+      method: 'POST', 
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      credentials: 'include',
+      mode: 'cors',
+      body 
+    });
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      res = await fetch(serverUrl, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body 
+      });
       data = await res.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
+    console.error("Error contacting AI service:", err);
     return "Sorry, there was an error contacting the AI service.";
   }
 }
@@ -1444,22 +1359,17 @@ window.sendNaviMessage = async function(faqText = '') {
   try {
     const localData = await fetch('Data/NaviInfo/naviinfo.txt').then(r => r.text());
     finalAnswer = await getGeminiAnswer(NAVI_AI_PROMPT + "\n\n" + localData, msg, window.GEMINI_API_KEY, imageData);
-    // Try to extract directions from the AI response
+    // Try to extract directions from the AI response or user message
     // Example: "Directions from [origin] to [destination]"
-    const dirMatch = /directions from ([^\n]+?) to ([^\n.]+)[\n.]/i.exec(msg + ' ' + finalAnswer);
-    if (dirMatch && window.naviDirectionsService && window.naviDirectionsRenderer) {
+    const dirMatch = /(?:directions|route|how\s+to\s+get)\s+from\s+([^\n]+?)\s+to\s+([^\n.]+)[\n.]/i.exec(msg + ' ' + finalAnswer);
+    if (dirMatch) {
       const origin = dirMatch[1].trim();
       const destination = dirMatch[2].trim();
-      window.naviDirectionsService.route({
-        origin,
-        destination,
-        travelMode: 'DRIVING'
-      }, function(result, status) {
-        if (status === 'OK') {
-          window.naviDirectionsRenderer.setDirections(result);
-          directionsDrawn = true;
-        }
-      });
+      try {
+        directionsDrawn = await window.drawRoute(origin, destination);
+      } catch (e) {
+        console.error("Failed to draw route:", e);
+      }
     }
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);

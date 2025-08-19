@@ -41,7 +41,7 @@ nav.navbar {
   width: auto;
   gap: 1rem;
   margin: 0;
-  padding: 0.5rem;
+  /*padding: 0.5rem; */
 }
 
 /* Merged styles for navbar-right across all definitions */
@@ -256,7 +256,7 @@ nav.navbar {
   color: #fff;
   font-size: 2.2rem;
   position: absolute;
-  top: 1rem;
+  top: 0.5rem;
   right: 1.2rem;
   cursor: pointer;
   z-index: 10001;
@@ -264,6 +264,7 @@ nav.navbar {
   border-radius: 8px;
   transition: all 0.3s ease;
   backdrop-filter: blur(5px);
+  display: none;
 }
 
 .mobile-menu-close:hover {
@@ -430,8 +431,8 @@ nav.navbar {
   }
 
   .navbar-logo-placeholder {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
   }
 
   .navbar-appname {
@@ -452,6 +453,7 @@ nav.navbar {
     flex-direction: row;
     gap: 0.5rem;
     justify-content: center;
+    margin-right: 30px;
   }
 
   .navbar-links {
@@ -469,6 +471,7 @@ nav.navbar {
 }
 
 /* Tablet Screens (768px to 799px) */
+/*
 @media screen and (min-width: 768px) and (max-width: 799px) {
   .navbar {
     flex-direction: column;
@@ -514,7 +517,7 @@ nav.navbar {
     order: 1;
   }
 }
-
+*/
 /* Mobile Screens (<=700px) */
 @media screen and (max-width: 700px) {
   .auth-btn {
@@ -614,6 +617,11 @@ nav.navbar {
     border-radius: 2px;
     margin: 2px 0;
   }
+  /*
+  .model-switch {
+    flex-direction: column;
+  } */
+  
 }
 
 /* Font size and padding adjustments */

@@ -133,7 +133,7 @@ Wednesday, July 30, 2025
 }
 
 .section4 {
-  background: #dddada;
+  background: #ece1ee;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 1.5rem;
@@ -438,7 +438,21 @@ Wednesday, July 30, 2025
 .input-options button:hover, .file-upload-btn:hover {
   background: #e2e8f0;
 }
+/*
+#video-modal {
 
+}
+#camera-feed {
+  width: 100;
+}
+.camera-modal {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  align-items: center;
+}
+*/
 /* Ensure Leaflet map and controls stay below navbar */
 .leaflet-container,
 .leaflet-pane,
@@ -660,6 +674,9 @@ main {
 
 @media screen and (min-width: 700px) and (max-width: 1150px) {
   /* Tablet styles */
+  .info-section h2 {
+    padding-top: 50px;
+  }
   .faq-list {
     width: 94%;
   }
@@ -723,10 +740,13 @@ main {
     grid-template-columns: 1fr !important;
     gap: 0.7rem;
     padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .section4 {
     padding: 0.7rem;
-    width:auto;
+    /* width:auto; */
     max-width: 350px;
   }
   .section4-home-img-container {
@@ -755,6 +775,7 @@ main {
     max-width: 98vw;
     margin-left: auto;
     margin-right: auto;
+    margin-top: auto;
   }
   .faq-list ul {
     columns: 1 !important;
@@ -767,6 +788,10 @@ main {
   }
   .info-section {
     margin-top: 1rem;
+  }
+  .info-section h2 {
+    padding-top: 0px;
+    margin-top: 0;
   }
   .chat-input-row {
     flex-direction: column;

@@ -112,7 +112,7 @@ window.renderSection = function() {
           <button type="button" class="stop-btn" onclick="if(abortController) abortController.abort();" style="display:none">Stop</button>
         </form>
         <div class="input-options">
-          <button type="button" onclick="window.captureImage('home')" title="Capture Image"><span>📷</span></button>
+          <button type="button" onclick="window.captureImage('home')" title="Capture Image" ><span>📷</span></button>
           <button type="button" onclick="window.recordAudio('home')" title="Record Audio"><span>🎤</span></button>
           <label class="file-upload-btn" title="Upload File">
             <span>📁</span>
@@ -135,7 +135,7 @@ window.renderSection = function() {
       <div class="section2" style="">
         <h2 style="margin-bottom: 25px;" >History of Yola</h2>
         <div style="width: ; height: ; overflow: hidden; border-radius: 12px; display:flex; gap:0.5rem;">
-        <img src="Data/Images/palace3.1.jpg" alt="Yola Palace" style="width:100% ; height:auto; object-fit: fill; border-radius: 12px;">
+        <img src="Data/Images/palace3.jpg" alt="Yola Palace" style="width:100% ; height:auto; object-fit: fill; border-radius: 12px;">
         <img src="Data/Images/palace.jpg" alt="Yola Palace" style="width:100% ; height:auto; object-fit: fill; border-radius: 12px;">
         </div>
         <p style="margin-top: 1.5rem; line-height: 1.6; color: #2d3748;">
@@ -222,8 +222,10 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
                         (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
 
     // Use backend proxy instead of direct Gemini API
-    let url = '/api/gemini';
-    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000/api/gemini'
+      : '/api/gemini';
+    const body = JSON.stringify({ model: modelVersion, contents: [contents] });
     let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
 
     if (!res.ok) {

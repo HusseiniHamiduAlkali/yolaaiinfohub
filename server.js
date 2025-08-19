@@ -11,24 +11,15 @@ const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 const validator = require('express-validator');
 const helmet = require('helmet');
+const fetch = require('node-fetch');
 require('dotenv').config({
   path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
 });
 
+
 const app = express();
 
-// Environment-specific configuration
-const isProduction = process.env.NODE_ENV === 'production';
-const RESET_URL_BASE = isProduction 
-  ? 'https://yolainfohub.netlify.app/reset-password'
-  : 'http://localhost:4000/reset-password';
-
-// Security middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
-
-// CORS configuration
+// CORS configuration (must be declared before use)
 const corsOptions = {
   origin: [
     'http://127.0.0.1:5500',
@@ -51,9 +42,45 @@ const corsOptions = {
   preflightContinue: false
 };
 
+// Security middleware
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 app.use(express.json());
+
+// Environment-specific configuration
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Mount /api/gemini endpoint
+app.post('/api/gemini', async (req, res) => {
+  try {
+    const { model, contents } = req.body;
+    const API_KEY = process.env.GEMINI_API_KEY;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+    
+    const response = await fetch(geminiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ contents })
+    });
+
+  const data = await response.json();
+  console.log('Gemini API response:', JSON.stringify(data, null, 2));
+  res.json(data);
+  } catch (error) {
+    console.error('Gemini API error:', error);
+    res.status(500).json({ error: 'Error processing Gemini API request' });
+  }
+});
+
+
+const RESET_URL_BASE = isProduction 
+  ? 'https://yolainfohub.netlify.app/reset-password'
+  : 'http://localhost:4000/reset-password';
 
 // Rate limiting
 const loginLimiter = rateLimit({
@@ -362,7 +389,9 @@ app.get('/api/me', async (req, res) => {
   res.json({ loggedIn: true, username: user.username, name: user.name, email: user.email });
 });
 
-app.listen(4000, () => console.log('Auth server running on http://localhost:4000'));
+// Mount the Gemini API router
+
+app.listen(4000, () => console.log('Server running on http://localhost:4000'));
 
 // Client-side fetch example (to be used in your frontend code)
 // fetch('http://localhost:4000/api/login', {

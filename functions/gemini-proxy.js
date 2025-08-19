@@ -1,9 +1,14 @@
-// Gemini API Proxy Route for Yola Info Hub
+// Gemini API Proxy Server for Yola Info Hub
 const express = require('express');
+const cors = require('cors');
 const fetch = require('node-fetch');
 require('dotenv').config();
 
-const router = express.Router();
+const app = express();
+
+// Enable CORS for local development
+app.use(cors());
+app.use(express.json());
 
 // POST /api/gemini
 router.post('/', async (req, res) => {
@@ -30,4 +35,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+// Start server
+const PORT = process.env.GEMINI_PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Gemini proxy server running on http://localhost:${PORT}`);
+});

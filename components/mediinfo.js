@@ -73,7 +73,7 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for MediInfo
 window.MEDI_AI_PROMPT = window.MEDI_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Respond to greetings politely, and enquire on how to help the user with medical and health information in Yola.
+Enquire on how to help the user with medical and health information in Yola.
 Answer the user's question using the information provided below, and the internet. But only those regarding medical and health matters.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local healthcare provider for further help."
 And if a user clearly requests information on education, navigation, community, environment, jobs, or agriculture, refer them to either of EduInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
@@ -233,19 +233,19 @@ window.renderSection = function() {
 
               <div class="section4">
                 <div class="img-placeholder">
-                  <img src="Data/Images/fortland.jpg" alt="Specialist Hospital">
+                  <img src="Data/Images/fortland.jpg" alt="Fortland Bone Hospital Yola">
                 </div>
                 <h3>Fortland Bone Hospital Yola</h3>
-                <p></p>
+                <p>Specialized hospital focused on orthopedic care, bone treatments, and rehabilitation services in Yola.</p>
                 <a href="details/specialist-hospital.html">Learn more →</a>
               </div>
 
               <div class="section4">
                 <div class="img-placeholder">
-                  <img src="Data/Images/boshang.png" alt="Adamawa-German Hospital">
+                  <img src="Data/Images/boshang.png" alt="New Boshang Clinic, Yola">
                 </div>
                 <h3>New Boshang Clinic, Yola</h3>
-                <p></p>
+                <p>Modern healthcare facility offering comprehensive medical services and specialized treatments in Yola.</p>
                 <a href="details/german-hospital.html">Learn more →</a>
               </div>
 
@@ -311,55 +311,55 @@ window.renderSection = function() {
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/alfijr.png" alt="Community Pharmacy">
+                <img src="Data/Images/alfijr.png" alt="Alfijr Pharmacy, Yola">
               </div>
               <h3>Alfijr Pharmacy, Yola.</h3>
-              <p></p>
+              <p>Reliable pharmacy providing a wide range of medications, healthcare products, and pharmaceutical services to the Yola community.</p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/jds.png" alt="Community Pharmacy">
+                <img src="Data/Images/jds.png" alt="JDS Pharmacy, Yola">
               </div>
               <h3>JDS Pharmacy, Yola.</h3>
-              <p></p>
+              <p>Community pharmacy offering quality medications, health supplies, and professional pharmaceutical care services in Yola.</p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
             
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/mufami.jpg" alt="Community Pharmacy">
+                <img src="Data/Images/mufami.jpg" alt="Mufami Pharmacy Store">
               </div>
               <h3>Mufami Pharmacy Store.</h3>
-              <p></p>
+              <p>Local pharmacy store providing essential medications, healthcare products, and personalized customer service to the Yola community.</p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/jasar.png" alt="Community Pharmacy">
+                <img src="Data/Images/jasar.png" alt="Jasar Pharmacy, Yola">
               </div>
               <h3>Jasar Pharmacy, Yola.</h3>
-              <p></p>
+              <p>Full-service pharmacy offering prescription medications, healthcare products, and expert pharmaceutical advice in Yola.</p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/kerion.png" alt="Community Pharmacy">
+                <img src="Data/Images/kerion.png" alt="Kerion Pharmacy, Yola">
               </div>
               <h3>Kerion Pharmacy, Yola.</h3>
-              <p></p>
+              <p>Modern pharmacy facility providing comprehensive pharmaceutical services, health products, and professional healthcare advice in Yola.</p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/lekki.jpg" alt="Community Pharmacy">
+                <img src="Data/Images/lekki.jpg" alt="Lekki Pharmacy and Pharmaceuticals, Yola">
               </div>
               <h3>Lekki Pharmacy and Pharmaceuticals, Yola.</h3>
-              <p></p>
+              <p>Premium pharmacy and pharmaceutical service provider offering a wide range of medications, health products, and professional healthcare consultations in Yola.</p>
               <a href="details/community-pharmacy.html">Learn more →</a>
             </div>
 
@@ -375,28 +375,28 @@ window.renderSection = function() {
 
         <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/polio.jpg" alt="">
+              <img src="Data/Images/polio.jpg" alt="Polio Immunization at Community PHCCs">
             </div>
             <h3>Polio Immunization at Community PHCCs.</h3>
-            <p></p>
+            <p>Regular polio immunization programs conducted at Primary Healthcare Centers to protect children and maintain Yola's polio-free status.</p>
             <a href="details/.html">Learn more →</a>
           </div>
 
         <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/mosquito.jpg" alt="">
+              <img src="Data/Images/mosquito.jpg" alt="Mosquito nets distribution to resident of Yola">
             </div>
             <h3>Mosquito nets distribution to resident of Yola.</h3>
-            <p></p>
+            <p>Community health initiative providing free insecticide-treated mosquito nets to Yola residents to prevent malaria and other mosquito-borne diseases.</p>
             <a href="details/.html">Learn more →</a>
           </div>
 
         <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/redcross.png" alt="">
+              <img src="Data/Images/redcross.png" alt="Redcross society awareness campaign in Yola">
             </div>
             <h3>Redcross society awareness campaign in Yola.</h3>
-            <p></p>
+            <p>Regular health awareness campaigns conducted by the Red Cross Society to educate Yola residents about emergency preparedness, first aid, and public health.</p>
             <a href="details/.html">Learn more →</a>
           </div>
 
@@ -506,12 +506,15 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
     const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    let res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:4000/api/gemini'
+      : '/api/gemini';
+    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
       data = await res.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";

@@ -39,17 +39,18 @@ window.renderSection = function() {
           <ul>
             <li><strong>AI-Powered Chat:</strong> Get instant answers to your questions across various categories.</li>
             <li><strong>Section-Specific Information:</strong> Dedicated sections for EduInfo, AgroInfo, EcoInfo, MediInfo, NaviInfo, and ServiInfo.</li>
-            <li><strong>User-Friendly Interface and Responsiveness:</strong> A clean, intuitive design for seamless navigation on different devices (PC >= 1150px, Tab <= 1150px >= 900px, Mobile < 900px),<br>with Hamburger Menu on Mobile Screen. </li>
-            <li><strong>Image & Audio Input:</strong> Interact with the AI using images and voice messages for a richer experience.</li>
+            <li><strong>User-Friendly Interface and Responsiveness:</strong> A clean, intuitive design for seamless navigation on different devices <br> PC above 1150px, Tab from 900px to 1150px , Mobile below 900px,<br>with Hamburger Menu on Mobile Screen.</li>
+            <li><strong>Image, Audio and Files Input:</strong> Interact with the AI using images, voice messages and other files for a richer experience.</li>
             <li><strong>Text-To-Speech:</strong> A text-to-speech option to listen to the AI's response in any section.</li>
             <li><strong>Local Focus:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
             <li><strong>Multi Modality:</strong> A pecial functionality, enabling user to switch between two different Gemini models for their response.</li>
+            <li><strong>Frequently Asked Questions FAQs:</strong> FAQs available as clickable links directly below the chat areas of every section.</li>
           </ul>
           
           <h3>Section-specific Features:</h3>
           <ul>
             <li><strong>NaviInfo:</strong> Maps For Directions and Navigation.</li>
-            <li><strong>EcoInfo:</strong>Carbon Calculator and an Eco Classifier, which is able to classify objects (images) as recylable or not.</li>
+            <li><strong>EcoInfo:</strong> Carbon Calculator and an Eco Classifier, which is able to classify objects (images) as recylable or not.</li>
           </ul>
           <h3>Contents of the Environment Variable (.env file):</h3>
           <ul style="list-style: none;">
@@ -71,8 +72,9 @@ window.renderSection = function() {
           </ul>
 
           <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better.</p>
-          
+
           <p><strong>I Husseini Hamidu Alkali the Chief Pilot, Together With GitCopilot We Are Able To Land Unto This Robust Project For My July 3MTT Knowledge Showcase.</strong><p>
+          <p><strong>My Fellow ID: FE/23/1941341. Cohort 3.
           
         </div>
       </div>
