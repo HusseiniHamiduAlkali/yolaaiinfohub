@@ -394,7 +394,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:4000/api/gemini'
-      : 'https://yolainfohub.netlify.app/api/gemini';
+      : 'https://yolaaiinfohub.netlify.app/api/gemini';
       
     let res = await fetch(serverUrl, { 
       method: 'POST', 
@@ -415,7 +415,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
-    return "Sorry, there was an error contacting the AI service.";
+    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }
 
@@ -466,7 +466,7 @@ window.sendServiMessage = async function(faqText = '') {
     finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
@@ -639,7 +639,7 @@ window.sendServiMessage = async function(faqText = '') {
   msgGroup.className = 'chat-message-group';
   msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    <div class='ai-msg'><span class='ai-msg-text'>Servi AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
   preview.innerHTML = '';
@@ -651,7 +651,7 @@ window.sendServiMessage = async function(faqText = '') {
     finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);

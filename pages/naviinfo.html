@@ -109,6 +109,32 @@
         .route-link:hover {
             background: #2c5282;
         }
+
+        .map-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            justify-content: center;
+        }
+
+        .map-controls button {
+            padding: 0.5rem 1rem;
+            background: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .map-controls button:hover {
+            background: #2c5282;
+        }
+
+        .map-controls button:active {
+            transform: translateY(1px);
+        }
     </style>
 </head>
 <body>
@@ -148,8 +174,14 @@
                 </div>
             </div>
 
-            <div id="map" class="map-container"></div>
+            <div id="navi-map" class="map-container"></div>
             <div id="directions-panel" class="directions-panel"></div>
+            
+            <div class="map-controls">
+                <button onclick="window.zoomIn()">Zoom In</button>
+                <button onclick="window.zoomOut()">Zoom Out</button>
+                <button onclick="window.centerOnYola()">Center on Yola</button>
+            </div>
 
             <div class="routes-section">
                 <h2>Popular Routes</h2>
@@ -188,8 +220,54 @@
         </section>
     </main>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+    <script>
+        // Map control functions
+        window.zoomIn = function() {
+            if (window.map) {
+                window.map.setZoom(window.map.getZoom() + 1);
+            }
+        };
+        
+        window.zoomOut = function() {
+            if (window.map) {
+                window.map.setZoom(window.map.getZoom() - 1);
+            }
+        };
+        
+        window.centerOnYola = function() {
+            if (window.map) {
+                window.map.setCenter({ lat: 9.2182, lng: 12.4818 });
+            }
+        };
+
+        // Load Maps API directly
+        const loadMapsAPI = () => {
+            const keylessScript = document.createElement('script');
+            keylessScript.src = 'https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v7.0/mapsJavaScriptAPI.js';
+            keylessScript.id = 'maps-api';
+            keylessScript.async = true;
+            keylessScript.defer = true;
+            keylessScript.onload = () => {
+                console.log('Maps API loaded, initializing...');
+                if (window.google && window.google.maps) {
+                    window.initMap();
+                }
+            };
+            keylessScript.onerror = () => {
+                console.error('Failed to load Maps API');
+                const mapDiv = document.getElementById('navi-map');
+                if (mapDiv) {
+                    mapDiv.innerHTML = '<div style="text-align:center;padding:2em;color:#e53e3e;">Unable to load Google Maps. Please check your internet connection and refresh the page.</div>';
+                }
+            };
+            document.head.appendChild(keylessScript);
+        };
+
+        // Initialize map when the page loads
+        window.addEventListener('load', loadMapsAPI);
+    </script>
     <script src="../components/navbar.js"></script>
+    <script src="../components/mapDirections.js"></script>
     <script src="../components/naviinfo.js"></script>
 </body>
 </html>

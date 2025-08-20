@@ -8,10 +8,20 @@
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
+.section2-home-image-placeholder {
+  overflow: hidden; 
+  border-radius: 12px; 
+  display:flex; 
+  gap:0.5rem;
+}
+.section2-home-img1, .section2-home-img2 {
+  width:100% ; 
+  height:auto; 
+  object-fit: fill; 
+  border-radius: 12px;
+}
 .section4-home {
-    
     border-radius: 15px;
-
     border: solid;
 }
 
@@ -50,6 +60,7 @@
 .section4-home-img-container h4 {
    text-align: center;
    height: 100%;
+   font-size: larger;
 }
 .section4-home-img-placeholder img {
     width: 100%; 
@@ -57,3 +68,16 @@
     object-fit: fill; 
     border-radius: 12px;
     }
+ .section4-home-btn {
+  margin-bottom: 0;
+ }
+@media screen and (max-width: 700px) {
+  .section2-home-image-placeholder {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .section2-home-img1, .section2-home-img2 {
+    height: 100% ; 
+  }
+ 
+}

@@ -3,14 +3,13 @@ window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
 
-// Function to toggle between Gemini 1.5 Flash and Gemini 2.5 Flash  
+// Toggle Gemini Model
 window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
     const label = document.querySelector('.model-label');
     if (label) {
         label.textContent = useGemini25 ? 'Using Gemini 2.5 Flash' : 'Using Gemini 1.5 Flash';
     }
-    // Store preference
     localStorage.setItem('gemini_model_preference', useGemini25 ? '2.5' : '1.5');
 };
 
@@ -222,13 +221,13 @@ window.renderSection = function() {
           <h3 class="section3-title">Community Bulletin <br> (Top Stories this week in Yola).</h3>
           <div class="section4-container">
           
-            <div class="section4">
+              <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/flood2.jpg" alt="flood Yola.">
               </div>
               <h3>The Ever-devastating Flood Experienced in Yola.</h3>
               <p></p>
-              <a href="details/flood.html">Learn more →</a>
+              <a href="../details/Community/flood.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -238,7 +237,7 @@ window.renderSection = function() {
               <h3>Six Nigerian Law School Students Kidnapped En Route To Yola Campus.</h3>
               <p>Six students of the Nigerian Law School have been reportedly abducted by suspected armed bandits
                  while travelling to resume at the school's...</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/law-students.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -248,34 +247,30 @@ window.renderSection = function() {
               <h3>Total blackout hits Yola, Jalingo as TCN begins repair</h3>
               <p>The residents of Yola and Jalingo, the capitals of Adamawa and Taraba States, 
                 have been hit by a five-day darkness.</p>
-              <a href="details/.html">Learn more →</a>
-            </div>
-
-            <div class="section4">
+              <a href="../details/Community/blackout.html">Learn more →</a>
+            </div>            <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/waterboard2.jpg" alt="waterboard">
               </div>
               <h3>Relief after 15 years as Yola Town water scheme gets facelift</h3>
               <p>Residents of Yola Town in Yola South Local Government Area of Adamawa State have been relieved of an acute shortage of water.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/water-scheme.html">Learn more →</a>
             </div>
 
-            <div class="section4">
+              <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/conference2.png" alt="">
               </div>
               <h3>Gov. Fintiri flags off N18.9b international conference centre in Yola</h3>
               <p>Governor Ahmadu Fintiri, on Thursday, May 29, 2025, performed the groundbreaking ceremony for the construction of an ultramodern International Conference and...</p>
-              <a href="details/.html">Learn more →</a>
-            </div>
-
-            <div class="section4">
+              <a href="../details/Community/conference-center.html">Learn more →</a>
+            </div>            <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/cng.jpg" alt=" Yola">
               </div>
               <h3>Nigerian govt commissions LCNG fuelling station in Yola, 1st in Northeast</h3>
               <p>The Nigerian government has commissioned an LCNG refuelling and conversion centre in the Adamawa State capital, Yola It is coming as the...</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/lcng-station.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -284,7 +279,7 @@ window.renderSection = function() {
               </div>
               <h3>Meters theft rampant in Adamawa as Yola Electric Company cautions customers</h3>
               <p>The Yola Electricity Distribution Company (YEDC) has issued a stern warning to customers against buying meters from any source other than designated purchasing...</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/yedc-meters.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -293,7 +288,7 @@ window.renderSection = function() {
               </div>
               <h3>Atiku preaches patience, courage at AUN, Yola graduation ceremony</h3>
               <p>Former Vice President Atiku Abubakar has urged young people to embrace patience and courage, which he described as virtues that pay off in life.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/aun-graduation.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -302,7 +297,7 @@ window.renderSection = function() {
               </div>
               <h3>Adamawa government okays N2.9Bn to rebuild Yola town market</h3>
               <p>The Adamawa State Govt approved N2,937, 217120.45 k for the reconstruction of the Yola town market, destroyed by fire about five months ago.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/market-rebuild.html">Learn more →</a>
             </div>
 
           </div>
@@ -345,7 +340,7 @@ window.renderSection = function() {
               </div>
               <h3>Bako Youth Organisation Yola</h3>
               <p>Supporting youth through education, business, and social programs.</p>
-              <a href="details/womensupport.html">Learn more →</a>
+              <a href="../details/Community/bako-youth.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -354,16 +349,16 @@ window.renderSection = function() {
               </div>
               <h3>Universal Youth Development Initiative Yola</h3>
               <p>Supporting youth through education, business, and social programs.</p>
-              <a href="details/womensupport.html">Learn more →</a>
+              <a href="../details/Community/universal-youth.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/adamawaunited.jpg" alt="Adamawa United">
               </div>
-              <h3>Adamawa United Football Club, Association.</h3>
-              <p>Supporting youth through education, business, and social programs.</p>
-              <a href="details/womensupport.html">Learn more →</a>
+              <h3>Adamawa United Football Club Association</h3>
+              <p>Professional football club promoting sports development in Adamawa State.</p>
+              <a href="../details/Community/adamawa-united.html">Learn more →</a>
             </div>
 
           </div>
@@ -398,7 +393,7 @@ window.renderSection = function() {
               </div>
               <h3>AUN Class of 2K26 Community Service</h3>
               <p>The AUN class of 2026 embarked on inaugral community service in Yola local primary schools.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/aun-community.html">Learn more →</a>
             </div>
 
             
@@ -428,19 +423,17 @@ window.renderSection = function() {
               </div>
               <h3>Fintiri Wallet Program</h3>
               <p>Conditional cash transfer for the less previllaged in the society</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/fintiri-wallet.html">Learn more →</a>
             </div>
             
-            <div class="section4">
+              <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/fcea.png" alt="">
               </div>
               <h3>Female child Education Awareness Program</h3>
               <p>Conditional cash transfer for the less previllaged in the society</p>
-              <a href="details/.html">Learn more →</a>
-            </div>
-            
-            <div class="section4">
+              <a href="../details/Community/female-education.html">Learn more →</a>
+            </div>            <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/govcup.jpg" alt="Governor's Cup Football Competition in Yola">
               </div>
@@ -473,7 +466,7 @@ window.renderSection = function() {
               </div>
               <h3>World Breastfeeding Week in Yola</h3>
               <p>Global awareness week promoting the importance of breastfeeding and maternal health in Yola.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/breastfeeding-week.html">Learn more →</a>
             </div>
           
           
@@ -483,7 +476,7 @@ window.renderSection = function() {
               </div>
               <h3>Childrens' Day in Yola</h3>
               <p>Annual celebration dedicated to children with fun activities, games and educational programs in Yola.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/childrens-day.html">Learn more →</a>
             </div>
           
             <div class="section4">
@@ -492,7 +485,7 @@ window.renderSection = function() {
               </div>
               <h3>International Women's Day</h3>
               <p>Annual celebration recognizing women's achievements and promoting gender equality in Yola.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/womens-day.html">Learn more →</a>
             </div>
           
             <div class="section4">
@@ -501,7 +494,7 @@ window.renderSection = function() {
               </div>
               <h3>International Day of Education.</h3>
               <p>Global celebration highlighting the importance of education and learning opportunities in Yola.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/education-day.html">Learn more →</a>
             </div>
 
                       
@@ -511,7 +504,7 @@ window.renderSection = function() {
               </div>
               <h3>National Independence Day in Yola.</h3>
               <p>Celebration of Nigeria's independence with cultural displays, parades and festivities in Yola.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/independence-day.html">Learn more →</a>
             </div>
           
             <div class="section4">
@@ -520,7 +513,7 @@ window.renderSection = function() {
               </div>
               <h3>World Malaria Day in Yola.</h3>
               <p>Annual awareness campaign promoting malaria prevention and treatment in Yola communities.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/malaria-day.html">Learn more →</a>
             </div>
 
         </div>
@@ -751,7 +744,7 @@ window.sendCommunityMessage = async function(faqText = '') {
   msgGroup.className = 'chat-message-group';
   msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    <div class='ai-msg'><span class='ai-msg-text'>Community AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
   preview.innerHTML = '';
@@ -763,7 +756,7 @@ window.sendCommunityMessage = async function(faqText = '') {
     finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + localData, msg, window.GEMINI_API_KEY);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
@@ -955,7 +948,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
     console.error("Gemini API error:", err);
-    return "Sorry, there was an error contacting the AI service.";
+    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }
 

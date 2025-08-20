@@ -38,8 +38,38 @@ window.initNaviInfo = () => {
             </div>
         `;
         
-        // Once content is added, load the maps API
-        loadGoogleMapsAPI();
+          // Load Maps API
+      const mapDiv = document.querySelector('#map');
+      if (mapDiv) {
+        mapDiv.innerHTML = '<div style="text-align:center;padding:2em;color:#666;">Loading map...</div>';
+      }
+      
+      // Load the Maps API script if not already present
+      if (!document.getElementById('google-maps-api')) {
+        const script = document.createElement('script');
+        script.id = 'google-maps-api';
+        script.src = 'https://maps.googleapis.com/maps/api/js?libraries=geometry,places&callback=initMap';
+        script.async = true;
+        script.defer = true;
+        script.onerror = () => {
+          console.log('Failed to load Google Maps API, trying keyless version...');
+          // Fallback to keyless version
+          const keylessScript = document.createElement('script');
+          keylessScript.src = 'https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v7.0/mapsJavaScriptAPI.js';
+          keylessScript.id = 'keyless-maps-api';
+          keylessScript.async = true;
+          keylessScript.onload = () => {
+            if (window.google && window.google.maps) {
+              window.initMap();
+            }
+          };
+          document.head.appendChild(keylessScript);
+        };
+        document.head.appendChild(script);
+      } else if (window.google && window.google.maps) {
+        // If API is already loaded, initialize the map
+        window.initMap();
+      }
     }
 };
 
@@ -153,26 +183,67 @@ For non-navigation queries about health, education, community, environment, jobs
 
 // Initialize Google Maps instance
 window.initMap = function() {
+    console.log('Initializing map...');
     const mapDiv = document.getElementById('navi-map');
-    if (!mapDiv || !window.google) return;
+    if (!mapDiv) {
+        console.error('Map container not found');
+        return;
+    }
 
-    // Create the map centered on Yola
-    window.map = new google.maps.Map(mapDiv, {
-        center: { lat: 9.2182, lng: 12.4818 },
-        zoom: 13,
-        mapTypeId: 'hybrid'  // hybrid = satellite + labels
-    });
+    try {
+        // Show loading state
+        mapDiv.innerHTML = '<div style="text-align:center;padding:2em;color:#666;">Initializing map...</div>';
 
-    // Initialize directions service and renderer
-    window.directionsService = new google.maps.DirectionsService();
-    window.directionsRenderer = new google.maps.DirectionsRenderer({
-        map: window.map,
-        suppressMarkers: false,
-        preserveViewport: false
-    });
+        // Wait for Maps API to be ready
+        if (!window.google || !window.google.maps) {
+            setTimeout(window.initMap, 1000);
+            return;
+        }
 
-    // Initialize markers array
-    window.markers = [];
+        // Clear loading message
+        mapDiv.innerHTML = '';
+
+        // Create the map centered on Yola
+        window.map = new google.maps.Map(mapDiv, {
+            center: { lat: 9.2182, lng: 12.4818 },
+            zoom: 13,
+            mapTypeId: 'hybrid',
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                position: google.maps.ControlPosition.TOP_RIGHT
+            },
+            fullscreenControl: true,
+            streetViewControl: true,
+            zoomControl: true,
+            gestureHandling: 'cooperative',
+            styles: [
+                {
+                    featureType: 'poi',
+                    elementType: 'labels',
+                    stylers: [{ visibility: 'on' }]
+                },
+                {
+                    featureType: 'transit',
+                    elementType: 'labels',
+                    stylers: [{ visibility: 'on' }]
+                }
+            ]
+        });
+
+        // Initialize directions and markers
+        window.markers = [];
+        
+        if (typeof window.initMapDirections === 'function') {
+            window.initMapDirections();
+        } else {
+            console.error('MapDirections not loaded');
+        }
+        
+        console.log('Map initialized successfully');
+    } catch (error) {
+        console.error('Error initializing map:', error);
+    }
 };
 
 // Function to show location on map
@@ -220,42 +291,7 @@ window.showLocation = async function(locationName) {
 };
 
 // Function to draw route between two points using Google Maps
-window.drawRoute = async function(origin, destination) {
-    if (!window.map || !window.directionsService || !window.directionsRenderer) return false;
-    
-    try {
-        // Add "Yola" to searches if not present
-        if (!origin.toLowerCase().includes('yola')) origin += ' Yola, Nigeria';
-        if (!destination.toLowerCase().includes('yola')) destination += ' Yola, Nigeria';
-
-        const request = {
-            origin: origin,
-            destination: destination,
-            travelMode: google.maps.TravelMode.DRIVING
-        };
-
-        const result = await new Promise((resolve, reject) => {
-            window.directionsService.route(request, (result, status) => {
-                if (status === 'OK') {
-                    resolve(result);
-                } else {
-                    reject(new Error('Directions request failed: ' + status));
-                }
-            });
-        });
-
-        window.directionsRenderer.setDirections(result);
-        const mapSection = document.getElementById('navi-map');
-        if (mapSection) {
-            mapSection.style.display = 'block';
-            mapSection.scrollIntoView({ behavior: 'smooth' });
-        }
-        return true;
-    } catch (error) {
-        console.error('Routing failed:', error);
-        return false;
-    }
-};
+// This function has been moved to mapDirections.js for better organization and reliability
 
 // Function to calculate distance between points
 window.calculateDistance = async function(origin, destination) {
@@ -1135,7 +1171,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
     console.error("Error contacting AI service:", err);
-    return "Sorry, there was an error contacting the AI service.";
+    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }
 
@@ -1348,7 +1384,7 @@ window.sendNaviMessage = async function(faqText = '') {
   msgGroup.className = 'chat-message-group';
   msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    <div class='ai-msg'><span class='ai-msg-text'>Navi AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
   preview.innerHTML = '';
@@ -1373,7 +1409,7 @@ window.sendNaviMessage = async function(faqText = '') {
     }
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer) + (directionsDrawn ? '<br><span style="color:#3182ce">Directions drawn on map.</span>' : '');

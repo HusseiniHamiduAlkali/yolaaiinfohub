@@ -748,6 +748,8 @@ main {
     padding: 0.7rem;
     /* width:auto; */
     max-width: 350px;
+    margin-top: 15px ;
+    margin-bottom: 15px;
   }
   .section4-home-img-container {
   display: block;

@@ -198,7 +198,7 @@ nav.navbar {
   position: fixed;
   top: 0;
   right: 0;
-  width: 75%;
+  width: 65%;
   height: 100vh;
   background: #2d3748;
   border-radius: 0 0 0 16px;
@@ -245,7 +245,7 @@ nav.navbar {
 }
 
 .mobile-menu li button:hover {
-  background: #4a5568;
+  background: #dadada;
   color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }

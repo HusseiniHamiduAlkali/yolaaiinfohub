@@ -549,7 +549,7 @@ window.sendAgroMessage = async function(faqText = '') {
   msgGroup.className = 'chat-message-group';
   msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    <div class='ai-msg'><span class='ai-msg-text'>Agro AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
   preview.innerHTML = '';
@@ -561,7 +561,7 @@ window.sendAgroMessage = async function(faqText = '') {
     finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = `
@@ -735,6 +735,6 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
-    return "Sorry, there was an error contacting the AI service.";
+    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }

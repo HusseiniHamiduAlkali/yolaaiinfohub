@@ -1,3 +1,8 @@
 Yola ServiInfo Section
 
 This file contains local services and support information for Yola, Adamawa State, Nigeria. Add facts, contacts, and FAQs here to improve the ServiInfo AI answers.
+
+
+
+
+Consult the Internet for answers to users' requests, by google search and other methods.

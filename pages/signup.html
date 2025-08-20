@@ -297,11 +297,11 @@
   </main>
 
   <script src="/components/auth.js"></script>
-  <script src="/Data/nigeria-states-lgas.js"></script>
+  <script src="../components/states-lgas.js"></script>
   <script>
     function populateStates() {
       const stateSelect = document.getElementById('state');
-      const states = Object.keys(window.nigeriaStatesAndLGAs);
+      const states = Object.keys(window.STATES_LGAS);
       states.sort();
       stateSelect.innerHTML = '<option value="">Select State</option>';
       states.forEach(state => {
@@ -314,8 +314,8 @@
       const lgaSelect = document.getElementById('lga');
       const selectedState = stateSelect.value;
       lgaSelect.innerHTML = '<option value="">Select LGA</option>';
-      if (selectedState && window.nigeriaStatesAndLGAs[selectedState]) {
-        const lgas = window.nigeriaStatesAndLGAs[selectedState];
+      if (selectedState && window.STATES_LGAS[selectedState]) {
+        const lgas = window.STATES_LGAS[selectedState];
         lgas.sort();
         lgas.forEach(lga => {
           lgaSelect.innerHTML += `<option value="${lga}">${lga}</option>`;

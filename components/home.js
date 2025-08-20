@@ -134,9 +134,9 @@ window.renderSection = function() {
       
       <div class="section2" style="">
         <h2 style="margin-bottom: 25px;" >History of Yola</h2>
-        <div style="width: ; height: ; overflow: hidden; border-radius: 12px; display:flex; gap:0.5rem;">
-        <img src="Data/Images/palace3.jpg" alt="Yola Palace" style="width:100% ; height:auto; object-fit: fill; border-radius: 12px;">
-        <img src="Data/Images/palace.jpg" alt="Yola Palace" style="width:100% ; height:auto; object-fit: fill; border-radius: 12px;">
+        <div class="section2-home-image-placeholder" >
+          <img class="section2-home-img1" src="Data/Images/palace3.jpg" alt="Yola Palace" >
+          <img class="section2-home-img2" src="Data/Images/palace.jpg" alt="Yola Palace" >
         </div>
         <p style="margin-top: 1.5rem; line-height: 1.6; color: #2d3748;">
           Yola, the capital city of Adamawa State, has a rich history dating back to its establishment as the capital of the Fulani state of Adamawa in 1841. 
@@ -145,7 +145,7 @@ window.renderSection = function() {
           with modern development.
         </p>
           <div style="display:flex;">
-            <a href="details/adamawaemiratecouncil.html" class="section4-home-a">Explore more →</a>
+            <a href="details/Home/yolaadamawa.html" class="section4-home-a">Explore more →</a>
           </div>
         </a>
       </div>
@@ -162,7 +162,9 @@ window.renderSection = function() {
 
               <div style="display:flex; flex-direction: column;">
                 <h4>Explore the mysterious and ground-breaking emirate council and the kingdom of the 12th Lamido Fombina. His royal highness Alh. (Dr.) Muhammad Barkindo Aliyu Musdafa PhD. CFR. The primere ruler of Adamawa and the grand patron of Tabital Pulaaku International.<h4>
-                <a href="details/adamawaemiratecouncil.html" class="">Explore more →</a>
+                <h4 style="height: auto;">
+                  <a  href="details/Home/fombinakingdom.html" >Explore more →</a>
+                </h4>
               </div>
               
             </div>
@@ -181,7 +183,9 @@ window.renderSection = function() {
 
               <div style=" display:flex; flex-direction: column;">
                 <h4>Meet the cabinet of the Executive governor of Adamawa state, His excellency Rt. Hon. Ahmadu Umaru Fintiri OON. And the state executive council (ADSEC).<h4>
-                <a href="details/adamawaexecutivecouncil.html" class="">Explore more →</a>
+                <h4 style="height: auto;">
+                  <a href="details/adamawaexecutivecouncil.html" >Explore more →</a>
+                </h4>
               </div>
               
               
@@ -424,7 +428,7 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   msgGroup.className = 'chat-message-group';
   msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    <div class='ai-msg'><span class='ai-msg-text'>Home AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
   preview.innerHTML = '';
@@ -442,7 +446,7 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
       finalAnswer = "Request stopped by user.";
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
-      finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+      finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
     }
   }
 

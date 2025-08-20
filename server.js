@@ -32,7 +32,7 @@ const corsOptions = {
     'http://localhost:3000',
     'http://localhost:8080',
     'http://127.0.0.1:8080',
-    'https://yolainfohub.netlify.app'
+    'https://yolaaiinfohub.netlify.app'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -79,7 +79,7 @@ app.post('/api/gemini', async (req, res) => {
 
 
 const RESET_URL_BASE = isProduction 
-  ? 'https://yolainfohub.netlify.app/reset-password'
+  ? 'https://yolaaiinfohub.netlify.app/reset-password'
   : 'http://localhost:4000/reset-password';
 
 // Rate limiting

@@ -95,7 +95,7 @@ window.renderSection = function() {
               </div>
               <h3>Adamawa State University (ADSU), Mubi</h3>
               <p>A state-owned university offering various undergraduate and postgraduate programs. Located in Mubi, with modern facilities and diverse academic departments.</p>
-              <a href="details/adsu.html">Learn more →</a>
+              <a href="details/Edu/adsu.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -103,7 +103,7 @@ window.renderSection = function() {
               </div>
               <h3>American University of Nigeria (AUN), Main campus Yola</h3>
               <p>Premier private university providing American-style education. Known for its state-of-the-art facilities and international standards.</p>
-              <a href="details/aun.html">Learn more →</a>
+              <a href="details/Edu/aun.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -111,7 +111,7 @@ window.renderSection = function() {
               </div>
               <h3>Modibbo Adama University (MAU), Yola.</h3>
               <p>Federal university offering comprehensive programs in science, technology, and humanities. Features modern research facilities.</p>
-              <a href="details/mau.html">Learn more →</a>
+              <a href="details/Edu/mau.html">Learn more →</a>
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ window.renderSection = function() {
               </div>
               <h3>Federal College of Education</h3>
               <p>Leading institution for teacher training and educational development.</p>
-              <a href="details/fce-yola.html">Learn more →</a>
+              <a href="details/Edu/fce-yola.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -134,7 +134,7 @@ window.renderSection = function() {
               </div>
               <h3>State Polytechnic</h3>
               <p>Technical institution offering diploma and certificate programs.</p>
-              <a href="details/spy-yola.html">Learn more →</a>
+              <a href="details/Edu/spy-yola.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -142,7 +142,7 @@ window.renderSection = function() {
               </div>
               <h3>Federal Polytechnic</h3>
               <p>Technical institution offering diploma and certificate programs.</p>
-              <a href="details/fed-poly-yola.html">Learn more →</a>
+              <a href="details/Edu/fed-poly-yola.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -150,7 +150,7 @@ window.renderSection = function() {
               </div>
               <h3>School of Nursing</h3>
               <p>Specialized institution for nursing education and healthcare training.</p>
-              <a href="details/nursing-school-yola.html">Learn more →</a>
+              <a href="details/Edu/nursing-school-yola.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -159,7 +159,7 @@ window.renderSection = function() {
               </div>
               <h3>College For Legal Studies, Yola.</h3>
               <p>Professional institution dedicated to legal education and training for aspiring legal practitioners in Yola.</p>
-              <a href="details/cls-yola.html">Learn more →</a>
+              <a href="details/Edu/cls-yola.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -167,7 +167,7 @@ window.renderSection = function() {
               </div>
               <h3>Central College OF Health Sciences And Technology, Yola.</h3>
               <p>Leading institution providing comprehensive education in health sciences, medical technology, and allied health professions in Yola.</p>
-              <a href="details/central-college.html">Learn more →</a>
+              <a href="details/Edu/central-college.html">Learn more →</a>
             </div>
           </div>
 
@@ -182,7 +182,7 @@ window.renderSection = function() {
               </div>
               <h3>El-kenemy College of Islamic Theology, Yola</h3>
               <p>Premier islamic secondary school known for academic excellence and character development.</p>
-              <a href="details/el-kenemy-college.html">Learn more →</a>
+              <a href="details/Edu/el-kenemy-college.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -190,7 +190,7 @@ window.renderSection = function() {
               </div>
               <h3>Aliyu Musdafa College, (AMC) Yola</h3>
               <p>Historic institution providing quality education to students across the state.</p>
-              <a href="details/amc-yola.html">Learn more →</a>
+              <a href="details/Edu/amc-yola.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -198,7 +198,7 @@ window.renderSection = function() {
               </div>
               <h3>Chiroma Ahmad Academy, Yola</h3>
               <p>Modern secondary school offering international curriculum and quality education.</p>
-              <a href="details/chiroma-ahmad-academy.html">Learn more →</a>
+              <a href="details/Edu/chiroma-ahmad-academy.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -206,7 +206,7 @@ window.renderSection = function() {
               </div>
               <h3>General Murtala Muhammad College (GMMC), Yola</h3>
               <p>Historic government secondary school known for academic excellence and comprehensive education in science and arts.</p>
-              <a href="details/gmmc-yola.html">Learn more →</a>
+              <a href="details/Edu/gmmc-yola.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -214,7 +214,7 @@ window.renderSection = function() {
               </div>
               <h3>Adroit International Academy, Yola.</h3>
               <p>Historic institution providing quality education to students across the state.</p>
-              <a href="details/amc-yola.html">Learn more →</a>
+              <a href="details/adroit-academy.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -222,7 +222,7 @@ window.renderSection = function() {
               </div>
               <h3>Government Technical College, Yola.</h3>
               <p>Public technical college providing hands-on training in various technical and vocational skills to prepare students for technical careers.</p>
-              <a href="details/gtc-yola.html">Learn more →</a>
+              <a href="details/Edu/gtc-yola.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -231,7 +231,7 @@ window.renderSection = function() {
               </div>
               <h3>Al-Bayaan Bilingual Academy, Yola.</h3>
               <p>Modern bilingual educational institution providing quality education in both English and Arabic languages with an integrated curriculum.</p>
-              <a href="details/albayaan-academy.html">Learn more →</a>
+              <a href="details/Edu/albayaan-academy.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -239,7 +239,7 @@ window.renderSection = function() {
               </div>
               <h3>Baitul-Ateeq College, Yola.</h3>
               <p>Historic institution providing quality education to students across the state.</p>
-              <a href="details/amc-yola.html">Learn more →</a>
+              <a href="details/Edu/baitul-ateeq.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -247,7 +247,7 @@ window.renderSection = function() {
               </div>
               <h3>Government Day Secondary School, Yola.</h3>
               <p>Public secondary school providing affordable quality education with a focus on academic excellence and character development.</p>
-              <a href="details/gdss-yola.html">Learn more →</a>
+              <a href="details/Edu/gdss-yola.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -256,7 +256,7 @@ window.renderSection = function() {
               </div>
               <h3>UBEC Smart School, Yola</h3>
               <p>Modern educational facility incorporating technology and digital learning tools to provide innovative education in Yola.</p>
-              <a href="details/ubec-smart-school.html">Learn more →</a>
+              <a href="details/Edu/ubec-smart-school.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -264,7 +264,7 @@ window.renderSection = function() {
               </div>
               <h3>Sulaiman Ribadu Academy, Yola.</h3>
               <p>Historic institution providing quality education to students across the state.</p>
-              <a href="details/amc-yola.html">Learn more →</a>
+              <a href="details/Edu/sra-yola.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -272,7 +272,7 @@ window.renderSection = function() {
               </div>
               <h3>Federal Government Girls' College, Yola.</h3>
               <p>Modern secondary school offering international curriculum and quality education.</p>
-              <a href="details/chiroma-ahmad-academy.html">Learn more →</a>
+              <a href="details/Edu/fggc-yola.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -281,7 +281,7 @@ window.renderSection = function() {
               </div>
               <h3>EYN Academy, Yola.</h3>
               <p>Faith-based educational institution providing quality secondary education with emphasis on academic excellence and moral values.</p>
-              <a href="details/eyn-secondary.html">Learn more →</a>
+              <a href="details/Edu/eyn-secondary.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -289,7 +289,7 @@ window.renderSection = function() {
               </div>
               <h3>BINANI Football Academy, Yola.</h3>
               <p>Specialized sports academy providing football training and education to develop young talented athletes in Yola.</p>
-              <a href="details/binani-academy.html">Learn more →</a>
+              <a href="details/Edu/binani-academy.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -297,7 +297,7 @@ window.renderSection = function() {
               </div>
               <h3>Al-Na'ab Academy, Yola.</h3>
               <p>Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.</p>
-              <a href="details/alnaab-academy.html">Learn more →</a>
+              <a href="details/Edu/alnaab-academy.html">Learn more →</a>
             </div>
           </div>
         </div>
@@ -313,7 +313,7 @@ window.renderSection = function() {
               </div>
               <h3>National Library Of Nigeria (NLN), Yola Branch.</h3>
               <p>Public library and educational resource center.</p>
-              <a href="details/library.html">Learn more →</a>
+              <a href="details/Edu/library.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -322,7 +322,7 @@ window.renderSection = function() {
               </div>
               <h3>Bindir Knowledge Center (BKC),Yola.</h3>
               <p>Modern knowledge hub providing access to educational resources, research materials, and digital learning facilities.</p>
-              <a href="details/bkc-yola.html">Learn more →</a>
+              <a href="details/Edu/bkc-yola.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -331,7 +331,7 @@ window.renderSection = function() {
               </div>
               <h3>Cosmotech Learning center, Yola.</h3>
               <p>Technology-focused learning center offering digital skills training, computer education, and modern learning resources.</p>
-              <a href="details/cosmotech-yola.html">Learn more →</a>
+              <a href="details/Edu/cosmotech-yola.html">Learn more →</a>
             </div>
           </div>
         </div>
@@ -378,7 +378,7 @@ window.sendEduMessage = async function(faqText = '') {
     msgGroup.className = 'chat-message-group';
     msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    <div class='ai-msg'><span class='ai-msg-text'>Edu AI typing...</span></div>
   `;
     chat.appendChild(msgGroup);
     const imageData = preview.querySelector('img') ? preview.querySelector('img').src : null;
@@ -391,7 +391,7 @@ window.sendEduMessage = async function(faqText = '') {
         finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
     } catch (e) {
         console.error("Error fetching local data or Gemini API call:", e);
-        finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+        finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
     }
 
     msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
@@ -439,7 +439,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
-    return "Sorry, there was an error contacting the AI service.";
+    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }
 

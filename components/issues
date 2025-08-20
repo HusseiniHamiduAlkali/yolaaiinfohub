@@ -1,34 +1,25 @@
+1. highlight the current section in the mobile menu. the style for that is present, but the current section is not registered as active to get the style in the mobile menu
+2. Input all the states and their local government area accordingly to the auth signup page.
+
+1. Highlight the current section on the hamburger-menu
+2.
+Provide me with html pages in the details folder for the details of the .section4 of EduInfo similar in terms of styling and color to those already present in the detals folder for some .section4 of CommunityInfo. And link the pages to thier various .section4 learn more buttons.
+
+2.2 EcoInfo AgroInfo MediInfo NaviInfo CommunityInfo ServiInfo
+
+Remove the Spinner in any section.
+
+highlight the current section in the mobile menu. the style for that is present, but the current section is not registered as active to get the style in them
+
 Analyse each .section4 edit and add information in the <p> and the alt="" to Match the <h3> of any .section4 in any section.
 
-// I want the stop button to replace the sending button
 add information onhover for some content parts
-Section's AI prompts check.
 EduInfo data check
 EduInfo assignment help
-1. I WANT HOME TOBE LOADED AS DEFAULT AFTER REFRESH
-3. style the AI message to be left-aligned and not alwaya centrealised like  how it is.
-1. Input all the states and their local government area accordingly
+
+3. style the AI message to be left-aligned and not always centrealised like  how it is.
 
 STYLE : camra capture & stop recording button (onCapture)
         make Send btn color same as NavBar
 
-Yola Transportation and Flight Data
-
-I want to populate my AI chat bot's local data with information about transportation and flight in Yola, get me the vast information you could
-
-3. display a message (with the problem associated e.g password must contain atleast one digit) if the password entered in the confirm password and input password forms did not match or did not meet the password criteria wriiten.
-
-2. make the maps be with labels in default
-4. want my leaflet maps design to be in the satellite format (i.e like blakish showing roof top)
-1. Highlight the current section on the hamburger-menu
-
-2. Add a Feature that enable the user to stop response before completing loading the response by the AI.
-3. Make the send button color faint when submitting and disabled
-
 LOCAL DATA
-
-agro - paste - good 
-Maps - paste - good object
-Eco - paste - good
-Community - paste - No
-EduInfo - paste - No
