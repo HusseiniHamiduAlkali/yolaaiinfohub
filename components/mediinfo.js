@@ -1,4 +1,4 @@
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
+
 
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
@@ -73,7 +73,7 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for MediInfo
 window.MEDI_AI_PROMPT = window.MEDI_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Enquire on how to help the user with medical and health information in Yola.
+Help the user with medical and health information in Yola.
 Answer the user's question using the information provided below, and the internet. But only those regarding medical and health matters.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local healthcare provider for further help."
 And if a user clearly requests information on education, navigation, community, environment, jobs, or agriculture, refer them to either of EduInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
@@ -139,11 +139,7 @@ window.renderSection = function() {
           <div id="medi-chat-preview" class="chat-preview"></div>
           <input type="text" id="medi-chat-input" placeholder="Ask about medical info..." required />
           <div class="send-button-group">
-            <button type="submit" class="send-button">
-              <span class="send-text">Send</span>
-              <span class="spinner"></span>
-            </button>
-            <button type="button" class="stop-button" style="display:none" onclick="window.stopMediResponse()">Stop</button>
+            <button type="submit" class="send-button">Send</button>
           </div>
         </form>
         <div class="input-options">
@@ -179,7 +175,7 @@ window.renderSection = function() {
               </div>
               <h3>Valli clinic jimeta, Yola.</h3>
               <p>Community health center providing essential healthcare services and preventive care.</p>
-              <a href="details/jimeta-phc.html">Learn more →</a>
+              <a href="details/Medi/valli-clinic.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -187,7 +183,7 @@ window.renderSection = function() {
               </div>
               <h3>Malamre PHCC, Yola.</h3>
               <p>Modern facility offering primary healthcare services and maternal care.</p>
-              <a href="details/yola-south-phc.html">Learn more →</a>
+              <a href="details/Medi/malamre-clinic.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -195,7 +191,7 @@ window.renderSection = function() {
               </div>
               <h3>Yola Central Dispensary.</h3>
               <p>Well-equipped center providing comprehensive primary healthcare services.</p>
-              <a href="details/modibbo-adama-phc.html">Learn more →</a>
+              <a href="details/Medi/yola-dispensary.html">Learn more →</a>
             </div>
           </div>
         </div>
@@ -210,7 +206,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Specialist Hospital Yola</h3>
                 <p>Major secondary healthcare facility with specialized departments and services.</p>
-                <a href="details/specialist-hospital.html">Learn more →</a>
+                <a href="details/Medi/specialist-hospital.html">Learn more →</a>
               </div>
 
               <div class="section4">
@@ -219,7 +215,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Adamawa-German Hospital, Yola</h3>
                 <p>Public hospital providing comprehensive medical care and emergency services.</p>
-                <a href="details/german-hospital.html">Learn more →</a>
+                <a href="details/Medi/german-hospital.html">Learn more →</a>
               </div>
 
               <div class="section4">
@@ -228,16 +224,16 @@ window.renderSection = function() {
                 </div>
                 <h3>Meddy Specialists' Clinic, Yola</h3>
                 <p>Private hospital offering quality healthcare services and specialized treatments.</p>
-                <a href="details/meddy-clinic.html">Learn more →</a>
+                <a href="details/Medi/meddy-clinic.html">Learn more →</a>
               </div>
 
               <div class="section4">
                 <div class="img-placeholder">
                   <img src="Data/Images/fortland.jpg" alt="Fortland Bone Hospital Yola">
                 </div>
-                <h3>Fortland Bone Hospital Yola</h3>
+                <h3>Fortland Orthopaedic Hospital, Yola.</h3>
                 <p>Specialized hospital focused on orthopedic care, bone treatments, and rehabilitation services in Yola.</p>
-                <a href="details/specialist-hospital.html">Learn more →</a>
+                <a href="details/Medi/fortland-hospital.html">Learn more →</a>
               </div>
 
               <div class="section4">
@@ -246,7 +242,7 @@ window.renderSection = function() {
                 </div>
                 <h3>New Boshang Clinic, Yola</h3>
                 <p>Modern healthcare facility offering comprehensive medical services and specialized treatments in Yola.</p>
-                <a href="details/german-hospital.html">Learn more →</a>
+                <a href="details/Medi/newboshang-hospital.html">Learn more →</a>
               </div>
 
               <div class="section4">
@@ -255,7 +251,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Galbose Specialists' Clinic, Yola</h3>
                 <p>Private hospital offering quality healthcare services and specialized treatments.</p>
-                <a href="details/meddy-clinic.html">Learn more →</a>
+                <a href="details/Medi/galbose-hospital.html">Learn more →</a>
               </div>
 
             </div>
@@ -263,6 +259,7 @@ window.renderSection = function() {
 
         <div class="section3">
           <h3 class="section3-title">The Tertiary Hospital in Yola.</h3>
+          <div class="section4-container">
           <div class="section4-mau-container">
             <div class="section4" style="width: 1160px; height: 450px;">
               <div class="mauth-placeholder" style="display:flex; flex-direction: row; overflow:hidden; gap:1rem; width:100%;">
@@ -272,8 +269,9 @@ window.renderSection = function() {
             
               <h3>Modibbo Adama Teaching Hospital (MAUTH), Yola.</h3>
               <p>University teaching hospital providing advanced medical care and training.</p>
-              <a href="details/mau-teaching-hospital.html">Learn more →</a>
+              <a href="details/Medi/mauth-yola.html">Learn more →</a>
             
+            </div>
             </div>
           </div>
 
@@ -288,7 +286,7 @@ window.renderSection = function() {
               </div>
               <h3>Meddy Pharmacy</h3>
               <p>24/7 pharmacy with extensive stock of medicines and medical supplies.</p>
-              <a href="details/meddy-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/meddy-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -297,7 +295,7 @@ window.renderSection = function() {
               </div>
               <h3>Shekinah Pharmacy</h3>
               <p>Modern pharmacy chain offering quality medications and healthcare products.</p>
-              <a href="details/shekinah-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/shekinah-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -306,7 +304,7 @@ window.renderSection = function() {
               </div>
               <h3>Kingblaise Pharmacy, Yola.</h3>
               <p>Local pharmacy providing affordable medications and healthcare advice.</p>
-              <a href="details/community-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/kingblaise-pharmacy.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -315,7 +313,7 @@ window.renderSection = function() {
               </div>
               <h3>Alfijr Pharmacy, Yola.</h3>
               <p>Reliable pharmacy providing a wide range of medications, healthcare products, and pharmaceutical services to the Yola community.</p>
-              <a href="details/community-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/alfijr-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -324,7 +322,7 @@ window.renderSection = function() {
               </div>
               <h3>JDS Pharmacy, Yola.</h3>
               <p>Community pharmacy offering quality medications, health supplies, and professional pharmaceutical care services in Yola.</p>
-              <a href="details/community-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/jds-pharmacy.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -333,7 +331,7 @@ window.renderSection = function() {
               </div>
               <h3>Mufami Pharmacy Store.</h3>
               <p>Local pharmacy store providing essential medications, healthcare products, and personalized customer service to the Yola community.</p>
-              <a href="details/community-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/mufami-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -342,7 +340,7 @@ window.renderSection = function() {
               </div>
               <h3>Jasar Pharmacy, Yola.</h3>
               <p>Full-service pharmacy offering prescription medications, healthcare products, and expert pharmaceutical advice in Yola.</p>
-              <a href="details/community-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/jasar-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -351,7 +349,7 @@ window.renderSection = function() {
               </div>
               <h3>Kerion Pharmacy, Yola.</h3>
               <p>Modern pharmacy facility providing comprehensive pharmaceutical services, health products, and professional healthcare advice in Yola.</p>
-              <a href="details/community-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/kerion-pharmacy.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -360,7 +358,7 @@ window.renderSection = function() {
               </div>
               <h3>Lekki Pharmacy and Pharmaceuticals, Yola.</h3>
               <p>Premium pharmacy and pharmaceutical service provider offering a wide range of medications, health products, and professional healthcare consultations in Yola.</p>
-              <a href="details/community-pharmacy.html">Learn more →</a>
+              <a href="details/Medi/lekki-pharmacy.html">Learn more →</a>
             </div>
 
           </div>
@@ -379,7 +377,7 @@ window.renderSection = function() {
             </div>
             <h3>Polio Immunization at Community PHCCs.</h3>
             <p>Regular polio immunization programs conducted at Primary Healthcare Centers to protect children and maintain Yola's polio-free status.</p>
-            <a href="details/.html">Learn more →</a>
+            <a href="details/Medi/polio-immunization.html">Learn more →</a>
           </div>
 
         <div class="section4">
@@ -388,7 +386,7 @@ window.renderSection = function() {
             </div>
             <h3>Mosquito nets distribution to resident of Yola.</h3>
             <p>Community health initiative providing free insecticide-treated mosquito nets to Yola residents to prevent malaria and other mosquito-borne diseases.</p>
-            <a href="details/.html">Learn more →</a>
+            <a href="details/Medi/nets-distribution.html">Learn more →</a>
           </div>
 
         <div class="section4">
@@ -397,7 +395,7 @@ window.renderSection = function() {
             </div>
             <h3>Redcross society awareness campaign in Yola.</h3>
             <p>Regular health awareness campaigns conducted by the Red Cross Society to educate Yola residents about emergency preparedness, first aid, and public health.</p>
-            <a href="details/.html">Learn more →</a>
+            <a href="details/Medi/redcross-awareness.html">Learn more →</a>
           </div>
 
         </div>
@@ -410,18 +408,16 @@ window.renderSection = function() {
 };
 
 window.stopMediResponse = function() {
-  if (mediAbortController) {
-    mediAbortController.abort();
-    mediAbortController = null;
+  if (window.mediAbortController) {
+    window.mediAbortController.abort();
+    window.mediAbortController = null;
   }
   const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
   if (sendBtn) {
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
-    sendBtn.disabled = false;
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
   }
-  if (stopBtn) stopBtn.style.display = 'none';
 };
 
 window.sendMediMessage = async function(faqText = '') {
@@ -449,11 +445,23 @@ window.sendMediMessage = async function(faqText = '') {
   window.mediAbortController = new AbortController();
 
   if (sendBtn) {
-    sendBtn.disabled = true;
     sendBtn.classList.add('sending');
-    sendBtn.querySelector('.send-text').textContent = '';
+    sendBtn.textContent = 'Stop';
+    sendBtn.style.backgroundColor = '#ff4444';
+
+    // Add click handler to stop response
+    const stopHandler = () => {
+      if (window.mediAbortController) {
+        window.mediAbortController.abort();
+        window.mediAbortController = null;
+      }
+      sendBtn.removeEventListener('click', stopHandler);
+      sendBtn.classList.remove('sending');
+      sendBtn.textContent = 'Send';
+      sendBtn.style.backgroundColor = '';
+    };
+    sendBtn.addEventListener('click', stopHandler);
   }
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
@@ -465,24 +473,41 @@ window.sendMediMessage = async function(faqText = '') {
   preview.innerHTML = '';
   if (!faqText) input.value = '';
 
+  // Load existing chat history
+  let chatHistory = JSON.parse(localStorage.getItem('medi_chat_history') || '[]');
+
   let finalAnswer = "";
   try {
     const localData = await fetch('Data/MediInfo/mediinfo.txt').then(r => r.text());
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
+    
+    // Include chat history in the context
+    const historyContext = chatHistory.length > 0 
+        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
+        : "";
+        
+    finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+    
+    // Store in chat history (keep last 5 messages)
+    chatHistory.push({ user: msg, ai: finalAnswer });
+    if (chatHistory.length > 5) chatHistory = chatHistory.slice(-5);
+    localStorage.setItem('medi_chat_history', JSON.stringify(chatHistory));
   } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    if (e.name === 'AbortError') {
+        finalAnswer = "Response stopped by user.";
+    } else {
+        console.error("Error fetching local data or Gemini API call:", e);
+        finalAnswer = "Sorry, I could not access local information or the AI at this time. Please try again.";
+    }
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
   chat.scrollTop = chat.scrollHeight;
 
   if (sendBtn) {
-    sendBtn.disabled = false;
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
   }
-  if (stopBtn) stopBtn.style.display = 'none';
   window.mediAbortController = null;
 };
 

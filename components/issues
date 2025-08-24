@@ -1,17 +1,18 @@
 1. highlight the current section in the mobile menu. the style for that is present, but the current section is not registered as active to get the style in the mobile menu
-2. Input all the states and their local government area accordingly to the auth signup page.
 
-1. Highlight the current section on the hamburger-menu
-2.
-Provide me with html pages in the details folder for the details of the .section4 of EduInfo similar in terms of styling and color to those already present in the detals folder for some .section4 of CommunityInfo. And link the pages to thier various .section4 learn more buttons.
+Provide me with html pages in the details folder for the details of the .section4 of CommunityInfo similar in terms of styling and color to those already present in the detals folder for some .section4 of CommunityInfo. And link the pages to thier various .section4 learn more buttons.
 
-2.2 EcoInfo AgroInfo MediInfo NaviInfo CommunityInfo ServiInfo
+2.2 EcoInfo  NaviInfo  ServiInfo
 
-Remove the Spinner in any section.
+Analyse each .section4 edit and add information in the <p> and the alt="" to Match the <h3> of any .section4 in Community section.
 
-highlight the current section in the mobile menu. the style for that is present, but the current section is not registered as active to get the style in them
+I want to ensure the section for which the user is seeing a detail page (from details folder) is loaded if the user cliked the back button on the detail page.
 
-Analyse each .section4 edit and add information in the <p> and the alt="" to Match the <h3> of any .section4 in any section.
+provide me with the logo in the image placeholder for Navi .section4 items(analyse the other sections for more informaiton)
+
+Ensure the stop (.sending) button aborts the request to AI on click and adjust the message telling the user they aborted the request when it is clicked because currently it displays the failed message which is not right.
+
+Ensure my Authentication is working with the render backend url and my mongodb uri it is just showing me invalid credentilals and server error when trying to reset the password in my .env
 
 add information onhover for some content parts
 EduInfo data check

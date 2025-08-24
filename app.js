@@ -153,10 +153,20 @@ window.addEventListener('load', () => {
   const section = path || 'home';
   if (typeof window.loadSection === 'function') {
     window.loadSection(section);
+    // Highlight home by default if no specific path
+    if (!path || path === 'index.html') {
+      window.highlightActiveNav('home');
+    }
   } else {
     // fallback: reload after scripts
     setTimeout(() => {
-      if (typeof window.loadSection === 'function') window.loadSection(section);
+      if (typeof window.loadSection === 'function') {
+        window.loadSection(section);
+        // Highlight home by default if no specific path
+        if (!path || path === 'index.html') {
+          window.highlightActiveNav('home');
+        }
+      }
     }, 500);
   }
 });

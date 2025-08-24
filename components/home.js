@@ -1,4 +1,4 @@
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
+
 
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
@@ -6,7 +6,46 @@ window.useGemini25 = window.useGemini25 || false;
 // Home AI prompt for Gemini API
 
 
-window.HOME_AI_PROMPT = window.HOME_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.\nRespond to greetings politely, and offer to help the user with any information about Yola, Adamawa State, Nigeria.\nAnswer the user's question using the information provided below, and the internet. If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local authority for further help."\nIf a user clearly requests information on agriculture, education, navigation, community, health, jobs, or environment, refer them to AgroInfo, EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo, as the case may be.`;
+window.HOME_AI_PROMPT = window.HOME_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.\nRespond to greetings politely, and offer to help the user with any information about Yola, Adamawa State, Nigeria.\nAnswer the user's question using the information provided below, and the internet. If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local authority for further help."\nIf a user clearly requests information on agriculture, education, navigation, community, health, jobs, or environment, refer them to AgroInfo, EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo, as the case may be.
+
+Previous conversation history:
+{history}
+`;
+
+// Chat history management
+window.homeChatHistory = [];
+window.MAX_HISTORY_LENGTH = 10;
+
+function addToHomeChatHistory(role, content) {
+  window.homeChatHistory.push({ role, content });
+  if (window.homeChatHistory.length > window.MAX_HISTORY_LENGTH) {
+    window.homeChatHistory.shift();
+  }
+  localStorage.setItem('homeChatHistory', JSON.stringify(window.homeChatHistory));
+}
+
+function loadHomeChatHistory() {
+  try {
+    const savedHistory = localStorage.getItem('homeChatHistory');
+    if (savedHistory) {
+      window.homeChatHistory = JSON.parse(savedHistory);
+      const chat = document.getElementById('home-chat-messages');
+      if (chat) {
+        chat.innerHTML = window.homeChatHistory.map(msg => `
+          <div class='chat-message-group'>
+            <div class='${msg.role === 'user' ? 'user-msg' : 'ai-msg'}'>
+              ${msg.role === 'user' ? msg.content : formatAIResponse(msg.content)}
+            </div>
+          </div>
+        `).join('');
+        chat.scrollTop = chat.scrollHeight;
+      }
+    }
+  } catch (e) {
+    console.error('Error loading chat history:', e);
+    window.homeChatHistory = [];
+  }
+}
 
 // Function to toggle between Gemini models
 window.toggleGeminiModel = function(section, useGemini25) {
@@ -89,6 +128,9 @@ window.renderSection = function() {
     link.id = 'global-css';
     document.head.appendChild(link);
   }
+  
+  // Load chat history when section renders
+  setTimeout(loadHomeChatHistory, 100); // Small delay to ensure DOM is ready
   document.getElementById('main-content').innerHTML = `
     <section class="info-section">
       <h2>Welcome to Yola Info Hub</h2>
@@ -108,8 +150,7 @@ window.renderSection = function() {
         <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendHomeMessage();">
           <div id="home-chat-preview" class="chat-preview"></div>
           <input type="text" id="home-chat-input" placeholder="Ask anything..." required />
-          <button type="submit">Send</button>
-          <button type="button" class="stop-btn" onclick="if(abortController) abortController.abort();" style="display:none">Stop</button>
+          <button type="submit" class="send-button">Send</button>
         </form>
         <div class="input-options">
           <button type="button" onclick="window.captureImage('home')" title="Capture Image" ><span>📷</span></button>
@@ -184,7 +225,7 @@ window.renderSection = function() {
               <div style=" display:flex; flex-direction: column;">
                 <h4>Meet the cabinet of the Executive governor of Adamawa state, His excellency Rt. Hon. Ahmadu Umaru Fintiri OON. And the state executive council (ADSEC).<h4>
                 <h4 style="height: auto;">
-                  <a href="details/adamawaexecutivecouncil.html" >Explore more →</a>
+                  <a href="details/Home/adamawaexecutivecouncil.html" >Explore more →</a>
                 </h4>
               </div>
               
@@ -215,8 +256,15 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       });
     }
 
+    // Format chat history
+    const historyText = window.homeChatHistory.map(msg => 
+      `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+    ).join('\n');
+
     // Use the editable prompt from localStorage or fallback
-    const promptGuide = localStorage.getItem('home_ai_prompt') || HOME_AI_PROMPT;
+    const promptGuide = (localStorage.getItem('home_ai_prompt') || HOME_AI_PROMPT)
+      .replace('{history}', historyText);
+
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
@@ -403,6 +451,19 @@ window.uploadFile = function(e, section) {
 
 window.homeAbortController = window.homeAbortController || null;
 
+window.stopHomeResponse = function() {
+  if (window.homeAbortController) {
+    window.homeAbortController.abort();
+    window.homeAbortController = null;
+  }
+  const sendBtn = document.querySelector('.send-button');
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+  }
+};
+
 window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   const input = document.getElementById('home-chat-input');
   const chat = document.getElementById('home-chat-messages');
@@ -420,8 +481,22 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   window.homeAbortController = new AbortController();
 
   if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<div class="spinner"></div>';
+    submitBtn.classList.add('sending');
+    submitBtn.textContent = 'Stop';
+    submitBtn.style.backgroundColor = '#ff4444';
+
+    // Add click handler to stop response
+    const stopHandler = () => {
+      if (window.homeAbortController) {
+        window.homeAbortController.abort();
+        window.homeAbortController = null;
+      }
+      submitBtn.removeEventListener('click', stopHandler);
+      submitBtn.classList.remove('sending');
+      submitBtn.textContent = 'Send';
+      submitBtn.style.backgroundColor = '';
+    };
+    submitBtn.addEventListener('click', stopHandler);
   }
 
   const msgGroup = document.createElement('div');
@@ -453,11 +528,15 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
   chat.scrollTop = chat.scrollHeight;
 
+  // Store messages in chat history
+  addToHomeChatHistory('user', msg);
+  addToHomeChatHistory('assistant', finalAnswer);
+
   if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = "Send";
+    submitBtn.classList.remove('sending');
+    submitBtn.textContent = 'Send';
+    submitBtn.style.backgroundColor = '';
   }
-  if (stopBtn) stopBtn.style.display = 'none';
   
   // Reset abort controller
   abortController = null;

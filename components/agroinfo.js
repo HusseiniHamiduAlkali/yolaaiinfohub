@@ -1,8 +1,8 @@
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
+
 
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
-
+    
 // Function to toggle between Gemini models
 window.toggleGeminiModel = function(section, useGemini25) {
     window.useGemini25 = useGemini25;
@@ -13,6 +13,7 @@ window.toggleGeminiModel = function(section, useGemini25) {
     // Store preference
     localStorage.setItem('gemini_model_preference', useGemini25 ? '2.5' : '1.5');
 };
+
 
 // Initialize model preference from storage
 if (typeof window.useGemini25 === 'undefined') {
@@ -73,12 +74,29 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for AgroInfo
 window.AGRO_AI_PROMPT = window.AGRO_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Enquire on how to help the user with agricultural information in Yola.
+Help the user with agricultural information in Yola.
 Answer the user's question using the information provided below, and the internet. But only those regarding agriculture and farming.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local agricultural authority for further help."
 And if a user clearly requests information on education, navigation, community, health, jobs, or environment, refer them to either of EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo, as the case may be.`;
 
 window.agroAbortController = window.agroAbortController || null;
+
+window.stopAgroResponse = function() {
+  if (window.agroAbortController) {
+    window.agroAbortController.abort();
+    window.agroAbortController = null;
+  }
+  const sendBtn = document.querySelector('.send-button');
+  const aiMsgText = document.querySelector('.ai-msg-text');
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+  }
+  if (aiMsgText) {
+    aiMsgText.innerHTML = "Response stopped by user.";
+  }
+};
 
 // Robust navbar loader
 function ensureNavbarLoaded(cb) {
@@ -139,11 +157,7 @@ window.renderSection = function() {
           <div id="agro-chat-preview" class="chat-preview"></div>
           <input type="text" id="agro-chat-input" placeholder="Ask about agriculture..." required />
           <div class="send-button-group">
-            <button type="submit" class="send-button">
-              <span class="send-text">Send</span>
-              <span class="spinner"></span>
-            </button>
-            <button type="button" class="stop-button" style="display:none" onclick="window.stopAgroResponse()">Stop</button>
+            <button type="submit" class="send-button">Send</button>
           </div>
         </form>
         <div class="input-options">
@@ -180,7 +194,7 @@ window.renderSection = function() {
               </div>
               <h3>All Farmers Association of Nigeria (AFAN)</h3>
               <p>National umbrella organization representing farmers' interests, providing support, and promoting agricultural development in Nigeria.</p>
-              <a href="details/organisations.html">Learn more →</a>
+              <a href="details/Agro/afan.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -189,7 +203,7 @@ window.renderSection = function() {
               </div>
               <h3>Rice farmers association of Nigeria Adamawa state chapter, Yola.</h3>
               <p>State chapter organization supporting rice farmers through training, resources, and market access initiatives.</p>
-              <a href="details/rifan-adamawa.html">Learn more →</a>
+              <a href="details/Agro/rifan.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -198,7 +212,7 @@ window.renderSection = function() {
               </div>
               <h3>Small-scale Women Farmers Organisation in Nigeria (SWOFON), Yola.</h3>
               <p>Organization empowering women farmers through capacity building, access to resources, and advocacy for gender-inclusive agricultural policies.</p>
-              <a href="details/swofon-yola.html">Learn more →</a>
+              <a href="details/Agro/swofon.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -207,7 +221,7 @@ window.renderSection = function() {
               </div>
               <h3>Himma Youth Farmers Association of Nigeria (HYFAN), Yola Chapter.</h3>
               <p>Youth-focused agricultural organization promoting farming among young people through training, mentorship, and support programs.</p>
-              <a href="details/hyfan-yola.html">Learn more →</a>
+              <a href="details/Agro/hyfan.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -216,16 +230,16 @@ window.renderSection = function() {
               </div>
               <h3>Smallholder farmers association of Nigeria Adamawa state chapter, Yola.</h3>
               <p>Organization supporting small-scale farmers with resources, training, and market access to improve agricultural productivity and livelihoods.</p>
-              <a href="details/smallholder-farmers-yola.html">Learn more →</a>
+              <a href="details/Agro/smallholder.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/peasantfarmers.jpg" alt="Peasant Farmers Association, Yola">
+                <img src="Data/Images/fison.png" alt="FISON, Yola">
               </div>
-              <h3>Peasant Farmers Association, Yola.</h3>
-              <p>Community organization supporting small-scale farmers with sustainable farming practices, organic agriculture methods, and market access opportunities.</p>
-              <a href="details/peasant-farmers-yola.html">Learn more →</a>
+              <h3>Fisheries Society Of Nigeria (FISON), Yola.</h3>
+              <p>Professional organization supporting the development of fisheries and aquaculture through research, training, and best practices.</p>
+              <a href="details/Agro/peasant.html">Learn more →</a>
             </div>
 
           </div>
@@ -241,7 +255,7 @@ window.renderSection = function() {
               </div>
               <h3>IITA - The International Institute Of Tropical Agriculture, Training Scheme.</h3>
               <p>IITA says it ahs trained 35,000 farmers on modern farming techniques in seven local governments in Adamawa state.</p>
-              <a href="details/agricultural-extension-office.html">Learn more →</a>
+              <a href="details/Agro/iita.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -250,7 +264,7 @@ window.renderSection = function() {
               </div>
               <h3>ACRESAL  Agro-Climatic Resilience In Semi-Arid Landscapes.</h3>
               <p>State-run facility providing resources to support local farmers in improving agricultural productivity.</p>
-              <a href="details/farmers-support-center.html">Learn more →</a>
+              <a href="details/Agro/acresal.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -259,7 +273,7 @@ window.renderSection = function() {
               </div>
               <h3>Raw Materials Research And Development Council, Yola.</h3>
               <p>Research and development center for improved farming practices.</p>
-              <a href="details/agricultural-research-station.html">Learn more →</a>
+              <a href="details/Agro/rmrdc.html">Learn more →</a>
             </div>
 
           </div>
@@ -275,7 +289,7 @@ window.renderSection = function() {
             </div>
             <h3>Yusash Agro Chemicals.</h3>
             <p>Leading supplier of agricultural chemicals, fertilizers, and farming inputs with expert guidance for optimal usage.</p>
-            <a href="details/yusash-agro.html">Learn more →</a>
+            <a href="details/Agro/yusash-inputs.html">Learn more →</a>
           </div>
           <div class="section4">
             <div class="img-placeholder">
@@ -283,7 +297,7 @@ window.renderSection = function() {
             </div>
             <h3>Mia Agro Chemicals, Yola.</h3>
             <p>Comprehensive provider of agricultural chemicals, pesticides, and farming supplies serving the Yola farming community.</p>
-            <a href="details/mia-agro.html">Learn more →</a>
+            <a href="details/Agro/mia-agro-inputs.html">Learn more →</a>
           </div>
            <div class="section4">
             <div class="img-placeholder">
@@ -291,7 +305,7 @@ window.renderSection = function() {
             </div>
             <h3>Comfort Agro Chemicals, Yola.</h3>
             <p>Reliable supplier of quality agricultural inputs, chemicals, and farming supplies with professional advisory services.</p>
-            <a href="details/comfort-agro.html">Learn more →</a>
+            <a href="details/Agro/comfort-agro-inputs.html">Learn more →</a>
           </div>
           
            <div class="section4">
@@ -300,7 +314,7 @@ window.renderSection = function() {
             </div>
             <h3>Golden Agro Supply, Yola.</h3>
             <p>One-stop shop for agricultural supplies, equipment, and farming inputs with technical support services.</p>
-            <a href="details/golden-agro.html">Learn more →</a>
+            <a href="details/Agro/golden-inputs.html">Learn more →</a>
           </div>
           
            <div class="section4">
@@ -308,8 +322,8 @@ window.renderSection = function() {
               <img src="Data/Images/nazareth.png" alt="Golden Agro Supply, Yola">
             </div>
             <h3>Nazareth Farmers' Service Center, Yola.</h3>
-            <p></p>
-            <a href="details/golden-agro.html">Learn more →</a>
+            <p>Comprehensive agricultural service center providing farming supplies, equipment, and technical support to local farmers.</p>
+            <a href="details/Agro/nazareth-inputs.html">Learn more →</a>
           </div>
           
            <div class="section4">
@@ -317,8 +331,8 @@ window.renderSection = function() {
               <img src="Data/Images/kandimi.png" alt="Golden Agro Supply, Yola">
             </div>
             <h3>Kandimi Agro Input Dealers, Yola.</h3>
-            <p></p>
-            <a href="details/golden-agro.html">Learn more →</a>
+            <p>Trusted agricultural input dealer offering quality seeds, fertilizers, and farming supplies with expert guidance.</p>
+            <a href="details/Agro/kandimi-inputs.html">Learn more →</a>
           </div>
         </div>
 
@@ -332,7 +346,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Ngurore Livestock Market, Yola.</h3>
                 <p>Major marketplace for livestock trading and related services.</p>
-                <a href="details/central-livestock-market.html">Learn more →</a>
+                <a href="details/Agro/ngurore-market.html">Learn more →</a>
               </div>  
 
               
@@ -341,8 +355,8 @@ window.renderSection = function() {
                   <img src="Data/Images/jambutumarket1.png" alt="Chikun Chicks - Chicken">
                 </div>
                 <h3>Jambutu Vegetables and Fruits Market.</h3>
-                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
-                <a href="details/chikun-chicks.html">Learn more →</a>
+                <p>Major marketplace for fresh vegetables and fruits, connecting local farmers directly with consumers.</p>
+                <a href="details/Agro/jambutu-vegetables-market.html">Learn more →</a>
               </div>
               
               <div class="section4">
@@ -350,8 +364,8 @@ window.renderSection = function() {
                   <img src="Data/Images/jambutumarket2.png" alt="Chikun Chicks - Chicken">
                 </div>
                 <h3>Jambutu Smoked Fish Market, Yola.</h3>
-                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
-                <a href="details/chikun-chicks.html">Learn more →</a>
+                <p>Specialized market known for quality smoked fish products and fresh fish supplies from local fishermen.</p>
+                <a href="details/Agro/jambutu-fish-market.html">Learn more →</a>
               </div>
               <div class="section4">
                 <div class="img-placeholder">
@@ -359,7 +373,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Agricultural Inputs Trade Fair, Yola.</h3>
                 <p>Annual trade fair showcasing agricultural inputs, machinery, and innovations to connect farmers with suppliers.</p>
-                <a href="details/agric-fair.html">Learn more →</a>
+                <a href="details/Agro/trade-fair.html">Learn more →</a>
                 </div>
                 
               <div class="section4">
@@ -367,8 +381,8 @@ window.renderSection = function() {
                   <img src="Data/Images/sarekosam.png" alt="Chikun Chicks - Chicken">
                 </div>
                 <h3>Sare Kosam - Home Of Pure & Natural Milk.</h3>
-                <p></p>
-                <a href="details/chikun-chicks.html">Learn more →</a>
+                <p>Local dairy producer specializing in fresh, pure milk products sourced from local dairy farmers.</p>
+                <a href="details/Agro/sare-kosam.html">Learn more →</a>
               </div>
               <div class="section4">
                 <div class="img-placeholder">
@@ -376,7 +390,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Wakili (WK) Poultry Farms, Yola</h3>
                 <p>Modern poultry farm specializing in chicken breeding, egg production, and poultry products.</p>
-                <a href="details/wakili-farms.html">Learn more →</a>
+                <a href="details/Agro/wakili-farms.html">Learn more →</a>
               </div>
               <div class="section4">
                 <div class="img-placeholder">
@@ -384,7 +398,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Chikun Chicks - Chicken</h3>
                 <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
-                <a href="details/chikun-chicks.html">Learn more →</a>
+                <a href="details/Agro/chikun-chicks.html">Learn more →</a>
               </div>
 
               <div class="section4">
@@ -392,16 +406,16 @@ window.renderSection = function() {
                   <img src="Data/Images/lacrest.jpg" alt="Chikun Chicks - Chicken">
                 </div>
                 <h3>LA'CREST Frozens, Yola.</h3>
-                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
-                <a href="details/chikun-chicks.html">Learn more →</a>
+                <p>Premium frozen food distributor offering a wide range of quality frozen meat and poultry products.</p>
+                <a href="details/Agro/la-crest.html">Learn more →</a>
               </div>
               <div class="section4">
                 <div class="img-placeholder">
                   <img src="Data/Images/easylife.png" alt="Chikun Chicks - Chicken">
                 </div>
                 <h3>Easy Life Frozen Chicken.</h3>
-                <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
-                <a href="details/chikun-chicks.html">Learn more →</a>
+                <p>Supplier of high-quality frozen chicken products with reliable cold chain distribution in Yola.</p>
+                <a href="details/Agro/easy-life.html">Learn more →</a>
               </div>
               
             </div>
@@ -417,7 +431,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Rico Gado Quality Feed Mills</h3>
                 <p>Premium animal feed production and supply services.</p>
-                <a href="details/quality-feed-mills.html">Learn more →</a>
+                <a href="details/Agro/ricogado.html">Learn more →</a>
               </div>
 
               <div class="section4">
@@ -426,7 +440,7 @@ window.renderSection = function() {
                 </div>
                 <h3>Shamad Grain Processing Center, Yola.</h3>
                 <p>Modern grain processing and storage Facilities.</p>
-                <a href="details/grain-processing-center.html">Learn more →</a>
+                <a href="details/Agro/shamad.html">Learn more →</a>
               </div>
               
               <div class="section4">
@@ -435,7 +449,7 @@ window.renderSection = function() {
                 </div>
                 <h3>ColdHubs Stores, Jambutu Groceries Market, Jimeta, Yola.</h3>
                 <p>Temperature-controlled storage for agricultural products.</p>
-                <a href="details/cold-storage-facility.html">Learn more →</a>
+                <a href="details/Agro/coldhubs.html">Learn more →</a>
               </div>
               
             </div>
@@ -450,7 +464,7 @@ window.renderSection = function() {
               </div>
               <h3>Distribiution Of Farm Inputs To Residents By The Executive Governor</h3>
               <p>Government initiative providing essential farming inputs, seeds, and agricultural supplies to support local farmers and boost agricultural production.</p>
-              <a href="details/farm-input-distribution.html">Learn more →</a>
+              <a href="details/Agro/fintiri-inputs-distribution.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -459,7 +473,7 @@ window.renderSection = function() {
               </div>
               <h3>'Every Home A Garden' - Movement By The First Lady.</h3>
               <p>Initiative promoting urban agriculture and food security by encouraging household gardening and sustainable farming practices.</p>
-              <a href="details/every-home-garden.html">Learn more →</a>
+              <a href="details/Agro/every-home-garden.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -468,7 +482,7 @@ window.renderSection = function() {
               </div>
               <h3>Climate-smart Seed Production Training</h3>
               <p>Capacity building program teaching farmers climate-resilient seed production techniques and sustainable agricultural practices.</p>
-              <a href="details/climate-smart-training.html">Learn more →</a>
+              <a href="details/Agro/climate-smart-seed.html">Learn more →</a>
             </div>
 
           </div>
@@ -484,7 +498,7 @@ window.renderSection = function() {
               </div>
               <h3>Divine Pet Veterinary Clinic, Yola.</h3>
               <p>Professional veterinary clinic providing comprehensive medical care for pets and small animals in Yola.</p>
-              <a href="details/divine-pet-vet.html">Learn more →</a>
+              <a href="details/Agro/divine-pet-vet.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -493,7 +507,7 @@ window.renderSection = function() {
               </div>
               <h3>Hoof - Line Veterinary, Yola.</h3>
               <p>Specialized veterinary practice focusing on livestock health, treatment, and preventive care services.</p>
-              <a href="details/hoofline-vet.html">Learn more →</a>
+              <a href="details/Agro/hoofline-vet.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -502,7 +516,7 @@ window.renderSection = function() {
               </div>
               <h3>Critters veterinary Center.</h3>
               <p>Full-service veterinary center offering medical care, surgery, and health consultations for all types of animals.</p>
-              <a href="details/critters-vet.html">Learn more →</a>
+              <a href="details/Agro/critters-vet.html">Learn more →</a>
             </div>
 
           </div>
@@ -539,11 +553,23 @@ window.sendAgroMessage = async function(faqText = '') {
   window.agroAbortController = new AbortController();
 
   if (sendBtn) {
-    sendBtn.disabled = true;
     sendBtn.classList.add('sending');
-    sendBtn.querySelector('.send-text').textContent = '';
+    sendBtn.textContent = 'Stop';
+    sendBtn.style.backgroundColor = '#ff4444';
+
+    // Add click handler to stop response
+    const stopHandler = () => {
+      if (window.agroAbortController) {
+        window.agroAbortController.abort();
+        window.agroAbortController = null;
+      }
+      sendBtn.removeEventListener('click', stopHandler);
+      sendBtn.classList.remove('sending');
+      sendBtn.textContent = 'Send';
+      sendBtn.style.backgroundColor = '';
+    };
+    sendBtn.addEventListener('click', stopHandler);
   }
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
@@ -555,13 +581,36 @@ window.sendAgroMessage = async function(faqText = '') {
   preview.innerHTML = '';
   if (!faqText) input.value = '';
 
+  // Load existing chat history
+  let chatHistory = JSON.parse(localStorage.getItem('agro_chat_history') || '[]');
+
   let finalAnswer = "";
   try {
     const localData = await fetch('Data/AgroInfo/agroinfo.txt').then(r => r.text());
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
+    
+    // Include chat history in the context
+    const historyContext = chatHistory.length > 0 
+        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
+        : "";
+    
+    try {    
+      finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+      
+      // Store in chat history (keep last 5 messages)
+      chatHistory.push({ user: msg, ai: finalAnswer });
+      if (chatHistory.length > 5) chatHistory = chatHistory.slice(-5);
+      localStorage.setItem('agro_chat_history', JSON.stringify(chatHistory));
+    } catch (e) {
+      if (e.name === 'AbortError') {
+        finalAnswer = "Response stopped by user.";
+      } else {
+        console.error("Error in Gemini API call:", e);
+        finalAnswer = "Sorry, I could not get a response from the AI at this time. Please try again.";
+      }
+    }
   } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    console.error("Error fetching local data:", e);
+    finalAnswer = "Sorry, I could not access the local information. Please check your connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = `
@@ -575,11 +624,10 @@ window.sendAgroMessage = async function(faqText = '') {
   chat.scrollTop = chat.scrollHeight;
 
   if (sendBtn) {
-    sendBtn.disabled = false;
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
   }
-  if (stopBtn) stopBtn.style.display = 'none';
   window.agroAbortController = null;
 };
 
@@ -704,37 +752,53 @@ function formatAIResponse(text) {
 }
 
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
-  try {
-    const contents = {
-      parts: []
-    };
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1]
-        }
-      });
-    }
-    const promptGuide = localStorage.getItem('agro_ai_prompt') || AGRO_AI_PROMPT;
+  const contents = {
+    parts: []
+  };
+  if (imageData) {
     contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+      inlineData: {
+        mimeType: "image/jpeg",
+        data: imageData.split(',')[1]
+      }
     });
-    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
-    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:4000/api/gemini'
-      : '/api/gemini';
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-    let data = await res.json();
+  }
+  const promptGuide = localStorage.getItem('agro_ai_prompt') || AGRO_AI_PROMPT;
+  contents.parts.push({
+    text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+  });
+  const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+  let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+  const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:4000/api/gemini'
+    : '/api/gemini';
+
+  let response;
+  try {
+    response = await fetch(url, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body,
+      signal: window.agroAbortController?.signal 
+    });
+    
+    let data = await response.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-      data = await res.json();
+      response = await fetch(url, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body,
+        signal: window.agroAbortController?.signal 
+      });
+      data = await response.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
-    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    if (err.name === 'AbortError') {
+      throw err; // Re-throw abort errors to be handled by caller
+    }
+    throw new Error("Failed to get response from AI service");
   }
 }

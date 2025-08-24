@@ -1,4 +1,4 @@
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
+
 
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
@@ -73,7 +73,7 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for ServiInfo
 window.SERVI_AI_PROMPT = window.SERVI_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Enquire on how to help the user find professional services in Yola.
+Help the user find professional services in Yola.
 Answer the user's question using the information provided below, and the internet. But only those regarding professional services and service providers.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local service directory for further help."
 And if a user clearly requests information on health, education, community, environment, navigation, or agriculture, refer them to either of MediInfo, EduInfo, CommunityInfo, EcoInfo, NaviInfo, or AgroInfo, as the case may be.`;
@@ -139,11 +139,7 @@ window.renderSection = function() {
           <div id="servi-chat-preview" class="chat-preview"></div>
           <input type="text" id="servi-chat-input" placeholder="Ask for a professional..." required />
           <div class="send-button-group">
-            <button type="submit" class="send-button">
-              <span class="send-text">Send</span>
-              <span class="spinner"></span>
-            </button>
-            <button type="button" class="stop-button" style="display:none" onclick="window.stopServiResponse()">Stop</button>
+            <button type="submit" class="send-button">Send</button>
           </div>
         </form>
         <div class="input-options">
@@ -175,10 +171,10 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/electrician1.jpg" alt="Ibrahim Electric Solutions">
+                <img src="Data/Images/ServiInfo/electrician1.jpg" alt="Ibrahim Electric Solutions - Expert electrical services in Yola">
               </div>
               <h3>Ibrahim Electric Solutions</h3>
-              <p>Expert electrical installations and repairs with 15+ years experience. Available 24/7 for emergencies.</p>
+              <p>Expert electrical installations, repairs and maintenance with 15+ years experience. Available 24/7 for residential and commercial electrical emergencies in Yola. Licensed and certified electricians.</p>
               <a href="details/ibrahim-electric.html">Learn more →</a>
             </div>
             <div class="section4">
@@ -205,10 +201,10 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/plumber1.jpg" alt="Quality Plumbing">
+                <img src="Data/Images/ServiInfo/plumber1.jpg" alt="Quality Plumbing Services - Professional plumbing solutions in Yola">
               </div>
               <h3>Quality Plumbing Services</h3>
-              <p>Expert plumbing solutions for residential and commercial properties. 24/7 emergency services.</p>
+              <p>Expert plumbing solutions for residential and commercial properties in Yola. Specializing in repairs, installations, maintenance and 24/7 emergency services. Licensed plumbers with proven track record.</p>
               <a href="details/quality-plumbing.html">Learn more →</a>
             </div>
             <div class="section4">
@@ -235,10 +231,10 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/carpenter1.jpg" alt="Master Woodworks">
+                <img src="Data/Images/ServiInfo/carpenter1.jpg" alt="Master Woodworks - Premium carpentry and furniture services in Yola">
               </div>
               <h3>Master Woodworks</h3>
-              <p>Custom furniture and carpentry services with attention to detail and quality craftsmanship.</p>
+              <p>Premium custom furniture and carpentry services in Yola. Expert craftsmen specializing in bespoke furniture, home renovations, and architectural woodwork. Known for exceptional attention to detail and quality craftsmanship.</p>
               <a href="details/master-woodworks.html">Learn more →</a>
             </div>
             <div class="section4">
@@ -357,18 +353,16 @@ window.renderSection = function() {
 };
 
 window.stopServiResponse = function() {
-  if (serviAbortController) {
-    serviAbortController.abort();
-    serviAbortController = null;
+  if (window.serviAbortController) {
+    window.serviAbortController.abort();
+    window.serviAbortController = null;
   }
   const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
   if (sendBtn) {
-    sendBtn.disabled = false;
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
   }
-  if (stopBtn) stopBtn.style.display = 'none';
 };
 
 // Common helper for Gemini API call
@@ -444,11 +438,23 @@ window.sendServiMessage = async function(faqText = '') {
   window.serviAbortController = new AbortController();
 
   if (sendBtn) {
-    sendBtn.disabled = true;
     sendBtn.classList.add('sending');
-    sendBtn.querySelector('.send-text').textContent = '';
+    sendBtn.textContent = 'Stop';
+    sendBtn.style.backgroundColor = '#ff4444';
+
+    // Add click handler to stop response
+    const stopHandler = () => {
+      if (window.serviAbortController) {
+        window.serviAbortController.abort();
+        window.serviAbortController = null;
+      }
+      sendBtn.removeEventListener('click', stopHandler);
+      sendBtn.classList.remove('sending');
+      sendBtn.textContent = 'Send';
+      sendBtn.style.backgroundColor = '';
+    };
+    sendBtn.addEventListener('click', stopHandler);
   }
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
@@ -473,11 +479,10 @@ window.sendServiMessage = async function(faqText = '') {
   chat.scrollTop = chat.scrollHeight;
 
   if (sendBtn) {
-    sendBtn.disabled = false;
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
   }
-  if (stopBtn) stopBtn.style.display = 'none';
   window.serviAbortController = null;
 };
 
@@ -630,6 +635,17 @@ window.sendServiMessage = async function(faqText = '') {
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
 
+  // Save to chat history
+  const history = JSON.parse(localStorage.getItem('servi_chat_history') || '[]');
+  if (history.length >= 5) {
+    history.shift(); // Remove oldest message if we have 5 already
+  }
+  history.push({
+    user: msg,
+    ai: '', // Will be filled in after AI responds
+    timestamp: new Date().toISOString()
+  });
+
   if (submitBtn) {
     submitBtn.disabled = true;
     submitBtn.textContent = "Sending...";
@@ -647,8 +663,24 @@ window.sendServiMessage = async function(faqText = '') {
 
   let finalAnswer = "";
   try {
-    const localData = await fetch('Data/ServiInfo/serviinfo.txt').then(r => r.text()); // Assuming a local data file for ServiInfo
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY);
+    const localData = await fetch('Data/ServiInfo/serviinfo.txt').then(r => r.text());
+
+    // Get chat history context
+    const history = JSON.parse(localStorage.getItem('servi_chat_history') || '[]');
+    let historyContext = '';
+    if (history.length > 0) {
+      historyContext = '\n\nRecent chat history:\n' + 
+        history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
+    }
+
+    finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY);
+
+    // Update history with AI response
+    const updatedHistory = JSON.parse(localStorage.getItem('servi_chat_history') || '[]');
+    if (updatedHistory.length > 0) {
+      updatedHistory[updatedHistory.length - 1].ai = finalAnswer;
+      localStorage.setItem('servi_chat_history', JSON.stringify(updatedHistory));
+    }
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
     finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";

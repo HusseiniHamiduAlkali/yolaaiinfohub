@@ -44,6 +44,7 @@ window.renderSection = function() {
             <li><strong>Text-To-Speech:</strong> A text-to-speech option to listen to the AI's response in any section.</li>
             <li><strong>Local Focus:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
             <li><strong>Multi Modality:</strong> A pecial functionality, enabling user to switch between two different Gemini models for their response.</li>
+            <li><strong>Chat History:</strong>Ability to remember recent chats history by the AI, for about 10 chats. For a continious chat flow.</li>
             <li><strong>Frequently Asked Questions FAQs:</strong> FAQs available as clickable links directly below the chat areas of every section.</li>
           </ul>
           

@@ -1,7 +1,7 @@
 // eduinfo.js
 
 // API Key and Model Preference
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
+
 window.useGemini25 = window.useGemini25 || false;
 
 // Toggle Gemini Model
@@ -22,7 +22,7 @@ if (typeof window.useGemini25 === 'undefined') {
 
 // AI Prompt for EduInfo
 window.EDU_AI_PROMPT = `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Enquire on how to help the user with medical and health information in Yola.
+Help the user with medical and health information in Yola.
 Answer questions using the available information and focus only on education-related topics.
 If specific information is not available, say: "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help."
 For non-education queries about health, navigation, community, environment, jobs, or agriculture, refer users to MediInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo respectively.`;
@@ -54,11 +54,7 @@ window.renderSection = function() {
           <div class="chat-input-area">
             <input type="text" id="edu-chat-input" placeholder="Ask about education..." required />
             <div class="send-button-group">
-              <button type="submit" class="send-button">
-                <span class="send-text">Send</span>
-                <span class="spinner"></span>
-              </button>
-              <button type="button" class="stop-button" style="display:none" onclick="window.eduAbortController?.abort()">Stop</button>
+              <button type="submit" class="send-button">Send</button>
             </div>
           </div>
           <div class="input-options">
@@ -97,6 +93,7 @@ window.renderSection = function() {
               <p>A state-owned university offering various undergraduate and postgraduate programs. Located in Mubi, with modern facilities and diverse academic departments.</p>
               <a href="details/Edu/adsu.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/aunlogo.jpg" alt="American University of Nigeria">
@@ -105,6 +102,7 @@ window.renderSection = function() {
               <p>Premier private university providing American-style education. Known for its state-of-the-art facilities and international standards.</p>
               <a href="details/Edu/aun.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/maulogo2.jpg" alt="Modibbo Adama University">
@@ -120,6 +118,7 @@ window.renderSection = function() {
         <div class="section3">
           <h3 class="section3-title">Colleges</h3>
           <div class="section4-container">
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/fcelogo.png" alt="Federal College of Education">
@@ -128,6 +127,7 @@ window.renderSection = function() {
               <p>Leading institution for teacher training and educational development.</p>
               <a href="details/Edu/fce-yola.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/spylogo.jpg" alt="State Polytechnic">
@@ -136,6 +136,7 @@ window.renderSection = function() {
               <p>Technical institution offering diploma and certificate programs.</p>
               <a href="details/Edu/spy-yola.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/polylogo.jpg" alt="Federal Polytechnic">
@@ -144,6 +145,7 @@ window.renderSection = function() {
               <p>Technical institution offering diploma and certificate programs.</p>
               <a href="details/Edu/fed-poly-yola.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/conmylogo.jpg" alt="School of Nursing">
@@ -161,6 +163,7 @@ window.renderSection = function() {
               <p>Professional institution dedicated to legal education and training for aspiring legal practitioners in Yola.</p>
               <a href="details/Edu/cls-yola.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/centrallogo.jpeg" alt="Central College OF Health Sciences And Technology, Yola">
@@ -170,7 +173,6 @@ window.renderSection = function() {
               <a href="details/Edu/central-college.html">Learn more →</a>
             </div>
           </div>
-
 
 
         <div class="section3">
@@ -214,7 +216,7 @@ window.renderSection = function() {
               </div>
               <h3>Adroit International Academy, Yola.</h3>
               <p>Historic institution providing quality education to students across the state.</p>
-              <a href="details/adroit-academy.html">Learn more →</a>
+              <a href="details/Edu/adroit-academy.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -368,11 +370,23 @@ window.sendEduMessage = async function(faqText = '') {
     window.eduAbortController = new AbortController();
 
     if (sendBtn) {
-        sendBtn.disabled = true;
         sendBtn.classList.add('sending');
-        sendBtn.querySelector('.send-text').textContent = '';
+        sendBtn.textContent = 'Stop';
+        sendBtn.style.backgroundColor = '#ff4444';
+
+        // Add click handler to stop response
+        const stopHandler = () => {
+            if (window.eduAbortController) {
+                window.eduAbortController.abort();
+                window.eduAbortController = null;
+            }
+            sendBtn.removeEventListener('click', stopHandler);
+            sendBtn.classList.remove('sending');
+            sendBtn.textContent = 'Send';
+            sendBtn.style.backgroundColor = '';
+        };
+        sendBtn.addEventListener('click', stopHandler);
     }
-    if (stopBtn) stopBtn.style.display = 'inline-flex';
 
     const msgGroup = document.createElement('div');
     msgGroup.className = 'chat-message-group';
@@ -385,61 +399,94 @@ window.sendEduMessage = async function(faqText = '') {
     preview.innerHTML = '';
     if (!faqText) input.value = '';
 
+    // Load existing chat history
+    let chatHistory = JSON.parse(localStorage.getItem('edu_chat_history') || '[]');
+    
     let finalAnswer = "";
     try {
         const localData = await fetch('Data/EduInfo/eduinfo.txt').then(r => r.text());
-        finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
+        
+        // Include chat history in the context
+        const historyContext = chatHistory.length > 0 
+            ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
+            : "";
+            
+        finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+        
+        // Store in chat history (keep last 5 messages)
+        chatHistory.push({ user: msg, ai: finalAnswer });
+        if (chatHistory.length > 5) chatHistory = chatHistory.slice(-5);
+        localStorage.setItem('edu_chat_history', JSON.stringify(chatHistory));
     } catch (e) {
-        console.error("Error fetching local data or Gemini API call:", e);
-        finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+        if (e.name === 'AbortError') {
+            finalAnswer = "Response stopped by user.";
+        } else {
+            console.error("Error fetching local data or Gemini API call:", e);
+            finalAnswer = "Sorry, I could not access local information or the AI at this time. Please try again.";
+        }
     }
 
     msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
     chat.scrollTop = chat.scrollHeight;
 
     if (sendBtn) {
-        sendBtn.disabled = false;
         sendBtn.classList.remove('sending');
-        sendBtn.querySelector('.send-text').textContent = 'Send';
+        sendBtn.textContent = 'Send';
+        sendBtn.style.backgroundColor = '';
     }
-    if (stopBtn) stopBtn.style.display = 'none';
     window.eduAbortController = null;
 };
 
 // Common helper for Gemini API call
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
-  try {
-    const contents = {
-      parts: []
-    };
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1]
-        }
-      });
-    }
-    const promptGuide = localStorage.getItem('edu_ai_prompt') || EDU_AI_PROMPT;
+  const contents = {
+    parts: []
+  };
+  if (imageData) {
     contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+      inlineData: {
+        mimeType: "image/jpeg",
+        data: imageData.split(',')[1]
+      }
     });
-    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
-    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:4000/api/gemini'
-      : '/api/gemini';
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-    let data = await res.json();
+  }
+  const promptGuide = localStorage.getItem('edu_ai_prompt') || EDU_AI_PROMPT;
+  contents.parts.push({
+    text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+  });
+  const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+  let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+  const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:4000/api/gemini'
+    : '/api/gemini';
+  
+  let response;
+  try {
+    response = await fetch(url, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body,
+      signal: window.eduAbortController?.signal 
+    });
+    
+    let data = await response.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-      data = await res.json();
+      response = await fetch(url, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body,
+        signal: window.eduAbortController?.signal 
+      });
+      data = await response.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
-    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    if (err.name === 'AbortError') {
+      throw err; // Re-throw abort errors to be handled by caller
+    }
+    throw new Error("Failed to get response from AI service");
   }
 }
 

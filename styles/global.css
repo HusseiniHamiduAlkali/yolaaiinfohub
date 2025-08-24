@@ -17,12 +17,13 @@ Wednesday, July 30, 2025
 .model-switch {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.1rem;
 }
 
 .model-label {
     font-size: 0.85rem;
     color: #666;
+
 }
 
 /* Switch toggle */
@@ -89,7 +90,7 @@ Wednesday, July 30, 2025
 
 /* Global Section Layouts */
 .section2 {
-  width: 100%;
+  width: auto;
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1rem;
@@ -409,6 +410,7 @@ Wednesday, July 30, 2025
   transition: background 0.2s;
   min-width: 50px;
   position: relative;
+  margin-right: 5px;
 }
 
 .chat-input-area button:hover {
@@ -461,6 +463,7 @@ Wednesday, July 30, 2025
 }
 
 /* Stop button and loading spinner styles for all sections */
+/*
 .stop-button, #stop-btn {
   margin-left: 0em;
   background: #e53e3e;
@@ -477,14 +480,15 @@ Wednesday, July 30, 2025
 }
 .stop-button:hover {
   background: #c53030;
-}
+}*/
 .sending, .chat-input-area button:disabled {
-  background: #9792d7 !important;
+  background: red !important;
   color: #fff !important;
-  cursor: not-allowed !important;
+  cursor:auto !important;
   opacity: 0.7;
   position: relative;
 }
+/*
 .sending .spinner {
   display: inline-block;
   width: 1em;
@@ -498,7 +502,7 @@ Wednesday, July 30, 2025
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
+}*/
 
 body {
   margin: 0;
@@ -725,6 +729,10 @@ main {
 
 @media screen and (max-width: 700px) {
   /* Mobile styles */
+  
+  #main-content {
+    margin-top: 0px
+  }
   .section2 {
     padding: 0.8rem;
     margin: 1rem auto;
@@ -789,7 +797,8 @@ main {
     max-width: 98vw;
   }
   .info-section {
-    margin-top: 1rem;
+    /*margin-top: 1rem;*/
+    width: auto;
   }
   .info-section h2 {
     padding-top: 0px;
@@ -807,6 +816,11 @@ main {
   }
   .mauth-placeholder .img2 {
     display: none;
+  }
+  .model-label {
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: max-content;
   }
 }
 .auth-page-form input[type="email"] {

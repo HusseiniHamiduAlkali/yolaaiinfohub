@@ -1,4 +1,4 @@
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
+
 
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
@@ -122,7 +122,7 @@ window.speakText = window.speakText || function(text) {
 
 // Edit this prompt to instruct the AI on how to answer user messages for CommunityInfo
 window.COMMUNITY_AI_PROMPT = window.COMMUNITY_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Enquire on how to help the user with community information in Yola.
+Help the user with community information in Yola.
 Answer the user's question using the information provided below, and the internet. But only those regarding community events, organizations, and services.
 If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local community authority for further help."
 And if a user clearly requests information on health, education, navigation, environment, jobs, or agriculture, refer them to either of MediInfo, EduInfo, NaviInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
@@ -187,11 +187,7 @@ window.renderSection = function() {
           <div id="chat-preview" class="chat-preview"></div>
           <input type="text" id="chat-input" placeholder="Ask about community..." required />
           <div class="send-button-group">
-            <button type="submit" class="send-button">
-              <span class="send-text">Send</span>
-              <span class="spinner"></span>
-            </button>
-            <button type="button" class="stop-button" style="display:none" onclick="window.stopCommunityResponse()">Stop</button>
+            <button type="submit" class="send-button">Send</button>
           </div>
         </form>
         <div class="input-options">
@@ -223,10 +219,10 @@ window.renderSection = function() {
           
               <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/flood2.jpg" alt="flood Yola.">
+                <img src="Data/Images/flood2.jpg" alt="Flood devastation in Yola">
               </div>
               <h3>The Ever-devastating Flood Experienced in Yola.</h3>
-              <p></p>
+              <p>Severe flooding affecting communities and infrastructure in Yola, requiring emergency response and relief efforts.</p>
               <a href="../details/Community/flood.html">Learn more →</a>
             </div>
 
@@ -248,7 +244,8 @@ window.renderSection = function() {
               <p>The residents of Yola and Jalingo, the capitals of Adamawa and Taraba States, 
                 have been hit by a five-day darkness.</p>
               <a href="../details/Community/blackout.html">Learn more →</a>
-            </div>            <div class="section4">
+            </div>            
+            <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/waterboard2.jpg" alt="waterboard">
               </div>
@@ -264,7 +261,8 @@ window.renderSection = function() {
               <h3>Gov. Fintiri flags off N18.9b international conference centre in Yola</h3>
               <p>Governor Ahmadu Fintiri, on Thursday, May 29, 2025, performed the groundbreaking ceremony for the construction of an ultramodern International Conference and...</p>
               <a href="../details/Community/conference-center.html">Learn more →</a>
-            </div>            <div class="section4">
+            </div>            
+            <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/cng.jpg" alt=" Yola">
               </div>
@@ -309,11 +307,11 @@ window.renderSection = function() {
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/redcross3.jpg" alt="Red Cross">
+                <img src="Data/Images/redcross3.jpg" alt="Nigerian Red Cross Society Yola Branch - Emergency services and humanitarian aid">
               </div>
               <h3>Nigerian Red Cross Society - Yola Branch</h3>
-              <p>Humanitarian organization providing emergency services and community support.</p>
-              <a href="details/redcross.html">Learn more →</a>
+              <p>Leading humanitarian organization in Yola providing emergency response, first aid training, disaster relief, and community health services. Active in blood donation drives, emergency preparedness, and local community support programs.</p>
+              <a href="details/Community/redcross-society.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -322,16 +320,16 @@ window.renderSection = function() {
               </div>
               <h3>Yola Renewal Foundation</h3>
               <p>Empowering young people through education and skill development.</p>
-              <a href="details/youthdev.html">Learn more →</a>
+              <a href="details/Community/yola-renewal-foundation.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/womensupport.png" alt="Women Support">
+                <img src="Data/Images/womensupport.png" alt="YAWEF Yola - Youth and women empowerment programs">
               </div>
-              <h3>Youth And Women Empowerment Foundation (YAWEF),Yola</h3>
-              <p>Supporting women through education, business, and social programs.</p>
-              <a href="details/womensupport.html">Learn more →</a>
+              <h3>Youth And Women Empowerment Foundation (YAWEF), Yola</h3>
+              <p>Dedicated organization supporting women and youth development in Yola through education, vocational training, business mentorship, and social programs. Offers micro-loans, skills acquisition workshops, and entrepreneurship guidance.</p>
+              <a href="details/Community/yawef.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -371,11 +369,11 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/undp1.png" alt="UNDP vocational training">
+                <img src="Data/Images/undp1.png" alt="UNDP Vocational Training Program participants">
               </div>
               <h3>UNDP Vocational Training Program</h3>
-              <p></p>
-              <a href="details/programs.html">Learn more →</a>
+              <p>Skills development initiative providing vocational training to empower local youth and adults in Yola.</p>
+              <a href="details/Community/undp-training.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -384,7 +382,7 @@ window.renderSection = function() {
               </div>
               <h3>Lead Generation Initiative (LGI) Workshop</h3>
               <p>LGI Organises leadership training for 500 youth in Yola.</p>
-              <a href="details/youthdev.html">Learn more →</a>
+              <a href="details/Community/lgi-workshop.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -403,7 +401,7 @@ window.renderSection = function() {
               </div>
               <h3>AUN Townhall Meeting, Yola</h3>
               <p>Community engagement forum hosted by American University of Nigeria to discuss local issues and initiatives.</p>
-              <a href="details/womensupport.html">Learn more →</a>
+              <a href="../details/Community/aun-townhall.html">Learn more →</a>
             </div>
 
             
@@ -413,7 +411,7 @@ window.renderSection = function() {
               </div>
               <h3>American University of Nigeria, (AUN) Graduation Ceremony</h3>
               <p>Supporting youth through education, business, and social programs.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="../details/Community/aun-graduation-ceremony.html">Learn more →</a>
             </div>
 
             
@@ -433,13 +431,14 @@ window.renderSection = function() {
               <h3>Female child Education Awareness Program</h3>
               <p>Conditional cash transfer for the less previllaged in the society</p>
               <a href="../details/Community/female-education.html">Learn more →</a>
-            </div>            <div class="section4">
+            </div>            
+            <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/govcup.jpg" alt="Governor's Cup Football Competition in Yola">
               </div>
               <h3>Governor's Cup Football Competition</h3>
               <p>Annual football tournament bringing together teams from across Yola and promoting sports development.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="details/Community/governors-cup.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -448,7 +447,7 @@ window.renderSection = function() {
               </div>
               <h3>Community Cleaning Day</h3>
               <p>Monthly community cleaning and beautification program.</p>
-              <a href="details/.html">Learn more →</a>
+              <a href="details/Community/cleaning-day.html">Learn more →</a>
             </div>
 
           </div>
@@ -520,7 +519,7 @@ window.renderSection = function() {
         </div>
 
         <div class="section3">
-        <h3 class="section3-title">Community Centers</h3>
+        <h3 class="section3-title">Community Event Centers</h3>
           <div class="section4-container">
           
           <div class="section4">
@@ -529,80 +528,80 @@ window.renderSection = function() {
             </div>
             <h3>Mahmudu Ribadu Square, Yola</h3>
             <p>Venue for cultural events, exhibitions, and traditional performances.</p>
-            <a href="details/ribadu-square.html">Learn more →</a>
+            <a href="details/Community/ribadu-square.html">Learn more →</a>
           </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/digitalhall.jpg" alt="">
+                <img src="Data/Images/digitalhall.jpg" alt="Digital Multipurpose Hall in Yola">
               </div>
               <h3>Digital Multipurpose Hall Yola</h3>
-              <p>.</p>
-              <a href="details/.html">Learn more →</a>
+              <p>Modern event venue equipped with digital facilities for conferences, seminars, and community gatherings.</p>
+              <a href="details/Community/digital-hall.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/aunhall.png" alt="Sports Complex">
+                <img src="Data/Images/aunhall.png" alt="AUN Community Hall">
               </div>
               <h3>AUN Community Hall, Yola</h3>
-              <p>.</p>
-              <a href="details.html">Learn more →</a>
+              <p>University-owned venue hosting academic events, community programs, and cultural activities.</p>
+              <a href="details/Community/aun-hall.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/banquethall.jpg" alt="Sports Complex">
+                <img src="Data/Images/banquethall.jpg" alt="Government House Banquet Hall">
               </div>
               <h3>Banquet Hall, Government House Yola</h3>
-              <p>.</p>
-              <a href="details.html">Learn more →</a>
+              <p>Prestigious state venue for official functions, ceremonies and high-profile events.</p>
+              <a href="details/Community/banquet-hall.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/crystalpalace.jpg" alt="">
+                <img src="Data/Images/crystalpalace.jpg" alt="Crystal Palace Event Center">
               </div>
               <h3>Crystal Palace Event Center, Yola.</h3>
-              <p>.</p>
-              <a href="details.html">Learn more →</a>
+              <p>Modern event facility offering space for weddings, parties, and corporate functions.</p>
+              <a href="details/Community/crystal-palace.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/fcehall.jpg" alt="">
+                <img src="Data/Images/fcehall.jpg" alt="FCE Yola Multipurpose Hall">
               </div>
               <h3>Federal Collece Of Education (FCE) Yola, Multipurpose hall</h3>
-              <p>.</p>
-              <a href="details.html">Learn more →</a>
+              <p>Educational institution's hall hosting academic ceremonies, student events and community programs.</p>
+              <a href="details/Community/fce-hall.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/amchall.jpg" alt="">
+                <img src="Data/Images/amchall.jpg" alt="AMC Yola Multipurpose Hall">
               </div>
               <h3>Aliyu Musdafa College (AMC) Yola, Multipurpose hall.</h3>
-              <p>.</p>
-              <a href="details.html">Learn more →</a>
+              <p>School facility used for educational activities, meetings and community gatherings.</p>
+              <a href="details/Community/amc-hall.html">Learn more →</a>
             </div>
 
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/fastnet.jpg" alt="">
+                <img src="Data/Images/fastnet.jpg" alt="Fastnet Movie Theatre">
               </div>
               <h3>Fastnet Movie Theatre, Yola.</h3>
-              <p>.</p>
-              <a href="details.html">Learn more →</a>
+              <p>Modern cinema complex showing latest movies and providing entertainment to the community.</p>
+              <a href="details/Community/fastnet.html">Learn more →</a>
             </div>
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/lamidocinema.jpg" alt="">
+                <img src="Data/Images/lamidocinema.jpg" alt="Lamido Cinema">
               </div>
               <h3>Lamido Cinema, Yola.</h3>
-              <p>.</p>
-              <a href="details.html">Learn more →</a>
+              <p>Local movie theater offering film screenings and entertainment services to residents.</p>
+              <a href="details/Community/lamido-cinema.html">Learn more →</a>
             </div>
 
 
@@ -619,7 +618,7 @@ window.renderSection = function() {
               </div>
               <h3>Pulaaku FM Radio Yola.</h3>
               <p>A local Radio station offering in local languages.</p>
-              <a href="details/pulaaku.html">Learn more →</a>
+              <a href="details/Community/pulaaku.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -627,8 +626,8 @@ window.renderSection = function() {
                 <img src="Data/Images/fombinafmlogo.jpg" alt="Fombina FM Radio Yola.">
               </div>
               <h3>Fombina FM Radio Yola.</h3>
-              <p>A local Radio station offering in local languages.</p>
-              <a href="details/fombinafm.html">Learn more →</a>
+              <p></p>
+              <a href="details/Community/fombinafm.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -636,8 +635,8 @@ window.renderSection = function() {
                 <img src="Data/Images/fmgotel.jpg" alt="FM Gotel">
               </div>
               <h3>Gotel FM Yola.</h3>
-              <p>A local Radio station offering in local languages.</p>
-              <a href="details/gotelfm.html">Learn more →</a>
+              <p></p>
+              <a href="details/Community/gotelfm.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -645,8 +644,8 @@ window.renderSection = function() {
                 <img src="Data/Images/abcyola.jpg" alt="ABC Yola">
               </div>
               <h3>Adamawa Broadcasting Coperation (ABC), Yola.</h3>
-              <p>A state owned radio station </p>
-              <a href="details/abcyola.html">Learn more →</a>
+              <p> </p>
+              <a href="details/Community/abcyola.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
@@ -654,7 +653,7 @@ window.renderSection = function() {
               </div>
               <h3>NAS FM Radio Yola.</h3>
               <p>A private radio station broadcasting news, advertisement e.tc.</p>
-              <a href="details/nasfm.html">Learn more →</a>
+              <a href="details/Community/nasfm.html">Learn more →</a>
             </div>
 
             <div class="section4">
@@ -662,8 +661,8 @@ window.renderSection = function() {
                 <img src="Data/Images/usaku.png" alt="Usaku FM Yola">
               </div>
               <h3>Usaku FM Yola.</h3>
-              <p>A private radio station broadcasting news, advertisement e.tc.</p>
-              <a href="details/nasfm.html">Learn more →</a>
+              <p></p>
+              <a href="details/Community/usakufm.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -671,8 +670,8 @@ window.renderSection = function() {
                 <img src="Data/Images/ntalogo.jpg" alt="ABC Yola">
               </div>
               <h3>National Television Authority NTA Yola.</h3>
-              <p>Government owned television station</p>
-              <a href="details/nasfm.html">Learn more →</a>
+              <p></p>
+              <a href="details/Community/ntayola.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -680,8 +679,8 @@ window.renderSection = function() {
                 <img src="Data/Images/atv.jpg" alt="ATV Yola">
               </div>
               <h3>ATV Yola.</h3>
-              <p>Astate government station broadcasting news, advertisement e.tc.</p>
-              <a href="details/nasfm.html">Learn more →</a>
+              <p></p>
+              <a href="details/Community/atv.html">Learn more →</a>
             </div>
             
             <div class="section4">
@@ -689,8 +688,8 @@ window.renderSection = function() {
                 <img src="Data/Images/tvgotel.jpg" alt="TV Gotel Yola">
               </div>
               <h3>TV Gotel Yola.</h3>
-              <p>A private radio station broadcasting news, advertisement e.tc.</p>
-              <a href="details/nasfm.html">Learn more →</a>
+              <p></p>
+              <a href="details/Community/tvgotel.html">Learn more →</a>
             </div>
 
           </div>
@@ -708,13 +707,10 @@ window.stopCommunityResponse = function() {
     communityAbortController = null;
   }
   const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
   if (sendBtn) {
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
     sendBtn.disabled = false;
   }
-  if (stopBtn) stopBtn.style.display = 'none';
 };
 
 window.sendCommunityMessage = async function(faqText = '') {
@@ -722,11 +718,21 @@ window.sendCommunityMessage = async function(faqText = '') {
   const chat = document.getElementById('chat-messages');
   const preview = document.getElementById('chat-preview');
   const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
   
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
+
+  // Save to chat history
+  const history = JSON.parse(localStorage.getItem('community_chat_history') || '[]');
+  if (history.length >= 5) {
+    history.shift(); // Remove oldest message if we have 5 already
+  }
+  history.push({
+    user: msg,
+    ai: '', // Will be filled in after AI responds
+    timestamp: new Date().toISOString()
+  });
 
   if (communityAbortController) {
     communityAbortController.abort();
@@ -736,9 +742,14 @@ window.sendCommunityMessage = async function(faqText = '') {
   if (sendBtn) {
     sendBtn.disabled = true;
     sendBtn.classList.add('sending');
-    sendBtn.querySelector('.send-text').textContent = '';
-  }
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
+    sendBtn.textContent = 'Stop';
+    
+    // Add click handler to stop response
+    const stopHandler = () => {
+      window.stopCommunityResponse();
+      sendBtn.removeEventListener('click', stopHandler);
+    };
+    sendBtn.addEventListener('click', stopHandler);
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
@@ -753,7 +764,23 @@ window.sendCommunityMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const localData = await fetch('Data/CommunityInfo/communityinfo.txt').then(r => r.text());
-    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + localData, msg, window.GEMINI_API_KEY);
+    
+    // Get chat history context
+    const history = JSON.parse(localStorage.getItem('community_chat_history') || '[]');
+    let historyContext = '';
+    if (history.length > 0) {
+      historyContext = '\n\nRecent chat history:\n' + 
+        history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
+    }
+
+    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + localData + historyContext, msg, window.GEMINI_API_KEY);
+
+    // Update history with AI response
+    const updatedHistory = JSON.parse(localStorage.getItem('community_chat_history') || '[]');
+    if (updatedHistory.length > 0) {
+      updatedHistory[updatedHistory.length - 1].ai = finalAnswer;
+      localStorage.setItem('community_chat_history', JSON.stringify(updatedHistory));
+    }
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
     finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
@@ -765,9 +792,8 @@ window.sendCommunityMessage = async function(faqText = '') {
   if (sendBtn) {
     sendBtn.disabled = false;
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.textContent = 'Send';
   }
-  if (stopBtn) stopBtn.style.display = 'none';
   communityAbortController = null;
 };
 
@@ -921,7 +947,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:4000/api/gemini'
-      : 'https://yolainfohub.netlify.app/api/gemini';
+      : 'https://yolaaiinfohub.netlify.app/api/gemini';
       
     let res = await fetch(serverUrl, { 
       method: 'POST', 
@@ -951,4 +977,4 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }
-
+}

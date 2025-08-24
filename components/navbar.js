@@ -160,6 +160,7 @@ function renderNavbar() {
       newNavbarRight.style.display = 'flex';
       newNavbarRight.style.flexDirection = 'column';
       newNavbarRight.style.alignItems = 'flex-end';
+      //newNavbarRight.style.marginRight = '10px';
 
       newNavbarLinks.style.display = 'none'; // Hide navbar links
 
@@ -194,6 +195,7 @@ function renderNavbar() {
       rightContainer.style.display = 'flex';
       rightContainer.style.flexDirection = 'column';
       rightContainer.style.alignItems = 'flex-end';
+      rightContainer.style.marginRight = '10px';
       rightContainer.appendChild(newNavbarAuth); // Add auth buttons
       rightContainer.appendChild(newHamburger); // Add hamburger spans
       newNavbarContainer.appendChild(rightContainer);
@@ -207,6 +209,18 @@ function renderNavbar() {
         // Create mobile menu overlay
         mobileMenu = document.createElement('div');
         mobileMenu.className = 'mobile-menu';
+        
+        // Add click outside handler
+        const closeOnClickOutside = (event) => {
+          if (mobileMenu && !mobileMenu.contains(event.target) && !newHamburger.contains(event.target)) {
+            mobileMenu.classList.remove('show');
+            setTimeout(() => {
+              mobileMenu.remove();
+              document.removeEventListener('click', closeOnClickOutside);
+            }, 300);
+          }
+        };
+        document.addEventListener('click', closeOnClickOutside);
         // Close button
         const closeBtn = document.createElement('button');
         closeBtn.className = 'mobile-menu-close';
@@ -233,8 +247,18 @@ function renderNavbar() {
           const li = document.createElement('li');
           const btn = document.createElement('button');
           btn.textContent = link.name;
+          // Check if this is the current section
+          const currentSection = localStorage.getItem('currentSection') || 'home';
+          if (
+            (currentSection === 'aboutinfo' && link.name === 'About') ||
+            (currentSection === link.section) ||
+            (currentSection === 'home' && link.name === 'Home')
+          ) {
+            btn.classList.add('active');
+          }
           btn.onclick = () => {
             window.loadSection(link.section);
+            window.highlightActiveNav(link.section);
             mobileMenu.classList.remove('show');
             setTimeout(() => mobileMenu.remove(), 300);
           };
@@ -259,17 +283,31 @@ function renderNavbar() {
 
   // Highlight active section
   window.highlightActiveNav = function(section) {
-    document.querySelectorAll('.navbar-links button, .mobile-links button').forEach(btn => {
+    // Default to home if no section provided
+    if (!section || section === '' || section === 'index.html') {
+      section = 'home';
+    }
+
+    // Store current section in localStorage
+    localStorage.setItem('currentSection', section);
+
+    // Helper function to highlight a button if it matches current section
+    const highlightButton = (btn) => {
       btn.classList.remove('active');
-      const btnSection = btn.textContent.trim().toLowerCase() + (btn.textContent.trim().toLowerCase().endsWith('info') ? '' : 'info');
+      const btnText = btn.textContent.trim();
+      const btnSection = btnText.toLowerCase() + (btnText.toLowerCase().endsWith('info') ? '' : 'info');
+      
       if (
-        (section === 'aboutinfo' && btn.textContent.trim() === 'About') ||
+        (section === 'aboutinfo' && btnText === 'About') ||
         btnSection === section ||
-        (section === 'home' && btn.textContent.trim() === 'Home')
+        (section === 'home' && btnText === 'Home')
       ) {
         btn.classList.add('active');
       }
-    });
+    };
+
+    // Highlight in both desktop and mobile menus
+    document.querySelectorAll('.navbar-links button, .mobile-links button').forEach(highlightButton);
   };
 }
 

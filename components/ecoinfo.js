@@ -37,6 +37,17 @@ window.sendEcoMessage = async function(faqText = '') {
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
 
+  // Save to chat history
+  const history = JSON.parse(localStorage.getItem('eco_chat_history') || '[]');
+  if (history.length >= 5) {
+    history.shift(); // Remove oldest message if we have 5 already
+  }
+  history.push({
+    user: msg,
+    ai: '', // Will be filled in after AI responds
+    timestamp: new Date().toISOString()
+  });
+
   // Extract image data if present in preview
   let imageData = null;
   if (preview) {
@@ -55,17 +66,29 @@ window.sendEcoMessage = async function(faqText = '') {
 
   // Update UI state
   if (sendBtn) {
-    sendBtn.disabled = true;
     sendBtn.classList.add('sending');
-    sendBtn.querySelector('.send-text').textContent = '';
+    sendBtn.textContent = 'Stop';
+    sendBtn.style.backgroundColor = '#ff4444';
+
+    // Add click handler to stop response
+    const stopHandler = () => {
+      if (window.ecoAbortController) {
+        window.ecoAbortController.abort();
+        window.ecoAbortController = null;
+      }
+      sendBtn.removeEventListener('click', stopHandler);
+      sendBtn.classList.remove('sending');
+      sendBtn.textContent = 'Send';
+      sendBtn.style.backgroundColor = '';
+    };
+    sendBtn.addEventListener('click', stopHandler);
   }
-  if (stopBtn) stopBtn.style.display = 'inline-flex';
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
   msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    <div class='ai-msg'><span class='ai-msg-text'>Eco AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
   preview.innerHTML = '';
@@ -74,6 +97,14 @@ window.sendEcoMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
+    
+    // Get chat history context
+    const history = JSON.parse(localStorage.getItem('eco_chat_history') || '[]');
+    let historyContext = '';
+    if (history.length > 0) {
+      historyContext = '\n\nRecent chat history:\n' + 
+        history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
+    }
     
     const contents = {
       parts: []
@@ -89,7 +120,7 @@ window.sendEcoMessage = async function(faqText = '') {
     
     const promptGuide = localStorage.getItem('eco_ai_prompt') || ECO_AI_PROMPT;
     contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n${historyContext}\n\nUser question: ${msg}`
     });
     
     const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
@@ -134,6 +165,13 @@ window.sendEcoMessage = async function(faqText = '') {
                   data.candidates[0].content.parts[0].text) 
                   ? data.candidates[0].content.parts[0].text 
                   : "Sorry, I couldn't get a response from the AI.";
+
+    // Update history with AI response
+    const updatedHistory = JSON.parse(localStorage.getItem('eco_chat_history') || '[]');
+    if (updatedHistory.length > 0) {
+      updatedHistory[updatedHistory.length - 1].ai = finalAnswer;
+      localStorage.setItem('eco_chat_history', JSON.stringify(updatedHistory));
+    }
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
     finalAnswer = "Sorry, I could not access local information or the AI at this time.";
@@ -143,11 +181,10 @@ window.sendEcoMessage = async function(faqText = '') {
   chat.scrollTop = chat.scrollHeight;
 
   if (sendBtn) {
-    sendBtn.disabled = false;
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
   }
-  if (stopBtn) stopBtn.style.display = 'none';
   window.ecoAbortController = null;
 };
 
@@ -175,93 +212,6 @@ if (!document.getElementById('global-css')) {
   link.id = 'global-css';
   document.head.appendChild(link);
 }
-/*
-// No navbar rendering here; handled globally
-document.getElementById('main-content').innerHTML = `
-  <section class="info-section">
-    <h2>EcoInfo - Environmental Help</h2>
-    
-    <p>Ask about recycling, waste, or environmental services in Yola.</p>
-    <div class="chat-container">
-      <div class="chat-header">
-        <span>EcoInfo AI Chat</span>
-        <div class="model-switch">
-          <label class="switch">
-            <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('eco', this.checked)">
-            <span class="slider round"></span>
-          </label>
-          <span class="model-label">Using Gemini 1.5</span>
-        </div>
-      </div>
-      <div class="chat-messages" id="chat-messages"></div>
-      <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendEcoMessage();">
-        <div id="eco-chat-preview" class="chat-preview"></div>
-        <input type="text" id="eco-chat-input" placeholder="Ask about environment..." required />
-        <div class="send-button-group">
-          <button type="submit" class="send-button">
-            <span class="send-text">Send</span>
-            <span class="spinner"></span>
-          </button>
-          <button type="button" class="stop-button" style="display:none" onclick="window.stopEcoResponse()">Stop</button>
-        </div>
-      </form>
-      <div class="input-options">
-        <button type="button" onclick="window.captureImage('eco')" title="Capture Image"><span>📷</span></button>
-        <button type="button" onclick="window.recordAudio('eco')" title="Record Audio"><span>🎤</span></button>
-        <label class="file-upload-btn" title="Upload File">
-          <span>📁</span>
-          <input type="file" style="display:none" onchange="window.uploadFile(event, 'eco')" />
-        </label>
-      </div>
-      
-    <div class="faq-list">
-      <h3>EcoInfo FAQs</h3>
-      <ul>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('How do I recycle waste in Yola?')">How do I recycle waste in Yola?</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('Where are the nearest parks or green spaces?')">Where are the nearest parks or green spaces?</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('How can I report illegal dumping?')">How can I report illegal dumping?</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('What are the environmental organizations in Yola?')">What are the environmental organizations in Yola?</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('How do I start a community garden?')">How do I start a community garden?</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('What are the best practices for waste management?')">What are the best practices for waste management?</a></li>
-      </ul>
-    </div>
-    </div>
-    <div class="section2">
-      <h2>Environmental Services in Yola</h2>
-      
-      <div class="section3">
-        <h3 class="section3-title">Recycling Centers</h3>
-        <div class="section4-container">
-          <div class="section4">
-            <div class="img-placeholder">
-              <img src="Data/Images/EcoInfo/recycling1.jpg" alt="Yola Recycling Center">
-            </div>
-            <h3>Yola Recycling Center</h3>
-            <p>Comprehensive recycling facility handling paper, plastic, metal, and electronic waste.</p>
-            <a href="details/yola-recycling-center.html">Learn more →</a>
-          </div>
-          <div class="section4">
-            <div class="img-placeholder">
-              <img src="Data/Images/EcoInfo/recycling2.jpg" alt="GreenCycle Solutions">
-            </div>
-            <h3>GreenCycle Solutions</h3>
-            <p>Specialized in plastic recycling and sustainable waste management.</p>
-          <a href="details/greencycle-solutions.html">Learn more →</a>
-        </div>
-        <div class="section4">
-          <div class="img-placeholder">
-            <img src="Data/Images/EcoInfo/recycling3.jpg" alt="EcoWaste Management">
-          </div>
-          <h3>EcoWaste Management</h3>
-          <p>Industrial and commercial recycling services with eco-friendly practices.</p>
-          <a href="details/ecowaste-management.html">Learn more →</a>
-        </div>
-      </div>
-    </div>
-  </section>
-`;
-*/
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
 
 // Initialize classifiers
 window.ecoClassifier = null;
@@ -450,7 +400,7 @@ window.renderSection = function() {
           <div class="send-button-group">
             <button type="submit" class="send-button">
               <span class="send-text">Send</span>
-              <span class="spinner"></span>
+
             </button>
             <button type="button" class="stop-button" style="display:none" onclick="window.stopEcoResponse()">Stop</button>
           </div>
@@ -480,32 +430,66 @@ window.renderSection = function() {
         <h2>Environmental Services in Yola</h2>
         
         <div class="section3">
-          <h3 class="section3-title">Recycling Centers</h3>
+          <h3 class="section3-title">Waste collectors And Recycling Centers.</h3>
           <div class="section4-container">
+
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/recyclelimited.jpg" alt="Yola Recycling Center">
+                <img src="Data/Images/domesticcollectors.png" alt="Yola Domestic Waste Collectors - Professional waste collection services for households">
               </div>
-              <h3>Adamawa Waste To Wealth Cyclers Limited, Yola.</h3>
-              <p>Comprehensive recycling facility handling paper, plastic, metal, and electronic waste.</p>
-              <a href="details/yola-recycling-center.html">Learn more →</a>
+              <h3>Yola Domestic Waste Collectors.</h3>
+              <p>Licensed waste management service specializing in domestic waste collection and disposal in Yola.</p>
+              <a href="details/.html">Learn more →</a>
             </div>
+
+            
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/recycling2.jpg" alt="GreenCycle Solutions">
+                <img src="Data/Images/plasticcollectors.png" alt="Plastic Waste Collectors Yola - Specialized plastic waste collection and recycling services">
               </div>
-              <h3>Yola Plastics and Polythenes Waste Collectors.</h3>
-              <p>Specialized in plastic recycling and sustainable waste management.</p>
+              <h3>Plastic Waste Collectors, Yola.</h3>
+              <p>Specialized service for collecting and recycling plastic waste materials throughout Yola metropolitan area.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+
+          
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/metalcollectors.png" alt="Metal Waste and Scraps Collectors Yola - Professional metal recycling services">
+              </div>
+              <h3>Metal Waste and Scraps Collectors, Yola.</h3>
+              <p>Professional metal waste collection service focusing on scrap metal recycling and responsible disposal in Yola region.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+          
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/recyclingcompany.png" alt="Yola Plastics and Polythenes Waste Recycling Company - Specialized plastic recycling">
+              </div>
+              <h3>Yola Plastics and Polythenes Waste Recycling Company.</h3>
+              <p>Leading plastic recycling facility in Yola specializing in processing and recycling all types of plastics and polythene materials.</p>
             <a href="details/greencycle-solutions.html">Learn more →</a>
           </div>
+
           <div class="section4">
             <div class="img-placeholder">
-              <img src="Data/Images/EcoInfo/recycling3.jpg" alt="EcoWaste Management">
+              <img src="Data/Images/ecowastemanagement.png" alt="EcoWaste Management">
             </div>
             <h3>EcoWaste Management</h3>
             <p>Industrial and commercial recycling services with eco-friendly practices.</p>
             <a href="details/ecowaste-management.html">Learn more →</a>
           </div>
+
+          <div class="section4">
+            <div class="img-placeholder">
+              <img src="Data/Images/recyclelimited.jpg" alt="EcoWaste Management">
+            </div>
+            <h3>Adamawa Waste To Wealth Recyclers Limited.</h3>
+            <p>Industrial and commercial recycling services with eco-friendly practices.</p>
+            <a href="details/ecowaste-management.html">Learn more →</a>
+          </div>
+
+        </div>
         </div>
 
         <div class="section3">
@@ -521,6 +505,7 @@ window.renderSection = function() {
               <p>Community-based organization working on environmental protection and awareness.</p>
               <a href="details/eco-warriors.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/nesrea.jpg" alt="Clean Yola Project">
@@ -538,14 +523,16 @@ window.renderSection = function() {
               <p>Non-profit organization focused on environmental education and conservation.</p>
               <a href="details/green-yola-initiative.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/org1.jpg" alt="Green Yola Initiative">
+                <img src="Data/Images/greeninitiative.png" alt="Green Yola Initiative">
               </div>
-              <h3>Green Yola Initiative</h3>
+              <h3>UNDP 'Go Green' Initiative Yola</h3>
               <p>Non-profit organization focused on environmental education and conservation.</p>
               <a href="details/green-yola-initiative.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/wapan.jpg" alt="Eco Warriors">
@@ -554,6 +541,7 @@ window.renderSection = function() {
               <p>Community-based organization working on environmental protection and awareness.</p>
               <a href="details/eco-warriors.html">Learn more →</a>
             </div>
+
             <div class="section4">
               <div class="img-placeholder">
                 <img src="Data/Images/naswon.png" alt="Clean Yola Project">
@@ -563,7 +551,7 @@ window.renderSection = function() {
               <a href="details/clean-yola-project.html">Learn more →</a>
             </div>
 
-            </div>
+          </div>
         </div>
 
         <div class="section3">
@@ -579,7 +567,7 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/EcoInfo/initiative2.jpg" alt="Water Conservation">
+                <img src="Data/Images/waterconservation.png" alt="Water Conservation">
               </div>
               <h3>Water Conservation Project</h3>
               <p>Programs for water conservation and sustainable water management.</p>
@@ -596,26 +584,26 @@ window.renderSection = function() {
 
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/.jpg" alt="Solar Power">
+                <img src="Data/Images/communityconservation.png" alt="Community-Led Environmental Conservation Project - Local initiatives for environmental protection">
               </div>
               <h3>Community-Led Environmental Conservation Project, Yola.</h3>
-              <p></p>
+              <p>Grassroots initiative engaging local communities in environmental conservation efforts and sustainable practices.</p>
               <a href="details/yola-solar-initiative.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/.jpg" alt="Water Conservation">
+                <img src="Data/Images/wastetowealth.png" alt="Yola Waste To Wealth Initiative - Converting waste into economic opportunities">
               </div>
               <h3>Yola 'Waste To Wealth' Initiative.</h3>
-              <p></p>
+              <p>Innovative program transforming waste materials into valuable resources while creating economic opportunities for local residents.</p>
               <a href="details/water-conservation-project.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/.jpg" alt="Green Transport">
+                <img src="Data/Images/trashtotreasure.png" alt="Trash To Treasure Initiative Yola - Creative upcycling and waste transformation">
               </div>
               <h3>'Trash To Treasure' Initiative, Yola.</h3>
-              <p></p>
+              <p>Creative upcycling program turning waste materials into art and useful products while promoting environmental awareness.</p>
               <a href="details/green-transport-network.html">Learn more →</a>
             </div>
 
