@@ -21,34 +21,48 @@ const app = express();
 
 // CORS configuration (must be declared before use)
 const corsOptions = {
-  origin: [
-    'http://127.0.0.1:5500',
-    'http://localhost:5500',
-    'http://127.0.0.1:5502',
-    'http://localhost:5502',
-    'http://127.0.0.1:4000',
-    'http://localhost:4000',
-    'http://127.0.0.1:3000',
-    'http://localhost:3000',
-    'http://localhost:8080',
-    'http://127.0.0.1:8080',
-    'https://yolaaiinfohub.netlify.app'
-  ],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://127.0.0.1:5500',
+      'http://localhost:5500',
+      'http://127.0.0.1:5502',
+      'http://localhost:5502',
+      'http://127.0.0.1:4000',
+      'http://localhost:4000',
+      'http://127.0.0.1:3000',
+      'http://localhost:3000',
+      'http://localhost:8080',
+      'http://127.0.0.1:8080',
+      'https://yolaaiinfohub.netlify.app'
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.match(/^https?:\/\/localhost(:\d+)?$/)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
   exposedHeaders: ['Set-Cookie'],
-  optionsSuccessStatus: 200,
-  preflightContinue: false
+  optionsSuccessStatus: 200
 };
 
-// Security middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
-
+// Apply CORS first
 app.use(cors(corsOptions));
+
+// Then other middleware
 app.use(express.json());
+
+// Security middleware with appropriate settings for CORS
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}));
 
 // Environment-specific configuration
 const isProduction = process.env.NODE_ENV === 'production';
@@ -120,11 +134,13 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'yola-info-hub-secret',
   resave: false,
   saveUninitialized: false,
+  proxy: true, // Required for secure cookies behind a proxy/load balancer
   cookie: { 
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/'
   }
 }));
 

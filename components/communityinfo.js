@@ -1,7 +1,7 @@
 
 
 // Gemini model preference
-window.useGemini25 = window.useGemini25 || false;
+window.useGemini25 = false;
 
 // Toggle Gemini Model
 window.toggleGeminiModel = function(section, useGemini25) {
@@ -702,14 +702,15 @@ window.renderSection = function() {
 };
 
 window.stopCommunityResponse = function() {
-  if (communityAbortController) {
-    communityAbortController.abort();
-    communityAbortController = null;
+  if (window.communityAbortController) {
+    window.communityAbortController.abort();
+    window.communityAbortController = null;
   }
   const sendBtn = document.querySelector('.send-button');
   if (sendBtn) {
     sendBtn.classList.remove('sending');
-    sendBtn.disabled = false;
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
   }
 };
 
@@ -718,38 +719,45 @@ window.sendCommunityMessage = async function(faqText = '') {
   const chat = document.getElementById('chat-messages');
   const preview = document.getElementById('chat-preview');
   const sendBtn = document.querySelector('.send-button');
-  
+
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
 
-  // Save to chat history
-  const history = JSON.parse(localStorage.getItem('community_chat_history') || '[]');
-  if (history.length >= 5) {
-    history.shift(); // Remove oldest message if we have 5 already
+  // Extract image data if present in preview
+  let imageData = null;
+  const previewImg = preview.querySelector('img');
+  if (previewImg) {
+    imageData = previewImg.src;
+    msg = msg + "\nPlease analyze this image and provide relevant community information or suggestions.";
   }
-  history.push({
-    user: msg,
-    ai: '', // Will be filled in after AI responds
-    timestamp: new Date().toISOString()
-  });
 
-  if (communityAbortController) {
-    communityAbortController.abort();
+  // Reset previous abort controller if it exists
+  if (window.communityAbortController) {
+    window.communityAbortController.abort();
+    window.communityAbortController = null;
   }
-  communityAbortController = new AbortController();
+  
+  // Create new abort controller
+  window.communityAbortController = new AbortController();
 
   if (sendBtn) {
-    sendBtn.disabled = true;
     sendBtn.classList.add('sending');
     sendBtn.textContent = 'Stop';
+    sendBtn.style.backgroundColor = '#ff4444';
+
+    // Remove any existing click listeners by cloning, then switch to a non-submit button
+    const newBtn = sendBtn.cloneNode(true);
+    // ensure clicking 'Stop' does not re-submit the form
+    newBtn.type = 'button';
+    sendBtn.parentNode.replaceChild(newBtn, sendBtn);
     
-    // Add click handler to stop response
-    const stopHandler = () => {
+    // Add click handler to stop response (prevent default form submission)
+    const stopHandler = (e) => {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
       window.stopCommunityResponse();
-      sendBtn.removeEventListener('click', stopHandler);
     };
-    sendBtn.addEventListener('click', stopHandler);
+    newBtn.addEventListener('click', stopHandler);
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
@@ -773,30 +781,47 @@ window.sendCommunityMessage = async function(faqText = '') {
         history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
     }
 
-    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + localData + historyContext, msg, window.GEMINI_API_KEY);
+    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
 
     // Update history with AI response
-    const updatedHistory = JSON.parse(localStorage.getItem('community_chat_history') || '[]');
-    if (updatedHistory.length > 0) {
-      updatedHistory[updatedHistory.length - 1].ai = finalAnswer;
-      localStorage.setItem('community_chat_history', JSON.stringify(updatedHistory));
+    history.push({ user: msg, ai: finalAnswer });
+    while (history.length > 10) history.shift(); // Keep only last 10 messages
+    localStorage.setItem('community_chat_history', JSON.stringify(history));
+    
+    } catch (e) {
+    if (e.name === 'AbortError' || e.message === 'AbortError') {
+      finalAnswer = "USER ABORTED REQUEST";
+    } else {
+      console.error("Error fetching local data or Gemini API call:", e);
+      finalAnswer = "Sorry, I could not access local information or the AI at this time. Please check your internet connection!";
     }
-  } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
   chat.scrollTop = chat.scrollHeight;
 
-  if (sendBtn) {
-    sendBtn.disabled = false;
-    sendBtn.classList.remove('sending');
-    sendBtn.textContent = 'Send';
-  }
-  communityAbortController = null;
-};
+  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+  chat.scrollTop = chat.scrollHeight;
 
+  // Reset the button state
+  const currentBtn = document.querySelector('.send-button');
+  if (currentBtn) {
+    // Replace to clear listeners
+    const restoredBtn = currentBtn.cloneNode(true);
+    // restore submit behaviour
+    restoredBtn.type = 'submit';
+    currentBtn.parentNode.replaceChild(restoredBtn, currentBtn);
+    
+    // Reset button appearance
+    restoredBtn.classList.remove('sending');
+    restoredBtn.textContent = 'Send';
+    restoredBtn.style.backgroundColor = '';
+    
+    // Add the send message handler back (prevent default in case it's used as click)
+    restoredBtn.addEventListener('click', (e) => { if (e && typeof e.preventDefault === 'function') e.preventDefault(); window.sendCommunityMessage(); });
+  }
+};
+  
 window.captureImage = function() {
   const overlay = document.createElement('div');
   overlay.className = 'camera-overlay';
@@ -926,6 +951,10 @@ function formatAIResponse(text) {
 
 
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+  if (!window.communityAbortController) {
+    window.communityAbortController = new AbortController();
+  }
+
   try {
     const contents = {
       parts: []
@@ -951,30 +980,45 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       
     let res = await fetch(serverUrl, { 
       method: 'POST', 
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      credentials: 'include',
-      mode: 'cors',
-      body 
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      signal: window.communityAbortController.signal 
     });
+    
+    if (!res.ok) {
+      throw new Error('Network response was not ok');
+    }
+    
     let data = await res.json();
     
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(apiUrl, { 
+      res = await fetch(serverUrl, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
-        body 
+        body,
+        signal: window.communityAbortController.signal
       });
+      
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
       data = await res.json();
     }
+    
+    if (window.communityAbortController.signal.aborted) {
+      throw new Error('AbortError');
+    }
+    
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
+    if (err.name === 'AbortError' || err.message === 'AbortError') {
+      throw new Error('AbortError');
+    }
     console.error("Gemini API error:", err);
-    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    return "Sorry, I could not access local information or the AI at this time. Please check your internet connection!";
   }
 }
 }

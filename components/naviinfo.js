@@ -1150,7 +1150,8 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       },
       credentials: 'include',
       mode: 'cors',
-      body 
+      body,
+      signal: window.naviAbortController?.signal
     });
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
@@ -1159,7 +1160,8 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       res = await fetch(serverUrl, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
-        body 
+        body,
+        signal: window.naviAbortController?.signal
       });
       data = await res.json();
     }
@@ -1373,16 +1375,18 @@ window.sendNaviMessage = async function(faqText = '') {
 
     // Add click handler to stop response
     const stopHandler = () => {
-      if (window.naviAbortController) {
-        window.naviAbortController.abort();
-        window.naviAbortController = null;
-      }
-      sendBtn.removeEventListener('click', stopHandler);
-      sendBtn.classList.remove('sending');
-      sendBtn.textContent = 'Send';
-      sendBtn.style.backgroundColor = '';
-    };
-    sendBtn.addEventListener('click', stopHandler);
+      const stopHandler = (e) => {
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        if (window.naviAbortController) {
+          window.naviAbortController.abort();
+          window.naviAbortController = null;
+        }
+        sendBtn.removeEventListener('click', stopHandler);
+        sendBtn.classList.remove('sending');
+        sendBtn.textContent = 'Send';
+        sendBtn.style.backgroundColor = '';
+      };
+      sendBtn.addEventListener('click', stopHandler);
   }
 
   const msgGroup = document.createElement('div');
@@ -1427,8 +1431,12 @@ window.sendNaviMessage = async function(faqText = '') {
       }
     }
   } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+      if (e.name === 'AbortError' || e.message === 'AbortError') {
+        finalAnswer = "USER ABORTED REQUEST";
+      } else {
+        console.error("Error fetching local data or Gemini API call:", e);
+        finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+      }
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer) + (directionsDrawn ? '<br><span style="color:#3182ce">Directions drawn on map.</span>' : '');

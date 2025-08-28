@@ -66,21 +66,25 @@ window.sendEcoMessage = async function(faqText = '') {
 
   // Update UI state
   if (sendBtn) {
-    sendBtn.classList.add('sending');
-    sendBtn.textContent = 'Stop';
-    sendBtn.style.backgroundColor = '#ff4444';
-
-    // Add click handler to stop response
-    const stopHandler = () => {
+    const originalType = sendBtn.type;
+    const stopHandler = (e) => {
+      if (e && e.preventDefault) e.preventDefault();
       if (window.ecoAbortController) {
         window.ecoAbortController.abort();
         window.ecoAbortController = null;
       }
       sendBtn.removeEventListener('click', stopHandler);
+      sendBtn.type = originalType;
       sendBtn.classList.remove('sending');
       sendBtn.textContent = 'Send';
       sendBtn.style.backgroundColor = '';
     };
+
+    sendBtn.classList.add('sending');
+    sendBtn.textContent = 'Stop';
+    sendBtn.style.backgroundColor = '#ff4444';
+    // make the active button non-submit to avoid re-submission
+    sendBtn.type = 'button';
     sendBtn.addEventListener('click', stopHandler);
   }
 
@@ -174,7 +178,8 @@ window.sendEcoMessage = async function(faqText = '') {
     }
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    if (e && e.name === 'AbortError') finalAnswer = 'USER ABORTED REQUEST';
+    else finalAnswer = "Sorry, I could not access local information or the AI at this time.";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);

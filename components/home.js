@@ -486,7 +486,8 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
     submitBtn.style.backgroundColor = '#ff4444';
 
     // Add click handler to stop response
-    const stopHandler = () => {
+    const stopHandler = (e) => {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
       if (window.homeAbortController) {
         window.homeAbortController.abort();
         window.homeAbortController = null;
@@ -517,8 +518,8 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
     const localData = await fetch('Data/HomeInfo/homeinfo.txt').then(r => r.text()); // Assuming a local data file for HomeInfo
     finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY);
   } catch (e) {
-    if (e.name === 'AbortError') {
-      finalAnswer = "Request stopped by user.";
+    if (e.name === 'AbortError' || e.message === 'AbortError') {
+      finalAnswer = "USER ABORTED REQUEST";
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
       finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";

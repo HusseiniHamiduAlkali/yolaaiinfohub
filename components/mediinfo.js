@@ -259,7 +259,7 @@ window.renderSection = function() {
 
         <div class="section3">
           <h3 class="section3-title">The Tertiary Hospital in Yola.</h3>
-          <div class="section4-container">
+          <div class="section4-container" style="display: flex;">
           <div class="section4-mau-container">
             <div class="section4" style="width: 1160px; height: 450px;">
               <div class="mauth-placeholder" style="display:flex; flex-direction: row; overflow:hidden; gap:1rem; width:100%;">
@@ -445,22 +445,31 @@ window.sendMediMessage = async function(faqText = '') {
   window.mediAbortController = new AbortController();
 
   if (sendBtn) {
+    // preserve original type and onclick so we can restore them
+    const originalType = sendBtn.type;
+    const originalClickHandler = sendBtn.onclick;
+
     sendBtn.classList.add('sending');
     sendBtn.textContent = 'Stop';
     sendBtn.style.backgroundColor = '#ff4444';
+    // make it a non-submit while stopping to avoid form resubmission
+    sendBtn.type = 'button';
 
     // Add click handler to stop response
-    const stopHandler = () => {
+    const stopHandler = (e) => {
+      if (e && e.preventDefault) e.preventDefault();
       if (window.mediAbortController) {
         window.mediAbortController.abort();
         window.mediAbortController = null;
       }
-      sendBtn.removeEventListener('click', stopHandler);
+      // restore original behavior
+      sendBtn.onclick = originalClickHandler;
+      sendBtn.type = originalType;
       sendBtn.classList.remove('sending');
       sendBtn.textContent = 'Send';
       sendBtn.style.backgroundColor = '';
     };
-    sendBtn.addEventListener('click', stopHandler);
+    sendBtn.onclick = stopHandler;
   }
 
   const msgGroup = document.createElement('div');
@@ -492,8 +501,8 @@ window.sendMediMessage = async function(faqText = '') {
     if (chatHistory.length > 5) chatHistory = chatHistory.slice(-5);
     localStorage.setItem('medi_chat_history', JSON.stringify(chatHistory));
   } catch (e) {
-    if (e.name === 'AbortError') {
-        finalAnswer = "Response stopped by user.";
+    if (e && e.name === 'AbortError') {
+        finalAnswer = "USER ABORTED REQUEST";
     } else {
         console.error("Error fetching local data or Gemini API call:", e);
         finalAnswer = "Sorry, I could not access local information or the AI at this time. Please try again.";
@@ -534,12 +543,22 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:4000/api/gemini'
       : '/api/gemini';
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    let res = await fetch(url, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body,
+      signal: window.mediAbortController?.signal 
+    });
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      res = await fetch(url, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body,
+        signal: window.mediAbortController?.signal
+      });
       data = await res.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";

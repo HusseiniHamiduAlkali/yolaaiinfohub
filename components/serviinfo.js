@@ -398,13 +398,19 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       },
       credentials: 'include',
       mode: 'cors',
-      body 
+      body,
+      signal: window.serviAbortController?.signal 
     });
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+      res = await fetch('/api/gemini', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body,
+        signal: window.serviAbortController?.signal
+      });
       data = await res.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
@@ -438,21 +444,25 @@ window.sendServiMessage = async function(faqText = '') {
   window.serviAbortController = new AbortController();
 
   if (sendBtn) {
-    sendBtn.classList.add('sending');
-    sendBtn.textContent = 'Stop';
-    sendBtn.style.backgroundColor = '#ff4444';
-
-    // Add click handler to stop response
-    const stopHandler = () => {
+    const originalType = sendBtn.type;
+    const stopHandler = (e) => {
+      if (e && e.preventDefault) e.preventDefault();
       if (window.serviAbortController) {
         window.serviAbortController.abort();
         window.serviAbortController = null;
       }
       sendBtn.removeEventListener('click', stopHandler);
+      sendBtn.type = originalType;
       sendBtn.classList.remove('sending');
       sendBtn.textContent = 'Send';
       sendBtn.style.backgroundColor = '';
     };
+
+    sendBtn.classList.add('sending');
+    sendBtn.textContent = 'Stop';
+    sendBtn.style.backgroundColor = '#ff4444';
+    // prevent form re-submission while stopping
+    sendBtn.type = 'button';
     sendBtn.addEventListener('click', stopHandler);
   }
 
@@ -472,7 +482,8 @@ window.sendServiMessage = async function(faqText = '') {
     finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    if (e && e.name === 'AbortError') finalAnswer = 'USER ABORTED REQUEST';
+    else finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
@@ -629,8 +640,8 @@ window.sendServiMessage = async function(faqText = '') {
   const input = document.getElementById('servi-chat-input');
   const chat = document.getElementById('servi-chat-messages');
   const preview = document.getElementById('servi-chat-preview');
-  const submitBtn = document.querySelector('#servi-chat-input + button[type="submit"]');
-
+  const sendBtn = document.querySelector('.send-button');
+  
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
@@ -646,9 +657,28 @@ window.sendServiMessage = async function(faqText = '') {
     timestamp: new Date().toISOString()
   });
 
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Sending...";
+  if (window.serviAbortController) {
+    window.serviAbortController.abort();
+  }
+  window.serviAbortController = new AbortController();
+
+  if (sendBtn) {
+    sendBtn.classList.add('sending');
+    sendBtn.textContent = 'Stop';
+    sendBtn.style.backgroundColor = '#ff4444';
+
+    // Add click handler to stop response
+    const stopHandler = () => {
+      if (window.serviAbortController) {
+        window.serviAbortController.abort();
+        window.serviAbortController = null;
+      }
+      sendBtn.removeEventListener('click', stopHandler);
+      sendBtn.classList.remove('sending');
+      sendBtn.textContent = 'Send';
+      sendBtn.style.backgroundColor = '';
+    };
+    sendBtn.addEventListener('click', stopHandler);
   }
 
   const msgGroup = document.createElement('div');
@@ -689,8 +719,10 @@ window.sendServiMessage = async function(faqText = '') {
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
   chat.scrollTop = chat.scrollHeight;
 
-  if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Send";
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
   }
+  window.serviAbortController = null;
 };
