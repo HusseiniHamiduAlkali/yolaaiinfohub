@@ -1,6 +1,19 @@
 
 // Frontend logic for login/signup/logout modals and API, plus password reset
 
+// Determine API base depending on environment (dev -> localhost backend, prod -> same-origin)
+const API_BASE = (function() {
+  try {
+    const host = window.location.hostname;
+    // treat localhost/127.0.0.1 and typical LAN IPs as dev
+    if (!host || host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.') || host.startsWith('10.') || host === '::1') return 'http://localhost:4000';
+    // otherwise assume API is proxied or available at the same origin
+    return '';
+  } catch (e) {
+    return 'http://localhost:4000';
+  }
+})();
+
 // Function to toggle password visibility
 window.togglePasswordVisibility = function(inputId) {
   const input = document.getElementById(inputId);
@@ -15,21 +28,59 @@ window.togglePasswordVisibility = function(inputId) {
 };
 
 window.updateAuthUI = function(user) {
+  // Keep a global reference to the current user for other components (navbar)
+  window.currentUser = user || null;
   const authButtons = document.getElementById('auth-buttons');
   const userInfo = document.getElementById('user-info');
+
+  // Update navbar username text if present
+  const navbarUsernameEl = document.getElementById('navbar-username');
+  if (navbarUsernameEl) {
+    if (user && user.username) navbarUsernameEl.textContent = user.username;
+    else navbarUsernameEl.textContent = '';
+  }
+
+  // Update navbar avatar and profile link if present
+  const navbarAvatarWrap = document.getElementById('navbar-avatar');
+  const navbarProfileLink = document.getElementById('navbar-profile-link');
+  const navbarFullnameEl = document.querySelector('.navbar-fullname');
+  const navbarUsernameTextEl = document.querySelector('.navbar-username-text');
+  if (navbarAvatarWrap) {
+    if (user && (user.avatar || user.name || user.username)) {
+      const avatarUrl = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
+      navbarAvatarWrap.innerHTML = `<img src="${avatarUrl}" alt="avatar"/>`;
+    } else {
+      navbarAvatarWrap.innerHTML = '';
+    }
+  }
+  if (navbarProfileLink) {
+    if (user && user.username) navbarProfileLink.href = `/pages/profile.html?u=${encodeURIComponent(user.username)}`;
+    else navbarProfileLink.removeAttribute('href');
+  }
+  // Also update fullname and @username if those elements exist
+  if (navbarFullnameEl) navbarFullnameEl.textContent = user && (user.name || user.username) ? (user.name || user.username) : '';
+  if (navbarUsernameTextEl) navbarUsernameTextEl.textContent = user && user.username ? `@${user.username}` : '';
   
   if (user && user.username) {
     // User is logged in
+    // set global currentUser (done above) and ensure navbar reflects it
     if (authButtons) authButtons.style.display = 'none';
     if (userInfo) {
       userInfo.style.display = 'flex';
       userInfo.querySelector('.username').textContent = user.name || user.username;
       userInfo.querySelector('.avatar').src = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}`;
     }
+    // If navbar exists, re-render to pick up username on PC views
+    if (window.Navbar && typeof window.Navbar.render === 'function') {
+      try { window.Navbar.render(); } catch(e) { /* ignore render errors */ }
+    }
   } else {
     // User is logged out
     if (authButtons) authButtons.style.display = 'flex';
     if (userInfo) userInfo.style.display = 'none';
+    if (window.Navbar && typeof window.Navbar.render === 'function') {
+      try { window.Navbar.render(); } catch(e) { /* ignore render errors */ }
+    }
   }
 };
 
@@ -41,7 +92,7 @@ window.showSignupModal = function() {
 };
 window.logoutUser = async function() {
   try {
-    const response = await fetch('http://localhost:4000/api/logout', {
+    const response = await fetch(`${API_BASE}/api/logout`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -81,7 +132,7 @@ window.showForgotModal = function() {
   document.getElementById('forgot-form').onsubmit = async function(e) {
     e.preventDefault();
     const email = document.getElementById('forgot-email').value.trim();
-    const res = await fetch('http://localhost:4000/api/forgot-password', {
+  const res = await fetch(`${API_BASE}/api/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -133,7 +184,7 @@ window.showResetPasswordModal = function(token, email) {
       document.getElementById('auth-error').textContent = 'Passwords do not match.';
       return;
     }
-    const res = await fetch('http://localhost:4000/api/reset-password', {
+  const res = await fetch(`${API_BASE}/api/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, token, password: pw1 })
@@ -211,12 +262,12 @@ function showAuthModal(type) {
       const name = document.getElementById('auth-name').value.trim();
       const nin = document.getElementById('auth-nin').value.trim();
       const password = document.getElementById('auth-password').value;
-      url = 'http://localhost:4000/api/signup';
+      url = `${API_BASE}/api/signup`;
       body = { username, email, name, nin, password };
     } else {
       const usernameOrEmail = document.getElementById('auth-username').value.trim();
       const password = document.getElementById('auth-password').value;
-      url = 'http://localhost:4000/api/login';
+      url = `${API_BASE}/api/login`;
       // If input looks like email, send as email
       if (/^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(usernameOrEmail)) {
         body = { email: usernameOrEmail, password };
@@ -224,7 +275,7 @@ function showAuthModal(type) {
         body = { username: usernameOrEmail, password };
       }
     }
-    const res = await fetch(url, {
+  const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -253,7 +304,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     // window.history.replaceState({}, document.title, window.location.pathname);
   }
   // Check auth state
-  const res = await fetch('http://localhost:4000/api/me', { credentials: 'include' });
+  const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
   const data = await res.json();
   if (data.loggedIn) {
     window.updateAuthUI({ username: data.username, name: data.name });

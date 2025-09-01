@@ -51,6 +51,45 @@ window.speakText = window.speakText || function(text) {
   speechSynthesis.speak(utterance);
 };
 
+// In-memory chat history helpers (cleared on full page reload)
+window.initChatHistory = window.initChatHistory || function(section, maxLen = 10) {
+  const key = `${section}ChatHistory`;
+  window[key] = window[key] || [];
+  window[`${section}MAX_HISTORY_LENGTH`] = maxLen;
+};
+
+window.addToChatHistory = window.addToChatHistory || function(section, role, content) {
+  const key = `${section}ChatHistory`;
+  window[key] = window[key] || [];
+  window[key].push({ role, content });
+  const max = window[`${section}MAX_HISTORY_LENGTH`] || 10;
+  if (window[key].length > max) window[key].shift();
+};
+
+window.getQAHistoryForSection = window.getQAHistoryForSection || function(section, maxPairs = 5) {
+  const key = `${section}ChatHistory`;
+  const h = window[key] || [];
+  const pairs = [];
+  for (let i = 0; i < h.length; i++) {
+    if (h[i].role === 'user') {
+      const ai = (h[i+1] && h[i+1].role === 'assistant') ? h[i+1].content : '';
+      pairs.push({ user: h[i].content, ai });
+    }
+    if (pairs.length >= maxPairs) break;
+  }
+  return pairs;
+};
+
+window.loadChatHistoryToDOM = window.loadChatHistoryToDOM || function(section, containerId) {
+  const id = containerId || `${section}-chat-messages`;
+  const chat = document.getElementById(id);
+  if (!chat) return;
+  const key = `${section}ChatHistory`;
+  const hist = window[key] || [];
+  chat.innerHTML = hist.map(msg => `\n      <div class='chat-message-group'>\n        <div class='${msg.role === 'user' ? 'user-msg' : 'ai-msg'}'>${msg.role === 'assistant' ? (typeof formatAIResponse === 'function' ? formatAIResponse(msg.content) : msg.content) : msg.content}</div>\n      </div>\n  `).join('');
+  chat.scrollTop = chat.scrollHeight;
+};
+
 // Common helper for Gemini API call
 async function getGeminiAnswer(prompt, msg, section, apiKey, imageData = null) {
   try {

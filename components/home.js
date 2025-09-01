@@ -13,37 +13,13 @@ Previous conversation history:
 `;
 
 // Chat history management
-window.homeChatHistory = [];
-window.MAX_HISTORY_LENGTH = 10;
-
-function addToHomeChatHistory(role, content) {
-  window.homeChatHistory.push({ role, content });
-  if (window.homeChatHistory.length > window.MAX_HISTORY_LENGTH) {
-    window.homeChatHistory.shift();
-  }
-  localStorage.setItem('homeChatHistory', JSON.stringify(window.homeChatHistory));
-}
-
+// Use shared in-memory chat history helpers
+window.initChatHistory && window.initChatHistory('home', 10);
 function loadHomeChatHistory() {
   try {
-    const savedHistory = localStorage.getItem('homeChatHistory');
-    if (savedHistory) {
-      window.homeChatHistory = JSON.parse(savedHistory);
-      const chat = document.getElementById('home-chat-messages');
-      if (chat) {
-        chat.innerHTML = window.homeChatHistory.map(msg => `
-          <div class='chat-message-group'>
-            <div class='${msg.role === 'user' ? 'user-msg' : 'ai-msg'}'>
-              ${msg.role === 'user' ? msg.content : formatAIResponse(msg.content)}
-            </div>
-          </div>
-        `).join('');
-        chat.scrollTop = chat.scrollHeight;
-      }
-    }
+    window.loadChatHistoryToDOM && window.loadChatHistoryToDOM('home', 'home-chat-messages');
   } catch (e) {
     console.error('Error loading chat history:', e);
-    window.homeChatHistory = [];
   }
 }
 
@@ -133,7 +109,7 @@ window.renderSection = function() {
   setTimeout(loadHomeChatHistory, 100); // Small delay to ensure DOM is ready
   document.getElementById('main-content').innerHTML = `
     <section class="info-section">
-      <h2>Welcome to Yola Info Hub</h2>
+      <h2>Welcome to Yola AI Info Hub</h2>
       <p>Ask anything about Yola, Adamawa State, Nigeria.</p>
       <div class="chat-container">
         <div class="chat-header">
@@ -275,7 +251,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
 
     // Use backend proxy instead of direct Gemini API
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:4000/api/gemini'
+  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
     const body = JSON.stringify({ model: modelVersion, contents: [contents] });
     let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
@@ -530,8 +506,8 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   chat.scrollTop = chat.scrollHeight;
 
   // Store messages in chat history
-  addToHomeChatHistory('user', msg);
-  addToHomeChatHistory('assistant', finalAnswer);
+  window.addToChatHistory && window.addToChatHistory('home', 'user', msg);
+  window.addToChatHistory && window.addToChatHistory('home', 'assistant', finalAnswer);
 
   if (submitBtn) {
     submitBtn.classList.remove('sending');

@@ -514,8 +514,7 @@ window.renderSection = function() {
               <a href="details/yola-airport.html">Learn more →</a>
             </div>
 
-          </div
-
+          </div>
 
         <div class="section3">
           <h3 class="section3-title">Parks and Recreation</h3>
@@ -1139,7 +1138,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     
     // Determine the server URL based on the environment
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:4000/api/gemini'
+  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : 'https://yolainfohub.netlify.app/api/gemini';
       
     let res = await fetch(serverUrl, { 
@@ -1449,4 +1448,4 @@ window.sendNaviMessage = async function(faqText = '') {
   }
   if (stopBtn) stopBtn.style.display = 'none';
   window.naviAbortController = null;
-};
+}};

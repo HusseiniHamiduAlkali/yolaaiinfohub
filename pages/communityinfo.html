@@ -135,6 +135,33 @@
         </section>
     </main>
 -->
+    <script>
+        // Save last page and scroll position before navigating to a details page
+        (function(){
+            // handle links that point to details/Community
+            document.addEventListener('click', function(e){
+                const a = e.target.closest && e.target.closest('a');
+                if(!a) return;
+                const href = a.getAttribute('href') || '';
+                if(href.includes('../details/Community/')){
+                    try{
+                        sessionStorage.setItem('lastPage', window.location.pathname + window.location.search);
+                        sessionStorage.setItem('lastScroll', String(window.scrollY || window.pageYOffset || 0));
+                    }catch(err){ /* ignore storage errors */ }
+                }
+            }, {capture:true});
+
+            // Restore scroll if ?scroll= is present
+            window.addEventListener('DOMContentLoaded', function(){
+                const params = new URLSearchParams(window.location.search);
+                const scroll = params.get('scroll');
+                if(scroll){
+                    // small delay to allow layout to stabilize
+                    setTimeout(()=> window.scrollTo(0, parseInt(scroll,10)||0), 50);
+                }
+            });
+        })();
+    </script>
     <script src="../components/navbar.js"></script>
     <script src="../components/communityinfo.js"></script>
 </body>

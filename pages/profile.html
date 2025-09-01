@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile | Yola AI Info Hub</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/navbar.css">
+  <style>
+    .profile-container { max-width: 760px; margin: 5rem auto; background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.4);}    
+    .profile-header { display:flex; gap:1rem; align-items:center; }
+    .profile-avatar { width:96px; height:96px; border-radius:50%; overflow:hidden; background:#f3f4f6; display:flex; align-items:center; justify-content:center; }
+    .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+    .profile-meta { display:flex; flex-direction:column; }
+    .profile-meta h2 { margin:0; }
+    .profile-details { margin-top:1.2rem; display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+    .profile-field { background:#f8fafc; padding:0.8rem; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+  <main>
+    <div class="profile-container">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar"></div>
+        <div class="profile-meta">
+          <h2 id="profile-name">Profile</h2>
+          <div id="profile-username" style="color:#718096">@username</div>
+        </div>
+      </div>
+      <div class="profile-details" id="profile-details">
+        <div class="profile-field" id="pf-email">Email: -</div>
+        <div class="profile-field" id="pf-phone">Phone: -</div>
+        <div class="profile-field" id="pf-state">State: -</div>
+        <div class="profile-field" id="pf-lga">LGA: -</div>
+        <div class="profile-field" id="pf-address" style="grid-column:1 / -1">Address: -</div>
+      </div>
+    </div>
+  </main>
+  <script>
+    // Render navbar if available
+    window.Navbar && window.Navbar.render && window.Navbar.render();
+    const params = new URLSearchParams(window.location.search);
+    const u = params.get('u');
+    const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
+    async function loadProfile() {
+      try {
+        if (u) {
+          // attempt to fetch public profile endpoint (not implemented) fallback to /api/me if matches session
+          const meRes = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
+          const me = await meRes.json();
+          if (me.loggedIn && me.username === u) {
+            fillProfile(me);
+            return;
+          }
+          // no public endpoint; show basic 'username' only
+          document.getElementById('profile-name').textContent = u;
+          document.getElementById('profile-username').textContent = '@' + u;
+        } else {
+          const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
+          const data = await res.json();
+          if (data.loggedIn) {
+            fillProfile(data);
+          } else {
+            document.getElementById('profile-name').textContent = 'Not signed in';
+            document.getElementById('profile-username').textContent = '';
+          }
+        }
+      } catch (err) {
+        console.error('Profile load error', err);
+      }
+    }
+    function fillProfile(data) {
+      document.getElementById('profile-name').textContent = data.name || data.username || 'User';
+      document.getElementById('profile-username').textContent = '@' + (data.username || '');
+      const avatarWrap = document.getElementById('profile-avatar');
+      const avatarUrl = data.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || data.username)}&background=3182ce&color=fff`;
+      avatarWrap.innerHTML = `<img src="${avatarUrl}" alt="avatar"/>`;
+      document.getElementById('pf-email').textContent = 'Email: ' + (data.email || '-');
+      document.getElementById('pf-phone').textContent = 'Phone: ' + (data.phone || '-');
+      document.getElementById('pf-state').textContent = 'State: ' + (data.state || '-');
+      document.getElementById('pf-lga').textContent = 'LGA: ' + (data.lga || '-');
+      document.getElementById('pf-address').textContent = 'Address: ' + (data.address || '-');
+    }
+    loadProfile();
+  </script>
+</body>
+</html>

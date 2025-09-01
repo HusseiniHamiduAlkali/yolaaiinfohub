@@ -37,16 +37,10 @@ window.sendEcoMessage = async function(faqText = '') {
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
 
-  // Save to chat history
-  const history = JSON.parse(localStorage.getItem('eco_chat_history') || '[]');
-  if (history.length >= 5) {
-    history.shift(); // Remove oldest message if we have 5 already
-  }
-  history.push({
-    user: msg,
-    ai: '', // Will be filled in after AI responds
-    timestamp: new Date().toISOString()
-  });
+  // Ensure in-memory history exists for eco
+  window.initChatHistory && window.initChatHistory('eco', 10);
+  // Reserve slot for user message (AI will be added after response)
+  window.addToChatHistory && window.addToChatHistory('eco', 'user', msg);
 
   // Extract image data if present in preview
   let imageData = null;
@@ -102,13 +96,9 @@ window.sendEcoMessage = async function(faqText = '') {
   try {
     const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
     
-    // Get chat history context
-    const history = JSON.parse(localStorage.getItem('eco_chat_history') || '[]');
-    let historyContext = '';
-    if (history.length > 0) {
-      historyContext = '\n\nRecent chat history:\n' + 
-        history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
-    }
+  // Get chat history context from in-memory helper
+  const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('eco', 5) : [];
+  const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
     
     const contents = {
       parts: []
@@ -132,7 +122,7 @@ window.sendEcoMessage = async function(faqText = '') {
     
     // Determine the server URL based on the environment
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:4000/api/gemini'
+  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : 'https://yolainfohub.netlify.app/api/gemini';
       
     let res = await fetch(serverUrl, { 
@@ -170,12 +160,8 @@ window.sendEcoMessage = async function(faqText = '') {
                   ? data.candidates[0].content.parts[0].text 
                   : "Sorry, I couldn't get a response from the AI.";
 
-    // Update history with AI response
-    const updatedHistory = JSON.parse(localStorage.getItem('eco_chat_history') || '[]');
-    if (updatedHistory.length > 0) {
-      updatedHistory[updatedHistory.length - 1].ai = finalAnswer;
-      localStorage.setItem('eco_chat_history', JSON.stringify(updatedHistory));
-    }
+  // Add AI response to in-memory history
+  window.addToChatHistory && window.addToChatHistory('eco', 'assistant', finalAnswer);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
     if (e && e.name === 'AbortError') finalAnswer = 'USER ABORTED REQUEST';
@@ -648,6 +634,8 @@ window.renderSection = function() {
       </div>
     </section>
   `;
+  // Load any in-memory chat history for eco
+  setTimeout(() => { window.loadChatHistoryToDOM && window.loadChatHistoryToDOM('eco', 'chat-messages'); }, 50);
 };
 
 
@@ -670,7 +658,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:4000/api/gemini'
+  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
     let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
     let data = await res.json();

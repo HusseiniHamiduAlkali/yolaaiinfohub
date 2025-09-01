@@ -113,7 +113,8 @@ async function initializeApp() {
     }
 
     // Then check authentication state
-    const response = await fetch('http://localhost:4000/api/me', {
+  const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
+  const response = await fetch(`${API_BASE}/api/me`, {
       credentials: 'include'
     });
     const data = await response.json();
@@ -130,7 +131,12 @@ async function initializeApp() {
     // Determine the section to load based on the URL path
     const path = window.location.pathname.split('/').pop();
     const section = path === '' || path === 'index.html' ? 'home' : path.replace('.html', '');
-    window.loadSection(section);
+    // If a details->back restore is pending, avoid forcing the default section here
+    if(!sessionStorage.getItem('lastSection')){
+      window.loadSection(section);
+    } else {
+      console.log('app.js: skipping default load because restore is pending');
+    }
   } catch (error) {
     console.error('Error initializing app:', error);
     window.updateAuthUI(null);
@@ -152,19 +158,28 @@ window.addEventListener('load', () => {
   const path = window.location.pathname.substring(1);
   const section = path || 'home';
   if (typeof window.loadSection === 'function') {
-    window.loadSection(section);
-    // Highlight home by default if no specific path
-    if (!path || path === 'index.html') {
-      window.highlightActiveNav('home');
+    // If restore is pending, do not force-load home here; index.html restore logic will run instead
+    if(!sessionStorage.getItem('lastSection')){
+      window.loadSection(section);
+      // Highlight home by default if no specific path
+      if (!path || path === 'index.html') {
+        window.highlightActiveNav('home');
+      }
+    } else {
+      console.log('load handler: skipping default load because restore is pending');
     }
   } else {
     // fallback: reload after scripts
     setTimeout(() => {
       if (typeof window.loadSection === 'function') {
-        window.loadSection(section);
-        // Highlight home by default if no specific path
-        if (!path || path === 'index.html') {
-          window.highlightActiveNav('home');
+        if(!sessionStorage.getItem('lastSection')){
+          window.loadSection(section);
+          // Highlight home by default if no specific path
+          if (!path || path === 'index.html') {
+            window.highlightActiveNav('home');
+          }
+        } else {
+          console.log('fallback loader: skipping default load because restore is pending');
         }
       }
     }, 500);

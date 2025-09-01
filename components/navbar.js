@@ -8,6 +8,7 @@ function renderNavbar() {
   // Create the auth buttons container that will be reused
   let authButtonsHTML = `
     <div class="navbar-auth" id="navbar-auth">
+      <span style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
       <button id="signin-btn" class="auth-btn" type="button">Sign in</button>
       <button id="signup-btn" class="auth-btn" type="button">Sign up</button>
     </div>
@@ -16,7 +17,7 @@ function renderNavbar() {
   if (window.currentUser && window.currentUser.username) {
     authButtonsHTML = `
       <div class="navbar-auth" id="navbar-auth" style="display:flex;align-items:center;gap:0.7rem;">
-        <span class="navbar-username" style="font-weight:600;color:#205080;font-size:1.08rem;">${window.currentUser.username}</span>
+      <!--  <span class="navbar-username" style="font-weight:600;color:#205080;font-size:1.08rem;">${window.currentUser.username}</span>   -->
         <button id="logout-btn" class="auth-btn" onclick="window.logoutUser()">Logout</button>
       </div>
     `;
@@ -41,6 +42,17 @@ function renderNavbar() {
       </div>
       <div class="navbar-right">
         <div class="navbar-top-section">
+          <div class="navbar-username-container" id="navbar-username-container">
+            ${window.currentUser && window.currentUser.username ? `
+              <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link" id="navbar-profile-link">
+                <span class="navbar-avatar" id="navbar-avatar">${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}</span>
+                <span class="navbar-names">
+                  <span class="navbar-fullname">${window.currentUser.name || ''}</span>
+                  <span class="navbar-username-text">(@${window.currentUser.username})</span>
+                </span>
+              </a>
+            ` : ''}
+          </div>
           ${authButtonsHTML}
         </div>
         <ul class="navbar-links">

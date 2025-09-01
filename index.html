@@ -42,10 +42,12 @@
   <script src="components/aboutinfo.js"></script>
   <script src="components/ecoClassifier.js"></script>
   <script src="components/ecoAI.js"></script>
+  <script src="components/details-navigation.js"></script>
   <script src="app.js"></script>
   <script>
     // Section loader for auth and main pages
-    window.loadSection = async function(section) {
+    // Internal loader that actually performs the section load. Returns a Promise.
+    window.__performLoadSection = function(section) {
       // Auth pages: hide full navbar, show minimal appbar
       const navbarDiv = document.getElementById('navbar');
       const minimalAppbar = `<div class="minimal-appbar"><span class="appname">Yola AI Info Hub</span></div>`;
@@ -64,7 +66,7 @@
         const page = window.AuthSections[section];
         document.getElementById('main-content').innerHTML = page.render();
         if (page.mount) page.mount();
-        return;
+        return Promise.resolve();
       } else {
         // Restore full navbar if it was replaced by minimal appbar
         if (!navbarDiv.querySelector('.navbar')) {
@@ -87,22 +89,96 @@
         ecoinfo: 'components/ecoinfo.js',
         serviinfo: 'components/serviinfo.js',
       };
-      const script = document.createElement('script');
-      script.src = routes[section] || routes['home'];
-      script.setAttribute('data-section-script', 'true');
-      script.onload = () => {
-        if (window.renderSection) {
-          window.renderSection();
-        }
-        window.highlightActiveNav?.(section);
-      };
-      document.body.appendChild(script);
+      return new Promise((resolve) => {
+  const baseSrc = routes[section] || routes['home'];
+  console.log('performLoadSection: requested', section, baseSrc);
+  // Fast-path: if a script with this baseSrc is already present, and renderSection is defined,
+  // call renderSection directly to avoid reloading the script and potential ordering issues.
+  const existingScript = Array.from(document.querySelectorAll('script[src]')).find(s => s.src && s.src.indexOf(baseSrc) !== -1);
+  if (existingScript && typeof window.renderSection === 'function'){
+    console.log('performLoadSection: existing script found, invoking renderSection for', section);
+    try{ window.renderSection(); }catch(e){ console.error('renderSection threw', e); }
+    window.highlightActiveNav?.(section);
+    return resolve();
+  }
+
+  const script = document.createElement('script');
+  // Add a small cache-buster to force re-execution when needed (helps restore)
+  script.src = baseSrc + '?_r=' + Date.now();
+        script.setAttribute('data-section-script', 'true');
+        script.onload = () => {
+          console.log('performLoadSection: script loaded for', section, 'window.renderSection exists?', typeof window.renderSection === 'function');
+          try{
+            if (window.renderSection) {
+              // Allow renderSection to run synchronously; resolve after it completes
+              window.renderSection();
+            }
+          }catch(e){ console.error('renderSection error', e); }
+          window.highlightActiveNav?.(section);
+          resolve();
+        };
+  script.onerror = (err) => { console.error('Error loading section script', baseSrc, err); resolve(); };
+        document.body.appendChild(script);
+      });
+    };
+
+    // Public loader: if a restore is in progress, queue requests (ignore 'home')
+    window.loadSection = function(section){
+      window.__pendingLoadQueue = window.__pendingLoadQueue || [];
+      if(window.__restoringSection){
+        if(section === 'home') return Promise.resolve();
+        return new Promise((resolve, reject) => {
+          window.__pendingLoadQueue.push({section, resolve, reject});
+        });
+      }
+      return window.__performLoadSection(section);
     };
     // Render the navbar only once on initial load
     document.getElementById('navbar').innerHTML = Navbar.render();
     if (window.updateAuthUI) window.updateAuthUI(null);
-    // Load the home section by default
-    window.loadSection('home');
+    // Load saved section if available (restores from details page back-button), otherwise default to home
+    (function(){
+      const pendingSection = sessionStorage.getItem('lastSection');
+      const pendingScroll = parseInt(sessionStorage.getItem('lastScroll') || '0', 10) || 0;
+      if(pendingSection){
+        // mark that we're in restore mode so other callers don't override
+        window.__restoringSection = true;
+        // Directly perform the load for restore to avoid queuing the request
+        window.__performLoadSection(pendingSection).then(()=>{
+          // One deterministic scroll after the section has rendered
+          try{ window.scrollTo(0, pendingScroll); }catch(e){}
+          try{ document.getElementById('main-content')?.scrollTo?.(0, pendingScroll); }catch(e){}
+          // Clear stored values so they aren't reused
+          sessionStorage.removeItem('lastSection');
+          sessionStorage.removeItem('lastScroll');
+            // Unset restoring flag now that restore is complete
+            window.__restoringSection = false;
+            // Drain any queued load requests (skip any 'home' requests)
+            const q = window.__pendingLoadQueue || [];
+            window.__pendingLoadQueue = [];
+            (async function drain(){
+              for(const req of q){
+                if(req && req.section === 'home') {
+                  try{ req.resolve(); }catch(e){}
+                  continue;
+                }
+                try{
+                  await window.__performLoadSection(req.section);
+                  req.resolve();
+                }catch(err){ req.reject(err); }
+              }
+            })();
+        }).catch((err)=>{
+          console.error('Error loading section for restore', err);
+          // ensure we clear the restoring flag so normal navigation resumes
+          sessionStorage.removeItem('lastSection');
+          sessionStorage.removeItem('lastScroll');
+          window.__restoringSection = false;
+        });
+      } else {
+        window.loadSection('home');
+      }
+    })();
   </script>
 </body>
 </html>

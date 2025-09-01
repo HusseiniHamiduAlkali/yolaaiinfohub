@@ -57,7 +57,44 @@ nav.navbar {
 
 .navbar-top-section {
   align-self: flex-end;
+  display: flex;
+  width: auto;
+  flex-direction: row;
+  justify-content: flex-end;
 }
+
+.navbar-username-container {
+  display: none; /* Hidden by default; shown on large screens */
+  align-items: center;
+  margin-right: 0.8rem;
+}
+
+.navbar-username-text {
+  font-weight: 700;
+  color: #cbd5e1;
+  margin-right: 0.6rem;
+  font-size: 1rem;
+}
+
+/* Avatar and name styles */
+.navbar-avatar {
+  display: inline-flex;
+  width: 50px;
+  height: 45px;
+  border-radius: 25%;
+  overflow: hidden;
+  margin-right: 0.6rem;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  align-items: center;
+  justify-content: center;
+}
+.navbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.navbar-names { display: inline-flex; flex-direction: column; align-items: flex-start; }
+.navbar-fullname { font-weight: 600; color: #e6eef9; font-size: 0.98rem; }
+.navbar-profile-link { display: inline-flex; align-items: center; text-decoration: none; }
+.navbar-profile-link:hover .navbar-fullname, .navbar-profile-link:hover .navbar-username-text { text-decoration: underline; }
 
 /* Merged styles for navbar-links across all definitions */
 .navbar-links {
@@ -119,6 +156,7 @@ nav.navbar {
 
 #logout-btn {
   background: #e53e3e;
+  margin-top: 5px;
 }
 
 #logout-btn:hover {
@@ -411,6 +449,10 @@ nav.navbar {
     font-size: 2.7rem;
     font-weight: bold;
   }
+
+  /* Show username on PC and position it above links, left of the auth/buttons */
+  .navbar-username-container { display: flex !important; }
+  .navbar-username-text { color: #e4e4e4; font-size: 1.05rem; margin-right: 1rem; }
 }
 
 /* Tablet Screens (701px to 1150px) */
@@ -485,7 +527,7 @@ nav.navbar {
     width: auto;
     max-width: 100%;
     box-sizing: border-box;
-    position: relative;
+    position: fixed;
   }
 
   .navbar-container {

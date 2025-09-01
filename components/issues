@@ -8,8 +8,6 @@ if the user cliked the back button on the detail page. I want to ensure the sect
 
 provide me with the logo in the image placeholder for Servi .section4 items (analyse the other sections for more informaiton)
 
-Ensure my Authentication is working with the render backend url and my mongodb uri in my .env it is just showing me invalid credentilals and server error when trying to reset the password.
-
 add information onhover for some content parts
 EduInfo data check
 EduInfo assignment help
@@ -22,3 +20,75 @@ STYLE : camra capture & stop recording button (onCapture)
 LOCAL DATA
 
 Stop button not properly implemented in Home, Edu, Eco, Agro, Community, Navi, Servi and Medi sections. It is not aborting the request and the proper message is not displayed that the user aborted the request.
+
+Edu Ai not working
+
+Chat history functionality: implement for every section and let the history clean with a clean refresh of the app but not after rendering a section (e.g. not after moving from Edu to Eco or back to Home).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ensure my Authentication is working with the render backend url and my mongodb uri in my .env it is just showing me invalid credentilals and server error when trying to reset the password.
+
+
+
+I want a logout button when logged in, to replace the signup and signin buttons
+
+Add .minimal.nav to forgot password page.
+
+
+
+yes. 1. make both the full name and the username appear, but the username with '@' symbol as the first character. 2. Add the avatar and make both the avatar and the username clickable leading to the profile page.

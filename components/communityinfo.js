@@ -159,6 +159,7 @@ function ensureNavbarLoaded(cb) {
 }
 
 window.renderSection = function() {
+  console.log('communityinfo.renderSection running');
   ensureNavbarLoaded();
   if (!document.getElementById('global-css')) {
     const link = document.createElement('link');
@@ -975,7 +976,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:4000/api/gemini'
+  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : 'https://yolaaiinfohub.netlify.app/api/gemini';
       
     let res = await fetch(serverUrl, { 

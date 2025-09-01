@@ -684,10 +684,13 @@ main {
   .faq-list {
     width: 94%;
   }
+  .section-extra {
+    width: 700px;
+  }
   .section2 {
     padding: 1.2rem;
     margin: 1.5rem auto;
-    width: auto;
+    width: -moz-available;
   }
   .section3 {
     margin: 1.5rem 0;
@@ -703,6 +706,7 @@ main {
   }
   .section4{
     max-width: calc(100% - 1rem);
+    width: auto;
   }
   .section4 .img-placeholder {
     height: 180px;
@@ -733,9 +737,13 @@ main {
   #main-content {
     margin-top: 0px
   }
+  .section-extra {
+    width: -moz-available;
+  }
   .section2 {
     padding: 0.8rem;
     margin: 1rem auto;
+    width: -moz-available;
   }
   .section3 {
     margin: 1rem 0;
@@ -754,8 +762,8 @@ main {
   }
   .section4 {
     padding: 0.7rem;
-    /* width:auto; */
-    max-width: 350px;
+    width:100%; 
+    max-width: 300px;
     margin-top: 15px ;
     margin-bottom: 15px;
   }
@@ -802,7 +810,7 @@ main {
   }
   .info-section h2 {
     padding-top: 0px;
-    margin-top: 0;
+    margin-top: 60px;
   }
   .chat-input-row {
     flex-direction: column;
@@ -828,7 +836,7 @@ main {
   border-radius: 7px;
   border: 1px solid #cbd5e1;
   font-size: 1rem;
-  width: 100%;
+  width: -moz-available;
 }
 .auth-page-form button[type="submit"] {
   background: #3182ce;

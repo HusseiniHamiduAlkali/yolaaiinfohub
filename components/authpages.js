@@ -21,7 +21,7 @@ window.SigninPage = {
         body = { username: usernameOrEmail, password };
       }
       try {
-        const res = await fetch('http://localhost:4000/api/login', {
+  const res = await fetch((window.API_BASE || 'http://localhost:4000') + '/api/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ window.SignupPage = {
       }
 
       try {
-        const res = await fetch('http://localhost:4000/api/signup', {
+  const res = await fetch((window.API_BASE || 'http://localhost:4000') + '/api/signup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -389,7 +389,7 @@ window.ForgotPage = {
       }
 
       try {
-        const res = await fetch('http://localhost:4000/api/forgot-password', {
+  const res = await fetch((window.API_BASE || 'http://localhost:4000') + '/api/forgot-password', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

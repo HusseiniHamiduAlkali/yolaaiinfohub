@@ -350,6 +350,8 @@ window.renderSection = function() {
       
     </section>
   `;
+  // Load in-memory servi history
+  setTimeout(() => { window.loadChatHistoryToDOM && window.loadChatHistoryToDOM('servi', 'servi-chat-messages'); }, 50);
 };
 
 window.stopServiResponse = function() {
@@ -387,7 +389,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:4000/api/gemini'
+  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : 'https://yolaaiinfohub.netlify.app/api/gemini';
       
     let res = await fetch(serverUrl, { 
@@ -646,16 +648,9 @@ window.sendServiMessage = async function(faqText = '') {
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
 
-  // Save to chat history
-  const history = JSON.parse(localStorage.getItem('servi_chat_history') || '[]');
-  if (history.length >= 5) {
-    history.shift(); // Remove oldest message if we have 5 already
-  }
-  history.push({
-    user: msg,
-    ai: '', // Will be filled in after AI responds
-    timestamp: new Date().toISOString()
-  });
+  // Init in-memory history and add user entry
+  window.initChatHistory && window.initChatHistory('servi', 10);
+  window.addToChatHistory && window.addToChatHistory('servi', 'user', msg);
 
   if (window.serviAbortController) {
     window.serviAbortController.abort();
@@ -695,22 +690,12 @@ window.sendServiMessage = async function(faqText = '') {
   try {
     const localData = await fetch('Data/ServiInfo/serviinfo.txt').then(r => r.text());
 
-    // Get chat history context
-    const history = JSON.parse(localStorage.getItem('servi_chat_history') || '[]');
-    let historyContext = '';
-    if (history.length > 0) {
-      historyContext = '\n\nRecent chat history:\n' + 
-        history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
-    }
-
-    finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY);
-
-    // Update history with AI response
-    const updatedHistory = JSON.parse(localStorage.getItem('servi_chat_history') || '[]');
-    if (updatedHistory.length > 0) {
-      updatedHistory[updatedHistory.length - 1].ai = finalAnswer;
-      localStorage.setItem('servi_chat_history', JSON.stringify(updatedHistory));
-    }
+  // Get history context from in-memory pairs
+  const pairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('servi', 5) : [];
+  const historyContext = pairs.length > 0 ? '\n\nRecent chat history:\n' + pairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+  finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY);
+  // Append assistant reply to in-memory history
+  window.addToChatHistory && window.addToChatHistory('servi', 'assistant', finalAnswer);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
     finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";

@@ -770,7 +770,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
   const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
   let body = JSON.stringify({ model: modelVersion, contents: [contents] });
   const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:4000/api/gemini'
+  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
     : '/api/gemini';
 
   let response;

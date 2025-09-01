@@ -113,7 +113,28 @@
             </div>
         </div>
         
-        <a href="javascript:history.back()" class="back-button">← Back to Places</a>
+        <a href="javascript:void(0)" id="back-button" class="back-button">← Back to Places</a>
     </div>
+    <script>
+        // Back button now uses lastSection + lastScroll saved in sessionStorage by the SPA/components
+        (function(){
+            const backBtn = document.getElementById('back-button');
+            backBtn && backBtn.addEventListener('click', function(e){
+                const lastSection = sessionStorage.getItem('lastSection');
+                const lastScroll = sessionStorage.getItem('lastScroll');
+                if(lastSection){
+                    // Navigate back to the SPA index and let the shared script restore the section + scroll
+                    // Keep values in sessionStorage for the index restore logic
+                    window.location.href = '/index.html';
+                } else if(lastScroll){
+                    // Fallback: try to go back in history and then scroll
+                    history.back();
+                    setTimeout(()=> window.scrollTo(0, parseInt(lastScroll,10)||0), 200);
+                } else {
+                    history.back();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

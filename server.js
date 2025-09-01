@@ -93,8 +93,8 @@ app.post('/api/gemini', async (req, res) => {
 
 
 const RESET_URL_BASE = isProduction 
-  ? 'https://yolaaiinfohub.netlify.app/reset-password'
-  : 'http://localhost:4000/reset-password';
+  ? 'https://yolaaiinfohub.netlify.app/forgot-password'
+  : 'http://localhost:4000/forgot-password';
 
 // Rate limiting
 const loginLimiter = rateLimit({
@@ -145,15 +145,38 @@ app.use(session({
 }));
 
 // Email transport configuration
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: process.env.EMAIL_PORT === '465',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+// Configure email transporter only if SMTP credentials are present
+let transporter = null;
+const emailHost = process.env.EMAIL_HOST;
+const emailPort = process.env.EMAIL_PORT ? Number(process.env.EMAIL_PORT) : undefined;
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
+
+const emailConfigured = emailHost && emailPort && emailUser && emailPass;
+if (emailConfigured) {
+  transporter = nodemailer.createTransport({
+    host: emailHost,
+    port: emailPort,
+    secure: emailPort === 465,
+    auth: {
+      user: emailUser,
+      pass: emailPass
+    }
+  });
+
+  // Verify transporter configuration early so issues surface on startup
+  transporter.verify().then(() => {
+    console.log('Email transporter verified');
+  }).catch(err => {
+    console.error('Email transporter verification failed. Email may not be sent:', err && err.message ? err.message : err);
+  });
+} else {
+  console.warn('Email not configured: set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in .env to enable email sending.');
+}
+// For development/testing: store last generated reset link in memory so it can be inspected
+let lastResetLink = null;
+// Control whether reset links are returned in API responses (dev-only)
+const includeResetInResponse = !isProduction && process.env.DEBUG_RESET === 'true';
 
 mongoose.connect(process.env.MONGO_URI, { 
   useNewUrlParser: true, 
@@ -271,17 +294,23 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
     const resetToken = crypto.randomBytes(32).toString('hex');
     const hash = await bcrypt.hash(resetToken, 10);
     
-    user.resetToken = hash;
-    user.resetTokenExpires = Date.now() + 3600000; // 1 hour
-    await user.save();
+  // Use a targeted update to avoid triggering full-document validators
+  await User.updateOne({ _id: user._id }, { $set: { resetToken: hash, resetTokenExpires: Date.now() + 3600000 } });
 
-    // Send password reset email
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
-    
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    // Build a safe reset URL: prefer the request origin, then FRONTEND_URL, then reasonable defaults
+    const requestOrigin = req.get('origin');
+    const fallbackFront = process.env.FRONTEND_URL || (isProduction ? 'https://yolaaiinfohub.netlify.app' : 'http://localhost:5500');
+    const origin = (requestOrigin || fallbackFront).replace(/\/$/, '');
+    // User's site uses pages/forgot-password.html as the reset page; build link accordingly
+  const resetUrl = `${origin}/pages/forgot-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
+  // store for debugging
+  lastResetLink = resetUrl;
+
+    // Prepare mail options
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       to: email,
-      subject: 'Password Reset Request',
+      subject: 'Yola AI Info Hub - Password Reset',
       html: `
         <p>Hello ${user.name},</p>
         <p>You requested a password reset. Click the link below to reset your password.</p>
@@ -289,9 +318,36 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
         <p>This link will expire in 1 hour.</p>
         <p>If you did not request this, please ignore this email.</p>
       `
-    });
+    };
 
-    res.json({ success: true, message: 'Password reset email sent' });
+    // Send email if transporter is configured; otherwise log the reset URL for manual testing
+    if (transporter) {
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Password reset email sent to ${email}`);
+      } catch (sendErr) {
+        console.error('Failed to send password reset email:', sendErr && sendErr.message ? sendErr.message : sendErr);
+        if (process.env.SUPPRESS_RESET_LOG !== 'true') {
+          console.log('Fallback - reset URL (copy this to browser to test):', resetUrl);
+        }
+  // Do not expose reset link to clients in production; only include in response when explicitly enabled for dev
+  const respFail = { success: true, message: 'Password reset link generated. If you do not receive an email, contact support or check server logs.' };
+  if (includeResetInResponse && lastResetLink) respFail.resetLink = lastResetLink;
+  return res.json(respFail);
+      }
+    } else {
+      if (process.env.SUPPRESS_RESET_LOG !== 'true') {
+        console.log('Email not configured; reset link:', resetUrl);
+      }
+      // Still return success to the client to avoid exposing internal errors
+  const respNoEmail = { success: true, message: 'Password reset link generated. Email sending is not configured on the server; check server logs for the reset link.' };
+  if (includeResetInResponse && lastResetLink) respNoEmail.resetLink = lastResetLink;
+  return res.json(respNoEmail);
+    }
+
+    const respOk = { success: true, message: 'Password reset email sent' };
+    if (includeResetInResponse && lastResetLink) respOk.resetLink = lastResetLink;
+    res.json(respOk);
   } catch (error) {
     console.error('Password reset error:', error);
     res.status(500).json({ success: false, error: 'Failed to process password reset request' });
@@ -299,7 +355,7 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
 });
 
 // Reset password with token
-app.post('/api/reset-password', async (req, res) => {
+app.post('/api/forgot-password', async (req, res) => {
   try {
     const { email, token, password } = req.body;
     const user = await User.findOne({
@@ -317,12 +373,9 @@ app.post('/api/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'Invalid reset token' });
     }
 
-    // Update password
-    const hash = await bcrypt.hash(password, 10);
-    user.password = hash;
-    user.resetToken = undefined;
-    user.resetTokenExpires = undefined;
-    await user.save();
+  // Update password using an atomic update so validation for unrelated missing fields is not triggered
+  const hash = await bcrypt.hash(password, 10);
+  await User.updateOne({ _id: user._id }, { $set: { password: hash }, $unset: { resetToken: 1, resetTokenExpires: 1 } });
 
     res.json({ success: true, message: 'Password has been reset' });
   } catch (error) {
@@ -376,10 +429,8 @@ app.post('/api/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
-    // Update login info
-    user.lastLogin = new Date();
-    user.loginAttempts = 0;
-    await user.save();
+  // Update login info with targeted update (avoids full-document validation)
+  await User.updateOne({ _id: user._id }, { $set: { lastLogin: new Date(), loginAttempts: 0 } });
 
     // Set session
     req.session.userId = user._id;
@@ -408,6 +459,14 @@ app.get('/api/me', async (req, res) => {
 // Mount the Gemini API router
 
 app.listen(4000, () => console.log('Server running on http://localhost:4000'));
+
+// Expose debug endpoint only in non-production to retrieve last generated reset link
+if (!isProduction) {
+  app.get('/debug/last-reset', (req, res) => {
+    if (!lastResetLink) return res.status(404).json({ error: 'No reset link generated yet' });
+    res.json({ lastResetLink });
+  });
+}
 
 // Client-side fetch example (to be used in your frontend code)
 // fetch('http://localhost:4000/api/login', {

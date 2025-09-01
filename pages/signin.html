@@ -90,14 +90,14 @@
       gap: 1.1rem;
     }
     .form-group label {
-      color: #4a5568;
+      color: #3e444d;
       font-size: 0.98rem;
       margin-bottom: 0.3rem;
       font-weight: 500;
     }
     .form-group input {
-      width: 100%;
-      padding: 0.7rem 0rem;
+      width: -moz-available;
+      padding: 0.7rem 0.7rem 0.7rem 0.7rem;
       border: 1.5px solid #cbd5e1;
       border-radius: 6px;
       font-size: 1.05rem;
@@ -184,10 +184,11 @@
     }
     .skip-auth-link i { margin-right: 0.4rem; }
     .skip-auth-link:hover { color: #205080; }
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       .auth-box {
         padding: 1.2rem 0.5rem 1.2rem 0.5rem;
         max-width: 98vw;
+        margin-top: 50px;
       }
       .minimal-nav-content {
         max-width: 99vw;
@@ -216,12 +217,12 @@
       <form id="signin-form" class="auth-form">
         <div class="form-group">
           <label for="username">Username or Email</label>
-          <input type="text" id="username" name="username" required>
+          <input type="text" id="username" name="username" placeholder="input username or email" required>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
           <div class="password-field">
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" placeholder="input password" required>
             <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password')">
               <i class="far fa-eye"></i>
             </button>
@@ -247,6 +248,8 @@
   <script>
     function showErrorModal(message) {
       // Create modal container
+  // Reuse API_BASE from auth.js where possible. If not available, fallback to localhost.
+  const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
       const modalContainer = document.createElement('div');
       modalContainer.className = 'error-modal';
       modalContainer.innerHTML = `
@@ -335,7 +338,7 @@
         return;
       }
       try {
-        const response = await fetch('http://localhost:4000/api/login', {
+    const response = await fetch(`${API_BASE}/api/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

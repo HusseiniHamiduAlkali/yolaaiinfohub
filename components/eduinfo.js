@@ -340,6 +340,8 @@ window.renderSection = function() {
       </div>
     </section>
   `;
+  // Load in-memory edu chat history when section renders
+  setTimeout(() => { window.loadChatHistoryToDOM && window.loadChatHistoryToDOM('edu', 'eduinfo-chat-messages'); }, 50);
 };
 
 // Register Section Initialization
@@ -399,10 +401,14 @@ window.sendEduMessage = async function(faqText = '') {
     preview.innerHTML = '';
     if (!faqText) input.value = '';
 
-    // Load existing chat history
-    let chatHistory = JSON.parse(localStorage.getItem('edu_chat_history') || '[]');
-    
-    let finalAnswer = "";
+  // Initialize in-memory history for edu and add user entry
+  window.initChatHistory && window.initChatHistory('edu', 10);
+  window.addToChatHistory && window.addToChatHistory('edu', 'user', msg);
+
+  // Build history context from in-memory pairs
+  const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('edu', 5) : [];
+
+  let finalAnswer = "";
     try {
         const localData = await fetch('Data/EduInfo/eduinfo.txt').then(r => r.text());
         
@@ -411,12 +417,9 @@ window.sendEduMessage = async function(faqText = '') {
             ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
             : "";
             
-        finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
-        
-        // Store in chat history (keep last 5 messages)
-        chatHistory.push({ user: msg, ai: finalAnswer });
-        if (chatHistory.length > 5) chatHistory = chatHistory.slice(-5);
-        localStorage.setItem('edu_chat_history', JSON.stringify(chatHistory));
+  finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+  // Add assistant reply to in-memory history
+  window.addToChatHistory && window.addToChatHistory('edu', 'assistant', finalAnswer);
     } catch (e) {
         if (e.name === 'AbortError') {
             finalAnswer = "Response stopped by user.";
@@ -457,7 +460,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
   const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
   let body = JSON.stringify({ model: modelVersion, contents: [contents] });
   const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:4000/api/gemini'
+  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
     : '/api/gemini';
   
   let response;
