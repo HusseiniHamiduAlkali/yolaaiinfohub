@@ -8,7 +8,7 @@ function renderNavbar() {
   // Create the auth buttons container that will be reused
   let authButtonsHTML = `
     <div class="navbar-auth" id="navbar-auth">
-      <span style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
+      <span class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
       <button id="signin-btn" class="auth-btn" type="button">Sign in</button>
       <button id="signup-btn" class="auth-btn" type="button">Sign up</button>
     </div>

@@ -68,7 +68,7 @@ window.renderSection = function() {
           <h3>Major Challenges:</h3>
           <ul>
             <li>Power/Electricity.</li>
-            <li>Internet Acces (Thanks to the Weekly Reflection Data Reward, It Has Really Cushioned This Effect).</li>
+            <li>Internet Access (Thanks to the Weekly Reflection Data Reward, It Has Really Cushioned This Effect).</li>
             
           </ul>
 

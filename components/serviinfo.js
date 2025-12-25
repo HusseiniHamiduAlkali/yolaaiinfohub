@@ -166,58 +166,121 @@ window.renderSection = function() {
       <div class="section2">
         <h2>Professionals in Yola</h2>
         
+        
+        <div class="section3">
+          <h3 class="section3-title">IT and Tech Professionals</h3>
+          <div class="section4-container">
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/pcklinic.png" alt="">
+              </div>
+              <h3>PC klinic, Yola</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/bitbybit.jpg" alt="">
+              </div>
+              <h3>BitByte Technologies, Yola.</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/ictrepublic.jpg" alt="">
+              </div>
+              <h3>ICT Republic, Yola.</h3>
+              <p></p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+          </div>
+        </div>
+
         <div class="section3">
           <h3 class="section3-title">Solar And Electricians</h3>
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/electrician1.jpg" alt="Ibrahim Electric Solutions - Expert electrical services in Yola">
+                <img src="Data/Images/jabbamaelectronics.jpg" alt="Electric Solutions - Expert electrical services in Yola">
               </div>
-              <h3>Ibrahim Electric Solutions</h3>
+              <h3>Jabbama Electric Solutions</h3>
               <p>Expert electrical installations, repairs and maintenance with 15+ years experience. Available 24/7 for residential and commercial electrical emergencies in Yola. Licensed and certified electricians.</p>
               <a href="details/ibrahim-electric.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/electrician2.jpg" alt="Yola Solar and Electronics Services">
+                <img src="Data/Images/altarsolar.jpg" alt="Alter Solar and Electronics Services">
               </div>
-              <h3>Yola Solar and Electronics Services</h3>
+              <h3>Alter Solar and Electronics Services</h3>
               <p>Certified solar and electrical contractors specializing in residential and commercial installations.</p>
               <a href="details/yola-power-services.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/electrician3.jpg" alt="Modern Electric">
+                <img src="Data/Images/sunking.jpg" alt="Sun King Electric">
               </div>
-              <h3>Modern Electric</h3>
+              <h3>Sun Kings Electronics Yola.</h3>
               <p>Professional electrical maintenance and smart home installation services.</p>
               <a href="details/modern-electric.html">Learn more →</a>
             </div>
           </div>
         </div>
 
+        
+        <div class="section3">
+          <h3 class="section3-title">Metal Works</h3>
+          <div class="section4-container">
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/atm2.jpg" alt="">
+              </div> 
+              <h3>ATM Aluminium and Metals, Yola.</h3>
+              <p>Expert metal installations, repairs and maintenance with 15+ years experience. Available 24/7 for residential and commercial electrical emergencies in Yola. Licensed and certified electricians.</p>
+              <a href="details/.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/noveltyaluminium.jpg" alt="Novelty Glass And Aluminium Works.">
+              </div>
+              <h3>Novelty Glass And Aluminium Works.</h3>
+              <p></p>
+              <a href="details/yola-power-services.html">Learn more →</a>
+            </div>
+            <div class="section4">
+              <div class="img-placeholder">
+                <img src="Data/Images/alumintech.jpg" alt="Alumintech solutions">
+              </div>
+              <h3>AluminTech Solutions, Yola.</h3>
+              <p></p>
+              <a href="details/">Learn more →</a>
+            </div>
+          </div>
+        </div>
+        
+
         <div class="section3">
           <h3 class="section3-title">Plumbers</h3>
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/plumber1.jpg" alt="Quality Plumbing Services - Professional plumbing solutions in Yola">
+                <img src="Data/Images/ogaplumbing.jpg" alt="Quality Plumbing Services - Professional plumbing solutions in Yola">
               </div>
-              <h3>Quality Plumbing Services</h3>
+              <h3>Oga Quality Plumbing Services</h3>
               <p>Expert plumbing solutions for residential and commercial properties in Yola. Specializing in repairs, installations, maintenance and 24/7 emergency services. Licensed plumbers with proven track record.</p>
               <a href="details/quality-plumbing.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/plumber2.jpg" alt="Yola Plumbers">
+                <img src="Data/Images/jameson.jpg" alt="Yola Plumbers">
               </div>
-              <h3>Yola Plumbers</h3>
+              <h3>Jameson Plumbing Services</h3>
               <p>Professional plumbing repairs and installations with guaranteed satisfaction.</p>
               <a href="details/yola-plumbers.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/plumber3.jpg" alt="HomeServe Plumbing">
+                <img src="Data/Images/homeserve.jpg" alt="HomeServe Plumbing">
               </div>
               <h3>HomeServe Plumbing</h3>
               <p>Comprehensive plumbing services including maintenance and emergency repairs.</p>
@@ -231,25 +294,25 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/carpenter1.jpg" alt="Master Woodworks - Premium carpentry and furniture services in Yola">
+                <img src="Data/Images/rhs.jpg" alt="Master Woodworks - Premium carpentry and furniture services in Yola">
               </div>
-              <h3>Master Woodworks</h3>
+              <h3>RHS Woodworks</h3>
               <p>Premium custom furniture and carpentry services in Yola. Expert craftsmen specializing in bespoke furniture, home renovations, and architectural woodwork. Known for exceptional attention to detail and quality craftsmanship.</p>
               <a href="details/master-woodworks.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/carpenter2.jpg" alt="Yola Furniture">
+                <img src="Data/Images/worksmanship.jpg" alt="Yola Furniture">
               </div>
-              <h3>Yola Furniture</h3>
+              <h3>Worksmanship carpentry solutions.</h3>
               <p>Specialized in custom furniture making and wooden interior solutions.</p>
               <a href="details/yola-furniture.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/carpenter3.jpg" alt="Creative Carpentry">
+                <img src="Data/Images/evanscarpentery.png" alt="Creative Carpentry">
               </div>
-              <h3>Creative Carpentry</h3>
+              <h3>Evans Carpentry, Yola.</h3>
               <p>Modern and traditional carpentry services for homes and offices.</p>
               <a href="details/creative-carpentry.html">Learn more →</a>
             </div>
@@ -261,26 +324,26 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/freelancer1.jpg" alt="Tech Solutions">
+                <img src="Data/Images/virtualassistant.png" alt="Tech Solutions">
               </div>
-              <h3>Tech Solutions Hub</h3>
-              <p>IT services, web development, and digital marketing solutions.</p>
+              <h3>Virtual Assistant Freelancers</h3>
+              <p></p>
               <a href="details/tech-solutions-hub.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/freelancer2.jpg" alt="Creative Studio">
+                <img src="Data/Images/sjgraphics.png" alt="Creative Studio">
               </div>
-              <h3>Creative Studio</h3>
+              <h3>SJ Graphics, Yola.</h3>
               <p>Graphic design, content creation, and branding services.</p>
               <a href="details/creative-studio.html">Learn more →</a>
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/freelancer3.jpg" alt="Education Experts">
+                <img src="Data/Images/rmphotography.jpg" alt="Education Experts">
               </div>
-              <h3>Education Experts</h3>
-            <p>Professional tutoring and educational consultation services.</p>
+              <h3>Photography Freelancing Hub</h3>
+            <p></p>
             <a href="details/education-experts.html">Learn more →</a>
           </div>
         </div>
@@ -301,7 +364,7 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/carpenter2.jpg" alt="CAC Yola Office">
+                <img src="Data/Images/caclogo.jpg" alt="CAC Yola Office">
               </div>
               <h3>Corporate Affairs Commission (CAC), Yola Office</h3>
               <p>Government agency responsible for business registration and corporate regulations in Yola.</p>
@@ -309,7 +372,7 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/carpenter3.jpg" alt="NIPOST Yola">
+                <img src="Data/Images/nipost.png" alt="NIPOST Yola">
               </div>
               <h3>Nigerian Postal Service (NIPOST), Yola</h3>
               <p>Official postal service provider offering mail and package delivery services in Yola.</p>
@@ -323,7 +386,7 @@ window.renderSection = function() {
           <div class="section4-container">
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/.jpg" alt="Red Cross Society Yola">
+                <img src="Data/Images/redcrosslogo.jpg" alt="Red Cross Society Yola">
               </div>
               <h3>Red Cross Society Yola Branch</h3>
               <p>International humanitarian organization providing emergency relief, healthcare services, and community support in Yola.</p>
@@ -331,7 +394,7 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/freelancer2.jpg" alt="YMCA Yola">
+                <img src="Data/Images/ymca.png" alt="YMCA Yola">
               </div>
               <h3>YMCA Yola Chapter</h3>
               <p>Youth development organization offering educational, recreational, and social programs for young people in Yola.</p>
@@ -339,10 +402,10 @@ window.renderSection = function() {
             </div>
             <div class="section4">
               <div class="img-placeholder">
-                <img src="Data/Images/ServiInfo/freelancer3.jpg" alt="Education Experts">
+                <img src="Data/Images/purelife.png" alt="Education Experts">
               </div>
-              <h3>Education Experts</h3>
-            <p>Professional tutoring and educational consultation services.</p>
+              <h3>Ahmad Uthman - Purelife Foundation.</h3>
+            <p></p>
             <a href="details/education-experts.html">Learn more →</a>
           </div>
         </div>

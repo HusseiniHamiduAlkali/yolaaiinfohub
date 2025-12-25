@@ -77,9 +77,16 @@
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     
   }
+  .section4-home-img-container h4 {
+    font-size: inherit;
+  }
   .section2-home-img1, .section2-home-img2 {
     height: 100% ; 
     width :100%;
   }
- 
+  .section4-home-a {
+    margin-bottom: 0;
+    margin-right: 0;
+    margin-left: 0;
+  }
 }

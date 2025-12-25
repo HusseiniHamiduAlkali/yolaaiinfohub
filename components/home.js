@@ -110,7 +110,7 @@ window.renderSection = function() {
   document.getElementById('main-content').innerHTML = `
     <section class="info-section">
       <h2>Welcome to Yola AI Info Hub</h2>
-      <p>Ask anything about Yola, Adamawa State, Nigeria.</p>
+      <p>Ask anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the About section.</p>
       <div class="chat-container">
         <div class="chat-header">
           <span>Home AI Chat</span>

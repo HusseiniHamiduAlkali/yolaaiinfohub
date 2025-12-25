@@ -296,10 +296,11 @@ Wednesday, July 30, 2025
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-top: auto;
 }
 
 .chat-messages {
-  min-height: 250px;
+  min-height: 350px;
   max-height: 200px;
   overflow-y: auto;
   background: #f1f3f6;
@@ -807,6 +808,7 @@ main {
   .info-section {
     /*margin-top: 1rem;*/
     width: auto;
+    gap: 1rem;
   }
   .info-section h2 {
     padding-top: 0px;
