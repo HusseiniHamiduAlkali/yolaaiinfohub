@@ -1,0 +1,105 @@
+
+    <section class="info-section">
+      <h2>Welcome to Yola AI Info Hub</h2>
+      <p>Ask anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the About section.</p>
+      <div class="chat-container">
+        <div class="chat-header">
+          <span>Home AI Chat</span>
+          <div class="model-switch">
+            <label class="switch">
+              <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('home', this.checked)">
+              <span class="slider round"></span>
+            </label>
+            <span class="model-label">Using Gemini 1.5 Flash</span>
+          </div>
+        </div>
+        <div class="chat-messages" id="home-chat-messages"></div>
+        <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendHomeMessage();">
+          <div id="home-chat-preview" class="chat-preview"></div>
+          <input type="text" id="home-chat-input" placeholder="Ask anything..." required />
+          <button type="submit" class="send-button">Send</button>
+        </form>
+        <div class="input-options">
+          <button type="button" onclick="window.captureImage('home')" title="Capture Image" ><span>📷</span></button>
+          <button type="button" onclick="window.recordAudio('home')" title="Record Audio"><span>🎤</span></button>
+          <label class="file-upload-btn" title="Upload File">
+            <span>📁</span>
+            <input type="file" style="display:none" onchange="window.uploadFile(event, 'home')" />
+          </label>
+        </div>
+        <div class="faq-list">
+        <h3>General FAQs</h3>
+        <ul>
+          <li><a class="faq-link" onclick="window.sendHomeMessage('What is the capital of Adamawa State?')">What is the capital of Adamawa State</a></li>
+          <li><a class="faq-link" onclick="window.sendHomeMessage('What is the current time in Yola?')">What is the current time in Yola</a></li>
+          <li><a class="faq-link" onclick="window.sendHomeMessage('What are popular places to visit?')">What are popular places to visit</a></li>
+          <li><a class="faq-link" onclick="window.sendHomeMessage('How to get around Yola?')">How to get around Yola</a></li>
+          <li><a class="faq-link" onclick="window.sendHomeMessage('Current weather in Yola')">Current weather in Yola</a></li>
+          <li><a class="faq-link" onclick="window.sendHomeMessage('Emergency services contact information')">Emergency services contact information</a></li>
+        </ul>
+      </div>
+      </div>
+      
+      <div class="section2" >
+        <h2 style="margin-bottom: 25px;" >History of Yola</h2>
+        <div class="section2-home-image-placeholder" >
+          <img class="section2-home-img1" src="Data/Images/palace3.jpg" alt="Yola Palace" >
+          <img class="section2-home-img2" src="Data/Images/palace.jpg" alt="Yola Palace" >
+        </div>
+        <p style="margin-top: 1.5rem; line-height: 1.6; color: #2d3748;">
+          Yola, the capital city of Adamawa State, has a rich history dating back to its establishment as the capital of the Fulani state of Adamawa in 1841. 
+          Founded by Modibbo Adama, it served as an important center for Islamic learning and trade. The city's strategic location along the Benue River 
+          made it a vital commercial hub. Today, Yola continues to be a significant cultural and administrative center, blending its historical heritage 
+          with modern development.
+        </p>
+          <div style="display:flex;">
+            <a href="details/Home/yolaadamawa.html" class="section4-home-a">Explore more →</a>
+          </div>
+        </a>
+      </div>
+
+      <div class="section2-home">
+
+        <div class="section4-home-container">
+          <div class="section4-home">
+            <div class="section4-home-img-container">
+
+              <div class="section4-home-img-placeholder">
+                <img src="Data/Images/lamido.png" alt="" >
+              </div>
+
+              <div style="display:flex; flex-direction: column;">
+                <h4>Explore the mysterious and ground-breaking emirate council and the kingdom of the 12th Lamido Fombina. His royal highness Alh. (Dr.) Muhammad Barkindo Aliyu Musdafa PhD. CFR. The primere ruler of Adamawa and the grand patron of Tabital Pulaaku International.<h4>
+                <h4 style="height: auto;">
+                  <a  href="details/Home/fombinakingdom.html" >Explore more →</a>
+                </h4>
+              </div>
+              
+            </div>
+             
+          </div>
+        </div>
+
+        <div class="section4-home-container">
+          <div class="section4-home">
+
+            <div class="section4-home-img-container">
+
+              <div class="section4-home-img-placeholder">
+                <img src="Data/Images/fintiri.png" alt="" >
+              </div>
+
+              <div style=" display:flex; flex-direction: column;">
+                <h4>Meet the cabinet of the Executive governor of Adamawa state, His excellency Rt. Hon. Ahmadu Umaru Fintiri OON. And the state executive council (ADSEC).<h4>
+                <h4 style="height: auto;">
+                  <a href="details/Home/adamawaexecutivecouncil.html" >Explore more →</a>
+                </h4>
+              </div>
+              
+              
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>

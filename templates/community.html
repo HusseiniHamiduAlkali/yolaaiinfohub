@@ -1,0 +1,531 @@
+
+<section class="info-section">
+    <h2>CommunityInfo - Community Help</h2>
+    <p>Ask about local events, organizations, or community services in Yola.</p>
+    <div class="chat-container">
+    <div class="chat-header">
+        <span>CommunityInfo AI Chat</span>
+        <div class="model-switch">
+        <label class="switch">
+            <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('community', this.checked)">
+            <span class="slider round"></span>
+        </label>
+        <span class="model-label">Using Gemini 1.5 Flash</span>
+        </div>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendCommunityMessage();">
+        <div id="chat-preview" class="chat-preview"></div>
+        <input type="text" id="chat-input" placeholder="Ask about community..." required />
+        <div class="send-button-group">
+        <button type="submit" class="send-button">Send</button>
+        </div>
+    </form>
+    <div class="input-options">
+        <button type="button" onclick="captureImage()" title="Capture Image"><span>📷</span></button>
+        <button type="button" onclick="recordAudio()" title="Record Audio"><span>🎤</span></button>
+        <label class="file-upload-btn" title="Upload File">
+        <span>📁</span>
+        <input type="file" style="display:none" onchange="uploadFile(event, 'community')" />
+        </label>
+    </div>
+    <div class="faq-list">
+    <h3>CommunityInfo FAQs</h3>
+    <ul>
+        <li><a class="faq-link" onclick="window.sendCommunityMessage('What are the major community events in Yola?')">What are the major community events in Yola?</a></li>
+        <li><a class="faq-link" onclick="window.sendCommunityMessage('How do I join a local organization?')">How do I join a local organization?</a></li>
+        <li><a class="faq-link" onclick="window.sendCommunityMessage('Where can I find information about volunteering?')">Where can I find information about volunteering?</a></li>
+        <li><a class="faq-link" onclick="window.sendCommunityMessage('How do I report a community issue?')">How do I report a community issue?</a></li>
+        <li><a class="faq-link" onclick="window.sendCommunityMessage('What are the support groups in Yola?')">What are the support groups in Yola?</a></li>
+        <li><a class="faq-link" onclick="window.sendCommunityMessage('How can I organize a community event?')">How can I organize a community event?</a></li>
+    </ul>
+    </div>
+    </div>
+
+    <div class=section2>
+
+    <div class="section3">
+        <h3 class="section3-title">Community Bulletin <br> (Top Stories this week in Yola).</h3>
+        <div class="section4-container">
+        
+            <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/flood2.jpg" alt="Flood devastation in Yola">
+            </div>
+            <h3>The Ever-devastating Flood Experienced in Yola.</h3>
+            <p>Severe flooding affecting communities and infrastructure in Yola, requiring emergency response and relief efforts.</p>
+            <a href="../details/Community/flood.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/lawstudents.jpg" alt=" Yola.">
+            </div>
+            <h3>Six Nigerian Law School Students Kidnapped En Route To Yola Campus.</h3>
+            <p>Six students of the Nigerian Law School have been reportedly abducted by suspected armed bandits
+                while travelling to resume at the school's...</p>
+            <a href="../details/Community/law-students.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/blackout.jpg" alt="">
+            </div>
+            <h3>Total blackout hits Yola, Jalingo as TCN begins repair</h3>
+            <p>The residents of Yola and Jalingo, the capitals of Adamawa and Taraba States, 
+            have been hit by a five-day darkness.</p>
+            <a href="../details/Community/blackout.html">Learn more →</a>
+        </div>            
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/waterboard2.jpg" alt="waterboard">
+            </div>
+            <h3>Relief after 15 years as Yola Town water scheme gets facelift</h3>
+            <p>Residents of Yola Town in Yola South Local Government Area of Adamawa State have been relieved of an acute shortage of water.</p>
+            <a href="../details/Community/water-scheme.html">Learn more →</a>
+        </div>
+
+            <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/conference2.png" alt="">
+            </div>
+            <h3>Gov. Fintiri flags off N18.9b international conference centre in Yola</h3>
+            <p>Governor Ahmadu Fintiri, on Thursday, May 29, 2025, performed the groundbreaking ceremony for the construction of an ultramodern International Conference and...</p>
+            <a href="../details/Community/conference-center.html">Learn more →</a>
+        </div>            
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/cng.jpg" alt=" Yola">
+            </div>
+            <h3>Nigerian govt commissions LCNG fuelling station in Yola, 1st in Northeast</h3>
+            <p>The Nigerian government has commissioned an LCNG refuelling and conversion centre in the Adamawa State capital, Yola It is coming as the...</p>
+            <a href="../details/Community/lcng-station.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/yedc3.jpg" alt="">
+            </div>
+            <h3>Meters theft rampant in Adamawa as Yola Electric Company cautions customers</h3>
+            <p>The Yola Electricity Distribution Company (YEDC) has issued a stern warning to customers against buying meters from any source other than designated purchasing...</p>
+            <a href="../details/Community/yedc-meters.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/atikuaun.jpg" alt="">
+            </div>
+            <h3>Atiku preaches patience, courage at AUN, Yola graduation ceremony</h3>
+            <p>Former Vice President Atiku Abubakar has urged young people to embrace patience and courage, which he described as virtues that pay off in life.</p>
+            <a href="../details/Community/aun-graduation.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/yolamarket.jpg" alt="">
+            </div>
+            <h3>Adamawa government okays N2.9Bn to rebuild Yola town market</h3>
+            <p>The Adamawa State Govt approved N2,937, 217120.45 k for the reconstruction of the Yola town market, destroyed by fire about five months ago.</p>
+            <a href="../details/Community/market-rebuild.html">Learn more →</a>
+        </div>
+
+        </div>
+    </div>
+
+    <div class="section3">
+        <h3 class="section3-title">Community Organizations</h3>
+        <div class="section4-container">
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/redcross3.jpg" alt="Nigerian Red Cross Society Yola Branch - Emergency services and humanitarian aid">
+            </div>
+            <h3>Nigerian Red Cross Society - Yola Branch</h3>
+            <p>Leading humanitarian organization in Yola providing emergency response, first aid training, disaster relief, and community health services. Active in blood donation drives, emergency preparedness, and local community support programs.</p>
+            <a href="details/Community/redcross-society.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/yolarflogo.jpg" alt="Youth Organization">
+            </div>
+            <h3>Yola Renewal Foundation</h3>
+            <p>Empowering young people through education and skill development.</p>
+            <a href="details/Community/yola-renewal-foundation.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/womensupport.png" alt="YAWEF Yola - Youth and women empowerment programs">
+            </div>
+            <h3>Youth And Women Empowerment Foundation (YAWEF), Yola</h3>
+            <p>Dedicated organization supporting women and youth development in Yola through education, vocational training, business mentorship, and social programs. Offers micro-loans, skills acquisition workshops, and entrepreneurship guidance.</p>
+            <a href="details/Community/yawef.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/byda.jpg" alt="Women Support">
+            </div>
+            <h3>Bako Youth Organisation Yola</h3>
+            <p>Supporting youth through education, business, and social programs.</p>
+            <a href="../details/Community/bako-youth.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/toungo.jpg" alt="Women Support">
+            </div>
+            <h3>Universal Youth Development Initiative Yola</h3>
+            <p>Supporting youth through education, business, and social programs.</p>
+            <a href="../details/Community/universal-youth.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/adamawaunited.jpg" alt="Adamawa United">
+            </div>
+            <h3>Adamawa United Football Club Association</h3>
+            <p>Professional football club promoting sports development in Adamawa State.</p>
+            <a href="../details/Community/adamawa-united.html">Learn more →</a>
+        </div>
+
+        </div>
+    </div>
+
+
+    <div class="section3">
+        <h3 class="section3-title">Community Activities and Programs</h3>
+        
+        <div class="section4-container">
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/undp1.png" alt="UNDP Vocational Training Program participants">
+            </div>
+            <h3>UNDP Vocational Training Program</h3>
+            <p>Skills development initiative providing vocational training to empower local youth and adults in Yola.</p>
+            <a href="details/Community/undp-training.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/lgi.png" alt="(LGI) Workshop">
+            </div>
+            <h3>Lead Generation Initiative (LGI) Workshop</h3>
+            <p>LGI Organises leadership training for 500 youth in Yola.</p>
+            <a href="details/Community/lgi-workshop.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/auncommunity2.jpg" alt="AUN Class of 2K26">
+            </div>
+            <h3>AUN Class of 2K26 Community Service</h3>
+            <p>The AUN class of 2026 embarked on inaugral community service in Yola local primary schools.</p>
+            <a href="../details/Community/aun-community.html">Learn more →</a>
+        </div>
+
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/auntownhall.jpg" alt="AUN Townhall Meeting in Yola">
+            </div>
+            <h3>AUN Townhall Meeting, Yola</h3>
+            <p>Community engagement forum hosted by American University of Nigeria to discuss local issues and initiatives.</p>
+            <a href="../details/Community/aun-townhall.html">Learn more →</a>
+        </div>
+
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/aungraduation.jpg" alt=" (AUN) graduation">
+            </div>
+            <h3>American University of Nigeria, (AUN) Graduation Ceremony</h3>
+            <p>Supporting youth through education, business, and social programs.</p>
+            <a href="../details/Community/aun-graduation-ceremony.html">Learn more →</a>
+        </div>
+
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/fintiriwallet.jpg" alt="Fintiri wallet program">
+            </div>
+            <h3>Fintiri Wallet Program</h3>
+            <p>Conditional cash transfer for the less previllaged in the society</p>
+            <a href="../details/Community/fintiri-wallet.html">Learn more →</a>
+        </div>
+        
+            <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/fcea.png" alt="">
+            </div>
+            <h3>Female child Education Awareness Program</h3>
+            <p>Conditional cash transfer for the less previllaged in the society</p>
+            <a href="../details/Community/female-education.html">Learn more →</a>
+        </div>            
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/govcup.jpg" alt="Governor's Cup Football Competition in Yola">
+            </div>
+            <h3>Governor's Cup Football Competition</h3>
+            <p>Annual football tournament bringing together teams from across Yola and promoting sports development.</p>
+            <a href="details/Community/governors-cup.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/cleaningday.png" alt="Community Cleaning Day">
+            </div>
+            <h3>Community Cleaning Day</h3>
+            <p>Monthly community cleaning and beautification program.</p>
+            <a href="details/Community/cleaning-day.html">Learn more →</a>
+        </div>
+
+        </div>
+    </div>
+
+    
+    <div class="section3">
+    <h3 class="section3-title">Events in Yola</h3>
+        
+        <div class="section4-container">
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/wbfw.png" alt="World Breastfeeding Week Celebration in Yola">
+            </div>
+            <h3>World Breastfeeding Week in Yola</h3>
+            <p>Global awareness week promoting the importance of breastfeeding and maternal health in Yola.</p>
+            <a href="../details/Community/breastfeeding-week.html">Learn more →</a>
+        </div>
+        
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/childday2.png" alt="Children's Day Celebration in Yola">
+            </div>
+            <h3>Childrens' Day in Yola</h3>
+            <p>Annual celebration dedicated to children with fun activities, games and educational programs in Yola.</p>
+            <a href="../details/Community/childrens-day.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/aunwomen.jpg" alt="International Women's Day Celebration">
+            </div>
+            <h3>International Women's Day</h3>
+            <p>Annual celebration recognizing women's achievements and promoting gender equality in Yola.</p>
+            <a href="../details/Community/womens-day.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/eduday.jpg" alt="International Day of Education Celebration">
+            </div>
+            <h3>International Day of Education.</h3>
+            <p>Global celebration highlighting the importance of education and learning opportunities in Yola.</p>
+            <a href="../details/Community/education-day.html">Learn more →</a>
+        </div>
+
+                    
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/independence.jpg" alt="National Independence Day Celebration in Yola">
+            </div>
+            <h3>National Independence Day in Yola.</h3>
+            <p>Celebration of Nigeria's independence with cultural displays, parades and festivities in Yola.</p>
+            <a href="../details/Community/independence-day.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/malariaday.png" alt="World Malaria Day Event in Yola">
+            </div>
+            <h3>World Malaria Day in Yola.</h3>
+            <p>Annual awareness campaign promoting malaria prevention and treatment in Yola communities.</p>
+            <a href="../details/Community/malaria-day.html">Learn more →</a>
+        </div>
+
+    </div>
+    </div>
+
+    <div class="section3">
+    <h3 class="section3-title">Community Event Centers</h3>
+        <div class="section4-container">
+        
+        <div class="section4">
+        <div class="img-placeholder">
+            <img src="Data/Images/ribadusquare.jpg" alt="Cultural Center">
+        </div>
+        <h3>Mahmudu Ribadu Square, Yola</h3>
+        <p>Venue for cultural events, exhibitions, and traditional performances.</p>
+        <a href="details/Community/ribadu-square.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/digitalhall.jpg" alt="Digital Multipurpose Hall in Yola">
+            </div>
+            <h3>Digital Multipurpose Hall Yola</h3>
+            <p>Modern event venue equipped with digital facilities for conferences, seminars, and community gatherings.</p>
+            <a href="details/Community/digital-hall.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/aunhall.png" alt="AUN Community Hall">
+            </div>
+            <h3>AUN Community Hall, Yola</h3>
+            <p>University-owned venue hosting academic events, community programs, and cultural activities.</p>
+            <a href="details/Community/aun-hall.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/banquethall.jpg" alt="Government House Banquet Hall">
+            </div>
+            <h3>Banquet Hall, Government House Yola</h3>
+            <p>Prestigious state venue for official functions, ceremonies and high-profile events.</p>
+            <a href="details/Community/banquet-hall.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/crystalpalace.jpg" alt="Crystal Palace Event Center">
+            </div>
+            <h3>Crystal Palace Event Center, Yola.</h3>
+            <p>Modern event facility offering space for weddings, parties, and corporate functions.</p>
+            <a href="details/Community/crystal-palace.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/fcehall.jpg" alt="FCE Yola Multipurpose Hall">
+            </div>
+            <h3>Federal Collece Of Education (FCE) Yola, Multipurpose hall</h3>
+            <p>Educational institution's hall hosting academic ceremonies, student events and community programs.</p>
+            <a href="details/Community/fce-hall.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/amchall.jpg" alt="AMC Yola Multipurpose Hall">
+            </div>
+            <h3>Aliyu Musdafa College (AMC) Yola, Multipurpose hall.</h3>
+            <p>School facility used for educational activities, meetings and community gatherings.</p>
+            <a href="details/Community/amc-hall.html">Learn more →</a>
+        </div>
+
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/fastnet.jpg" alt="Fastnet Movie Theatre">
+            </div>
+            <h3>Fastnet Movie Theatre, Yola.</h3>
+            <p>Modern cinema complex showing latest movies and providing entertainment to the community.</p>
+            <a href="details/Community/fastnet.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/lamidocinema.jpg" alt="Lamido Cinema">
+            </div>
+            <h3>Lamido Cinema, Yola.</h3>
+            <p>Local movie theater offering film screenings and entertainment services to residents.</p>
+            <a href="details/Community/lamido-cinema.html">Learn more →</a>
+        </div>
+
+
+        </div>
+    </div>
+
+    <div class="section3">
+        <h3 class="section3-title">Radio and TV stations</h3>
+        <div class="section4-container">
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/pulaakufm.jpg" alt="Pulaaku FM Radio Yola.">
+            </div>
+            <h3>Pulaaku FM Radio Yola.</h3>
+            <p>A local Radio station offering in local languages.</p>
+            <a href="details/Community/pulaaku.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/fombinafmlogo.jpg" alt="Fombina FM Radio Yola.">
+            </div>
+            <h3>Fombina FM Radio Yola.</h3>
+            <p></p>
+            <a href="details/Community/fombinafm.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/fmgotel.jpg" alt="FM Gotel">
+            </div>
+            <h3>Gotel FM Yola.</h3>
+            <p></p>
+            <a href="details/Community/gotelfm.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/abcyola.jpg" alt="ABC Yola">
+            </div>
+            <h3>Adamawa Broadcasting Coperation (ABC), Yola.</h3>
+            <p> </p>
+            <a href="details/Community/abcyola.html">Learn more →</a>
+        </div>
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/nasfm.png" alt="ABC Yola">
+            </div>
+            <h3>NAS FM Radio Yola.</h3>
+            <p>A private radio station broadcasting news, advertisement e.tc.</p>
+            <a href="details/Community/nasfm.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/usaku.png" alt="Usaku FM Yola">
+            </div>
+            <h3>Usaku FM Yola.</h3>
+            <p></p>
+            <a href="details/Community/usakufm.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/ntalogo.jpg" alt="ABC Yola">
+            </div>
+            <h3>National Television Authority NTA Yola.</h3>
+            <p></p>
+            <a href="details/Community/ntayola.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/atv.jpg" alt="ATV Yola">
+            </div>
+            <h3>ATV Yola.</h3>
+            <p></p>
+            <a href="details/Community/atv.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/tvgotel.jpg" alt="TV Gotel Yola">
+            </div>
+            <h3>TV Gotel Yola.</h3>
+            <p></p>
+            <a href="details/Community/tvgotel.html">Learn more →</a>
+        </div>
+
+        </div>
+    </div>
+
+</div>
+
+</section>

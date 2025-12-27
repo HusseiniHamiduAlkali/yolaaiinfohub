@@ -24,3 +24,71 @@ Edu Ai not working
 Chat history functionality: implement for every section and let the history clean with a clean refresh of the app but not after rendering a section (e.g. not after moving from Edu to Eco or back to Home).
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Perfect! Here's a summary of what's in commonAI.js:
+
+📋 Contents of commonAI.js
+1. Gemini Model Management
+window.useGemini25 - Global flag for model preference (default: false = 1.5 Flash)
+window.toggleGeminiModel() - Function to toggle between Gemini 2.5 and 1.5 Flash models
+Model preference is stored in localStorage for persistence
+2. Text-to-Speech Functions
+window.currentSpeech - Global variable to track active speech
+window.stopSpeaking() - Cancels any ongoing speech synthesis
+window.speakText(text) - Converts text to speech with HTML tag removal
+3. Media Capture Functions
+window.captureImage(section) - Opens camera overlay for photo capture
+window.recordAudio(section) - Opens microphone overlay for audio recording
+window.uploadFile(e, section) - Handles file uploads (images, audio, video, PDF, documents)
+4. UI Response Formatting
+formatAIResponse(text) - Formats AI responses with:
+Bold text (*text* → <b>text</b>)
+Line breaks (\n → <br>)
+Read-aloud button (🔊)
+5. Navigation Management
+ensureNavbarLoaded(cb) - Robust navbar loader with retry logic
+Dynamically loads navbar.js if not already present
+6. Gemini API Integration
+getGeminiAnswer(localData, msg, apiKey, imageData) - Main function for calling Gemini API
+Supports both text and image inputs
+Uses backend proxy (/api/gemini) for API calls
+Handles model selection (gemini-pro-vision for images, 2.5/1.5 Flash for text)
+Includes error handling and response validation
+All these functions are shared utilities that can be reused across multiple info sections (Home, Edu, Agro, Medi, Community, Navi, Servi, Eco) instead of being duplicated in each file! ✅

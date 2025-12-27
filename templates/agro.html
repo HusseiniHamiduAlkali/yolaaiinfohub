@@ -1,0 +1,386 @@
+
+<section class="info-section">
+    <h2>AgroInfo - Agriculture Help</h2>
+    <p>Ask about farming, crops, livestock, or agricultural services in Yola.</p>
+    <div class="chat-container">
+    <div class="chat-header">
+        <span>AgroInfo AI Chat</span>
+        <div class="model-switch">
+        <label class="switch">
+            <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('agro', this.checked)">
+            <span class="slider round"></span>
+        </label>
+        <span class="model-label">Using Gemini 1.5 Flash</span>
+        </div>
+    </div>
+    <div class="chat-messages" id="agro-chat-messages"></div>
+    <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendAgroMessage();">
+        <div id="agro-chat-preview" class="chat-preview"></div>
+        <input type="text" id="agro-chat-input" placeholder="Ask about agriculture..." required />
+        <div class="send-button-group">
+        <button type="submit" class="send-button">Send</button>
+        </div>
+    </form>
+    <div class="input-options">
+        <button type="button" onclick="captureImage()" title="Capture Image"><span>📷</span></button>
+        <button type="button" onclick="recordAudio()" title="Record Audio"><span>🎤</span></button>
+        <label class="file-upload-btn" title="Upload File">
+        <span>📁</span>
+        <input type="file" style="display:none" onchange="uploadFile(event, 'agro')" />
+        </label>
+    </div>
+    <div class="faq-list">
+    <h3>AgroInfo FAQs</h3>
+    <ul>
+        <li><a class="faq-link" onclick="window.sendAgroMessage('What are the main crops grown in Yola?')">What are the main crops grown in Yola?</a></li>
+        <li><a class="faq-link" onclick="window.sendAgroMessage('Where can I buy farm inputs in Yola?')">Where can I buy farm inputs in Yola?</a></li>
+        <li><a class="faq-link" onclick="window.sendAgroMessage('How do I access agricultural extension services?')">How do I access agricultural extension services?</a></li>
+        <li><a class="faq-link" onclick="window.sendAgroMessage('What are common livestock diseases in Yola?')">What are common livestock diseases in Yola?</a></li>
+        <li><a class="faq-link" onclick="window.sendAgroMessage('Information on irrigation methods suitable for Yola')">Information on irrigation methods suitable for Yola</a></li>
+        <li><a class="faq-link" onclick="window.sendAgroMessage('What government programs support farmers in Adamawa State?')">What government programs support farmers in Adamawa State?</a></li>
+    </ul>
+    </div>
+    </div>
+    
+    <div class="section2">
+    <h2>Community Agricultural Services</h2>
+    
+    <div class="section3">
+        <h3 class="section3-title">Community Agricultural Organizations in Yola</h3>
+        <div class="section4-container">
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/afanassociation.jpg" alt="All Farmers Association of Nigeria (AFAN)">
+            </div>
+            <h3>All Farmers Association of Nigeria (AFAN)</h3>
+            <p>National umbrella organization representing farmers' interests, providing support, and promoting agricultural development in Nigeria.</p>
+            <a href="details/Agro/afan.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/rifanassociation.jpg" alt="Rice farmers association of Nigeria Adamawa state chapter, Yola">
+            </div>
+            <h3>Rice farmers association of Nigeria Adamawa state chapter, Yola.</h3>
+            <p>State chapter organization supporting rice farmers through training, resources, and market access initiatives.</p>
+            <a href="details/Agro/rifan.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/swofonassociation.png" alt="Small-scale Women Farmers Organisation in Nigeria (SWOFON), Yola">
+            </div>
+            <h3>Small-scale Women Farmers Organisation in Nigeria (SWOFON), Yola.</h3>
+            <p>Organization empowering women farmers through capacity building, access to resources, and advocacy for gender-inclusive agricultural policies.</p>
+            <a href="details/Agro/swofon.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/hyfassociation.jpg" alt="Himma Youth Farmers Association of Nigeria (HYFAN), Yola Chapter">
+            </div>
+            <h3>Himma Youth Farmers Association of Nigeria (HYFAN), Yola Chapter.</h3>
+            <p>Youth-focused agricultural organization promoting farming among young people through training, mentorship, and support programs.</p>
+            <a href="details/Agro/hyfan.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/smallholderassociation.png" alt="Smallholder farmers association of Nigeria Adamawa state chapter, Yola">
+            </div>
+            <h3>Smallholder farmers association of Nigeria Adamawa state chapter, Yola.</h3>
+            <p>Organization supporting small-scale farmers with resources, training, and market access to improve agricultural productivity and livelihoods.</p>
+            <a href="details/Agro/smallholder.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/fison.png" alt="FISON, Yola">
+            </div>
+            <h3>Fisheries Society Of Nigeria (FISON), Yola.</h3>
+            <p>Professional organization supporting the development of fisheries and aquaculture through research, training, and best practices.</p>
+            <a href="details/Agro/peasant.html">Learn more →</a>
+        </div>
+
+        </div>
+    </div>
+
+    <div class="section3">
+        <h3 class="section3-title">Extension Services</h3>
+        <div class="section4-container">
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/iita.png" alt="Agric Extension">
+            </div>
+            <h3>IITA - The International Institute Of Tropical Agriculture, Training Scheme.</h3>
+            <p>IITA says it ahs trained 35,000 farmers on modern farming techniques in seven local governments in Adamawa state.</p>
+            <a href="details/Agro/iita.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/acresal.png" alt="Agric Extension">
+            </div>
+            <h3>ACRESAL  Agro-Climatic Resilience In Semi-Arid Landscapes.</h3>
+            <p>State-run facility providing resources to support local farmers in improving agricultural productivity.</p>
+            <a href="details/Agro/acresal.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/rmrdc.jpg" alt="Research Station">
+            </div>
+            <h3>Raw Materials Research And Development Council, Yola.</h3>
+            <p>Research and development center for improved farming practices.</p>
+            <a href="details/Agro/rmrdc.html">Learn more →</a>
+        </div>
+
+        </div>
+    </div>
+
+    <div class="section3">
+        <h3 class="section3-title">Agricultural Input Suppliers</h3>
+        <div class="section4-container">
+
+        <div class="section4">
+        <div class="img-placeholder">
+            <img src="Data/Images/yusashagro.jpg" alt="Yusash Agro Chemicals">
+        </div>
+        <h3>Yusash Agro Chemicals.</h3>
+        <p>Leading supplier of agricultural chemicals, fertilizers, and farming inputs with expert guidance for optimal usage.</p>
+        <a href="details/Agro/yusash-inputs.html">Learn more →</a>
+        </div>
+        <div class="section4">
+        <div class="img-placeholder">
+            <img src="Data/Images/miaagro.jpg" alt="Mia Agro Chemicals, Yola">
+        </div>
+        <h3>Mia Agro Chemicals, Yola.</h3>
+        <p>Comprehensive provider of agricultural chemicals, pesticides, and farming supplies serving the Yola farming community.</p>
+        <a href="details/Agro/mia-agro-inputs.html">Learn more →</a>
+        </div>
+        <div class="section4">
+        <div class="img-placeholder">
+            <img src="Data/Images/comfortagro.png" alt="Comfort Agro Chemicals, Yola">
+        </div>
+        <h3>Comfort Agro Chemicals, Yola.</h3>
+        <p>Reliable supplier of quality agricultural inputs, chemicals, and farming supplies with professional advisory services.</p>
+        <a href="details/Agro/comfort-agro-inputs.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+        <div class="img-placeholder">
+            <img src="Data/Images/goldenagro.png" alt="Golden Agro Supply, Yola">
+        </div>
+        <h3>Golden Agro Supply, Yola.</h3>
+        <p>One-stop shop for agricultural supplies, equipment, and farming inputs with technical support services.</p>
+        <a href="details/Agro/golden-inputs.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+        <div class="img-placeholder">
+            <img src="Data/Images/nazareth.png" alt="Golden Agro Supply, Yola">
+        </div>
+        <h3>Nazareth Farmers' Service Center, Yola.</h3>
+        <p>Comprehensive agricultural service center providing farming supplies, equipment, and technical support to local farmers.</p>
+        <a href="details/Agro/nazareth-inputs.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+        <div class="img-placeholder">
+            <img src="Data/Images/kandimi.png" alt="Golden Agro Supply, Yola">
+        </div>
+        <h3>Kandimi Agro Input Dealers, Yola.</h3>
+        <p>Trusted agricultural input dealer offering quality seeds, fertilizers, and farming supplies with expert guidance.</p>
+        <a href="details/Agro/kandimi-inputs.html">Learn more →</a>
+        </div>
+    </div>
+
+        <div class="section3">
+        <h3 class="section3-title">Agricultural Commercial Activities.</h3>
+        <div class="section4-container">
+    
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/ngurore.jpg" alt="Livestock Market">
+            </div>
+            <h3>Ngurore Livestock Market, Yola.</h3>
+            <p>Major marketplace for livestock trading and related services.</p>
+            <a href="details/Agro/ngurore-market.html">Learn more →</a>
+            </div>  
+
+            
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/jambutumarket1.png" alt="Chikun Chicks - Chicken">
+            </div>
+            <h3>Jambutu Vegetables and Fruits Market.</h3>
+            <p>Major marketplace for fresh vegetables and fruits, connecting local farmers directly with consumers.</p>
+            <a href="details/Agro/jambutu-vegetables-market.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/jambutumarket2.png" alt="Chikun Chicks - Chicken">
+            </div>
+            <h3>Jambutu Smoked Fish Market, Yola.</h3>
+            <p>Specialized market known for quality smoked fish products and fresh fish supplies from local fishermen.</p>
+            <a href="details/Agro/jambutu-fish-market.html">Learn more →</a>
+            </div>
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/agricfair.jpg" alt="Agricultural Inputs Trade Fair, Yola">
+            </div>
+            <h3>Agricultural Inputs Trade Fair, Yola.</h3>
+            <p>Annual trade fair showcasing agricultural inputs, machinery, and innovations to connect farmers with suppliers.</p>
+            <a href="details/Agro/trade-fair.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/sarekosam.png" alt="Chikun Chicks - Chicken">
+            </div>
+            <h3>Sare Kosam - Home Of Pure & Natural Milk.</h3>
+            <p>Local dairy producer specializing in fresh, pure milk products sourced from local dairy farmers.</p>
+            <a href="details/Agro/sare-kosam.html">Learn more →</a>
+            </div>
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/wakili.png" alt="Wakili (WK) Poultry Farms, Yola">
+            </div>
+            <h3>Wakili (WK) Poultry Farms, Yola</h3>
+            <p>Modern poultry farm specializing in chicken breeding, egg production, and poultry products.</p>
+            <a href="details/Agro/wakili-farms.html">Learn more →</a>
+            </div>
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/chikun.png" alt="Chikun Chicks - Chicken">
+            </div>
+            <h3>Chikun Chicks - Chicken</h3>
+            <p>Professional poultry business providing quality chicks, eggs, and chicken products to the Yola market.</p>
+            <a href="details/Agro/chikun-chicks.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/lacrest.jpg" alt="Chikun Chicks - Chicken">
+            </div>
+            <h3>LA'CREST Frozens, Yola.</h3>
+            <p>Premium frozen food distributor offering a wide range of quality frozen meat and poultry products.</p>
+            <a href="details/Agro/la-crest.html">Learn more →</a>
+            </div>
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/easylife.png" alt="Chikun Chicks - Chicken">
+            </div>
+            <h3>Easy Life Frozen Chicken.</h3>
+            <p>Supplier of high-quality frozen chicken products with reliable cold chain distribution in Yola.</p>
+            <a href="details/Agro/easy-life.html">Learn more →</a>
+            </div>
+            
+        </div>
+        </div>
+
+    <div class="section3">
+        <h3 class="section3-title">Processing Centers and Storage Facilities</h3>
+        <div class="section4-container">
+
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/ricogadoprocessing.jpg" alt="Animal Feed">
+            </div>
+            <h3>Rico Gado Quality Feed Mills</h3>
+            <p>Premium animal feed production and supply services.</p>
+            <a href="details/Agro/ricogado.html">Learn more →</a>
+            </div>
+
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/shamadprocessing.jpg" alt="Grain Processing">
+            </div>
+            <h3>Shamad Grain Processing Center, Yola.</h3>
+            <p>Modern grain processing and storage Facilities.</p>
+            <a href="details/Agro/shamad.html">Learn more →</a>
+            </div>
+            
+            <div class="section4">
+            <div class="img-placeholder">
+                <img src="Data/Images/coldhubs.png" alt="Cold Storage">
+            </div>
+            <h3>ColdHubs Stores, Jambutu Groceries Market, Jimeta, Yola.</h3>
+            <p>Temperature-controlled storage for agricultural products.</p>
+            <a href="details/Agro/coldhubs.html">Learn more →</a>
+            </div>
+            
+        </div>
+
+    <div class="section3">
+        <h3 class="section3-title">Agricultural Support Initiatives</h3>
+        <div class="section4-container">
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/agro2.png" alt="Distribution Of Farm Inputs To Residents By The Executive Governor">
+            </div>
+            <h3>Distribiution Of Farm Inputs To Residents By The Executive Governor</h3>
+            <p>Government initiative providing essential farming inputs, seeds, and agricultural supplies to support local farmers and boost agricultural production.</p>
+            <a href="details/Agro/fintiri-inputs-distribution.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/agro1.png" alt="'Every Home A Garden' - Movement By The First Lady">
+            </div>
+            <h3>'Every Home A Garden' - Movement By The First Lady.</h3>
+            <p>Initiative promoting urban agriculture and food security by encouraging household gardening and sustainable farming practices.</p>
+            <a href="details/Agro/every-home-garden.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/climatesmart.png" alt="Climate-smart Seed Production Training">
+            </div>
+            <h3>Climate-smart Seed Production Training</h3>
+            <p>Capacity building program teaching farmers climate-resilient seed production techniques and sustainable agricultural practices.</p>
+            <a href="details/Agro/climate-smart-seed.html">Learn more →</a>
+        </div>
+
+        </div>
+    </div>
+    
+    <div class="section3">
+        <h3 class="section3-title">Medical And Clinical Veterinary Services</h3>
+        <div class="section4-container">
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/divinepetvet.jpg" alt="Divine Pet Veterinary Clinic, Yola">
+            </div>
+            <h3>Divine Pet Veterinary Clinic, Yola.</h3>
+            <p>Professional veterinary clinic providing comprehensive medical care for pets and small animals in Yola.</p>
+            <a href="details/Agro/divine-pet-vet.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/hooflinevet.jpg" alt="Hoof - Line Veterinary, Yola">
+            </div>
+            <h3>Hoof - Line Veterinary, Yola.</h3>
+            <p>Specialized veterinary practice focusing on livestock health, treatment, and preventive care services.</p>
+            <a href="details/Agro/hoofline-vet.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/crittersvet.png" alt="Critters veterinary Center">
+            </div>
+            <h3>Critters veterinary Center.</h3>
+            <p>Full-service veterinary center offering medical care, surgery, and health consultations for all types of animals.</p>
+            <a href="details/Agro/critters-vet.html">Learn more →</a>
+        </div>
+
+        </div>
+    </div>
+    </div>
+</section>

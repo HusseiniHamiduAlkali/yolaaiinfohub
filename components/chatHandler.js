@@ -1,5 +1,7 @@
 // Common chat handler functions
-window.GEMINI_API_KEY = "AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U";
+// NOTE: API keys must not be embedded into frontend code for security.
+// Use a backend proxy (/api/gemini) or Netlify function that holds the GEMINI key.
+window.GEMINI_API_KEY = window.GEMINI_API_KEY || null;
 
 // Global text-to-speech variables and functions
 window.currentSpeech = window.currentSpeech || null;
@@ -113,14 +115,18 @@ async function getGeminiAnswer(prompt, msg, section, apiKey, imageData = null) {
     });
 
     const model = imageData ? 'gemini-pro-vision' : 'gemini-1.5-flash';
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [contents] })
-    });
-    const data = await res.json();
-    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) ?
-      data.candidates[0].content.parts[0].text : "No answer from AI.";
+
+    // Use backend proxy to call Gemini so the key remains on server-side
+    const proxyPayload = { model, contents: [contents] };
+    try {
+      const proxyResp = await window.callGemini(proxyPayload);
+      const data = proxyResp;
+      return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) ?
+        data.candidates[0].content.parts[0].text : "No answer from AI.";
+    } catch (err) {
+      console.error('callGemini failed', err);
+      return "Sorry, I'm having trouble connecting to the AI at the moment.";
+    }
   } catch (error) {
     console.error("Gemini API error:", error);
     return "Sorry, I'm having trouble connecting to the AI at the moment.";

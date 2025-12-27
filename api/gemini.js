@@ -16,7 +16,7 @@ const corsOptions = {
     'http://localhost:3000',
     'http://localhost:8080',
     'http://127.0.0.1:8080',
-    'https://yolainfohub.netlify.app',
+    'https://yolaaiinfohub.netlify.app',
     'http://0.0.0.0:0000'
   ],
   credentials: true,

@@ -1,7 +1,7 @@
-// --- BEGIN HARDCODED API KEYS ---
-window.GEMINI_API_KEY = 'AIzaSyAZ9TgevsUjCvczgJ31FHSUI1yZ25olZ9U';
-window.MAPS_API_KEY = 'AIzaSyDMKnF-SynUDvcQRTubKH31V7tGflUognY';
-// --- END HARDCODED API KEYS ---
+// API keys should be provided server-side or injected at build time.
+// Use `components/apiConfig.js` or Netlify/GitHub secrets to provide `window.API_BASE` and keep keys off the client.
+window.GEMINI_API_KEY = window.GEMINI_API_KEY || null;
+window.MAPS_API_KEY = window.MAPS_API_KEY || null;
 
 // Ensure navbar is loaded
 function ensureNavbarLoaded() {

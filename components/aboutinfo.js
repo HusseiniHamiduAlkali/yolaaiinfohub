@@ -139,20 +139,15 @@ window.renderSection = function() {
       input.value = '';
       return;
     }
-    // Call Gemini API
+    // Call Gemini via backend proxy
     try {
-      const res = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' + GEMINI_API_KEY, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: msg }] }]
-        })
-      });
-      const data = await res.json();
+      if (typeof window.callGemini !== 'function') throw new Error('Backend proxy not available');
+      const payload = { model: 'gemini-1.5-flash', contents: [{ parts: [{ text: msg }] }] };
+      const data = await window.callGemini(payload);
       let aiText = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
       msgGroup.querySelector('.ai-msg-text').innerHTML = aiText;
     } catch (error) {
-      console.error('Error calling Gemini API:', error);
+      console.error('Error calling Gemini proxy:', error);
       msgGroup.querySelector('.ai-msg-text').innerHTML = "Sorry, there was an error connecting to the AI. Please try again later.";
     }
     chat.scrollTop = chat.scrollHeight;
