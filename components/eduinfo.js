@@ -10,7 +10,7 @@ if (!window.commonAILoaded) {
 
 // AI Prompt for EduInfo
 window.EDU_AI_PROMPT = `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Help the user with medical and health information in Yola.
+Help the user with educational information in Yola.
 Answer questions using the available information and focus only on education-related topics.
 If specific information is not available, say: "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help."
 For non-education queries about health, navigation, community, environment, jobs, or agriculture, refer users to MediInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo respectively.`;
@@ -101,12 +101,17 @@ window.sendEduMessage = async function(faqText = '') {
     try {
         const localData = await fetch('Data/EduInfo/eduinfo.txt').then(r => r.text());
         
+        // Get chat history for this section
+        const chatHistory = window.getChatHistory('edu') || [];
+        
         // Include chat history in the context
         const historyContext = chatHistory.length > 0 
-            ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
+            ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `${h.role === 'user' ? 'User' : 'AI'}: ${h.content}`).join('\n\n')
             : "";
             
   finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+  // Add user message to history
+  window.addToChatHistory && window.addToChatHistory('edu', 'user', msg);
   // Add assistant reply to in-memory history
   window.addToChatHistory && window.addToChatHistory('edu', 'assistant', finalAnswer);
     } catch (e) {
@@ -146,7 +151,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
   contents.parts.push({
     text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
   });
-  const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+  const modelVersion = 'gemini-2.5-flash';
   let body = JSON.stringify({ model: modelVersion, contents: [contents] });
   const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
@@ -162,17 +167,6 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
     
     let data = await response.json();
-    if (data.error && window.useGemini25 && !imageData) {
-      // fallback to 1.5
-      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      response = await fetch(url, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body,
-        signal: window.eduAbortController?.signal 
-      });
-      data = await response.json();
-    }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
     if (err.name === 'AbortError') {

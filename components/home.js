@@ -66,10 +66,13 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       });
     }
 
-    // Format chat history
-    const historyText = window.homeChatHistory.map(msg => 
-      `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
-    ).join('\n');
+    // Format chat history - with null check
+    let historyText = '';
+    if (window.homeChatHistory && Array.isArray(window.homeChatHistory) && window.homeChatHistory.length > 0) {
+      historyText = window.homeChatHistory.map(msg => 
+        `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+      ).join('\n');
+    }
 
     // Use the editable prompt from localStorage or fallback
     const promptGuide = (localStorage.getItem('home_ai_prompt') || HOME_AI_PROMPT)
@@ -80,8 +83,8 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     });
 
     // Choose model based on user preference and image presence
-    modelVersion = imageData ? 'gemini-pro-vision' : 
-                        (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    // Use gemini-2.5-flash (available with current API key)
+    modelVersion = 'gemini-2.5-flash';
 
     // Use backend proxy instead of direct Gemini API
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -95,10 +98,25 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     }
 
     let data = await res.json();
-    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      return data.candidates[0].content.parts[0].text;
+    
+    // Check for API errors
+    if (data.error) {
+      console.error('Gemini API returned error:', data.error);
+      throw new Error(data.error.message || 'API error: ' + JSON.stringify(data.error));
     }
-    throw new Error('Invalid response format');
+    
+    // Check for expected response structure
+    if (!data.candidates || data.candidates.length === 0) {
+      console.error('No candidates in response:', JSON.stringify(data));
+      throw new Error('No response from AI (empty candidates)');
+    }
+    
+    if (!data.candidates[0].content?.parts?.[0]?.text) {
+      console.error('Invalid response structure:', JSON.stringify(data.candidates[0]));
+      throw new Error('Invalid response format from API');
+    }
+    
+    return data.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error(`Error with ${modelVersion || 'unknown modelVersion'}:`, error);
     throw error;
@@ -192,7 +210,17 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
       finalAnswer = "USER ABORTED REQUEST";
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
-      finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+      // Provide helpful error message to user
+      const errorMsg = e.message || 'Unknown error';
+      if (errorMsg.includes('API key')) {
+        finalAnswer = "⚠️ API key is not configured. Please check your environment setup.";
+      } else if (errorMsg.includes('empty candidates') || errorMsg.includes('No response')) {
+        finalAnswer = "⚠️ The AI returned an empty response. This might be a content policy violation or API issue. Please try rephrasing your question.";
+      } else if (errorMsg.includes('Invalid response format')) {
+        finalAnswer = "⚠️ Received an unexpected response format from the API. Please try again.";
+      } else {
+        finalAnswer = `⚠️ Error: ${errorMsg}`;
+      }
     }
   }
 

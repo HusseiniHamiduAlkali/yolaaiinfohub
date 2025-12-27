@@ -5,8 +5,72 @@
 window.useGemini25 = window.useGemini25 || false;
 
 // Chat history management
-// Use shared in-memory chat history helpers
-window.initChatHistory && window.initChatHistory('home', 10);
+// In-memory storage for chat histories
+window.chatHistories = window.chatHistories || {};
+
+// Initialize chat history for a section
+window.initChatHistory = function(section, maxMessages = 10) {
+  if (!window.chatHistories[section]) {
+    window.chatHistories[section] = [];
+  }
+  window.chatHistories[section].maxMessages = maxMessages;
+  
+  // Create global variables for each section for backward compatibility
+  const globalName = section + 'ChatHistory';
+  window[globalName] = window.chatHistories[section];
+};
+
+// Add a message to chat history
+window.addToChatHistory = function(section, role, content) {
+  if (!window.chatHistories[section]) {
+    window.initChatHistory(section);
+  }
+  window.chatHistories[section].push({ role, content });
+  
+  // Keep only the last maxMessages
+  const maxMessages = window.chatHistories[section].maxMessages || 10;
+  if (window.chatHistories[section].length > maxMessages) {
+    window.chatHistories[section].shift();
+  }
+  
+  // Update global variable
+  const globalName = section + 'ChatHistory';
+  window[globalName] = window.chatHistories[section];
+};
+
+// Get chat history for a section
+window.getChatHistory = function(section) {
+  if (!window.chatHistories[section]) {
+    window.initChatHistory(section);
+  }
+  return window.chatHistories[section];
+};
+
+// Load chat history to DOM
+window.loadChatHistoryToDOM = function(section, elementId) {
+  const element = document.getElementById(elementId);
+  if (!element || !window.chatHistories[section]) return;
+  
+  // Clear existing messages
+  element.innerHTML = '';
+  
+  // Load each message
+  window.chatHistories[section].forEach(msg => {
+    const msgGroup = document.createElement('div');
+    msgGroup.className = 'chat-message-group';
+    if (msg.role === 'user') {
+      msgGroup.innerHTML = `<div class='user-msg'>${msg.content}</div>`;
+    } else {
+      msgGroup.innerHTML = `<div class='ai-msg'><span class='ai-msg-text'>${msg.content}</span></div>`;
+    }
+    element.appendChild(msgGroup);
+  });
+};
+
+// Initialize chat histories for all sections
+['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'about'].forEach(section => {
+  window.initChatHistory(section, 10);
+});
 
 // Function to toggle between Gemini models
 window.toggleGeminiModel = function(section, useGemini25) {

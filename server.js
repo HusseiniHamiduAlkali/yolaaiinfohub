@@ -71,10 +71,38 @@ const isProduction = process.env.NODE_ENV === 'production';
 // Mount /api/gemini endpoint
 app.post('/api/gemini', async (req, res) => {
   try {
-    const { model, contents } = req.body;
+    let { model, contents } = req.body;
     const API_KEY = process.env.GEMINI_API_KEY;
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
     
+    if (!API_KEY) {
+      console.error('GEMINI_API_KEY not set in environment');
+      return res.status(500).json({ error: 'API key not configured' });
+    }
+    
+    if (!model || !contents) {
+      return res.status(400).json({ error: 'Missing model or contents' });
+    }
+    
+    // Normalize model names for v1 API compatibility
+    // Don't convert between models - use what the client requests
+    // The backend just passes through the model name the frontend requests
+    let normalizedModel = model;
+    
+    // Only map obviously invalid names (like old legacy names)
+    const modelMap = {
+      'gemini-pro-vision': 'gemini-1.5-flash',
+      'gemini-pro': 'gemini-1.5-flash'
+    };
+    
+    if (modelMap[model]) {
+      normalizedModel = modelMap[model];
+      console.log(`Mapped ${model} to ${normalizedModel}`);
+    }
+    
+    // Try v1 endpoint first (more stable), fall back to v1beta
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${API_KEY}`;
+    
+    console.log(`Calling Gemini API with model: ${normalizedModel} (requested: ${model})`);
     const response = await fetch(geminiUrl, {
       method: 'POST',
       headers: {
@@ -83,12 +111,21 @@ app.post('/api/gemini', async (req, res) => {
       body: JSON.stringify({ contents })
     });
 
-  const data = await response.json();
-  console.log('Gemini API response:', JSON.stringify(data, null, 2));
-  res.json(data);
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('Gemini API error response:', JSON.stringify(data, null, 2));
+      return res.status(response.status).json({ 
+        error: data.error?.message || 'Gemini API error',
+        details: data
+      });
+    }
+    
+    console.log('Gemini API success:', data.candidates?.length || 0, 'candidates');
+    res.json(data);
   } catch (error) {
     console.error('Gemini API error:', error);
-    res.status(500).json({ error: 'Error processing Gemini API request' });
+    res.status(500).json({ error: error.message || 'Error processing Gemini API request' });
   }
 });
 

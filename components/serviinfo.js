@@ -70,7 +70,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -89,19 +89,15 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       signal: window.serviAbortController?.signal 
     });
     let data = await res.json();
-    if (data.error && window.useGemini25 && !imageData) {
-      // fallback to 1.5
-      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch('/api/gemini', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body,
-        signal: window.serviAbortController?.signal
-      });
-      data = await res.json();
+    
+    if (!res.ok) {
+      console.error('Gemini API error response:', data);
+      throw new Error(data.error?.message || 'API error');
     }
+    
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
+    console.error('Error getting Gemini answer:', err);
     return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }

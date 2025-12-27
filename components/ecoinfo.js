@@ -126,7 +126,7 @@ window.sendEcoMessage = async function(faqText = '') {
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n${historyContext}\n\nUser question: ${msg}`
     });
     
-    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     
     // Determine the server URL based on the environment
@@ -146,22 +146,6 @@ window.sendEcoMessage = async function(faqText = '') {
     });
     
     let data = await res.json();
-    
-    if (data.error && window.useGemini25 && !imageData) {
-      // fallback to 1.5
-      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(serverUrl, { 
-        method: 'POST', 
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        credentials: 'include',
-        mode: 'cors',
-        body 
-      });
-      data = await res.json();
-    }
     
     finalAnswer = (data.candidates && data.candidates[0] && data.candidates[0].content && 
                   data.candidates[0].content.parts && data.candidates[0].content.parts[0] && 
@@ -335,19 +319,13 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
     let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
     let data = await res.json();
-    if (data.error && window.useGemini25 && !imageData) {
-      // fallback to 1.5
-      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-      data = await res.json();
-    }
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
     return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";

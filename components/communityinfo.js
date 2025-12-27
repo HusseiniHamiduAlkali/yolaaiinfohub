@@ -40,7 +40,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     
     const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -248,7 +248,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
-    const modelVersion = imageData ? 'gemini-pro-vision' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
     
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
