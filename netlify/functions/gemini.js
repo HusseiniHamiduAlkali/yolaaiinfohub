@@ -10,7 +10,7 @@ const CORS_HEADERS = {
 // Rate limiting helper: Simple in-memory rate limit tracking
 const requestCounts = {};
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const MAX_REQUESTS_PER_MINUTE = 30; // Adjust based on your API quota
+const MAX_REQUESTS_PER_MINUTE = 60; // Increased for Netlify with multiple users
 
 function checkRateLimit(ip) {
   const now = Date.now();
