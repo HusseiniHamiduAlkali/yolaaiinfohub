@@ -75,7 +75,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
-      : 'https://yolaaiinfohub.netlify.app/api/gemini';
+      : '/api/gemini';
       
     let res = await fetch(serverUrl, { 
       method: 'POST', 
@@ -88,17 +88,33 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       body,
       signal: window.serviAbortController?.signal 
     });
-    let data = await res.json();
-    
+
     if (!res.ok) {
-      console.error('Gemini API error response:', data);
-      throw new Error(data.error?.message || 'API error');
+      if (res.status === 429) {
+        throw new Error('API_RATE_LIMIT');
+      } else if (res.status >= 500) {
+        throw new Error('API_SERVER_ERROR');
+      }
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    let data;
+    try {
+      data = await res.json();
+    } catch (jsonError) {
+      console.error('Failed to parse API response:', jsonError);
+      throw new Error('INVALID_JSON_RESPONSE');
+    }
+    
+    if (data.error) {
+      console.error('Gemini API error:', data.error);
+      throw new Error('API_ERROR: ' + (data.error.message || JSON.stringify(data.error)));
     }
     
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
     console.error('Error getting Gemini answer:', err);
-    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    throw err;
   }
 }
 
@@ -165,8 +181,21 @@ window.sendServiMessage = async function(faqText = '') {
     finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    if (e && e.name === 'AbortError') finalAnswer = 'USER ABORTED REQUEST';
-    else finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    const errorMsg = e?.message || 'Unknown error';
+    
+    if (e && e.name === 'AbortError') {
+      finalAnswer = 'USER ABORTED REQUEST';
+    } else if (errorMsg.includes('API_RATE_LIMIT')) {
+      finalAnswer = "⚠️ The AI service is currently receiving too many requests. Please wait a moment and try again.";
+    } else if (errorMsg.includes('API_SERVER_ERROR')) {
+      finalAnswer = "⚠️ The AI service is temporarily unavailable. Please try again in a few moments.";
+    } else if (errorMsg.includes('API_ERROR')) {
+      finalAnswer = `⚠️ API Error: ${errorMsg.replace('API_ERROR: ', '')}`;
+    } else if (errorMsg.includes('INVALID_JSON_RESPONSE')) {
+      finalAnswer = "⚠️ Received an invalid response from the server. Please try again.";
+    } else {
+      finalAnswer = "⚠️ Sorry, I could not access local information or the AI at this time. Please check your internet connection.";
+    }
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);

@@ -94,31 +94,47 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
 
     if (!res.ok) {
+      // Handle specific HTTP errors
+      if (res.status === 429) {
+        throw new Error('API_RATE_LIMIT');
+      } else if (res.status === 400) {
+        throw new Error('API_BAD_REQUEST');
+      } else if (res.status >= 500) {
+        throw new Error('API_SERVER_ERROR');
+      }
       throw new Error(`HTTP error! status: ${res.status}`);
     }
 
-    let data = await res.json();
-    
-    // Check for API errors
+    // Parse JSON safely
+    let data;
+    try {
+      data = await res.json();
+    } catch (jsonError) {
+      console.error('Failed to parse API response as JSON:', jsonError);
+      throw new Error('INVALID_JSON_RESPONSE');
+    }
+
+    // Check for API errors in the response
     if (data.error) {
       console.error('Gemini API returned error:', data.error);
-      throw new Error(data.error.message || 'API error: ' + JSON.stringify(data.error));
+      const errorMsg = typeof data.error === 'string' ? data.error : (data.error.message || 'Unknown error');
+      throw new Error('API_ERROR: ' + errorMsg);
     }
     
     // Check for expected response structure
     if (!data.candidates || data.candidates.length === 0) {
       console.error('No candidates in response:', JSON.stringify(data));
-      throw new Error('No response from AI (empty candidates)');
+      throw new Error('EMPTY_RESPONSE');
     }
     
     if (!data.candidates[0].content?.parts?.[0]?.text) {
       console.error('Invalid response structure:', JSON.stringify(data.candidates[0]));
-      throw new Error('Invalid response format from API');
+      throw new Error('INVALID_RESPONSE_FORMAT');
     }
     
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
-    console.error(`Error with ${modelVersion || 'unknown modelVersion'}:`, error);
+    console.error(`Error with ${modelVersion || 'unknown model'}:`, error);
     throw error;
   }
 }
@@ -210,14 +226,27 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
       finalAnswer = "USER ABORTED REQUEST";
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
-      // Provide helpful error message to user
+      // Provide helpful error messages based on error type
       const errorMsg = e.message || 'Unknown error';
-      if (errorMsg.includes('API key')) {
+      
+      if (errorMsg.includes('API_RATE_LIMIT')) {
+        finalAnswer = "⚠️ The AI service is currently receiving too many requests. Please wait a moment and try again.";
+      } else if (errorMsg.includes('API_BAD_REQUEST')) {
+        finalAnswer = "⚠️ Your request format is incorrect. Please try rephrasing your question.";
+      } else if (errorMsg.includes('API_SERVER_ERROR')) {
+        finalAnswer = "⚠️ The AI service is temporarily unavailable. Please try again in a few moments.";
+      } else if (errorMsg.includes('API_ERROR')) {
+        finalAnswer = `⚠️ API Error: ${errorMsg.replace('API_ERROR: ', '')}. Please check your input and try again.`;
+      } else if (errorMsg.includes('INVALID_JSON_RESPONSE')) {
+        finalAnswer = "⚠️ Received an invalid response from the server. This might be a temporary issue. Please try again.";
+      } else if (errorMsg.includes('EMPTY_RESPONSE')) {
+        finalAnswer = "⚠️ The AI returned an empty response. This might be due to content policy or API limits. Please try rephrasing.";
+      } else if (errorMsg.includes('INVALID_RESPONSE_FORMAT')) {
+        finalAnswer = "⚠️ The API response format was unexpected. Please try again.";
+      } else if (errorMsg.includes('API key')) {
         finalAnswer = "⚠️ API key is not configured. Please check your environment setup.";
-      } else if (errorMsg.includes('empty candidates') || errorMsg.includes('No response')) {
-        finalAnswer = "⚠️ The AI returned an empty response. This might be a content policy violation or API issue. Please try rephrasing your question.";
-      } else if (errorMsg.includes('Invalid response format')) {
-        finalAnswer = "⚠️ Received an unexpected response format from the API. Please try again.";
+      } else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
+        finalAnswer = "⚠️ Network error. Please check your internet connection and try again.";
       } else {
         finalAnswer = `⚠️ Error: ${errorMsg}`;
       }
