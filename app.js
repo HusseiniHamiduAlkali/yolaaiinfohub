@@ -118,15 +118,21 @@ async function initializeApp() {
     const response = await fetch(`${API_BASE}/api/me`, {
       credentials: 'include'
     });
+    
     if (response.ok) {
-      const data = await response.json();
-      if (data.loggedIn) {
-        window.updateAuthUI({
-          username: data.username,
-          name: data.name,
-          email: data.email
-        });
-      } else {
+      try {
+        const data = await response.json();
+        if (data && data.loggedIn) {
+          window.updateAuthUI({
+            username: data.username,
+            name: data.name,
+            email: data.email
+          });
+        } else {
+          window.updateAuthUI(null);
+        }
+      } catch (jsonError) {
+        console.error('Failed to parse auth response:', jsonError);
         window.updateAuthUI(null);
       }
     } else {
