@@ -7,26 +7,40 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json'
 };
 
-// Rate limiting helper: Simple in-memory rate limit tracking
-const requestCounts = {};
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const MAX_REQUESTS_PER_MINUTE = 60; // Increased for Netlify with multiple users
+// Simple request deduplication cache
+// Cache responses for identical requests for 30 seconds to avoid duplicate API calls
+const responseCache = new Map();
+const CACHE_TTL = 30000; // 30 seconds
 
-function checkRateLimit(ip) {
-  const now = Date.now();
-  if (!requestCounts[ip]) {
-    requestCounts[ip] = [];
+function getCacheKey(model, contents) {
+  // Create a simple hash of the request
+  const str = JSON.stringify({ model, contents });
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
   }
-  
-  // Clean old requests outside the window
-  requestCounts[ip] = requestCounts[ip].filter(time => now - time < RATE_LIMIT_WINDOW);
-  
-  if (requestCounts[ip].length >= MAX_REQUESTS_PER_MINUTE) {
-    return false; // Rate limited
+  return hash.toString(36);
+}
+
+function getCachedResponse(key) {
+  const cached = responseCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
   }
-  
-  requestCounts[ip].push(now);
-  return true; // OK
+  // Clean up expired cache
+  if (cached) {
+    responseCache.delete(key);
+  }
+  return null;
+}
+
+function setCacheResponse(key, data) {
+  responseCache.set(key, {
+    data,
+    timestamp: Date.now()
+  });
 }
 
 exports.handler = async function(event, context) {
@@ -49,21 +63,6 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    // Get client IP for rate limiting
-    const clientIp = event.headers['x-forwarded-for']?.split(',')[0] || 'unknown';
-    
-    // Check rate limit
-    if (!checkRateLimit(clientIp)) {
-      return {
-        statusCode: 429,
-        headers: CORS_HEADERS,
-        body: JSON.stringify({ 
-          error: 'Rate limit exceeded. Please wait before making another request.',
-          retryAfter: 60
-        })
-      };
-    }
-
     // Parse request body
     let model, contents;
     try {
@@ -92,6 +91,18 @@ exports.handler = async function(event, context) {
         statusCode: 400,
         headers: CORS_HEADERS,
         body: JSON.stringify({ error: 'Invalid model name' })
+      };
+    }
+
+    // Check cache first - avoid duplicate API calls
+    const cacheKey = getCacheKey(model, contents);
+    const cachedResponse = getCachedResponse(cacheKey);
+    if (cachedResponse) {
+      console.log('Returning cached Gemini response for key:', cacheKey);
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify(cachedResponse)
       };
     }
 
@@ -148,6 +159,9 @@ exports.handler = async function(event, context) {
         body: JSON.stringify({ error: errorMessage })
       };
     }
+
+    // Cache successful response to avoid duplicate API calls
+    setCacheResponse(cacheKey, data);
 
     return {
       statusCode: 200,
