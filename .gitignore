@@ -18,6 +18,8 @@
 .env.test.local
 .env.production.local
 .env.production
+.env.example
+
 
 # Logs
 npm-debug.log*
@@ -30,3 +32,7 @@ yarn-error.log*
 # IDE
 .vscode
 .idea
+
+*.md
+!README.md
+.YOUR_ENVIRONMENT_VARIABLES.md
