@@ -42,8 +42,15 @@ window.sendEcoMessage = async function(faqText = '') {
   const stopBtn = document.querySelector('.stop-button');
 
   // Get message from input or FAQ
+  // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
+  let imageData = null;
+  if (preview) {
+    const img = preview.querySelector('img');
+    if (img) imageData = img.src;
+    // You can add similar logic for audio/video if needed
+  }
   if (!msg && !attach) return;
 
   // Ensure in-memory history exists for eco
@@ -104,11 +111,9 @@ window.sendEcoMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
-    
-  // Get chat history context from in-memory helper
-  const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('eco', 5) : [];
-  const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
-    
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('eco', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
     const contents = {
       parts: []
     };
@@ -120,20 +125,16 @@ window.sendEcoMessage = async function(faqText = '') {
         }
       });
     }
-    
     const promptGuide = localStorage.getItem('eco_ai_prompt') || ECO_AI_PROMPT;
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n${historyContext}\n\nUser question: ${msg}`
     });
-    
     const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    
     // Determine the server URL based on the environment
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
+      ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : 'https://yolainfohub.netlify.app/api/gemini';
-      
     let res = await fetch(serverUrl, { 
       method: 'POST', 
       headers: { 
@@ -144,17 +145,14 @@ window.sendEcoMessage = async function(faqText = '') {
       mode: 'cors',
       body 
     });
-    
     let data = await res.json();
-    
     finalAnswer = (data.candidates && data.candidates[0] && data.candidates[0].content && 
                   data.candidates[0].content.parts && data.candidates[0].content.parts[0] && 
                   data.candidates[0].content.parts[0].text) 
                   ? data.candidates[0].content.parts[0].text 
                   : "Sorry, I couldn't get a response from the AI.";
-
-  // Add AI response to in-memory history
-  window.addToChatHistory && window.addToChatHistory('eco', 'assistant', finalAnswer);
+    // Add AI response to in-memory history
+    window.addToChatHistory && window.addToChatHistory('eco', 'assistant', finalAnswer);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
     if (e && e.name === 'AbortError') finalAnswer = 'USER ABORTED REQUEST';
@@ -182,7 +180,7 @@ window.stopEcoResponse = function() {
   const stopBtn = document.querySelector('.stop-button');
   if (sendBtn) {
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.textContent = 'Send';
     sendBtn.disabled = false;
   }
   if (stopBtn) stopBtn.style.display = 'none';
@@ -370,7 +368,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     if (sendBtn) {
       sendBtn.disabled = false;
       sendBtn.classList.remove('sending');
-      sendBtn.querySelector('.send-text').textContent = 'Send';
+      sendBtn.textContent = 'Send';
     }
     if (stopBtn) stopBtn.style.display = 'none';
     window.ecoAbortController = null;

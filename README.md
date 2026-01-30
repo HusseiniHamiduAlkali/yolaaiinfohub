@@ -14,6 +14,12 @@ This project is a responsive web application built with HTML, CSS, and JavaScrip
 2. Add your Gemini API key and Google Maps API key in the placeholders in the code.
 3. Open `index.html` to start the app.
 
+Tip: To avoid external CDN/CORS/MIME issues with TomTom's Web SDK, install it locally so the backend can serve it:
+
+   npm install @tomtom-international/web-sdk-maps
+
+If the package is present, the server will serve the SDK at `/vendor/tomtom` and the app will prefer that local copy before trying CDN sources.
+
 ## Features
 - Responsive design for PC, tablet, and mobile
 - Navbar/hamburger menu

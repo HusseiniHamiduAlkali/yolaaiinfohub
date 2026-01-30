@@ -55,6 +55,7 @@ function renderNavbar() {
           </div>
           ${authButtonsHTML}
         </div>
+        <div class="navbar-links-container">
         <ul class="navbar-links">
           <li><button onclick="window.loadSection('home')">Home</button></li>
           <li><button onclick="window.loadSection('eduinfo')">EduInfo</button></li>
@@ -66,6 +67,7 @@ function renderNavbar() {
           <li><button onclick="window.loadSection('serviinfo')">ServiInfo</button></li>
           <li><button onclick="window.loadSection('aboutinfo')">About</button></li>
         </ul>
+        </div>
       </div>
     </div>
   `;

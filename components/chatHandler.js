@@ -319,7 +319,7 @@ window.sendMessage = async function(section, faqText = '') {
   if (sendBtn) {
     sendBtn.disabled = true;
     sendBtn.classList.add('sending');
-    sendBtn.querySelector('.send-text').textContent = '';
+    sendBtn.textContent = '';
   }
   if (stopBtn) stopBtn.style.display = 'inline-flex';
 
@@ -352,7 +352,7 @@ window.sendMessage = async function(section, faqText = '') {
   if (sendBtn) {
     sendBtn.disabled = false;
     sendBtn.classList.remove('sending');
-    sendBtn.querySelector('.send-text').textContent = 'Send';
+    sendBtn.textContent = 'Send';
   }
   if (stopBtn) stopBtn.style.display = 'none';
   window[`${section}AbortController`] = null;

@@ -1,3 +1,34 @@
+// --- SHARED STOP BUTTON ABORT LOGIC ---
+/**
+ * Shared handler for Stop button abort logic in all AI chat sections.
+ * @param {Object} opts - Options object
+ * @param {AbortController} opts.abortController - The AbortController instance to abort
+ * @param {string} opts.section - Section name (e.g., 'home', 'edu', etc.)
+ * @param {string} [opts.chatContainerId] - ID of the chat messages container (e.g., 'home-chat-messages')
+ * @param {string} [opts.stopBtnSelector] - Selector for the Stop button (e.g., '.stop-btn' or '.stop-button')
+ * @param {string} [opts.abortMsg] - Custom abort message (optional)
+ */
+window.handleStopButtonAbort = function({ abortController, section, chatContainerId, stopBtnSelector, abortMsg }) {
+  if (abortController) {
+    abortController.abort();
+  }
+  // Hide Stop button if selector provided
+  if (stopBtnSelector) {
+    const stopBtn = document.querySelector(stopBtnSelector);
+    if (stopBtn) stopBtn.style.display = 'none';
+  }
+  // Show user-aborted message in chat
+  if (chatContainerId) {
+    const chatMessages = document.getElementById(chatContainerId);
+    if (chatMessages) {
+      const abortMessage = document.createElement('div');
+      abortMessage.className = 'chat-message';
+      abortMessage.innerHTML = `<div class="error-message">${abortMsg || 'Request aborted by user'}</div>`;
+      chatMessages.appendChild(abortMessage);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  }
+};
 // commonAI.js
 // Shared utility functions for AI sections (Home, Edu, Agro, etc.)
 
@@ -46,14 +77,13 @@ window.getChatHistory = function(section) {
   return window.chatHistories[section];
 };
 
+
 // Load chat history to DOM
 window.loadChatHistoryToDOM = function(section, elementId) {
   const element = document.getElementById(elementId);
   if (!element || !window.chatHistories[section]) return;
-  
   // Clear existing messages
   element.innerHTML = '';
-  
   // Load each message
   window.chatHistories[section].forEach(msg => {
     const msgGroup = document.createElement('div');
@@ -64,6 +94,16 @@ window.loadChatHistoryToDOM = function(section, elementId) {
       msgGroup.innerHTML = `<div class='ai-msg'><span class='ai-msg-text'>${msg.content}</span></div>`;
     }
     element.appendChild(msgGroup);
+  });
+};
+
+// Clear all chat histories (for full app refresh)
+window.clearAllChatHistories = function() {
+  window.chatHistories = {};
+  // Optionally clear global variables for backward compatibility
+  ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'about'].forEach(section => {
+    const globalName = section + 'ChatHistory';
+    window[globalName] = [];
   });
 };
 
@@ -140,7 +180,279 @@ window.speakText = window.speakText || function(text) {
   speechSynthesis.speak(utterance);
 };
 
+
+const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// --- IMAGE CAPTURE ---
+window.captureImage = function(section) {
+    if (isMobile()) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.setAttribute('capture', 'environment');
+        input.onchange = (e) => window.uploadFile(e, section);
+        input.click();
+    } else {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.innerHTML = `
+            <div class="camera-modal">
+                <h3 style="margin-top:0">Take a Photo</h3>
+                <video id="camera-feed" autoplay playsinline></video>
+                <div class="controls">
+                    <button id="snap-btn">Capture</button>
+                    <button id="close-camera">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const video = document.getElementById('camera-feed');
+        let stream;
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(s => {
+                stream = s;
+                video.srcObject = stream;
+            })
+            .catch(() => {
+                alert("Camera access denied.");
+                overlay.remove();
+            });
+
+        document.getElementById('snap-btn').onclick = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+           
+            canvas.toBlob((blob) => {
+                const file = new File([blob], "photo.png", { type: "image/png" });
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                window.uploadFile({ target: { files: dt.files } }, section);
+            }, 'image/png');
+
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.remove();
+        };
+
+        document.getElementById('close-camera').onclick = () => {
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.remove();
+        };
+    }
+};
+
+// --- AUDIO RECORDING ---
+window.recordAudio = function(section) {
+    if (isMobile()) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'audio/*';
+        input.setAttribute('capture', 'capture');
+        input.onchange = (e) => window.uploadFile(e, section);
+        input.click();
+    } else {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.innerHTML = `
+            <div class="audio-modal">
+                <div class="recording-status">
+                    <div class="pulse"></div>
+                    <span id="record-timer">00:00</span>
+                </div>
+                <p class="recording-audio">Recording audio...</p>
+                <div class="controls">
+                    <button id="stop-recording">Stop & Save</button>
+                    <button id="close-audio">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let stream;
+        let seconds = 0;
+        let timerInterval;
+
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(s => {
+                stream = s;
+                mediaRecorder = new MediaRecorder(stream);
+               
+                // Start Timer
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                    const secs = (seconds % 60).toString().padStart(2, '0');
+                    document.getElementById('record-timer').innerText = `${mins}:${secs}`;
+                }, 1000);
+
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    clearInterval(timerInterval);
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const file = new File([audioBlob], "voice.webm", { type: "audio/webm" });
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    window.uploadFile({ target: { files: dt.files } }, section);
+                    if (stream) stream.getTracks().forEach(t => t.stop());
+                    overlay.remove();
+                };
+                mediaRecorder.start();
+            })
+            .catch(() => {
+                alert("Microphone access denied.");
+                overlay.remove();
+            });
+
+        document.getElementById('stop-recording').onclick = () => {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        };
+        document.getElementById('close-audio').onclick = () => {
+            clearInterval(timerInterval);
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.remove();
+        };
+    }
+};
+
+// --- FILE UPLOAD & PREVIEW ---
+window.uploadFile = function(e, section) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const preview = document.getElementById(section + '-chat-preview');
+        let html = '';
+        if (file.type.startsWith('image/')) {
+            html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Capture' />`;
+        } else if (file.type.startsWith('audio/')) {
+            html = `<audio src='${ev.target.result}' controls style='max-width:160px;margin:4px 0;'></audio>`;
+        } else {
+            html = `<div style="padding:5px; background:#f1f1f1; border-radius:5px; font-size:11px;">📄 ${file.name}</div>`;
+        }
+        preview.innerHTML = html;
+        // Remove any lingering remove-btn after sending
+        const removeBtn = preview.querySelector('.remove-btn');
+        if (removeBtn) removeBtn.remove();
+    };
+    reader.readAsDataURL(file);
+};
+
+
+
+window.uploadFile = function(e, section) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const preview = document.getElementById(section + '-chat-preview');
+       
+        // Create a container for the preview and the remove button
+        const container = document.createElement('div');
+        container.className = 'preview-container';
+
+        let mediaHtml = '';
+        if (file.type.startsWith('image/')) {
+            mediaHtml = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;' alt='Preview' />`;
+        } else if (file.type.startsWith('audio/')) {
+            mediaHtml = `<audio src='${ev.target.result}' controls style='max-width:160px; border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;' alt='Preview'></audio>`;
+        } else {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:11px;">📄 ${file.name}</div>`;
+        }
+
+        // Add the media and the "X" button to the container
+        container.innerHTML = `
+            ${mediaHtml}
+            <button class="remove-btn" onclick="this.parentElement.remove()" title="Remove">x</button>
+        `;
+
+        // Clear previous preview and add the new one
+        preview.innerHTML = '';
+        preview.appendChild(container);
+    };
+   
+    reader.readAsDataURL(file);
+};
+
+
+
+
+/*//Wednesday, January 7, 2026 1:39 PM
+// REPLACEMENT: Native Image Capture (Camera)
+window.captureImage = function(section) {
+  // 1. Create a hidden file input dynamically
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.capture = 'environment'; // 'environment' = rear camera, 'user' = selfie
+  input.style.display = 'none';
+
+  // 2. Listen for the user completing the action
+  input.onchange = function(e) {
+    // Pass the result directly to your existing uploadFile function
+    window.uploadFile(e, section);
+  };
+
+  // 3. Trigger the native OS interface
+  document.body.appendChild(input); // Required by some browsers
+  input.click();
+  document.body.removeChild(input); // Clean up
+};
+
+// REPLACEMENT: Native Audio Recording
+window.recordAudio = function(section) {
+  // 1. Create a hidden file input dynamically
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'audio/*';
+  input.capture = true; // Boolean true triggers the default voice recorder
+  input.style.display = 'none';
+
+  // 2. Listen for the user completing the action
+  input.onchange = function(e) {
+    // Pass the result directly to your existing uploadFile function
+    window.uploadFile(e, section);
+  };
+
+  // 3. Trigger the native OS interface
+  document.body.appendChild(input);
+  input.click();
+  document.body.removeChild(input);
+};
+
+// KEEP YOUR EXISTING UPLOAD FUNCTION
+// (No changes needed here, included for context)
+window.uploadFile = function(e, section) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const preview = document.getElementById(section + '-chat-preview');
+    let html = '';
+    if (file.type.startsWith('image/')) {
+      html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Uploaded Image' />`;
+    } else if (file.type.startsWith('audio/')) {
+      html = `<audio src='${ev.target.result}' controls style='max-width:120px;vertical-align:middle;margin:4px 0;'></audio>`;
+    } else if (file.type.startsWith('video/')) {
+      html = `<video src='${ev.target.result}' controls style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;'></video>`;
+    } else if (file.type === 'application/pdf') {
+      html = `<iframe src='${ev.target.result}' style='width:120px;height:80px;border-radius:8px;margin:4px 0;'></iframe><p style='font-size:10px;margin:0;'>${file.name}</p>`;
+    } else {
+      html = `<p style='font-size:12px;margin:4px 0;'>${file.name}</p>`;
+    }
+    preview.innerHTML = html;
+  };
+  reader.readAsDataURL(file);
+};
+*/
+
 // Common image capture function
+/*
 window.captureImage = function(section) {
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -262,6 +574,7 @@ window.uploadFile = function(e, section) {
   };
   reader.readAsDataURL(file);
 };
+*/
 
 // Common function to format AI responses
 function formatAIResponse(text) {

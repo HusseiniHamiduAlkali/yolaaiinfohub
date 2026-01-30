@@ -59,6 +59,15 @@ app.use(cors(corsOptions));
 // Then other middleware
 app.use(express.json());
 
+// Serve the map API key securely for frontend
+app.get('/api/maps-key', (req, res) => {
+  const apiKey = process.env.MAPS_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'API key not set' });
+  }
+  res.status(200).json({ apiKey });
+});
+
 // Security middleware with appropriate settings for CORS
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -495,6 +504,17 @@ app.get('/api/me', async (req, res) => {
 });
 
 // Mount the Gemini API router
+
+// Serve local TomTom SDK from node_modules if available to avoid external CDN issues
+const path = require('path');
+const fs = require('fs');
+const tomtomDist = path.join(__dirname, 'node_modules', '@tomtom-international', 'web-sdk-maps', 'dist');
+if (fs.existsSync(tomtomDist)) {
+  app.use('/vendor/tomtom', express.static(tomtomDist));
+  console.log('Serving TomTom SDK from local node_modules at /vendor/tomtom');
+} else {
+  console.warn('TomTom SDK not found in node_modules. To enable a local copy, run: npm install @tomtom-international/web-sdk-maps');
+}
 
 app.listen(4000, () => console.log('Server running on http://localhost:4000'));
 

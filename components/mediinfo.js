@@ -57,17 +57,16 @@ window.sendMediMessage = async function(faqText = '') {
   const preview = document.getElementById('medi-chat-preview');
   const sendBtn = document.querySelector('.send-button');
   const stopBtn = document.querySelector('.stop-button');
-  
-  // Extract image data if present in preview
-  let imageData = null;
-  const previewImg = preview.querySelector('img');
-  if (previewImg) {
-    imageData = previewImg.src;
-    msg = (msg || '') + "\nPlease analyze this image and provide relevant medical information, identify health-related issues, or suggest healthcare practices.";
-  }
-  
+
+  // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
+  let imageData = null;
+  if (preview) {
+    const img = preview.querySelector('img');
+    if (img) imageData = img.src;
+    // You can add similar logic for audio/video if needed
+  }
   if (!msg && !attach) return;
 
   if (window.mediAbortController) {
@@ -113,24 +112,21 @@ window.sendMediMessage = async function(faqText = '') {
   preview.innerHTML = '';
   if (!faqText) input.value = '';
 
-  // Load existing chat history
-  let chatHistory = JSON.parse(localStorage.getItem('medi_chat_history') || '[]');
+  // Load existing chat history using commonAI.js
+  window.initChatHistory && window.initChatHistory('medi', 10);
+  let chatHistory = window.getChatHistory ? window.getChatHistory('medi') : [];
 
   let finalAnswer = "";
   try {
     const localData = await fetch('Data/MediInfo/mediinfo.txt').then(r => r.text());
-    
     // Include chat history in the context
     const historyContext = chatHistory.length > 0 
-        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
+        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.role === 'user' ? h.content : ''}\nAI: ${h.role === 'assistant' ? h.content : ''}`).filter(Boolean).join('\n\n')
         : "";
-        
     finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
-    
-    // Store in chat history (keep last 5 messages)
-    chatHistory.push({ user: msg, ai: finalAnswer });
-    if (chatHistory.length > 5) chatHistory = chatHistory.slice(-5);
-    localStorage.setItem('medi_chat_history', JSON.stringify(chatHistory));
+    // Store in chat history (keep last 10 messages)
+    window.addToChatHistory && window.addToChatHistory('medi', 'user', msg);
+    window.addToChatHistory && window.addToChatHistory('medi', 'assistant', finalAnswer);
   } catch (e) {
     if (e && e.name === 'AbortError') {
         finalAnswer = "USER ABORTED REQUEST";

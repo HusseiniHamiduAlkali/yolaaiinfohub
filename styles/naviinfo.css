@@ -1,0 +1,88 @@
+/* Navigation Info Section */
+
+.navi-map-styled {
+  width: 100%;
+  height: 500px;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: #666;
+  border: 2px solid #e0e0e0;
+}
+
+#navi-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+/* Leaflet map controls styling */
+.leaflet-control {
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-control-zoom {
+  border: 2px solid #ccc;
+}
+
+.leaflet-control-zoom a {
+  background-color: white;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 26px;
+  text-decoration: none;
+  display: block;
+  text-align: center;
+  width: 26px;
+  height: 26px;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: #f4f4f4;
+}
+
+.leaflet-control-zoom a:first-child {
+  border-radius: 4px 4px 0 0;
+}
+
+.leaflet-control-zoom a:last-child {
+  border-radius: 0 0 4px 4px;
+  border-bottom: none;
+}
+
+/* Marker popups */
+.leaflet-popup-content-wrapper {
+  background-color: white;
+  color: #333;
+  border-radius: 4px;
+}
+
+.leaflet-popup-tip {
+  background-color: white;
+}
+
+/* Info section styling */
+/*
+.section-extra {
+  margin: 40px 0;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.section-extra h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+*/

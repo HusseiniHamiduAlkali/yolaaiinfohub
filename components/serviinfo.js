@@ -125,16 +125,15 @@ window.sendServiMessage = async function(faqText = '') {
   const sendBtn = document.querySelector('.send-button');
   const stopBtn = document.querySelector('.stop-button');
 
-  // Extract image data if present in preview
-  let imageData = null;
-  const previewImg = preview.querySelector('img');
-  if (previewImg) {
-    imageData = previewImg.src;
-    msg = (msg || '') + "\nPlease analyze this image and provide relevant service provider information, identify professional services needed, or suggest relevant service providers.";
-  }
-  
+  // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
+  let imageData = null;
+  if (preview) {
+    const img = preview.querySelector('img');
+    if (img) imageData = img.src;
+    // You can add similar logic for audio/video if needed
+  }
   if (!msg && !attach) return;
 
   if (window.serviAbortController) {
@@ -169,7 +168,7 @@ window.sendServiMessage = async function(faqText = '') {
   msgGroup.className = 'chat-message-group';
   msgGroup.innerHTML = `
     <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
+    <div class='ai-msg'><span class='ai-msg-text'>Servi AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
   preview.innerHTML = '';
@@ -260,13 +259,12 @@ window.sendServiMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const localData = await fetch('Data/ServiInfo/serviinfo.txt').then(r => r.text());
-
-  // Get history context from in-memory pairs
-  const pairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('servi', 5) : [];
-  const historyContext = pairs.length > 0 ? '\n\nRecent chat history:\n' + pairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
-  finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY);
-  // Append assistant reply to in-memory history
-  window.addToChatHistory && window.addToChatHistory('servi', 'assistant', finalAnswer);
+    // Get history context from in-memory pairs
+    const pairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('servi', 5) : [];
+    const historyContext = pairs.length > 0 ? '\n\nRecent chat history:\n' + pairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+    // Append assistant reply to in-memory history
+    window.addToChatHistory && window.addToChatHistory('servi', 'assistant', finalAnswer);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
     finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";

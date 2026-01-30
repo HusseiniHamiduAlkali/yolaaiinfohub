@@ -83,18 +83,15 @@ window.sendAgroMessage = async function(faqText = '') {
   const sendBtn = document.querySelector('.send-button');
   const stopBtn = document.querySelector('.stop-button');
 
-  // Extract image data if present in preview
-  let imageData = null;
-  if (preview) {
-    const previewImg = preview.querySelector('img');
-    if (previewImg) {
-      imageData = previewImg.src;
-      msg = (msg || '') + "\nPlease analyze this image and provide relevant agricultural information, identify crops, farming methods, or suggest similar agricultural practices.";
-    }
-  }
-  
+  // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
+  let imageData = null;
+  if (preview) {
+    const img = preview.querySelector('img');
+    if (img) imageData = img.src;
+    // You can add similar logic for audio/video if needed
+  }
   if (!msg && !attach) return;
 
   if (window.agroAbortController) {
@@ -131,8 +128,9 @@ window.sendAgroMessage = async function(faqText = '') {
   preview.innerHTML = '';
   if (!faqText) input.value = '';
 
-  // Load existing chat history
-  let chatHistory = JSON.parse(localStorage.getItem('agro_chat_history') || '[]');
+  // Load existing chat history using commonAI.js
+  window.initChatHistory && window.initChatHistory('agro', 10);
+  let chatHistory = window.getChatHistory ? window.getChatHistory('agro') : [];
 
   let finalAnswer = "";
   try {
@@ -140,16 +138,13 @@ window.sendAgroMessage = async function(faqText = '') {
     
     // Include chat history in the context
     const historyContext = chatHistory.length > 0 
-        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
+        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.role === 'user' ? h.content : ''}\nAI: ${h.role === 'assistant' ? h.content : ''}`).filter(Boolean).join('\n\n')
         : "";
-    
-    try {    
+    try {
       finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
-      
-      // Store in chat history (keep last 5 messages)
-      chatHistory.push({ user: msg, ai: finalAnswer });
-      if (chatHistory.length > 5) chatHistory = chatHistory.slice(-5);
-      localStorage.setItem('agro_chat_history', JSON.stringify(chatHistory));
+      // Store in chat history (keep last 10 messages)
+      window.addToChatHistory && window.addToChatHistory('agro', 'user', msg);
+      window.addToChatHistory && window.addToChatHistory('agro', 'assistant', finalAnswer);
     } catch (e) {
       if (e.name === 'AbortError') {
         finalAnswer = "Response stopped by user.";

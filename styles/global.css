@@ -441,6 +441,16 @@ Wednesday, July 30, 2025
 .input-options button:hover, .file-upload-btn:hover {
   background: #e2e8f0;
 }
+.chat-preview {
+  height: 37px;
+  width: 120px;
+  overflow: hidden;
+}
+.chat-preview:empty {
+  display: none;
+}
+
+
 /*
 #video-modal {
 
@@ -536,7 +546,7 @@ main {
 }
 
 .info-section h2 {
-  padding-top: 35px;
+  padding-top: 30px;
 }
 
 .info-section h2, p {
@@ -652,6 +662,156 @@ main {
   height: 60%;
 }
 
+
+
+
+
+
+
+/* Dark semi-transparent background */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px); /* Modern blur effect */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    font-family: sans-serif;
+}
+
+/* Modal Styling */
+.camera-modal, .audio-modal {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 650px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    height: inherit;
+}
+
+#camera-feed {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    background: #2c3e50;
+    margin-bottom: 15px;
+    transform: scaleX(-1); /* Mirror view for natural feel */
+}
+
+/* Button UI */
+.controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+#snap-btn, #stop-recording {
+    background: #2d3748;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+/*
+#snap-btn:hover, #stop-recording:hover {
+    background: #c0392b;
+}*/
+#snap-btn:hover, #stop-recording:hover {
+  background: #a6a9ad;
+  color: black;
+}
+#close-camera:hover, #close-audio:hover {
+    background: #c0392b;
+}
+
+#close-camera, #close-audio {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Recording Pulse Animation */
+.recording-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 50px;
+    margin-top: 50px;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.recording-audio {
+  padding-bottom: 110px !important;
+}
+
+.pulse {
+    width: 12px;
+    height: 12px;
+    background: #e74c3c;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+
+.preview-container {
+    position: relative;
+  /*  display: inline-block; */
+    margin:  0  !important;
+    width: 100%;
+    height: 100%;
+}
+
+.remove-btn {
+    padding: 0!important;
+    position: absolute;
+    top: -38px;
+    right: -104px;
+    background: #ff4757 !important;
+    color: white;
+    border: none;
+    border-radius: 50% !important;
+    width: 17px;
+    height: 22px;
+    min-width: auto !important;
+    font-size:small !important; 
+    font-weight: normal !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.remove-btn:hover {
+    background: #ff6b81 !important;
+}
+
+
+
+
+
+
 /* Responsive Layouts */
 @media screen and (max-width: 1200px) {
   .section4-container {
@@ -730,6 +890,22 @@ main {
     margin-left: auto;
     margin-right: auto;
   }
+
+  .login-suggestion {
+    margin-right: 0 !important;
+    margin-left: 15px;
+    width: 262px;
+  }
+  .auth-btn {
+    padding: 4px 5px;
+  }
+  /*
+  .navbar-links {
+    justify-content: space-around;
+  } */
+  .navbar-links-container {
+    margin-top: 20px;
+  }
 }
 
 @media screen and (max-width: 700px) {
@@ -796,6 +972,9 @@ main {
     margin-right: auto;
     margin-top: auto;
   }
+  .chat-input-area button {
+    padding: 0.5rem 0.2rem;
+  }
   .faq-list ul {
     columns: 1 !important;
     display: block;
@@ -831,6 +1010,18 @@ main {
     font-size: 0.7rem;
     font-weight: bold;
     width: max-content;
+  }
+
+  .mauth-placeholder .img2 {
+    display: none;
+  }
+  .chat-preview {
+    width : 150px;
+    height: 37px;
+  }
+  .remove-btn {
+    top: -38px;
+    right: -33px;
   }
 }
 .auth-page-form input[type="email"] {
@@ -929,9 +1120,4 @@ main {
   font-size: 1rem;
   min-height: 1.2em;
   text-align: center;
-}
-@media (max-width: 700px)  {
-  .mauth-placeholder .img2 {
-    display: none;
-  }
 }
