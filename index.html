@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="styles/auth.css">
   <!-- <link rel="stylesheet" href="styles/mapsinfo.css"/> -->
   <link rel="stylesheet" href="styles/ecoAI.css">
+  <link rel="stylesheet" href="styles/tomtom-controls-fallback.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -29,22 +30,26 @@
   </div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
-  <script src="components/navbar.js"></script>
-  <script src="components/auth.js"></script>
-  <script src="components/authpages.js"></script>
-  <script src="components/home.js"></script>
-  <script src="components/eduinfo.js"></script>
-  <script src="components/agroinfo.js"></script>
-  <script src="components/mediinfo.js"></script>
-  <script src="components/naviinfo.js"></script>
-  <script src="components/ecoinfo.js"></script>
-  <script src="components/serviinfo.js"></script>
-  <script src="components/communityinfo.js"></script>
-  <script src="components/aboutinfo.js"></script>
-  <script src="components/ecoClassifier.js"></script>
-  <script src="components/ecoAI.js"></script>
-  <script src="components/details-navigation.js"></script>
-  <script src="app.js"></script>
+  <!-- TomTom Maps SDK -->
+  <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.css">
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js"></script>
+  <script src="components/tomtomMap.js"></script>
+  <script src="components/navbar.js?v=20260220001"></script>
+  <script src="components/auth.js?v=20260220002"></script>
+  <script src="components/authpages.js?v=20260220001"></script>
+  <script src="components/home.js?v=20260220001"></script>
+  <script src="components/eduinfo.js?v=20260220001"></script>
+  <script src="components/agroinfo.js?v=20260220001"></script>
+  <script src="components/mediinfo.js?v=20260220001"></script>
+  <script src="components/naviinfo.js?v=20260220001"></script>
+  <script src="components/ecoinfo.js?v=20260220001"></script>
+  <script src="components/serviinfo.js?v=20260220001"></script>
+  <script src="components/communityinfo.js?v=20260220001"></script>
+  <script src="components/aboutinfo.js?v=20260220001"></script>
+  <script src="components/ecoClassifier.js?v=20260220001"></script>
+  <script src="components/ecoAI.js?v=20260220001"></script>
+  <script src="components/details-navigation.js?v=20260220001"></script>
+  <script src="app.js?v=20260220001"></script>
   <script>
     // Section loader for auth and main pages
     // Internal loader that actually performs the section load. Returns a Promise.
@@ -98,7 +103,16 @@
   const existingScript = Array.from(document.querySelectorAll('script[src]')).find(s => s.src && s.src.indexOf(baseSrc) !== -1);
   if (existingScript && typeof window.renderSection === 'function'){
     console.log('performLoadSection: existing script found, invoking renderSection for', section);
-    try{ window.renderSection(); }catch(e){ console.error('renderSection threw', e); }
+    try{
+      const ret = window.renderSection();
+      if (ret && typeof ret.then === 'function') {
+        ret.then(() => {
+          window.highlightActiveNav?.(section);
+          resolve();
+        }).catch(e => { console.error('renderSection threw (async)', e); resolve(); });
+        return;
+      }
+    }catch(e){ console.error('renderSection threw', e); }
     window.highlightActiveNav?.(section);
     return resolve();
   }
@@ -111,8 +125,14 @@
           console.log('performLoadSection: script loaded for', section, 'window.renderSection exists?', typeof window.renderSection === 'function');
           try{
             if (window.renderSection) {
-              // Allow renderSection to run synchronously; resolve after it completes
-              window.renderSection();
+              const ret = window.renderSection();
+              if (ret && typeof ret.then === 'function') {
+                ret.then(() => {
+                  window.highlightActiveNav?.(section);
+                  resolve();
+                }).catch(err => { console.error('renderSection error (async)', err); resolve(); });
+                return;
+              }
             }
           }catch(e){ console.error('renderSection error', e); }
           window.highlightActiveNav?.(section);
@@ -127,10 +147,15 @@
     window.loadSection = function(section){
       window.__pendingLoadQueue = window.__pendingLoadQueue || [];
       if(window.__restoringSection){
-        if(section === 'home') return Promise.resolve();
+        console.log('loadSection queued during restore:', section, 'flag state:', window.__restoringSection);
         return new Promise((resolve, reject) => {
           window.__pendingLoadQueue.push({section, resolve, reject});
         });
+      }
+      if(section === 'home'){
+        console.log('loadSection direct (restore complete): home flag state:', window.__restoringSection, 'STACK:', new Error().stack);
+      } else {
+        console.log('loadSection direct (restore complete):', section, 'flag state:', window.__restoringSection);
       }
       return window.__performLoadSection(section);
     };
@@ -140,26 +165,105 @@
     // Load saved section if available (restores from details page back-button), otherwise default to home
     (function(){
       const pendingSection = sessionStorage.getItem('lastSection');
-      const pendingScroll = parseInt(sessionStorage.getItem('lastScroll') || '0', 10) || 0;
+      // Support both legacy 'lastScroll' and newer 'lastScrollMain'/'lastScrollWindow'
+      const pendingScrollMain = parseInt(sessionStorage.getItem('lastScrollMain') || '0', 10) || 0;
+      const pendingScrollWindow = parseInt(sessionStorage.getItem('lastScrollWindow') || '0', 10) || 0;
+      const pendingScrollLegacy = parseInt(sessionStorage.getItem('lastScroll') || '0', 10) || 0;
+      // Decide target: prefer main scroll if available, otherwise window, then legacy
+      const pendingScroll = pendingScrollMain || pendingScrollWindow || pendingScrollLegacy || 0;
+      console.log('index.html restore check:', {pendingSection, pendingScrollMain, pendingScrollWindow, pendingScrollLegacy, pendingScroll});
       if(pendingSection){
         // mark that we're in restore mode so other callers don't override
         window.__restoringSection = true;
+        console.log('Restoring section:', pendingSection);
         // Directly perform the load for restore to avoid queuing the request
         window.__performLoadSection(pendingSection).then(()=>{
-          // One deterministic scroll after the section has rendered
-          try{ window.scrollTo(0, pendingScroll); }catch(e){}
-          try{ document.getElementById('main-content')?.scrollTo?.(0, pendingScroll); }catch(e){}
+          // One deterministic scroll after the section has rendered.
+          // Wait for layout stabilization (two animation frames) and retry a few times
+          console.log('Section loaded, scrolling to:', pendingScroll);
+          // Decide whether to restore main-content scroll or window/document scroll
+          const preferMain = Boolean(pendingScrollMain && pendingScrollMain > 0);
+          (async function waitAndScroll(target, useMain){
+            const main = document.getElementById('main-content');
+            function doScroll(){
+              try{
+                if(useMain && main && typeof main.scrollTo === 'function'){
+                  main.scrollTo(0, target);
+                } else {
+                  // Try document.scrollingElement first for broader compatibility
+                  const se = document.scrollingElement || document.documentElement || document.body;
+                  if(se && typeof se.scrollTo === 'function') se.scrollTo(0, target);
+                  else window.scrollTo(0, target);
+                }
+              }catch(e){ console.error('scroll error', e); }
+            }
+            // allow initial layout to settle (two frames)
+            await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+            doScroll();
+            // Wait for images inside main-content to load (or timeout) then try again
+            try{
+              const imgs = Array.from((main||document).querySelectorAll('img'));
+              const pending = imgs.filter(img => !img.complete);
+              if(pending.length){
+                // Wait for all current images to load or 2500ms timeout
+                await Promise.race([
+                  Promise.all(pending.map(i => new Promise(res => { i.addEventListener('load', res); i.addEventListener('error', res); }))),
+                  new Promise(res => setTimeout(res, 2500))
+                ]);
+              }
+
+              // Also observe the DOM briefly for any images added after render (e.g., scripts inserting images)
+              const addedImgs = [];
+              const mo = new MutationObserver(muts => {
+                for(const m of muts){
+                  for(const node of Array.from(m.addedNodes || [])){
+                    if(node && node.querySelectorAll){
+                      Array.from(node.querySelectorAll('img')).forEach(i => addedImgs.push(i));
+                    }
+                    if(node && node.tagName === 'IMG') addedImgs.push(node);
+                  }
+                }
+              });
+              mo.observe(main || document.body, { childList: true, subtree: true });
+              // wait briefly for possible late-added images
+              await new Promise(res => setTimeout(res, 800));
+              mo.disconnect();
+              const newPending = addedImgs.filter(i => !i.complete);
+              if(newPending.length){
+                await Promise.race([
+                  Promise.all(newPending.map(i => new Promise(res => { i.addEventListener('load', res); i.addEventListener('error', res); }))),
+                  new Promise(res => setTimeout(res, 2000))
+                ]);
+              }
+            }catch(e){ console.warn('wait for images failed', e); }
+
+            // retry a few times to handle other late layout shifts (fonts, 3rd-party widgets)
+            for(let i=0;i<8;i++){
+              await new Promise(r=>setTimeout(r, 160));
+              doScroll();
+              const pos = useMain && main ? main.scrollTop : (window.scrollY || document.documentElement.scrollTop || 0);
+              console.log('restore: attempt', i+1, 'measured', pos, 'target', target, 'useMain', useMain);
+              if(Math.abs(pos - target) < 8) break;
+            }
+            // As a final attempt, if a component signals readiness via window.sectionReady, respect it
+            if(typeof window.__lastSectionReady === 'number'){
+              const pos = main ? main.scrollTop : (window.scrollY || window.pageYOffset || 0);
+              console.log('restore: sectionReady timestamp', window.__lastSectionReady, 'measured', pos);
+            }
+          })(pendingScroll, preferMain);
           // Clear stored values so they aren't reused
           sessionStorage.removeItem('lastSection');
           sessionStorage.removeItem('lastScroll');
-            // Unset restoring flag now that restore is complete
-            window.__restoringSection = false;
+          sessionStorage.removeItem('lastScrollMain');
+          sessionStorage.removeItem('lastScrollWindow');
             // Drain any queued load requests (skip any 'home' requests)
             const q = window.__pendingLoadQueue || [];
             window.__pendingLoadQueue = [];
             (async function drain(){
               for(const req of q){
-                if(req && req.section === 'home') {
+                // Skip any queued home requests so restore isn't overwritten
+                if(req && req.section === 'home'){
+                  console.log('drain: skipping queued home request');
                   try{ req.resolve(); }catch(e){}
                   continue;
                 }
@@ -168,6 +272,11 @@
                   req.resolve();
                 }catch(err){ req.reject(err); }
               }
+              // NOW unset the restoring flag after all queued items are done
+              console.log('drain complete: clearing __restoringSection flag');
+              window.__restoringSection = false;
+              // Signal to app.js that restore just completed so it skips default load
+              window.__restoreJustCompleted = true;
             })();
         }).catch((err)=>{
           console.error('Error loading section for restore', err);
@@ -177,6 +286,7 @@
           window.__restoringSection = false;
         });
       } else {
+        console.log('No pending section detected, loading home via else block');
         window.loadSection('home');
       }
     })();

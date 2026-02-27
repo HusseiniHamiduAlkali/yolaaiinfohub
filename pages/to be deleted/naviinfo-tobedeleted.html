@@ -174,13 +174,13 @@
                 </div>
             </div>
 
-            <div id="navi-map" class="map-container"></div>
+            <div id="tomtom-map" class="map-container"></div>
             <div id="directions-panel" class="directions-panel"></div>
             
             <div class="map-controls">
-                <button onclick="window.zoomIn()">Zoom In</button>
-                <button onclick="window.zoomOut()">Zoom Out</button>
-                <button onclick="window.centerOnYola()">Center on Yola</button>
+                <button onclick="if(window.tomtomMap && window.tomtomMap.getZoom) window.tomtomMap.setZoom(window.tomtomMap.getZoom() + 1)">Zoom In</button>
+                <button onclick="if(window.tomtomMap && window.tomtomMap.getZoom) window.tomtomMap.setZoom(window.tomtomMap.getZoom() - 1)">Zoom Out</button>
+                <button onclick="if(window.tomtomMap && window.tomtomMap.setCenter) window.tomtomMap.setCenter([12.4818, 9.2182])">Center on Yola</button>
             </div>
 
             <div class="routes-section">
@@ -220,54 +220,11 @@
         </section>
     </main>
 
-    <script>
-        // Map control functions
-        window.zoomIn = function() {
-            if (window.map) {
-                window.map.setZoom(window.map.getZoom() + 1);
-            }
-        };
-        
-        window.zoomOut = function() {
-            if (window.map) {
-                window.map.setZoom(window.map.getZoom() - 1);
-            }
-        };
-        
-        window.centerOnYola = function() {
-            if (window.map) {
-                window.map.setCenter({ lat: 9.2182, lng: 12.4818 });
-            }
-        };
-
-        // Load Maps API directly
-        const loadMapsAPI = () => {
-            const keylessScript = document.createElement('script');
-            keylessScript.src = 'https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v7.0/mapsJavaScriptAPI.js';
-            keylessScript.id = 'maps-api';
-            keylessScript.async = true;
-            keylessScript.defer = true;
-            keylessScript.onload = () => {
-                console.log('Maps API loaded, initializing...');
-                if (window.google && window.google.maps) {
-                    window.initMap();
-                }
-            };
-            keylessScript.onerror = () => {
-                console.error('Failed to load Maps API');
-                const mapDiv = document.getElementById('navi-map');
-                if (mapDiv) {
-                    mapDiv.innerHTML = '<div style="text-align:center;padding:2em;color:#e53e3e;">Unable to load Google Maps. Please check your internet connection and refresh the page.</div>';
-                }
-            };
-            document.head.appendChild(keylessScript);
-        };
-
-        // Initialize map when the page loads
-        window.addEventListener('load', loadMapsAPI);
-    </script>
+    <!-- TomTom Maps SDK -->
+    <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps.css">
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js"></script>
+    <script src="../components/tomtomMap.js"></script>
     <script src="../components/navbar.js"></script>
-    <script src="../components/mapDirections.js"></script>
     <script src="../components/naviinfo.js"></script>
 </body>
 </html>

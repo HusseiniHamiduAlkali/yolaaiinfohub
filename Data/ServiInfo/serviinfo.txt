@@ -6,3 +6,58 @@ This file contains local services and support information for Yola, Adamawa Stat
 
 
 Consult the Internet for answers to users' requests, by google search and other methods.
+
+---
+FAQs (ServiInfo Section)
+
+Q: What are the main professional services available in Yola?
+A: Yola offers a range of services including legal, accounting, IT, repair, cleaning, and consulting. See the links below for more details.
+
+Q: How can I find a reliable service provider?
+A: You can check local directories, ask for recommendations, or contact the providers listed in the links below.
+
+Q: Are there emergency or 24-hour services in Yola?
+A: Some services such as plumbing, electrical, and security offer 24-hour support. See the links below for more information.
+
+Q: How do I report a problem with a service?
+A: Contact the provider directly or reach out to the local council if the issue is unresolved.
+
+Q: Are there support services for women, youth, or the elderly?
+A: Yes, there are dedicated support and welfare services. See the links below for more information.
+
+Q: How to find a reliable electrician?
+A: Reliable electricians in Yola can be found through local directories or by contacting the Adamawa State Electrical Association.
+
+Q: List of certified plumbers in Yola.
+A: Certified plumbers in Yola are registered with the Adamawa State Plumbing Guild. Contact their office for a list of members.
+
+Q: Are there private tutors for mathematics?
+A: Yes, private tutors for mathematics are available through local tutoring centers and online platforms.
+
+---
+Local Data Links (ServiInfo Section)
+
+- details/Servi/alumintech-solutions.html
+- details/Servi/atm-aluminium.html
+- details/Servi/bitbyte-technologies.html
+- details/Servi/cac.html
+- details/Servi/evans-carpentry.html
+- details/Servi/homeserve-plumbing.html
+- details/Servi/ict-republic.html
+- details/Servi/jabbama-electronics.html
+- details/Servi/modern-electric.html
+- details/Servi/nde.html
+- details/Servi/nipost.html
+- details/Servi/novelty-glass-aluminium.html
+- details/Servi/pc-klinic.html
+- details/Servi/pure-life.html
+- details/Servi/quality-plumbing.html
+- details/Servi/redcross.html
+- details/Servi/rhs-woodworks.html
+- details/Servi/rm-photography.html
+- details/Servi/sj-graphics.html
+- details/Servi/virtual-assistance-freelancers.html
+- details/Servi/worksmanship-furniture.html
+- details/Servi/ymca.html
+- details/Servi/yola-plumbers.html
+- details/Servi/yola-power-services.html

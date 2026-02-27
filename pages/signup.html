@@ -7,197 +7,7 @@
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/auth.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <style>
-    body {
-    background:#e4e4e4ff  ;
-      min-height: 100vh;
-      margin: 0;
-      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-    }
-    .minimal-nav {
-      background: #2d3748;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-      padding: 0.5rem 0;
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-    }
-    .minimal-nav-content {
-      max-width: 480px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-     color: #fff;
-        font-weight: 610;
-        font-size: 2rem;
-        }
-    
-    .nav-logo img {
-      height: 65px;
-      width: 60px;
-      border-radius: 13px;
-      margin-right: 1.7rem;
-      box-shadow: 0 2px 8px rgba(49,130,206,0.08);
-    }
-    .return-home {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      color: #3182ce;
-      font-size: 0.98rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    .return-home:hover { color: #205080; }
-    .return-home i { margin-right: 0.4rem; }
-    .auth-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding-top: 80px;
-      background: none;
-    }
-    .auth-box {
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-      padding: 2.5rem 2.2rem 2rem 2.2rem;
-      width: 100%;
-      max-width: 430px;
-      margin: 15px auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
-    .auth-box h2 {
-      text-align: center;
-      color: #2d3748;
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      letter-spacing: -1px;
-      margin-top: 0;
-    }
-    .auth-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.1rem;
-    }
-    .form-group label {
-      color: #3e444d;
-      font-size: 0.98rem;
-      margin-bottom: 0.3rem;
-      font-weight: 500;
-    }
-    .form-group input, .form-group select {
-      width: -moz-available;
-      padding: 0.7rem 0.7rem 0.7rem 0.7rem;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 1.05rem;
-      background: #f8fafc;
-      transition: border 0.2s;
-    }
-    .form-group input:focus, .form-group select:focus {
-      border: 1.5px solid #3182ce;
-      outline: none;
-      background: #fff;
-    }
-    
-    .form-group.checkbox-group {
-      display:flex;
-      flex-direction: row;
-    }
-    .password-field {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    .password-toggle {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #a0aec0;
-      font-size: 1.1rem;
-      cursor: pointer;
-      padding: 0.2rem 0.5rem;
-      z-index: 2;
-    }
-    .password-toggle:hover { color: #3182ce; }
-    .auth-submit {
-      background: #3182ce;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 0.8rem 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-top: 0.5rem;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(49,130,206,0.08);
-      transition: background 0.2s;
-    }
-    .auth-submit:hover {
-      background: #2563eb;
-    }
-    .auth-links {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-      margin-top: 0.7rem;
-      text-align: center;
-    }
-    .auth-links a {
-      color: #3182ce;
-      text-decoration: none;
-      font-size: 0.97rem;
-      transition: color 0.2s;
-    }
-    .auth-links a:hover { color: #205080; text-decoration: underline; }
-    .skip-auth {
-      margin-top: 1.2rem;
-      padding-top: 0.7rem;
-      border-top: 1px solid #e2e8f0;
-      text-align: center;
-    }
-    .skip-auth p {
-      color: #718096;
-      font-size: 0.97rem;
-      margin-bottom: 0.4rem;
-    }
-    .skip-auth-link {
-      display: inline-flex;
-      align-items: center;
-      color: #3182ce;
-      text-decoration: none;
-      font-size: 0.97rem;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    .skip-auth-link i { margin-right: 0.4rem; }
-    .skip-auth-link:hover { color: #205080; }
-    @media (max-width: 700px) {
-      .auth-box {
-        padding: 1.2rem 0.5rem 1.2rem 0.5rem;
-        max-width: 98vw;
-        margin-top: 50px;
-      }
-      .minimal-nav-content {
-        max-width: 99vw;
-        padding: 0 0.5rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="pages.css">
 </head>
 <body>
   <div class="minimal-nav">
@@ -353,6 +163,7 @@
     document.getElementById('signup-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      const submitBtn = document.querySelector('#signup-form button[type="submit"]');
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirm-password').value;
       
@@ -374,6 +185,9 @@
         termsAccepted: document.getElementById('terms').checked
       };
 
+      // Disable button during request
+      submitBtn.disabled = true;
+
       try {
   const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
   const response = await fetch(`${API_BASE}/api/signup`, {
@@ -390,10 +204,14 @@
           window.location.href = '/'; // Redirect to homepage on success
         } else {
           alert(data.error || 'Error signing up');
+          // Re-enable button on error
+          submitBtn.disabled = false;
         }
       } catch (error) {
         console.error('Sign up error:', error);
         alert('Error signing up. Please try again.');
+        // Re-enable button on error
+        submitBtn.disabled = false;
       }
     });
   </script>

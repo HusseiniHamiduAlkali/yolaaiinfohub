@@ -12,12 +12,17 @@ const csrf = require('csurf');
 const validator = require('express-validator');
 const helmet = require('helmet');
 const fetch = require('node-fetch');
+const fileUpload = require('express-fileupload');
 require('dotenv').config({
   path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
 });
 
 
 const app = express();
+
+// Increase payload size limit for large AI requests (default is 100KB, increasing to 50MB)
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // CORS configuration (must be declared before use)
 const corsOptions = {
@@ -56,8 +61,10 @@ const corsOptions = {
 // Apply CORS first
 app.use(cors(corsOptions));
 
-// Then other middleware
-app.use(express.json());
+// Then other middleware (json parser already configured above with 50mb limit)
+app.use(express.json({ limit: '50mb', extended: true }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(fileUpload({ limits: { fileSize: 50 * 1024 * 1024 } }));
 
 // Serve the map API key securely for frontend
 app.get('/api/maps-key', (req, res) => {
@@ -140,13 +147,13 @@ app.post('/api/gemini', async (req, res) => {
 
 
 const RESET_URL_BASE = isProduction 
-  ? 'https://yolaaiinfohub.netlify.app/forgot-password'
-  : 'http://localhost:4000/forgot-password';
+  ? 'https://yolaaiinfohub.netlify.app/pages/reset-password.html'
+  : 'http://localhost:5500/pages/reset-password.html';
 
 // Rate limiting
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts
+  windowMs: 60 * 60 * 1000, // 60 minutes
+  max: 20, // allow up to 20 attempts within the window
   message: { error: 'Too many login attempts, please try again later' }
 });
 
@@ -208,6 +215,9 @@ if (emailConfigured) {
     auth: {
       user: emailUser,
       pass: emailPass
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
 
@@ -344,26 +354,80 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
   // Use a targeted update to avoid triggering full-document validators
   await User.updateOne({ _id: user._id }, { $set: { resetToken: hash, resetTokenExpires: Date.now() + 3600000 } });
 
-    // Build a safe reset URL: prefer the request origin, then FRONTEND_URL, then reasonable defaults
-    const requestOrigin = req.get('origin');
-    const fallbackFront = process.env.FRONTEND_URL || (isProduction ? 'https://yolaaiinfohub.netlify.app' : 'http://localhost:5500');
-    const origin = (requestOrigin || fallbackFront).replace(/\/$/, '');
-    // User's site uses pages/forgot-password.html as the reset page; build link accordingly
-  const resetUrl = `${origin}/pages/forgot-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
+    // Build a safe reset URL: use FRONTEND_URL from env, or force production domain if in production
+    // Never use request origin for email links - it may be localhost/127.0.0.1
+    const frontendUrl = process.env.FRONTEND_URL || process.env.FRONT_END_URL || (isProduction ? 'https://yolaaiinfohub.netlify.app' : 'http://localhost:5500');
+    const origin = frontendUrl.replace(/\/$/, '');
+    // User's site uses pages/reset-password.html as the reset page; build link accordingly
+  const resetUrl = `${origin}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
   // store for debugging
   lastResetLink = resetUrl;
 
-    // Prepare mail options
+    // Prepare mail options with proper HTML formatting
     const mailOptions = {
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       to: email,
       subject: 'Yola AI Info Hub - Password Reset',
+      headers: {
+        'Content-Type': 'text/html; charset=UTF-8',
+        'Content-Transfer-Encoding': '8bit'
+      },
       html: `
-        <p>Hello ${user.name},</p>
-        <p>You requested a password reset. Click the link below to reset your password.</p>
-        <p><a href="${resetUrl}">Reset Password</a></p>
-        <p>This link will expire in 1 hour.</p>
-        <p>If you did not request this, please ignore this email.</p>
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #2c3e50;">Password Reset Request</h2>
+              
+              <p>Hello ${user.name},</p>
+              
+              <p>You requested a password reset for your Yola AI Info Hub account. Click the button below to reset your password:</p>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${resetUrl}" style="display: inline-block; background-color: #3498db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                  Reset Password
+                </a>
+              </div>
+              
+              <p>Or copy and paste this link in your browser:</p>
+              <p style="background-color: #f5f5f5; padding: 10px; word-break: break-all; border-radius: 3px; font-size: 12px;">
+                <code>${resetUrl}</code>
+              </p>
+              
+              <p style="color: #e74c3c;"><strong>⚠️ This link will expire in 1 hour.</strong></p>
+              
+              <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+              
+              <p style="color: #7f8c8d; font-size: 12px;">If you did not request this password reset, please ignore this email or contact our support team.</p>
+              
+              <p style="color: #7f8c8d; font-size: 12px;">
+                Best regards,<br>
+                <strong>Yola AI Info Hub Team</strong>
+              </p>
+            </div>
+          </body>
+        </html>
+      `,
+      text: `
+        Password Reset Request
+        
+        Hello ${user.name},
+        
+        You requested a password reset for your Yola AI Info Hub account.
+        
+        Click the link below or copy it to your browser to reset your password:
+        ${resetUrl}
+        
+        This link will expire in 1 hour.
+        
+        If you did not request this password reset, please ignore this email or contact our support team.
+        
+        Best regards,
+        Yola AI Info Hub Team
       `
     };
 
@@ -402,7 +466,7 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
 });
 
 // Reset password with token
-app.post('/api/forgot-password', async (req, res) => {
+app.post('/api/reset-password', async (req, res) => {
   try {
     const { email, token, password } = req.body;
     const user = await User.findOne({
@@ -457,6 +521,12 @@ app.post('/api/verify-email', async (req, res) => {
 app.post('/api/login', loginLimiter, async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    // Dev logging: record the login identifier (not the password) and timestamp
+    if (!isProduction) {
+      try {
+        console.log('Login attempt:', { identifier: email || username, ts: new Date().toISOString() });
+      } catch (e) { /* ignore logging errors */ }
+    }
     let user;
     
     // Find user by email or username
@@ -467,12 +537,14 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     }
 
     if (!user) {
+      if (!isProduction) console.log('Login result: user not found for', email || username);
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
     // Check password
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
+      if (!isProduction) console.log('Login result: password mismatch for', user.username);
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
@@ -481,7 +553,17 @@ app.post('/api/login', loginLimiter, async (req, res) => {
 
     // Set session
     req.session.userId = user._id;
-    res.json({ success: true, username: user.username, name: user.name });
+    // Include avatar/profilePicture (or generated UI avatar) so frontend can display it immediately
+    const avatar = user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
+    
+    // Server-side login logging
+    console.log(`\n✅ [LOGIN SUCCESS] ${new Date().toISOString()}`);
+    console.log(`   Username: ${user.username}`);
+    console.log(`   Email: ${user.email}`);
+    console.log(`   IP: ${req.ip}`);
+    console.log(`   User Agent: ${req.get('user-agent')}\n`);
+    
+    res.json({ success: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Error processing login' });
@@ -490,6 +572,10 @@ app.post('/api/login', loginLimiter, async (req, res) => {
 
 // Logout
 app.post('/api/logout', (req, res) => {
+  const username = req.session.userId ? 'unknown' : 'no-session';
+  console.log(`\n🚪 [LOGOUT] ${new Date().toISOString()}`);
+  console.log(`   IP: ${req.ip}\n`);
+  
   req.session.destroy(() => {
     res.json({ success: true });
   });
@@ -497,10 +583,101 @@ app.post('/api/logout', (req, res) => {
 
 // Check auth
 app.get('/api/me', async (req, res) => {
+  // Prevent caching of auth status - must always check fresh from session
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
   if (!req.session.userId) return res.json({ loggedIn: false });
   const user = await User.findById(req.session.userId);
   if (!user) return res.json({ loggedIn: false });
-  res.json({ loggedIn: true, username: user.username, name: user.name, email: user.email });
+  const avatar = user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
+  res.json({ loggedIn: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar });
+});
+
+// Get public profile by username (limited fields)
+app.get('/api/user/:username', async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const avatar = user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
+    res.json({ 
+      loggedIn: false, 
+      username: user.username, 
+      name: user.name, 
+      email: user.email, 
+      phone: user.phone, 
+      state: user.state, 
+      lga: user.lga, 
+      address: user.address, 
+      profilePicture: user.profilePicture, 
+      avatar 
+    });
+  } catch (err) {
+    console.error('Error fetching user profile:', err);
+    res.status(500).json({ error: 'Error fetching profile' });
+  }
+});
+
+// Update profile endpoint
+app.post('/api/update-profile', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { name, email, phone, state, lga, address } = req.body;
+    const user = await User.findById(req.session.userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Validate email if changed
+    if (email && email !== user.email) {
+      const existingEmail = await User.findOne({ email });
+      if (existingEmail) {
+        return res.status(400).json({ error: 'Email already in use' });
+      }
+    }
+
+    // Update fields
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (state) user.state = state;
+    if (lga) user.lga = lga;
+    if (address) user.address = address;
+
+    // Handle profile picture upload
+    if (req.files && req.files.profilePicture) {
+      const profilePic = req.files.profilePicture;
+      // Convert to base64 for simplicity; in production, use cloud storage
+      user.profilePicture = `data:${profilePic.mimetype};base64,${profilePic.data.toString('base64')}`;
+    }
+
+    await user.save();
+
+    // Return updated user data
+    const avatar = user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
+    res.json({ 
+      success: true, 
+      username: user.username, 
+      name: user.name, 
+      email: user.email, 
+      phone: user.phone, 
+      state: user.state, 
+      lga: user.lga, 
+      address: user.address,
+      profilePicture: user.profilePicture,
+      avatar 
+    });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(500).json({ error: 'Error updating profile' });
+  }
 });
 
 // Mount the Gemini API router

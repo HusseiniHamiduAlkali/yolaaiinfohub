@@ -1,4 +1,3 @@
-
 General Information:
 
     Yola is the capital of Adamawa State, Nigeria, and is located within the Yola South Local Government Area.
@@ -37,3 +36,55 @@ Waste Management and Environmental Sanitation:
 
 
 Consult the Internet for answers to users' requests, by google search and other methods.
+
+---
+FAQs (EcoInfo Section)
+
+Q: How does Yola manage waste?
+A: Waste management in Yola is coordinated by the Yola South LGA Environmental Department, with regular collection days and community involvement in sanitation exercises.
+
+Q: Are there recycling programs in Yola?
+A: Yes, a recycling hub was commissioned in 2023 to turn plastic waste into green jobs. Community members are encouraged to participate in recycling and clean-up initiatives.
+
+Q: How can I report illegal dumping?
+A: Residents can contact the Environmental Department or their Ward Head to report illegal dumping and organize clean-up efforts.
+
+Q: What are the main environmental challenges in Yola?
+A: Key challenges include waste disposal, flooding during the rainy season, and the need for more green spaces and tree planting.
+
+Q: What are the recycling options in Yola?
+A: Yola offers recycling services through the Sangere Bode Recycling Hub, which processes plastics and other materials into reusable products.
+
+Q: How to report illegal dumping?
+A: Illegal dumping can be reported to the Yola South LGA Environmental Department via their hotline or through community leaders.
+
+Q: Are there community clean-up programs?
+A: Yes, Yola organizes monthly environmental sanitation exercises on the last Saturday of each month.
+
+---
+Local Data Links (EcoInfo Section)
+
+---
+Local Data Links (EcoInfo Section)
+
+- details/Eco/adamawa-waste-to-wealth.html
+- details/Eco/association-of-plastic-recyclers.html
+- details/Eco/benue-valley-reserve.html
+- details/Eco/clean-yola-project.html
+- details/Eco/community-conservation.html
+- details/Eco/eco-warriors.html
+- details/Eco/ecowaste-management.html
+- details/Eco/green-cycle-solutions.html
+- details/Eco/green-transport-network.html
+- details/Eco/metal-waste-collectors.html
+- details/Eco/naswon-yola.html
+- details/Eco/plastic-waste-collectors.html
+- details/Eco/trash-to-treasure.html
+- details/Eco/undp.html
+- details/Eco/wapan-yola.html
+- details/Eco/waste-to-wealth.html
+- details/Eco/water-conservation-project.html
+- details/Eco/yola-community-garden.html
+- details/Eco/yola-domestic-waste-collectors.html
+- details/Eco/yola-eco-park.html
+- details/Eco/yola-solar-initiative.html

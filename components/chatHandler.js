@@ -274,6 +274,8 @@ window.uploadFile = function(e, section) {
   const reader = new FileReader();
   reader.onload = function(ev) {
     const preview = document.getElementById(section + '-chat-preview');
+    const container = document.createElement('div');
+    container.className = 'preview-container';
     let html = '';
     if (file.type.startsWith('image/')) {
       html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Uploaded Image' />`;
@@ -286,7 +288,9 @@ window.uploadFile = function(e, section) {
     } else {
       html = `<p style='font-size:12px;margin:4px 0;'>${file.name}</p>`;
     }
-    preview.innerHTML = html;
+    container.innerHTML = html + `<button class="remove-btn" onclick="window.removePreview('${section}')" title="Remove">x</button>`;
+    preview.innerHTML = '';
+    preview.appendChild(container);
   };
   reader.readAsDataURL(file);
 };
@@ -330,7 +334,12 @@ window.sendMessage = async function(section, faqText = '') {
     <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
   `;
   chat.appendChild(msgGroup);
-  preview.innerHTML = '';
+  // Clear preview using centralized helper so remove button and any state are cleaned
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
   if (!faqText) input.value = '';
 
   try {

@@ -94,7 +94,7 @@ window.renderSection = function() {
     link.id = 'global-css';
     document.head.appendChild(link);
   }
-  fetch('templates/community.html').then(r => r.text()).then(html => {
+  return fetch('templates/community.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
@@ -170,13 +170,39 @@ window.sendCommunityMessage = async function(faqText = '') {
     <div class='ai-msg'><span class='ai-msg-text'>Community AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
-  preview.innerHTML = '';
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
   if (!faqText) input.value = '';
 
   let finalAnswer = "";
   try {
-    const localData = await fetch('Data/CommunityInfo/communityinfo.txt').then(r => r.text());
-    
+    // Fetch the main .txt file
+    const signal = window.communityAbortController ? window.communityAbortController.signal : null;
+    const localDataTxt = await fetch('Data/CommunityInfo/communityinfo.txt', signal ? { signal } : {}).then(r => r.text());
+
+    // Extract local data links (lines starting with '-')
+    const linkLines = localDataTxt.split('\n').filter(line => line.trim().startsWith('- '));
+    const htmlLinks = linkLines.map(line => line.replace('- ', '').trim());
+
+    // Fetch all linked HTML files in parallel
+    const htmlContents = await Promise.all(
+      htmlLinks.map(async (link) => {
+        try {
+          const res = await fetch(link, signal ? { signal } : {});
+          if (!res.ok) return '';
+          return `\n--- ${link} ---\n` + (await res.text());
+        } catch {
+          return '';
+        }
+      })
+    );
+
+    // Combine all local data
+    const allLocalData = localDataTxt + '\n' + htmlContents.join('\n');
+
     // Get chat history context
     const history = JSON.parse(localStorage.getItem('community_chat_history') || '[]');
     let historyContext = '';
@@ -185,14 +211,13 @@ window.sendCommunityMessage = async function(faqText = '') {
         history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
     }
 
-    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, imageData, window.communityAbortController ? window.communityAbortController.signal : null);
 
     // Update history with AI response
     history.push({ user: msg, ai: finalAnswer });
     while (history.length > 10) history.shift(); // Keep only last 10 messages
     localStorage.setItem('community_chat_history', JSON.stringify(history));
-    
-    } catch (e) {
+  } catch (e) {
     if (e.name === 'AbortError' || e.message === 'AbortError') {
       finalAnswer = "USER ABORTED REQUEST";
     } else {
@@ -227,11 +252,7 @@ window.sendCommunityMessage = async function(faqText = '') {
 };
 
 
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
-  if (!window.communityAbortController) {
-    window.communityAbortController = new AbortController();
-  }
-
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   try {
     const contents = {
       parts: []
@@ -255,12 +276,16 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : 'https://yolaaiinfohub.netlify.app/api/gemini';
       
-    let res = await fetch(serverUrl, { 
-      method: 'POST', 
+    const fetchOptions = {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body,
-      signal: window.communityAbortController.signal 
-    });
+      body
+    };
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+      
+    let res = await fetch(serverUrl, fetchOptions);
     
     if (!res.ok) {
       throw new Error('Network response was not ok');
@@ -271,12 +296,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(serverUrl, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body,
-        signal: window.communityAbortController.signal
-      });
+      res = await fetch(serverUrl, fetchOptions);
       
       if (!res.ok) {
         throw new Error('Network response was not ok');
@@ -285,14 +305,10 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       data = await res.json();
     }
     
-    if (window.communityAbortController.signal.aborted) {
-      throw new Error('AbortError');
-    }
-    
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
-    if (err.name === 'AbortError' || err.message === 'AbortError') {
-      throw new Error('AbortError');
+    if (err.name === 'AbortError') {
+      throw err; // Re-throw abort errors
     }
     console.error("Gemini API error:", err);
     return "Sorry, I could not access local information or the AI at this time. Please check your internet connection!";

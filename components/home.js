@@ -1,4 +1,3 @@
-
 // Load common AI utilities first
 if (!window.commonAILoaded) {
   const script = document.createElement('script');
@@ -34,23 +33,26 @@ window.renderSection = function() {
     document.head.appendChild(link);
   }
   
-  // Load chat history when section renders
-  setTimeout(loadHomeChatHistory, 100); // Small delay to ensure DOM is ready
-  
-  fetch('templates/home.html').then(r => r.text()).then(html => {
+  return fetch('templates/home.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
+    
+    // Load chat history AFTER template is inserted
+    setTimeout(() => {
+      window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('home', 'home-chat-messages');
+    }, 50);
+    
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('home', this.checked); };
   }).catch(err => {
     console.error('Failed to load home template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
-  });  
+  });
 
 };
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   let modelVersion;
   try {
     const contents = {
@@ -91,7 +93,15 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
     const body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    const fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    };
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+    let res = await fetch(url, fetchOptions);
 
     if (!res.ok) {
       // Handle specific HTTP errors
@@ -134,6 +144,9 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     
     return data.candidates[0].content.parts[0].text;
   } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error; // Re-throw abort errors to be handled by caller
+    }
     console.error(`Error with ${modelVersion || 'unknown model'}:`, error);
     throw error;
   }
@@ -143,6 +156,9 @@ async function tryGeminiAPI(msg, localData, imageData) {
   try {
     return await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
   } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error; // Re-throw abort errors
+    }
     console.log('Falling back to Gemini 1.5...');
     try {
       return await tryGeminiModel('gemini-1.5-flash');
@@ -206,12 +222,21 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>Home AI typing...</span></div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Home AI typing...</span></div>
+    <span class='msg-actions' data-msg-id='${mid}'>
+      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    </span>
   `;
   chat.appendChild(msgGroup);
-  preview.innerHTML = '';
+  // Replace direct clearing of preview with the shared function
+  window.clearPreviewAndRemoveBtn(preview);
   if (!faqText) input.value = '';
 
   let finalAnswer = "";
@@ -219,10 +244,11 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   if (stopBtn) stopBtn.style.display = 'inline-block';
 
   try {
-    const localData = await fetch('Data/HomeInfo/homeinfo.txt').then(r => r.text()); // Assuming a local data file for HomeInfo
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY);
+    const signal = window.homeAbortController ? window.homeAbortController.signal : null;
+    const localData = await fetch('Data/HomeInfo/homeinfo.txt', signal ? { signal } : {}).then(r => r.text()); // Assuming a local data file for HomeInfo
+    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, null, signal);
   } catch (e) {
-    if (e.name === 'AbortError' || e.message === 'AbortError') {
+    if (e.name === 'AbortError') {
       finalAnswer = "USER ABORTED REQUEST";
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
@@ -254,6 +280,37 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+  // attach event listeners for the action buttons on this newly created group
+  const speakBtn = msgGroup.querySelector('.read-aloud-btn');
+  if (speakBtn) {
+    speakBtn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = msgGroup.querySelector('.ai-msg-text') ? msgGroup.querySelector('.ai-msg-text').textContent : '';
+      if (txt) window.speakText(txt, speakBtn);
+    });
+  }
+  const copyBtn = msgGroup.querySelector('.copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = msgGroup.querySelector('.ai-msg-text') ? msgGroup.querySelector('.ai-msg-text').textContent : '';
+      if (!txt) return;
+      try {
+        await navigator.clipboard.writeText(txt);
+        window.showCopyTooltip(copyBtn, 'Message copied!');
+      } catch (err) {
+        console.warn('Copy failed', err);
+      }
+    });
+  }
+  const deleteBtn = msgGroup.querySelector('.delete-msg-btn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const msgId = deleteBtn.getAttribute('data-msg-id') || mid;
+      window.confirmDeleteMessage('home', 'home-chat-messages', msgId);
+    });
+  }
   chat.scrollTop = chat.scrollHeight;
 
   // Store messages in chat history

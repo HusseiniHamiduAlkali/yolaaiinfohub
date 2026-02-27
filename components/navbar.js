@@ -47,8 +47,8 @@ function renderNavbar() {
               <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link" id="navbar-profile-link">
                 <span class="navbar-avatar" id="navbar-avatar">${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}</span>
                 <span class="navbar-names">
-                  <span class="navbar-fullname">${window.currentUser.name || ''}</span>
-                  <span class="navbar-username-text">(@${window.currentUser.username})</span>
+                  <span class="navbar-fullname">${window.currentUser.name || window.currentUser.username}</span>
+                  <span class="navbar-username-text">@${window.currentUser.username}</span>
                 </span>
               </a>
             ` : ''}
@@ -143,6 +143,14 @@ function renderNavbar() {
       topRow.style.marginBottom = '0.5rem';
       // Move logo and app name to the top row
       topRow.appendChild(newNavbarLeft);
+      // Include username container if user is logged in
+      const topSection = document.querySelector('.navbar-top-section');
+      if (topSection) {
+        topSection.style.display = 'flex';
+        topSection.style.alignItems = 'center';
+        topSection.style.gap = '0.7rem';
+        topRow.appendChild(topSection);
+      }
       // Move auth buttons to the top row
       topRow.appendChild(newNavbarAuth);
       // The newNavbarLinks element is now the bottom row
@@ -153,13 +161,12 @@ function renderNavbar() {
       newNavbarContainer.appendChild(topRow);
       newNavbarContainer.appendChild(newNavbarLinks);
       newHamburger.style.display = 'none';
-      // If user is signed in, show only username and logout button
+      // Ensure username container is visible if user is logged in
       if (window.currentUser && window.currentUser.username) {
+        const usernameContainer = document.getElementById('navbar-username-container');
+        if (usernameContainer) usernameContainer.style.display = 'flex';
         const navbarAuth = document.getElementById('navbar-auth');
-        if (navbarAuth) {
-          navbarAuth.style.display = 'flex';
-          navbarAuth.style.alignItems = 'center';
-        }
+        if (navbarAuth) navbarAuth.style.display = 'flex';
       }
       
     } else {
@@ -244,6 +251,69 @@ function renderNavbar() {
           setTimeout(() => mobileMenu.remove(), 300);
         };
         mobileMenu.appendChild(closeBtn);
+        
+        // Add username container to mobile menu if user is logged in
+        if (window.currentUser && window.currentUser.username) {
+          // Create username section for mobile menu
+          const userMenuSection = document.createElement('div');
+          userMenuSection.style.cssText = `
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #555;
+            gap: 0.7rem;
+            background: #1a202c;
+            margin-bottom: 1rem;
+          `;
+          
+          // Create avatar
+          const avatarDiv = document.createElement('div');
+          avatarDiv.style.cssText = `
+            display: inline-flex;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #fff;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 2px solid #cbd5e1;
+          `;
+          const avatarImg = document.createElement('img');
+          avatarImg.src = window.currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(window.currentUser.name || window.currentUser.username)}`;
+          avatarImg.alt = 'avatar';
+          avatarImg.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+          avatarDiv.appendChild(avatarImg);
+          
+          // Create names section
+          const namesDiv = document.createElement('div');
+          namesDiv.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.2rem;
+            flex: 1;
+          `;
+          
+          const fullnameSpan = document.createElement('span');
+          fullnameSpan.textContent = window.currentUser.name || window.currentUser.username;
+          fullnameSpan.style.cssText = 'font-weight: 600; color: #e6eef9; font-size: 0.95rem; line-height: 1.2;';
+          
+          const usernameSpan = document.createElement('span');
+          usernameSpan.textContent = '@' + window.currentUser.username;
+          usernameSpan.style.cssText = 'font-weight: 700; color: #cbd5e1; font-size: 0.95rem; letter-spacing: 0.5px;';
+          
+          namesDiv.appendChild(fullnameSpan);
+          namesDiv.appendChild(usernameSpan);
+          
+          userMenuSection.appendChild(avatarDiv);
+          userMenuSection.appendChild(namesDiv);
+          
+          mobileMenu.appendChild(userMenuSection);
+        }
+        
         // Menu links
         const linksList = document.createElement('ul');
         linksList.className = 'mobile-links';

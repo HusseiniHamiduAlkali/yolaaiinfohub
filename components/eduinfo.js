@@ -19,18 +19,21 @@ For non-education queries about health, navigation, community, environment, jobs
 window.eduAbortController = null;
 // Initialize EduInfo Section
 window.renderSection = function() {
-  fetch('templates/edu.html').then(r => r.text()).then(html => {
-    document.getElementById('main-content').innerHTML = html;
-    // Wire model toggle after template is inserted
-    const mt = document.getElementById('model-toggle');
-    if (mt) mt.onchange = function() { window.toggleGeminiModel('edu', this.checked); };
-  }).catch(err => {
-    console.error('Failed to load home template:', err);
-    document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
-  });  
-  
-  // Load in-memory edu chat history when section renders
-  setTimeout(() => { window.loadChatHistoryToDOM && window.loadChatHistoryToDOM('edu', 'eduinfo-chat-messages'); }, 50);
+    return fetch('templates/edu.html').then(r => r.text()).then(html => {
+        document.getElementById('main-content').innerHTML = html;
+        
+        // Load chat history AFTER template is inserted
+        setTimeout(() => { 
+          window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('edu', 'eduinfo-chat-messages'); 
+        }, 50);
+        
+        // Wire model toggle after template is inserted
+        const mt = document.getElementById('model-toggle');
+        if (mt) mt.onchange = function() { window.toggleGeminiModel('edu', this.checked); };
+    }).catch(err => {
+        console.error('Failed to load home template:', err);
+        document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
+    });
 };
 
 // Register Section Initialization
@@ -87,7 +90,7 @@ window.sendEduMessage = async function(faqText = '') {
   `;
     chat.appendChild(msgGroup);
     const imageData = preview.querySelector('img') ? preview.querySelector('img').src : null;
-    preview.innerHTML = '';
+    window.clearPreviewAndRemoveBtn(preview);
     if (!faqText) input.value = '';
 
   // Initialize in-memory history for edu and add user entry
@@ -99,7 +102,8 @@ window.sendEduMessage = async function(faqText = '') {
 
   let finalAnswer = "";
     try {
-        const localData = await fetch('Data/EduInfo/eduinfo.txt').then(r => r.text());
+        const signal = window.eduAbortController ? window.eduAbortController.signal : null;
+        const localData = await fetch('Data/EduInfo/eduinfo.txt', signal ? { signal } : {}).then(r => r.text());
         
         // Get chat history for this section
         const chatHistory = window.getChatHistory('edu') || [];
@@ -108,15 +112,34 @@ window.sendEduMessage = async function(faqText = '') {
         const historyContext = chatHistory.length > 0 
             ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `${h.role === 'user' ? 'User' : 'AI'}: ${h.content}`).join('\n\n')
             : "";
+        
+    // Find local file links in the txt (format: - School Name: details/Edu/filename.html)
+    const linkRegex = /details\/Edu\/[^\s]+\.html/gim;
+    const links = [];
+    let match;
+    while ((match = linkRegex.exec(localData)) !== null) {
+      links.push(match[0]);
+    }
+
+    // Fetch all linked file contents in parallel
+    let linkedContents = '';
+    if (links.length > 0) {
+      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
+      const results = await Promise.all(fetches);
+      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
+    }
+
+    // Combine all local data
+    const allLocalData = localData + linkedContents + historyContext;
             
-  finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+  finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, imageData, window.eduAbortController ? window.eduAbortController.signal : null);
   // Add user message to history
   window.addToChatHistory && window.addToChatHistory('edu', 'user', msg);
   // Add assistant reply to in-memory history
   window.addToChatHistory && window.addToChatHistory('edu', 'assistant', finalAnswer);
     } catch (e) {
-        if (e.name === 'AbortError') {
-            finalAnswer = "Response stopped by user.";
+        if (e.name === 'AbortError' || e.message === 'AbortError') {
+            finalAnswer = "USER ABORTED REQUEST";
         } else {
             console.error("Error fetching local data or Gemini API call:", e);
             finalAnswer = "Sorry, I could not access local information or the AI at this time. Please try again.";
@@ -135,7 +158,7 @@ window.sendEduMessage = async function(faqText = '') {
 };
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   const contents = {
     parts: []
   };
@@ -159,12 +182,16 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
   
   let response;
   try {
-    response = await fetch(url, { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' }, 
-      body,
-      signal: window.eduAbortController?.signal 
-    });
+    const fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    };
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+
+    response = await fetch(url, fetchOptions);
     
     let data = await response.json();
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";

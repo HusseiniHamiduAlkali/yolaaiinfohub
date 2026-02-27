@@ -1,4 +1,3 @@
-
 // Load common AI utilities first
 if (!window.commonAILoaded) {
   const script = document.createElement('script');
@@ -26,17 +25,21 @@ window.renderSection = function() {
     document.head.appendChild(link);
   }
   
-  fetch('templates/servi.html').then(r => r.text()).then(html => {
+  return fetch('templates/servi.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
+    
+    // Load chat history AFTER template is inserted
+    setTimeout(() => { 
+      window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('servi', 'servi-chat-messages'); 
+    }, 50);
+    
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('servi', this.checked); };
   }).catch(err => {
-    console.error('Failed to load home template:', err);
+    console.error('Failed to load servi template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
-  });  
-  // Load in-memory servi history
-  setTimeout(() => { window.loadChatHistoryToDOM && window.loadChatHistoryToDOM('servi', 'servi-chat-messages'); }, 50);
+  });
 };
 
 window.stopServiResponse = function() {
@@ -53,7 +56,7 @@ window.stopServiResponse = function() {
 };
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   try {
     const contents = {
       parts: []
@@ -76,8 +79,8 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
-      
-    let res = await fetch(serverUrl, { 
+    
+    const fetchOptions = { 
       method: 'POST', 
       headers: { 
         'Content-Type': 'application/json',
@@ -85,9 +88,13 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       },
       credentials: 'include',
       mode: 'cors',
-      body,
-      signal: window.serviAbortController?.signal 
-    });
+      body
+    };
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+      
+    let res = await fetch(serverUrl, fetchOptions);
 
     if (!res.ok) {
       if (res.status === 429) {
@@ -113,6 +120,9 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
+    if (err.name === 'AbortError') {
+      throw err; // Re-throw abort errors to be handled by caller
+    }
     console.error('Error getting Gemini answer:', err);
     throw err;
   }
@@ -171,28 +181,38 @@ window.sendServiMessage = async function(faqText = '') {
     <div class='ai-msg'><span class='ai-msg-text'>Servi AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
-  preview.innerHTML = '';
+  window.clearPreviewAndRemoveBtn(preview);
   if (!faqText) input.value = '';
 
   let finalAnswer = "";
   try {
-    const localData = await fetch('Data/ServiInfo/serviinfo.txt').then(r => r.text());
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
+    const signal = window.serviAbortController ? window.serviAbortController.signal : null;
+    const localData = await fetch('Data/ServiInfo/serviinfo.txt', signal ? { signal } : {}).then(r => r.text());
+
+    // Find local file links in the txt (format: details/Servi/filename.html)
+    const linkRegex = /details\/Servi\/[^\s]+\.html/gim;
+    const links = [];
+    let match;
+    while ((match = linkRegex.exec(localData)) !== null) {
+      links.push(match[0]);
+    }
+
+    // Fetch all linked file contents in parallel
+    let linkedContents = '';
+    if (links.length > 0) {
+      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
+      const results = await Promise.all(fetches);
+      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
+    }
+
+    // Combine all local data
+    const allLocalData = localData + linkedContents;
+    finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, imageData, signal);
   } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    const errorMsg = e?.message || 'Unknown error';
-    
-    if (e && e.name === 'AbortError') {
+    if (e.name === 'AbortError') {
       finalAnswer = 'USER ABORTED REQUEST';
-    } else if (errorMsg.includes('API_RATE_LIMIT')) {
-      finalAnswer = "⚠️ The AI service is currently receiving too many requests. Please wait a moment and try again.";
-    } else if (errorMsg.includes('API_SERVER_ERROR')) {
-      finalAnswer = "⚠️ The AI service is temporarily unavailable. Please try again in a few moments.";
-    } else if (errorMsg.includes('API_ERROR')) {
-      finalAnswer = `⚠️ API Error: ${errorMsg.replace('API_ERROR: ', '')}`;
-    } else if (errorMsg.includes('INVALID_JSON_RESPONSE')) {
-      finalAnswer = "⚠️ Received an invalid response from the server. Please try again.";
     } else {
+      console.error("Error fetching local data or Gemini API call:", e);
       finalAnswer = "⚠️ Sorry, I could not access local information or the AI at this time. Please check your internet connection.";
     }
   }
@@ -253,7 +273,8 @@ window.sendServiMessage = async function(faqText = '') {
     <div class='ai-msg'><span class='ai-msg-text'>Servi AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
-  preview.innerHTML = '';
+  const imageData = preview.querySelector('img') ? preview.querySelector('img').src : null;
+  window.clearPreviewAndRemoveBtn(preview);
   if (!faqText) input.value = '';
 
   let finalAnswer = "";

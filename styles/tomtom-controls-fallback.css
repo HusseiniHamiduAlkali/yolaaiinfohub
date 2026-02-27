@@ -1,0 +1,38 @@
+/* Fallback TomTom control button styles for satellite/3D/Pegman */
+.tt-control {
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  margin: 6px 0 0 6px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tt-control-btn {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 1.3em;
+  padding: 7px 10px;
+  margin: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.tt-control-btn:hover {
+  background: #e6f0fa;
+}
+.tt-3d-btn, .tt-pegman-btn, .tt-sat-btn {
+  font-size: 1.2em;
+}
+.tt-3d-btn {
+  color: #0076ff;
+}
+.tt-pegman-btn {
+  color: #ffb300;
+}
+.tt-sat-btn {
+  color: #444;
+}

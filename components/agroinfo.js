@@ -65,7 +65,7 @@ window.renderSection = function() {
     document.head.appendChild(link);
   }
   // Load HTML template from file for separation of concerns
-  fetch('templates/agro.html').then(r => r.text()).then(html => {
+  return fetch('templates/agro.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
@@ -125,29 +125,55 @@ window.sendAgroMessage = async function(faqText = '') {
     <div class='ai-msg'><span class='ai-msg-text'>Agro AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
-  preview.innerHTML = '';
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
   if (!faqText) input.value = '';
 
   // Load existing chat history using commonAI.js
   window.initChatHistory && window.initChatHistory('agro', 10);
   let chatHistory = window.getChatHistory ? window.getChatHistory('agro') : [];
 
+
   let finalAnswer = "";
   try {
-    const localData = await fetch('Data/AgroInfo/agroinfo.txt').then(r => r.text());
-    
+    // Fetch main local data
+    const signal = window.agroAbortController ? window.agroAbortController.signal : null;
+    const localData = await fetch('Data/AgroInfo/agroinfo.txt', signal ? { signal } : {}).then(r => r.text());
+
+    // Find local file links in the txt (format: details/Agro/filename.html)
+    const linkRegex = /^-\s*(details\/Agro\/[^\s]+\.html)$/gim;
+    const links = [];
+    let match;
+    while ((match = linkRegex.exec(localData)) !== null) {
+      links.push(match[1]);
+    }
+
+    // Fetch all linked file contents in parallel
+    let linkedContents = '';
+    if (links.length > 0) {
+      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
+      const results = await Promise.all(fetches);
+      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
+    }
+
     // Include chat history in the context
     const historyContext = chatHistory.length > 0 
         ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.role === 'user' ? h.content : ''}\nAI: ${h.role === 'assistant' ? h.content : ''}`).filter(Boolean).join('\n\n')
         : "";
+
+    // Combine all local data
+    const allLocalData = localData + linkedContents + historyContext;
     try {
-      finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+      finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, imageData, window.agroAbortController ? window.agroAbortController.signal : null);
       // Store in chat history (keep last 10 messages)
       window.addToChatHistory && window.addToChatHistory('agro', 'user', msg);
       window.addToChatHistory && window.addToChatHistory('agro', 'assistant', finalAnswer);
     } catch (e) {
-      if (e.name === 'AbortError') {
-        finalAnswer = "Response stopped by user.";
+      if (e.name === 'AbortError' || e.message === 'AbortError') {
+        finalAnswer = "USER ABORTED REQUEST";
       } else {
         console.error("Error in Gemini API call:", e);
         finalAnswer = "Sorry, I could not get a response from the AI at this time. Please try again.";
@@ -177,7 +203,7 @@ window.sendAgroMessage = async function(faqText = '') {
 };
 
 
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   const contents = {
     parts: []
   };
@@ -201,23 +227,22 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
 
   let response;
   try {
-    response = await fetch(url, { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' }, 
-      body,
-      signal: window.agroAbortController?.signal 
-    });
+    const fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    };
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+
+    response = await fetch(url, fetchOptions);
     
     let data = await response.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      response = await fetch(url, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body,
-        signal: window.agroAbortController?.signal 
-      });
+      response = await fetch(url, fetchOptions);
       data = await response.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";

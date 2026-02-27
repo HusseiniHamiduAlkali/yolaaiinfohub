@@ -29,44 +29,131 @@ window.handleStopButtonAbort = function({ abortController, section, chatContaine
     }
   }
 };
+
+// Global handler: any element with class `stop-button` will abort all known section controllers.
+// This protects against sections that didn't wire their local stop button correctly.
+document.addEventListener('click', function(e) {
+  try {
+    const el = e.target.closest && e.target.closest('.stop-button');
+    if (!el) return;
+
+    // List all known controllers and their section names
+    const controllers = {
+      home: window.homeAbortController,
+      edu: window.eduAbortController,
+      agro: window.agroAbortController,
+      medi: window.mediAbortController,
+      eco: window.ecoAbortController,
+      community: window.communityAbortController,
+      servi: window.serviAbortController,
+      navi: window.naviAbortController
+    };
+
+    Object.keys(controllers).forEach(section => {
+      const ctrl = controllers[section];
+      if (ctrl && typeof ctrl.abort === 'function') {
+        try { ctrl.abort(); } catch (err) { /* ignore */ }
+      }
+    });
+
+    // Update UI: hide generic stop buttons and reset send buttons
+    const sendButtons = document.querySelectorAll('.send-button');
+    sendButtons.forEach(btn => {
+      btn.classList.remove('sending');
+      btn.textContent = 'Send';
+      btn.style.backgroundColor = '';
+      // restore type if it was changed to button
+      if (btn.dataset.origType) btn.type = btn.dataset.origType;
+    });
+
+    // Show a generic aborted message in any visible chat container
+    const chatContainers = document.querySelectorAll('.chat-messages');
+    chatContainers.forEach(c => {
+      const abortMessage = document.createElement('div');
+      abortMessage.className = 'chat-message';
+      abortMessage.innerHTML = `<div class="error-message">Request aborted by user</div>`;
+      c.appendChild(abortMessage);
+      c.scrollTop = c.scrollHeight;
+    });
+  } catch (err) {
+    console.warn('Global stop handler error', err);
+  }
+});
 // commonAI.js
 // Shared utility functions for AI sections (Home, Edu, Agro, etc.)
 
 // Gemini model preference
 window.useGemini25 = window.useGemini25 || false;
 
-// Chat history management
+// Chat history management with localStorage persistence
 // In-memory storage for chat histories
 window.chatHistories = window.chatHistories || {};
+window.chatHistoriesMaxMessages = 20; // Max 20 messages per section
+window.chatStorageKey = 'chatHistories_v2'; // localStorage key
+
+// Load all chat histories from localStorage on startup
+window.loadChatHistoriesFromStorage = function() {
+  try {
+    const stored = localStorage.getItem(window.chatStorageKey);
+    if (stored) {
+      window.chatHistories = JSON.parse(stored);
+    }
+  } catch (e) {
+    console.warn('Failed to load chat histories from storage', e);
+  }
+};
+
+// Save all chat histories to localStorage
+window.saveChatHistoriesToStorage = function() {
+  try {
+    localStorage.setItem(window.chatStorageKey, JSON.stringify(window.chatHistories));
+  } catch (e) {
+    console.warn('Failed to save chat histories to storage', e);
+  }
+};
 
 // Initialize chat history for a section
-window.initChatHistory = function(section, maxMessages = 10) {
+window.initChatHistory = function(section, maxMessages = 20) {
   if (!window.chatHistories[section]) {
     window.chatHistories[section] = [];
   }
-  window.chatHistories[section].maxMessages = maxMessages;
+  window.chatHistories[section].maxMessages = maxMessages || window.chatHistoriesMaxMessages;
   
   // Create global variables for each section for backward compatibility
   const globalName = section + 'ChatHistory';
   window[globalName] = window.chatHistories[section];
 };
 
-// Add a message to chat history
+// Add a message to chat history with persistent storage
 window.addToChatHistory = function(section, role, content) {
   if (!window.chatHistories[section]) {
     window.initChatHistory(section);
   }
-  window.chatHistories[section].push({ role, content });
   
-  // Keep only the last maxMessages
-  const maxMessages = window.chatHistories[section].maxMessages || 10;
+  // Add message with timestamp and unique ID
+  const message = {
+    id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+    role,
+    content,
+    timestamp: Date.now(),
+    deleted: false // Flag for manually deleted messages
+  };
+  
+  window.chatHistories[section].push(message);
+  
+  // Keep only the last maxMessages - auto-delete oldest
+  const maxMessages = window.chatHistories[section].maxMessages || window.chatHistoriesMaxMessages;
   if (window.chatHistories[section].length > maxMessages) {
+    // Remove oldest message
     window.chatHistories[section].shift();
   }
   
   // Update global variable
   const globalName = section + 'ChatHistory';
   window[globalName] = window.chatHistories[section];
+  
+  // Persist to localStorage
+  window.saveChatHistoriesToStorage();
 };
 
 // Get chat history for a section
@@ -77,25 +164,387 @@ window.getChatHistory = function(section) {
   return window.chatHistories[section];
 };
 
+// Delete a specific message from chat history
+window.deleteFromChatHistory = function(section, messageId) {
+  if (!window.chatHistories[section]) return;
+  
+  const index = window.chatHistories[section].findIndex(msg => msg.id === messageId);
+  if (index !== -1) {
+    window.chatHistories[section].splice(index, 1);
+    
+    // Update global variable
+    const globalName = section + 'ChatHistory';
+    window[globalName] = window.chatHistories[section];
+    
+    // Persist to localStorage
+    window.saveChatHistoriesToStorage();
+    
+    return true;
+  }
+  return false;
+};
+
+// Get active user for chat history tracking
+window.getCurrentUser = function() {
+  // Check if user is logged in from localStorage or auth state
+  try {
+    const userStr = localStorage.getItem('userEmail') || localStorage.getItem('currentUser');
+    return userStr ? JSON.parse(userStr) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+// --- MESSAGE RENDERING HELPER ---
+// Unified function to create message DOM elements with speak, copy, delete buttons for AI messages
+window.createMessageElement = function(message, section, containerId) {
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  const mid = message && message.id ? message.id : (Date.now() + '_' + Math.random().toString(36).substr(2,9));
+  msgGroup.setAttribute('data-msg-id', mid);
+  const isUser = message && message.role === 'user';
+  let contentHtml = message && message.content ? message.content : '';
+  if (!isUser && contentHtml) {
+    // remove any buttons that may have been included in earlier formats
+    const tmp = document.createElement('div');
+    tmp.innerHTML = contentHtml;
+    tmp.querySelectorAll('button').forEach(b => b.remove());
+    // also remove any stray action containers (e.g. old flex div wrappers)
+    tmp.querySelectorAll('.msg-actions, .ai-response').forEach(el => {
+      // keep ai-response container but strip nested buttons
+      if (el.classList.contains('ai-response')) return;
+      el.remove();
+    });
+    contentHtml = tmp.innerHTML;
+  }
+
+  if (isUser) {
+    msgGroup.innerHTML = `
+      <div class='user-msg' data-msg-id='${mid}'>
+        <span class='msg-text'>${contentHtml}</span>
+      </div>
+    `;
+  } else {
+    // AI message: content in ai-msg and actions placed below bubble
+    msgGroup.innerHTML = `
+      <div class='ai-msg' data-msg-id='${mid}'>
+        <span class='ai-msg-text msg-text'>${contentHtml}</span>
+      </div>
+      <span class='msg-actions' data-msg-id='${mid}'>
+        <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+        <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+        <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+      </span>
+    `;
+
+    // Attach event listeners for AI message actions
+    // Speak
+    const speakBtn = msgGroup.querySelector('.read-aloud-btn');
+    if (speakBtn) {
+      speakBtn.addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
+        if (txt) window.speakText(txt, speakBtn);
+      });
+    }
+    // Copy
+    const copyBtn = msgGroup.querySelector('.copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
+        if (!txt) return;
+        try {
+          await navigator.clipboard.writeText(txt);
+          window.showCopyTooltip(copyBtn, 'Message copied!');
+        } catch (err) {
+          console.warn('Copy failed', err);
+        }
+      });
+    }
+    // Delete
+    const deleteBtn = msgGroup.querySelector('.delete-msg-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const msgId = deleteBtn.getAttribute('data-msg-id') || mid;
+        window.confirmDeleteMessage(section, containerId, msgId);
+      });
+    }
+  }
+  return msgGroup;
+};
 
 // Load chat history to DOM
 window.loadChatHistoryToDOM = function(section, elementId) {
   const element = document.getElementById(elementId);
-  if (!element || !window.chatHistories[section]) return;
+  if (!element) return;
+  
+  // Initialize history if doesn't exist
+  if (!window.chatHistories[section]) {
+    window.initChatHistory(section);
+  }
+  
+  const history = window.chatHistories[section];
+  if (!history || !Array.isArray(history)) return;
+  
   // Clear existing messages
   element.innerHTML = '';
-  // Load each message
-  window.chatHistories[section].forEach(msg => {
-    const msgGroup = document.createElement('div');
-    msgGroup.className = 'chat-message-group';
-    if (msg.role === 'user') {
-      msgGroup.innerHTML = `<div class='user-msg'>${msg.content}</div>`;
-    } else {
-      msgGroup.innerHTML = `<div class='ai-msg'><span class='ai-msg-text'>${msg.content}</span></div>`;
+  
+  // Load each message using unified rendering function
+  history.forEach(msg => {
+    if (msg && msg.deleted !== true) {
+      const msgElement = window.createMessageElement(msg, section, elementId);
+      element.appendChild(msgElement);
     }
-    element.appendChild(msgGroup);
+  });
+  
+  // Auto-scroll to bottom after loading
+  setTimeout(() => {
+    window.scrollChatToBottom(elementId, 'auto');
+  }, 50);
+};
+
+// --- CHAT APPEND & AUTO-SCROLL HELPERS ---
+// Append a message to a chat container, optionally persist to history, and auto-scroll.
+window.appendChatMessage = function({ section = 'home', containerId, role = 'ai', content = '', persistHistory = true }) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  // Persist into in-memory chat history first to get the message ID
+  let messageId = null;
+  if (persistHistory) {
+    // Save to history and get the message ID
+    if (!window.chatHistories[section]) {
+      window.initChatHistory(section);
+    }
+    
+    messageId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const message = {
+      id: messageId,
+      role,
+      content,
+      timestamp: Date.now(),
+      deleted: false
+    };
+    
+    window.chatHistories[section].push(message);
+    
+    // Keep only the last maxMessages
+    const maxMessages = window.chatHistories[section].maxMessages || window.chatHistoriesMaxMessages;
+    if (window.chatHistories[section].length > maxMessages) {
+      window.chatHistories[section].shift();
+    }
+    
+    // Update global variable
+    const globalName = section + 'ChatHistory';
+    window[globalName] = window.chatHistories[section];
+    
+    // Persist to localStorage
+    window.saveChatHistoriesToStorage();
+  } else {
+    // If not persisting, still create message object for rendering
+    messageObj = { id: messageId, role, content };
+  }
+
+  // Use unified message rendering function
+  const msgElement = window.createMessageElement(messageObj || { id: messageId, role, content, timestamp: Date.now() }, section, containerId);
+  container.appendChild(msgElement);
+
+  // Ensure observer is attached and scroll to bottom
+  window.scrollChatToBottom(containerId, 'smooth');
+};
+
+// Delete message from UI and history
+window.deleteMessageFromUI = function(section, containerId, messageId) {
+  // Remove from DOM
+  const msgElement = document.querySelector(`[data-msg-id="${messageId}"]`);
+  if (msgElement) {
+    msgElement.style.opacity = '0.5';
+    setTimeout(() => {
+      msgElement.remove();
+    }, 300);
+  }
+  
+  // Remove from history
+  window.deleteFromChatHistory(section, messageId);
+  
+  // Show confirmation (optional visual feedback)
+  console.log(`Message deleted from ${section}`);
+};
+
+// Smooth scroll a chat container to the bottom
+window.scrollChatToBottom = function(containerId, behavior = 'auto') {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  try {
+    // Prefer scrollTo with behavior when available
+    if (el.scrollTo) el.scrollTo({ top: el.scrollHeight, behavior });
+    el.scrollTop = el.scrollHeight;
+  } catch (e) {
+    el.scrollTop = el.scrollHeight;
+  }
+};
+
+// Attach MutationObservers to all elements with class 'chat-messages' so they auto-scroll when new children added
+window.observeChatContainers = function() {
+  const containers = document.querySelectorAll('.chat-messages');
+  containers.forEach(c => {
+    if (c.__chatObserverAttached) return;
+    const observer = new MutationObserver(muts => {
+      // Only react to child list changes (new messages)
+      for (const m of muts) {
+        if (m.type === 'childList' && m.addedNodes.length) {
+          // Scroll after a short delay to allow layout
+          setTimeout(() => {
+            c.scrollTop = c.scrollHeight;
+          }, 40);
+          break;
+        }
+      }
+    });
+    observer.observe(c, { childList: true });
+    c.__chatObserverAttached = true;
   });
 };
+
+// Ensure observers are attached when DOM is ready and when new containers are added
+document.addEventListener('DOMContentLoaded', () => {
+  // Load chat histories from localStorage on page load
+  window.loadChatHistoriesFromStorage();
+  
+  window.observeChatContainers();
+  // Observe the body for dynamically added chat containers
+  const bodyObserver = new MutationObserver(() => window.observeChatContainers());
+  bodyObserver.observe(document.body, { childList: true, subtree: true });
+});
+
+// --- CHAT HISTORY FORMATTING FOR AI ---
+// Format chat history for use in AI API calls (to maintain context)
+window.formatChatHistoryForAI = function(section, maxMessages = 20) {
+  const history = window.getChatHistory(section);
+  if (!history || history.length === 0) return '';
+  
+  // Get last maxMessages from history
+  const recentMessages = history.slice(-maxMessages);
+  
+  // Format as text for context
+  return recentMessages.map(msg => {
+    const role = msg.role === 'user' ? 'User' : 'Assistant';
+    return `${role}: ${msg.content}`;
+  }).join('\n');
+};
+
+// Get previous messages for system context in Gemini API calls
+window.getPreviousMessagesForContext = function(section) {
+  const history = window.getChatHistory(section);
+  if (!history || history.length === 0) return [];
+  
+  // Return only the last 10 messages for context (to avoid token limit)
+  return history.slice(-10).map(msg => ({
+    role: msg.role === 'user' ? 'user' : 'model',
+    parts: [{ text: msg.content }]
+  }));
+};
+
+// Clear all chat histories for a specific section
+window.clearChatHistoryForSection = function(section) {
+  if (window.chatHistories[section]) {
+    window.chatHistories[section] = [];
+    const globalName = section + 'ChatHistory';
+    window[globalName] = [];
+    window.saveChatHistoriesToStorage();
+    return true;
+  }
+  return false;
+};
+
+// Clear all chat histories for all sections (on logout or reset)
+window.clearAllChatHistories = function() {
+  window.chatHistories = {};
+  window.saveChatHistoriesToStorage();
+  // Clear all section-specific global variables
+  const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'community', 'about', 'eco', 'servi'];
+  sections.forEach(section => {
+    const globalName = section + 'ChatHistory';
+    window[globalName] = [];
+  });
+};
+
+// Get all chat histories grouped by section (for viewing all chats)
+window.getAllChatHistories = function() {
+  return window.chatHistories;
+};
+
+// --- FAQ CACHING ---
+// Simple FAQ cache with localStorage persistence and TTL
+window.faqCache = (function() {
+  const STORAGE_KEY = 'faq_cache_v1';
+  const DEFAULT_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+  let store = { data: {}, ttlMs: DEFAULT_TTL };
+
+  // Load from storage
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.data) store = parsed;
+    }
+  } catch (e) {
+    console.warn('Failed to load FAQ cache', e);
+  }
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); } catch (e) { /* ignore */ }
+  }
+
+  function get(question) {
+    if (!question) return null;
+    const key = question.trim().toLowerCase();
+    const entry = store.data[key];
+    if (!entry) return null;
+    if (Date.now() - (entry.ts || 0) > (store.ttlMs || DEFAULT_TTL)) {
+      // expired
+      delete store.data[key];
+      save();
+      return null;
+    }
+    return entry.answer;
+  }
+
+  function set(question, answer) {
+    if (!question) return;
+    const key = question.trim().toLowerCase();
+    store.data[key] = { answer, ts: Date.now() };
+    save();
+  }
+
+  function clear() {
+    store = { data: {}, ttlMs: DEFAULT_TTL };
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+
+  function setTTL(ms) { store.ttlMs = ms; save(); }
+
+  // Higher-level helper: get or fetch via provided async fetcher
+  async function getOrFetch(question, fetcher) {
+    if (!question) return null;
+    const cached = get(question);
+    if (cached) return cached;
+    if (typeof fetcher !== 'function') return null;
+    try {
+      const answer = await fetcher(question);
+      if (answer) set(question, answer);
+      return answer;
+    } catch (e) {
+      console.warn('FAQ fetcher failed', e);
+      return null;
+    }
+  }
+
+  return { get, set, clear, setTTL, getOrFetch };
+})();
 
 // Clear all chat histories (for full app refresh)
 window.clearAllChatHistories = function() {
@@ -111,6 +560,34 @@ window.clearAllChatHistories = function() {
 ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'about'].forEach(section => {
   window.initChatHistory(section, 10);
 });
+
+// Shared function to clear preview and remove the remove-btn
+// Use this instead of preview.innerHTML = '' in all section files
+window.clearPreviewAndRemoveBtn = function(previewElement) {
+  if (!previewElement) return;
+
+  // Remove any preview children and specific remove button
+  try {
+    // If a remove button exists, remove it
+    const removeBtn = previewElement.querySelector('.remove-btn');
+    if (removeBtn) removeBtn.remove();
+    // Clear remaining preview content
+    previewElement.innerHTML = '';
+  } catch (e) {
+    // Fallback to clearing HTML
+    previewElement.innerHTML = '';
+  }
+};
+
+// Convenience function called by the inline remove button
+window.removePreview = function(section) {
+  try {
+    const preview = document.getElementById(section + '-chat-preview');
+    if (preview) window.clearPreviewAndRemoveBtn(preview);
+  } catch (e) {
+    console.warn('removePreview error', e);
+  }
+};
 
 // Function to toggle between Gemini models
 window.toggleGeminiModel = function(section, useGemini25) {
@@ -180,12 +657,15 @@ window.speakText = window.speakText || function(text) {
   speechSynthesis.speak(utterance);
 };
 
-
-const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+// Define isMobile function if not already defined (to prevent redeclaration)
+if (typeof window.isMobile === 'undefined') {
+  const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  window.isMobile = isMobile;
+}
 
 // --- IMAGE CAPTURE ---
 window.captureImage = function(section) {
-    if (isMobile()) {
+    if (window.isMobile()) {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
@@ -246,7 +726,7 @@ window.captureImage = function(section) {
 
 // --- AUDIO RECORDING ---
 window.recordAudio = function(section) {
-    if (isMobile()) {
+    if (window.isMobile()) {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'audio/*';
@@ -325,19 +805,21 @@ window.uploadFile = function(e, section) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function(ev) {
-        const preview = document.getElementById(section + '-chat-preview');
-        let html = '';
-        if (file.type.startsWith('image/')) {
-            html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Capture' />`;
-        } else if (file.type.startsWith('audio/')) {
-            html = `<audio src='${ev.target.result}' controls style='max-width:160px;margin:4px 0;'></audio>`;
-        } else {
-            html = `<div style="padding:5px; background:#f1f1f1; border-radius:5px; font-size:11px;">📄 ${file.name}</div>`;
-        }
-        preview.innerHTML = html;
-        // Remove any lingering remove-btn after sending
-        const removeBtn = preview.querySelector('.remove-btn');
-        if (removeBtn) removeBtn.remove();
+      const preview = document.getElementById(section + '-chat-preview');
+      // Create a container with the preview and a remove button
+      const container = document.createElement('div');
+      container.className = 'preview-container';
+      let html = '';
+      if (file.type.startsWith('image/')) {
+        html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Capture' />`;
+      } else if (file.type.startsWith('audio/')) {
+        html = `<audio src='${ev.target.result}' controls style='max-width:160px;margin:4px 0;'></audio>`;
+      } else {
+        html = `<div style="padding:5px; background:#f1f1f1; border-radius:5px; font-size:11px;">📄 ${file.name}</div>`;
+      }
+      container.innerHTML = `${html}<button class="remove-btn" onclick="window.removePreview('${section}')" title="Remove">x</button>`;
+      preview.innerHTML = '';
+      preview.appendChild(container);
     };
     reader.readAsDataURL(file);
 };
@@ -367,8 +849,8 @@ window.uploadFile = function(e, section) {
 
         // Add the media and the "X" button to the container
         container.innerHTML = `
-            ${mediaHtml}
-            <button class="remove-btn" onclick="this.parentElement.remove()" title="Remove">x</button>
+          ${mediaHtml}
+          <button class="remove-btn" onclick="window.removePreview('${section}')" title="Remove">x</button>
         `;
 
         // Clear previous preview and add the new one
@@ -379,238 +861,49 @@ window.uploadFile = function(e, section) {
     reader.readAsDataURL(file);
 };
 
-
-
-
-/*//Wednesday, January 7, 2026 1:39 PM
-// REPLACEMENT: Native Image Capture (Camera)
-window.captureImage = function(section) {
-  // 1. Create a hidden file input dynamically
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.capture = 'environment'; // 'environment' = rear camera, 'user' = selfie
-  input.style.display = 'none';
-
-  // 2. Listen for the user completing the action
-  input.onchange = function(e) {
-    // Pass the result directly to your existing uploadFile function
-    window.uploadFile(e, section);
-  };
-
-  // 3. Trigger the native OS interface
-  document.body.appendChild(input); // Required by some browsers
-  input.click();
-  document.body.removeChild(input); // Clean up
-};
-
-// REPLACEMENT: Native Audio Recording
-window.recordAudio = function(section) {
-  // 1. Create a hidden file input dynamically
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'audio/*';
-  input.capture = true; // Boolean true triggers the default voice recorder
-  input.style.display = 'none';
-
-  // 2. Listen for the user completing the action
-  input.onchange = function(e) {
-    // Pass the result directly to your existing uploadFile function
-    window.uploadFile(e, section);
-  };
-
-  // 3. Trigger the native OS interface
-  document.body.appendChild(input);
-  input.click();
-  document.body.removeChild(input);
-};
-
-// KEEP YOUR EXISTING UPLOAD FUNCTION
-// (No changes needed here, included for context)
-window.uploadFile = function(e, section) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    const preview = document.getElementById(section + '-chat-preview');
-    let html = '';
-    if (file.type.startsWith('image/')) {
-      html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Uploaded Image' />`;
-    } else if (file.type.startsWith('audio/')) {
-      html = `<audio src='${ev.target.result}' controls style='max-width:120px;vertical-align:middle;margin:4px 0;'></audio>`;
-    } else if (file.type.startsWith('video/')) {
-      html = `<video src='${ev.target.result}' controls style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;'></video>`;
-    } else if (file.type === 'application/pdf') {
-      html = `<iframe src='${ev.target.result}' style='width:120px;height:80px;border-radius:8px;margin:4px 0;'></iframe><p style='font-size:10px;margin:0;'>${file.name}</p>`;
-    } else {
-      html = `<p style='font-size:12px;margin:4px 0;'>${file.name}</p>`;
-    }
-    preview.innerHTML = html;
-  };
-  reader.readAsDataURL(file);
-};
-*/
-
-// Common image capture function
-/*
-window.captureImage = function(section) {
-  const overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = `
-    <div class="camera-modal">
-      <video id="camera-feed" autoplay playsinline></video>
-      <button id="snap-btn">Capture Photo</button>
-      <button id="close-camera">Close</button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-
-  const video = document.getElementById('camera-feed');
-  const snapBtn = document.getElementById('snap-btn');
-  const closeBtn = document.getElementById('close-camera');
-  let stream;
-
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then(s => {
-      stream = s;
-      video.srcObject = stream;
-    })
-    .catch(err => {
-      console.error("Error accessing camera:", err);
-      alert("Could not access camera. Please ensure you have a camera and have granted permission.");
-      overlay.remove();
-    });
-
-  snapBtn.onclick = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageDataURL = canvas.toDataURL('image/png');
-    document.getElementById(section + '-chat-preview').innerHTML = `<img src='${imageDataURL}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Captured Image' />`;
-    overlay.remove();
-    if (stream) stream.getTracks().forEach(t => t.stop());
-  };
-
-  closeBtn.onclick = () => {
-    overlay.remove();
-    if (stream) stream.getTracks().forEach(t => t.stop());
-  };
-};
-
-// Common audio recording function
-window.recordAudio = function(section) {
-  const overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = `
-    <div class="audio-modal">
-      <p>Recording...</p>
-      <button id="stop-recording">Stop Recording</button>
-      <button id="close-audio">Close</button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-
-  const stopBtn = document.getElementById('stop-recording');
-  const closeBtn = document.getElementById('close-audio');
-  let mediaRecorder;
-  let audioChunks = [];
-  let stream;
-
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(s => {
-      stream = s;
-      mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.ondataavailable = e => {
-        audioChunks.push(e.data);
-      };
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const audioURL = URL.createObjectURL(audioBlob);
-        document.getElementById(section + '-chat-preview').innerHTML = `<audio src='${audioURL}' controls style='max-width:120px;vertical-align:middle;margin:4px 0;'></audio>`;
-        overlay.remove();
-        if (stream) stream.getTracks().forEach(t => t.stop());
-      };
-      mediaRecorder.start();
-    })
-    .catch(err => {
-      console.error("Error accessing audio:", err);
-      alert("Could not access microphone. Please ensure you have a microphone and have granted permission.");
-      overlay.remove();
-    });
-
-  stopBtn.onclick = () => {
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    overlay.remove();
-  };
-  closeBtn.onclick = () => {
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    overlay.remove();
-  };
-};
-
-// Common file upload function
-window.uploadFile = function(e, section) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    const preview = document.getElementById(section + '-chat-preview');
-    let html = '';
-    if (file.type.startsWith('image/')) {
-      html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Uploaded Image' />`;
-    } else if (file.type.startsWith('audio/')) {
-      html = `<audio src='${ev.target.result}' controls style='max-width:120px;vertical-align:middle;margin:4px 0;'></audio>`;
-    } else if (file.type.startsWith('video/')) {
-      html = `<video src='${ev.target.result}' controls style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;'></video>`;
-    } else if (file.type === 'application/pdf') {
-      html = `<iframe src='${ev.target.result}' style='width:120px;height:80px;border-radius:8px;margin:4px 0;'></iframe><p style='font-size:10px;margin:0;'>${file.name}</p>`;
-    } else {
-      html = `<p style='font-size:12px;margin:4px 0;'>${file.name}</p>`;
-    }
-    preview.innerHTML = html;
-  };
-  reader.readAsDataURL(file);
-};
-*/
-
 // Common function to format AI responses
 function formatAIResponse(text) {
   let formatted = text
     .replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>') // Bold
     .replace(/\n/g, '<br>'); // Line breaks
   
-  // Add read aloud button
+  // only return the formatted content; action buttons will be rendered
+  // separately so they can be positioned at the bottom of the bubble.
   return `
     <div class="ai-response">
       ${formatted}
-      <button onclick="window.speakText(this.parentElement.textContent)" class="read-aloud-btn" title="Listen to Response">
-        🔊
-      </button>
-      <style>
-        .read-aloud-btn {
-          background: transparent;
-          border: 1px solid #cbd5e0;
-          border-radius: 6px;
-          padding: 4px 8px;
-          margin-top: 8px;
-          cursor: pointer;
-          transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 0.9em;
-        }
-        .read-aloud-btn:hover {
-          background: #e2e8f0;
-          transform: translateY(-1px);
-        }
-      </style>
     </div>
   `;
 }
+
+// Copy AI response to clipboard
+window.copyResponseToClipboard = function(btn) {
+  const responseDiv = btn.closest('.ai-response');
+  if (!responseDiv) return;
+  const text = responseDiv.textContent.replace(/[🔊📋🗑️]/g, '').trim();
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    window.showCopyTooltip(btn, 'Message copied!');
+  }).catch(err => console.warn('Copy failed:', err));
+};
+
+// Delete AI response message
+window.deleteAIResponse = function(btn) {
+  const ok = confirm('Delete this message? This action cannot be undone.');
+  if (!ok) return;
+  const msgGroup = btn.closest('.chat-message-group');
+  if (msgGroup) {
+    msgGroup.style.opacity = '0.5';
+    setTimeout(() => msgGroup.remove(), 300);
+  } else {
+    // Fallback: remove just the response div
+    const responseDiv = btn.closest('.ai-response');
+    if (responseDiv) {
+      responseDiv.style.opacity = '0.5';
+      setTimeout(() => responseDiv.remove(), 300);
+    }
+  }
+};
 
 // Robust navbar loader
 function ensureNavbarLoaded(cb) {
@@ -643,7 +936,7 @@ function ensureNavbarLoaded(cb) {
 }
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   let modelVersion;
   try {
     const contents = {
@@ -686,7 +979,18 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
     const body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    
+    // Build fetch options with optional signal for abort support
+    const fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    };
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+    
+    let res = await fetch(url, fetchOptions);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -698,6 +1002,11 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     }
     throw new Error('Invalid response format');
   } catch (error) {
+    // Properly handle and re-throw AbortError
+    if (error.name === 'AbortError' || error.message === 'AbortError') {
+      console.log('Request aborted by user');
+      throw error;
+    }
     console.error(`Error with ${modelVersion || 'unknown modelVersion'}:`, error);
     throw error;
   }

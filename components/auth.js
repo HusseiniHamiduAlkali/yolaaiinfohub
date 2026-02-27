@@ -1,12 +1,18 @@
 
 // Frontend logic for login/signup/logout modals and API, plus password reset
+// Cache version: v2-login-handler-fix-2026-02-20
 
 // Determine API base depending on environment (dev -> localhost backend, prod -> same-origin)
 const API_BASE = (function() {
   try {
     const host = window.location.hostname;
     // treat localhost/127.0.0.1 and typical LAN IPs as dev
-    if (!host || host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.') || host.startsWith('10.') || host === '::1') return 'http://localhost:4000';
+    // Use the same hostname for the API so cookies set by the backend
+    // match the frontend host (avoids localhost vs 127.0.0.1 mismatch).
+    if (!host) return 'http://localhost:4000';
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.startsWith('192.') || host.startsWith('10.')) {
+      return `http://${host}:4000`;
+    }
     // otherwise assume API is proxied or available at the same origin
     return '';
   } catch (e) {
@@ -27,9 +33,48 @@ window.togglePasswordVisibility = function(inputId) {
   }
 };
 
+// Offline/Testing Mode: Manually trigger login state without internet
+window.triggerOfflineLogin = function(userData = null) {
+  const defaultUser = {
+    username: 'testuser',
+    name: 'Test User',
+    email: 'test@example.com',
+    phone: '+234-123-456-7890',
+    state: 'Lagos',
+    lga: 'Lekki',
+    address: '123 Main Street, Lekki',
+    profilePicture: null,
+    avatar: 'https://ui-avatars.com/api/?name=Test+User&background=3182ce&color=fff'
+  };
+  
+  const user = userData ? { ...defaultUser, ...userData } : defaultUser;
+  console.log('%c🔓 OFFLINE MODE: Manual login triggered', 'color: #ff6b6b; font-weight: bold; font-size: 12px;', user);
+  console.log('%c💡 TIP: Use window.triggerOfflineLogout() to test logout', 'color: #4ecdc4; font-size: 11px;');
+  window.updateAuthUI(user);
+  window.offlineModeActive = true;
+};
+
+// Offline/Testing Mode: Manually trigger logout
+window.triggerOfflineLogout = function() {
+  console.log('%c🔓 OFFLINE MODE: Manual logout triggered', 'color: #ff6b6b; font-weight: bold; font-size: 12px;');
+  console.log('%c💡 TIP: Use window.triggerOfflineLogin() to test login again', 'color: #4ecdc4; font-size: 11px;');
+  window.updateAuthUI(null);
+  window.offlineModeActive = false;
+};
+
 window.updateAuthUI = function(user) {
   // Keep a global reference to the current user for other components (navbar)
   window.currentUser = user || null;
+  // Persist user session in localStorage
+  if (user && user.username) {
+    try {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    } catch (e) { /* ignore */ }
+  } else {
+    try {
+      localStorage.removeItem('currentUser');
+    } catch (e) { /* ignore */ }
+  }
   const authButtons = document.getElementById('auth-buttons');
   const userInfo = document.getElementById('user-info');
 
@@ -70,6 +115,17 @@ window.updateAuthUI = function(user) {
       userInfo.querySelector('.username').textContent = user.name || user.username;
       userInfo.querySelector('.avatar').src = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}`;
     }
+    // Ensure navbar top section and username container are visible
+    try {
+      const topSection = document.querySelector('.navbar-top-section');
+      if (topSection) topSection.style.display = 'flex';
+      const usernameContainer = document.getElementById('navbar-username-container') || document.querySelector('.navbar-username-container');
+      if (usernameContainer) usernameContainer.style.display = 'flex';
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) logoutBtn.style.display = '';
+    } catch (e) {
+      console.warn('Could not adjust navbar display:', e);
+    }
     // If navbar exists, re-render to pick up username on PC views
     if (window.Navbar && typeof window.Navbar.render === 'function') {
       try { window.Navbar.render(); } catch(e) { /* ignore render errors */ }
@@ -78,6 +134,15 @@ window.updateAuthUI = function(user) {
     // User is logged out
     if (authButtons) authButtons.style.display = 'flex';
     if (userInfo) userInfo.style.display = 'none';
+    // Ensure navbar top section and username container are hidden when logged out
+    try {
+      const topSection = document.querySelector('.navbar-top-section');
+      if (topSection) topSection.style.display = '';
+      const usernameContainer = document.getElementById('navbar-username-container') || document.querySelector('.navbar-username-container');
+      if (usernameContainer) usernameContainer.style.display = 'none';
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) logoutBtn.style.display = 'none';
+    } catch (e) { /* ignore */ }
     if (window.Navbar && typeof window.Navbar.render === 'function') {
       try { window.Navbar.render(); } catch(e) { /* ignore render errors */ }
     }
@@ -99,12 +164,13 @@ window.logoutUser = async function() {
         'Content-Type': 'application/json'
       }
     });
-    if (response.ok) {
-      window.updateAuthUI(null);
-    } else {
+    // Always clear localStorage user on logout
+    window.updateAuthUI(null);
+    if (!response.ok) {
       console.error('Logout failed:', await response.text());
     }
   } catch (error) {
+    window.updateAuthUI(null);
     console.error('Logout error:', error);
   }
 };
@@ -131,7 +197,12 @@ window.showForgotModal = function() {
   modal.style.display = 'flex';
   document.getElementById('forgot-form').onsubmit = async function(e) {
     e.preventDefault();
+    const submitBtn = this.querySelector('button[type="submit"]');
     const email = document.getElementById('forgot-email').value.trim();
+    
+    // Disable button during request
+    submitBtn.disabled = true;
+    
   const res = await fetch(`${API_BASE}/api/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -139,6 +210,10 @@ window.showForgotModal = function() {
       body: JSON.stringify({ email })
     });
     const data = await res.json();
+    
+    // Re-enable button after response
+    submitBtn.disabled = false;
+    
     if (data.success) {
       document.getElementById('auth-error').style.color = '#3182ce';
       document.getElementById('auth-error').textContent = data.message;
@@ -174,6 +249,7 @@ window.showResetPasswordModal = function(token, email) {
   modal.style.display = 'flex';
   document.getElementById('reset-form').onsubmit = async function(e) {
     e.preventDefault();
+    const submitBtn = this.querySelector('button[type="submit"]');
     const pw1 = document.getElementById('reset-password').value;
     const pw2 = document.getElementById('reset-password2').value;
     if (pw1.length < 6) {
@@ -184,12 +260,20 @@ window.showResetPasswordModal = function(token, email) {
       document.getElementById('auth-error').textContent = 'Passwords do not match.';
       return;
     }
+    
+    // Disable button during request
+    submitBtn.disabled = true;
+    
   const res = await fetch(`${API_BASE}/api/reset-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, token, password: pw1 })
     });
     const data = await res.json();
+    
+    // Re-enable button after response
+    submitBtn.disabled = false;
+    
     if (data.success) {
       document.getElementById('auth-error').style.color = '#3182ce';
       document.getElementById('auth-error').textContent = 'Password reset! You can now sign in.';
@@ -255,6 +339,7 @@ function showAuthModal(type) {
   modal.style.display = 'flex';
   document.getElementById('auth-form').onsubmit = async function(e) {
     e.preventDefault();
+    const submitBtn = this.querySelector('button[type="submit"]');
     let url, body;
     if (type === 'signup') {
       const username = document.getElementById('auth-username').value.trim();
@@ -275,6 +360,10 @@ function showAuthModal(type) {
         body = { username: usernameOrEmail, password };
       }
     }
+    
+    // Disable button during request
+    submitBtn.disabled = true;
+    
   const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -282,17 +371,88 @@ function showAuthModal(type) {
       body: JSON.stringify(body)
     });
     const data = await res.json();
+    console.log('%cLogin Response:', 'color: blue; font-weight: bold;', { status: res.status, data: data, type: type });
     if (data.success) {
-      window.updateAuthUI({ username: data.username, name: data.name });
+      console.log('✅ Login successful:', { username: data.username, name: data.name });
+      const userData = {
+        username: data.username,
+        name: data.name,
+        email: data.email || '',
+        phone: data.phone || '',
+        state: data.state || '',
+        lga: data.lga || '',
+        address: data.address || '',
+        profilePicture: data.profilePicture || null,
+        avatar: data.avatar
+      };
+      console.log('%cCalling updateAuthUI with:', 'color: green; font-weight: bold;', userData);
+      window.updateAuthUI(userData);
+      console.log('%cwindow.currentUser after updateAuthUI:', 'color: green; font-weight: bold;', window.currentUser);
+      window.userLoggedInTime = new Date().toISOString();
+      if (type === 'signup') {
+        console.log('🎉 New user registered:', data.username);
+      }
+      // Verify with server
+      console.log('%cCalling checkLoginStatus to verify with server...', 'color: purple; font-weight: bold;');
+      if (window.checkLoginStatus) {
+        await window.checkLoginStatus();
+      }
       modal.remove();
     } else {
+      console.error('❌ Login failed:', data.error);
       document.getElementById('auth-error').textContent = data.error || 'Error';
+      // Re-enable button on error
+      submitBtn.disabled = false;
     }
   };
 }
 
-// On load, check auth state
+// Function to check login status (called on page load and after login)
+window.checkLoginStatus = async function() {
+  // First, try to restore user from localStorage for instant UI update
+  let restoredUser = null;
+  try {
+    const stored = localStorage.getItem('currentUser');
+    if (stored) {
+      restoredUser = JSON.parse(stored);
+      if (restoredUser && restoredUser.username) {
+        window.updateAuthUI(restoredUser);
+      }
+    }
+  } catch (e) { /* ignore */ }
 
+  // Then, verify with server for security and up-to-date info
+  try {
+    const res = await fetch(`${API_BASE}/api/me?t=${Date.now()}`, { 
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (data.loggedIn) {
+      console.log('%c✅ User already logged in: %c' + data.username, 'color: #27ae60; font-weight: bold;', 'color: #2980b9;');
+      window.updateAuthUI({
+        username: data.username,
+        name: data.name,
+        email: data.email || '',
+        phone: data.phone || '',
+        state: data.state || '',
+        lga: data.lga || '',
+        address: data.address || '',
+        profilePicture: data.profilePicture || null,
+        avatar: data.avatar
+      });
+    } else {
+      console.log('%cℹ️ User not logged in', 'color: #95a5a6;');
+      window.updateAuthUI(null);
+    }
+  } catch (err) {
+    console.warn('%c⚠️ Could not verify login status (offline?): %c' + err.message, 'color: #e74c3c; font-weight: bold;', 'color: #c0392b;');
+    console.log('%c💡 If offline, use: window.triggerOfflineLogin()', 'color: #f39c12; font-size: 11px;');
+    // If offline, keep localStorage user if present
+    if (!restoredUser) window.updateAuthUI(null);
+  }
+};
+
+// On load, check auth state
 window.addEventListener('DOMContentLoaded', async () => {
   // Check for reset token/email in URL
   const params = new URLSearchParams(window.location.search);
@@ -304,11 +464,5 @@ window.addEventListener('DOMContentLoaded', async () => {
     // window.history.replaceState({}, document.title, window.location.pathname);
   }
   // Check auth state
-  const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
-  const data = await res.json();
-  if (data.loggedIn) {
-    window.updateAuthUI({ username: data.username, name: data.name });
-  } else {
-    window.updateAuthUI(null);
-  }
+  window.checkLoginStatus();
 });

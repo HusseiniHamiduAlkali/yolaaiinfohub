@@ -3,3 +3,46 @@ Welcome to Yola Info Hub Home Section!
 This file contains local information about Yola, Adamawa State, Nigeria, for the Home AI chat. You can add more facts, history, or FAQs here to improve the AI's answers.
 
 Consult the Internet for answers to users' requests, by google search and other methods.
+
+---
+FAQs (Home Section)
+
+Q: What is Yola known for?
+A: Yola is known as the capital of Adamawa State and the historic seat of the Fombina Kingdom. It is famous for its rich culture, the Lamido's palace, and its role as a center of learning and commerce in northeastern Nigeria.
+
+Q: Who are the traditional rulers of Yola?
+A: The traditional rulers are the Lamidos of Adamawa, who lead the Fombina Kingdom. The Lamido's palace is a major cultural landmark in Yola.
+
+Q: What are some important government structures in Adamawa?
+A: The Adamawa State Executive Council oversees governance. For more, see the Adamawa Executive Council details below.
+
+Q: What is the Fombina Kingdom?
+A: The Fombina Kingdom, also known as the Adamawa Emirate, is a traditional state with a rich history, culture, and governance system. See the Fombina Kingdom details below.
+
+Q: Where can I learn more about Yola's history?
+A: You can explore the history of Yola, its people, and its significance as the capital of Adamawa State in the Yola Adamawa details below.
+
+Q: What is the capital of Adamawa State?
+A: The capital of Adamawa State is Yola, a city known for its historical significance and cultural heritage.
+
+Q: What is the current time in Yola?
+A: The current time in Yola depends on the West Africa Time (WAT) zone, which is UTC+1.
+
+Q: What are popular places to visit in Yola?
+A: Popular places to visit in Yola include the Lamido's Palace, the Modibbo Adama University, and the Yola International Airport area.
+
+Q: What is the brief history of Yola?
+A: Yola was founded in the early 19th century by Modibbo Adama, a Fulani scholar and leader, as the capital of the Adamawa Emirate.
+
+Q: What is the origin of Yola?
+A: Yola originated as a settlement along the Benue River and grew into a significant administrative and cultural center.
+
+Q: Emergency services contact information
+A: For emergencies in Yola, contact the Adamawa State Emergency Management Agency (ASEMA) or dial the national emergency number 112.
+
+---
+Local Data Links (Home Section)
+
+- Adamawa Executive Council: details/Home/adamawaexecutivecouncil.html
+- Fombina Kingdom: details/Home/fombinakingdom.html
+- Yola Adamawa: details/Home/yolaadamawa.html

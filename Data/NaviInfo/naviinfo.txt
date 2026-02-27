@@ -1,4 +1,3 @@
-
 General Information:
 
     Yola is the capital of Adamawa State, Nigeria, and is located within the Yola South Local Government Area.
@@ -163,3 +162,81 @@ III. Additional Useful Information
 
 
 Consult the Internet for answers to users' requests, by google search and other methods.
+
+---
+FAQs (NaviInfo Section)
+
+Q: How do I get to the Lamido's Palace from the airport?
+A: From Yola International Airport, take a taxi or private car heading towards Jimeta. The Lamido's Palace is located in the old town of Yola, approximately 8 km away.
+
+Q: Road safety officials emergency contact.
+A: The Federal Road Safety Corps (FRSC) emergency contact number in Yola is 122.
+
+Q: Is there a reliable taxi service?
+A: Reliable taxi services in Yola include Jimeta Cabs and private ride-hailing options available at the airport and major hotels.
+
+---
+Local Data Links (NaviInfo Section)
+
+- details/Navi/access-bank.html
+- details/Navi/adamawa-sunshine-motor.html
+- details/Navi/agga-islamic-center.html
+- details/Navi/alibaba-mosque.html
+- details/Navi/aun-hotel.html
+- details/Navi/aun-jabbama-restaurant.html
+- details/Navi/beast-fitness.html
+- details/Navi/catholic-secreteriat.html
+- details/Navi/chicken-cottage-yola.html
+- details/Navi/city-green-hotel.html
+- details/Navi/dantshoho-hotel.html
+- details/Navi/duragi-hotels.html
+- details/Navi/eyn.html
+- details/Navi/f-fitness.html
+- details/Navi/fce-footbal-pitch.html
+- details/Navi/fidelity-bank.html
+- details/Navi/fresh-air-transit.html
+- details/Navi/gauni-sports-arena.html
+- details/Navi/golden-alpihne-hotels.html
+- details/Navi/gorilla-park.html
+- details/Navi/gt-bank.html
+- details/Navi/hajja-ammi-mosque.html
+- details/Navi/icecream-planet.html
+- details/Navi/items7-restaurant.html
+- details/Navi/jabbama-plaza.html
+- details/Navi/jambutu-flyover.html
+- details/Navi/jamubutu-motor-park.html
+- details/Navi/jimeta-market.html
+- details/Navi/jippujam.html
+- details/Navi/jumia-pickup-shop.html
+- details/Navi/keke-napep.html
+- details/Navi/lccn.html
+- details/Navi/mamma-chare-hotel.html
+- details/Navi/marwa-shawarma-grills.html
+- details/Navi/mauth-mosque.html
+- details/Navi/mau-sports-center.html
+- details/Navi/madugu-rockview-hotel.html
+- details/Navi/mevish-cafe.html
+- details/Navi/modibbo-adama-central-mosque.html
+- details/Navi/modibbo-zailani-mosque.html
+- details/Navi/muna-hotel.html
+- details/Navi/oasis-bakery.html
+- details/Navi/peace-park.html
+- details/Navi/police-roundabout-flyover.html
+- details/Navi/roundabout-maishanu.html
+- details/Navi/sanhusein-mall.html
+- details/Navi/sauki-motor-park.html
+- details/Navi/stanbic-ibtc-bank.html
+- details/Navi/sterling-bank.html
+- details/Navi/top10-plaza.html
+- details/Navi/uptown-exclusive-spot.html
+- details/Navi/vortex-hotels.html
+- details/Navi/welcome-to-yola.html
+- details/Navi/wetlands-park.html
+- details/Navi/yahuza.html
+- details/Navi/yakubu-plaza.html
+- details/Navi/yola-airport.html
+- details/Navi/yola-market.html
+- details/Navi/yola-polo-ground.html
+- details/Navi/yola-underpass.html
+- details/Navi/yola-zoo.html
+- details/Navi/zenith-bank.html

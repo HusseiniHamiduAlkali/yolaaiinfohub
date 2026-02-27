@@ -1,4 +1,3 @@
-
 General Information:
 
     Yola is the capital of Adamawa State, Nigeria, and is located within the Yola South Local Government Area.
@@ -36,3 +35,53 @@ Agriculture and Farming (Basic Advice for Adamawa Region):
 
 
 Consult the Internet for answers to users' requests, by google search and other methods.
+
+---
+FAQs (AgroInfo Section)
+
+Q: What are the main crops grown in Yola?
+A: The main crops grown in Yola include maize, rice, groundnuts, and sorghum, which thrive in the region's climate.
+
+Q: Where can I buy farm inputs in Yola?
+A: Farm inputs can be purchased at the Adamawa State Agricultural Supply Depot or local markets like Jimeta Modern Market.
+
+Q: How do I access agricultural extension services?
+A: Agricultural extension services are available through the Adamawa State Ministry of Agriculture, which provides training and support to farmers.
+
+---
+Local Data Links (AgroInfo Section)
+
+- details/Agro/acresal.html
+- details/Agro/afan.html
+- details/Agro/chikun-chicks.html
+- details/Agro/climate-smart-seed.html
+- details/Agro/coldhubs.html
+- details/Agro/comfort-agro-inputs.html
+- details/Agro/critters-vet.html
+- details/Agro/divine-pet-vet.html
+- details/Agro/easy-life.html
+- details/Agro/every-home-garden.html
+- details/Agro/fintiri-inputs-distribution.html
+- details/Agro/fison.html
+- details/Agro/golden-inputs.html
+- details/Agro/hoofline-vet.html
+- details/Agro/hyfan.html
+- details/Agro/iita.html
+- details/Agro/jambutu-fish-market.html
+- details/Agro/jambutu-vegetables-market.html
+- details/Agro/kandimi-inputs.html
+- details/Agro/la-crest.html
+- details/Agro/mia-agro-inputs.html
+- details/Agro/nazareth-inputs.html
+- details/Agro/ngurore-market.html
+- details/Agro/peasant.html
+- details/Agro/ricogado.html
+- details/Agro/rifan.html
+- details/Agro/rmrdc.html
+- details/Agro/sare-kosam.html
+- details/Agro/shamad.html
+- details/Agro/smallholder.html
+- details/Agro/swofon.html
+- details/Agro/trade-fair.html
+- details/Agro/wakili-farms.html
+- details/Agro/yusash-inputs.html

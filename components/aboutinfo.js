@@ -58,7 +58,7 @@ window.renderSection = function() {
             <li>1. Google Gemini API KEY.</li>
             <li>2. Google Maps API KEY.</li>
             <li>3. Mongodb URI For User Authentication.</li>
-            <li>4. Dedicated e-mail Adress.</li>
+            <li>4. Dedicated e-mail adress.</li>
             <li>5. E-mail. Adress 'App Password' For Password Reset Route.</li>
             <li>6. Password reset URL base.</li>
             <li>7. Front-end Netlify URL.</li>
@@ -74,7 +74,7 @@ window.renderSection = function() {
 
           <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better.</p>
 
-          <p><strong>I Husseini Hamidu Alkali the Chief Pilot, Together With GitCopilot We Are Able To Land Unto This Robust Project For My July 3MTT Knowledge Showcase.</strong><p>
+          <p><strong>I Husseini Hamidu Alkali the Chief Pilot, Together With GitCopilot We Are Able To Land Unto This Robust Project For My 3MTT Knowledge Showcase.</strong><p>
           <p><strong>My Fellow ID: FE/23/1941341. Cohort 3.
           
         </div>

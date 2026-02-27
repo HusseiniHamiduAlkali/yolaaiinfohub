@@ -59,38 +59,42 @@ window.initializeSection = window.initializeSection || function(sectionName) {
 };
 
 // Load section content and initialize it
-window.loadSection = function(section) {
-    // Hide all sections first
-    document.querySelectorAll('[id$="-content"]').forEach(el => {
-        el.style.display = 'none';
-    });
+// This is for static section management. The dynamic SPA router in index.html uses __performLoadSection instead.
+// We only define this if window.loadSection hasn't been defined by index.html yet.
+if (!window.loadSection || typeof window.__performLoadSection !== 'function') {
+    window.loadSection = function(section) {
+        // Hide all sections first
+        document.querySelectorAll('[id$="-content"]').forEach(el => {
+            el.style.display = 'none';
+        });
 
-    // Show the selected section
-    const sectionEl = document.getElementById(section + '-content');
-    if (sectionEl) {
-        sectionEl.style.display = 'block';
-        // Initialize the section
-        window.initializeSection(section);
+        // Show the selected section
+        const sectionEl = document.getElementById(section + '-content');
+        if (sectionEl) {
+            sectionEl.style.display = 'block';
+            // Initialize the section
+            window.initializeSection(section);
 
-        // Directly initialize EduInfo section
-        if (section === 'eduinfo') {
-            if (typeof window.initEduInfo === 'function') {
-                window.initEduInfo();
+            // Directly initialize EduInfo section
+            if (section === 'eduinfo') {
+                if (typeof window.initEduInfo === 'function') {
+                    window.initEduInfo();
+                }
             }
+
+            // Update URL without reload
+            history.pushState({section}, '', '/' + (section === 'home' ? '' : section));
         }
 
-        // Update URL without reload
-        history.pushState({section}, '', '/' + (section === 'home' ? '' : section));
-    }
-
-    // Update navbar active state
-    document.querySelectorAll('.navbar-links button').forEach(btn => {
-        btn.classList.remove('active');
-        if (section === btn.onclick.toString().match(/loadSection\('(.+?)'\)/)[1]) {
-            btn.classList.add('active');
-        }
-    });
-};
+        // Update navbar active state
+        document.querySelectorAll('.navbar-links button').forEach(btn => {
+            btn.classList.remove('active');
+            if (section === btn.onclick.toString().match(/loadSection\('(.+?)'\)/)[1]) {
+                btn.classList.add('active');
+            }
+        });
+    };
+}
 
 // Initialize app
 async function initializeApp() {
@@ -149,10 +153,13 @@ async function initializeApp() {
     const path = window.location.pathname.split('/').pop();
     const section = path === '' || path === 'index.html' ? 'home' : path.replace('.html', '');
     // If a details->back restore is pending, avoid forcing the default section here
-    if(!sessionStorage.getItem('lastSection')){
+    // Also skip if a restore just completed (the restored section is already loaded)
+    if(!sessionStorage.getItem('lastSection') && !window.__restoringSection && !window.__restoreJustCompleted){
       window.loadSection(section);
     } else {
-      console.log('app.js: skipping default load because restore is pending');
+      console.log('app.js initializeApp: skipping default load because restore is pending, in-progress, or just completed');
+      // Clear the restore-complete flag so future page loads work normally
+      window.__restoreJustCompleted = false;
     }
   } catch (error) {
     console.error('Error initializing app:', error);
@@ -162,6 +169,17 @@ async function initializeApp() {
 
 // Initialize on page load
 window.addEventListener('load', () => {
+  // If the SPA loader from index.html is present, defer loading to it
+  if (typeof window.__performLoadSection === 'function') {
+    console.log('app.js: SPA loader detected - deferring section load to index.html');
+    // Still initialize app (auth/UI), but do not perform any section routing here
+    initializeApp().catch(error => {
+      console.error('Error during app initialization:', error);
+      window.updateAuthUI(null);
+    });
+    return;
+  }
+
   initializeApp().catch(error => {
     console.error('Error during app initialization:', error);
     window.updateAuthUI(null);
@@ -175,28 +193,30 @@ window.addEventListener('load', () => {
   const path = window.location.pathname.substring(1);
   const section = path || 'home';
   if (typeof window.loadSection === 'function') {
-    // If restore is pending, do not force-load home here; index.html restore logic will run instead
-    if(!sessionStorage.getItem('lastSection')){
+    // If restore is pending or just completed, skip default load
+    if(!sessionStorage.getItem('lastSection') && !window.__restoringSection && !window.__restoreJustCompleted){
       window.loadSection(section);
       // Highlight home by default if no specific path
       if (!path || path === 'index.html') {
         window.highlightActiveNav('home');
       }
     } else {
-      console.log('load handler: skipping default load because restore is pending');
+      console.log('load handler: skipping default load because restore is pending, in-progress, or just completed');
+      window.__restoreJustCompleted = false;
     }
   } else {
     // fallback: reload after scripts
     setTimeout(() => {
       if (typeof window.loadSection === 'function') {
-        if(!sessionStorage.getItem('lastSection')){
+        if(!sessionStorage.getItem('lastSection') && !window.__restoringSection && !window.__restoreJustCompleted){
           window.loadSection(section);
           // Highlight home by default if no specific path
           if (!path || path === 'index.html') {
             window.highlightActiveNav('home');
           }
         } else {
-          console.log('fallback loader: skipping default load because restore is pending');
+          console.log('fallback loader: skipping default load because restore is pending, in-progress, or just completed');
+          window.__restoreJustCompleted = false;
         }
       }
     }, 500);

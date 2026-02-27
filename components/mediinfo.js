@@ -27,14 +27,16 @@ window.renderSection = function() {
     document.head.appendChild(link);
   }
   
-  fetch('templates/medi.html').then(r => r.text()).then(html => {
-    document.getElementById('main-content').innerHTML = html;
-    // Wire model toggle after template is inserted
-    const mt = document.getElementById('model-toggle');
-    if (mt) mt.onchange = function() { window.toggleGeminiModel('medi', this.checked); };
-  }).catch(err => {
-    console.error('Failed to load home template:', err);
-    document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
+  return fetch('templates/medi.html').then(r => r.text()).then(html => {
+      return html;
+    }).then(html => {
+      document.getElementById('main-content').innerHTML = html;
+      // Wire model toggle after template is inserted
+      const mt = document.getElementById('model-toggle');
+      if (mt) mt.onchange = function() { window.toggleGeminiModel('medi', this.checked); };
+    }).catch(err => {
+      console.error('Failed to load medi template:', err);
+      document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
   });  
 };
 
@@ -109,26 +111,53 @@ window.sendMediMessage = async function(faqText = '') {
     <div class='ai-msg'><span class='ai-msg-text'>Medi AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
-  preview.innerHTML = '';
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
   if (!faqText) input.value = '';
 
   // Load existing chat history using commonAI.js
   window.initChatHistory && window.initChatHistory('medi', 10);
   let chatHistory = window.getChatHistory ? window.getChatHistory('medi') : [];
 
+
   let finalAnswer = "";
   try {
-    const localData = await fetch('Data/MediInfo/mediinfo.txt').then(r => r.text());
+    // Fetch main local data
+    const signal = window.mediAbortController ? window.mediAbortController.signal : null;
+    const localData = await fetch('Data/MediInfo/mediinfo.txt', signal ? { signal } : {}).then(r => r.text());
+
+    // Find local file links in the txt (format: details/Medi/filename.html)
+    const linkRegex = /^-\s*(details\/Medi\/[^\s]+\.html)$/gim;
+    const links = [];
+    let match;
+    while ((match = linkRegex.exec(localData)) !== null) {
+      links.push(match[1]);
+    }
+
+    // Fetch all linked file contents in parallel
+    let linkedContents = '';
+    if (links.length > 0) {
+      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
+      const results = await Promise.all(fetches);
+      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
+    }
+
     // Include chat history in the context
     const historyContext = chatHistory.length > 0 
         ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.role === 'user' ? h.content : ''}\nAI: ${h.role === 'assistant' ? h.content : ''}`).filter(Boolean).join('\n\n')
         : "";
-    finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
+
+    // Combine all local data
+    const allLocalData = localData + linkedContents + historyContext;
+    finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, imageData, window.mediAbortController ? window.mediAbortController.signal : null);
     // Store in chat history (keep last 10 messages)
     window.addToChatHistory && window.addToChatHistory('medi', 'user', msg);
     window.addToChatHistory && window.addToChatHistory('medi', 'assistant', finalAnswer);
   } catch (e) {
-    if (e && e.name === 'AbortError') {
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
         finalAnswer = "USER ABORTED REQUEST";
     } else {
         console.error("Error fetching local data or Gemini API call:", e);
@@ -148,7 +177,7 @@ window.sendMediMessage = async function(faqText = '') {
 };
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   try {
     const contents = {
       parts: []
@@ -170,26 +199,29 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
-    let res = await fetch(url, { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' }, 
-      body,
-      signal: window.mediAbortController?.signal 
-    });
+    
+    const fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    };
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+
+    let res = await fetch(url, fetchOptions);
     let data = await res.json();
     if (data.error && window.useGemini25 && !imageData) {
       // fallback to 1.5
       body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(url, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body,
-        signal: window.mediAbortController?.signal
-      });
+      res = await fetch(url, fetchOptions);
       data = await res.json();
     }
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
+    if (err.name === 'AbortError') {
+      throw err; // Re-throw abort errors
+    }
     return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }

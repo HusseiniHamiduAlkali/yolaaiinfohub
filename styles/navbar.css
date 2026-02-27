@@ -64,37 +64,86 @@ nav.navbar {
 }
 
 .navbar-username-container {
-  display: none; /* Hidden by default; shown on large screens */
+  display: flex;
   align-items: center;
-  margin-right: 0.8rem;
+  margin-right: 1.2rem;
+  /*padding: 0.5rem 0.8rem; */
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.navbar-username-container:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .navbar-username-text {
   font-weight: 700;
   color: #cbd5e1;
-  margin-right: 0.6rem;
-  font-size: 1rem;
+  margin-left: 0.4rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
 }
 
 /* Avatar and name styles */
 .navbar-avatar {
   display: inline-flex;
   width: 50px;
-  height: 45px;
-  border-radius: 25%;
+  height: 40px;
+  border-radius: 33%;
   overflow: hidden;
-  margin-right: 0.6rem;
+  margin-right: 0.7rem;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid #cbd5e1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.navbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-.navbar-names { display: inline-flex; flex-direction: column; align-items: flex-start; }
-.navbar-fullname { font-weight: 600; color: #e6eef9; font-size: 0.98rem; }
-.navbar-profile-link { display: inline-flex; align-items: center; text-decoration: none; }
-.navbar-profile-link:hover .navbar-fullname, .navbar-profile-link:hover .navbar-username-text { text-decoration: underline; }
+.navbar-avatar img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.navbar-username-container:hover .navbar-avatar {
+  transform: scale(1.08);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.navbar-names { 
+  display: inline-flex; 
+  flex-direction: column; 
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.navbar-fullname { 
+  font-weight: 600; 
+  color: #e6eef9; 
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.navbar-profile-link { 
+  display: inline-flex; 
+  align-items: center; 
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-profile-link:hover {
+  opacity: 0.85;
+}
+
+.navbar-profile-link:hover .navbar-fullname, 
+.navbar-profile-link:hover .navbar-username-text { 
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
 
 /* Merged styles for navbar-links across all definitions */
 .navbar-links {
@@ -189,6 +238,23 @@ nav.navbar {
   height: 40px;
   position: absolute;
   top: 1rem;
+
+/* Ensure username container appears inside hamburger/menu on mobile */
+@media (max-width: 700px) {
+  .navbar-username-container {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .navbar-username-text { display: inline-block; }
+  .navbar-fullname { display: none; }
+}
+
+/* Small tablets: show username container and logout button */
+@media (min-width: 701px) and (max-width: 900px) {
+  .navbar-username-container { display: flex !important; align-items: center; }
+  #logout-btn { display: inline-block !important; }
+}
   right: 1rem;
   z-index: 1000;
   flex-direction: column;
@@ -331,6 +397,42 @@ nav.navbar {
   color: #000000;
 }
 
+/* Ensure username container displays in mobile menu */
+.mobile-menu .navbar-top-section {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 0.7rem;
+}
+
+.mobile-menu .navbar-username-container {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.mobile-menu .navbar-avatar {
+  display: inline-flex !important;
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+}
+
+.mobile-menu .navbar-names {
+  display: inline-flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.mobile-menu .navbar-fullname,
+.mobile-menu .navbar-username-text {
+  display: block !important;
+}
+
 /* Minimal appbar for auth pages (moved from global.css) */
 .minimal-appbar {
   width: 100vw;
@@ -394,6 +496,9 @@ nav.navbar {
   display: flex;
 }
 
+.navbar-username-container { display: flex !important; }
+.navbar-username-text { color: #e4e4e4; font-size: 1.05rem; margin-right: 1rem; }
+
 /* PC Screens (>=1151px) */
 @media screen and (min-width: 1151px) {
   .navbar {
@@ -451,8 +556,7 @@ nav.navbar {
   }
 
   /* Show username on PC and position it above links, left of the auth/buttons */
-  .navbar-username-container { display: flex !important; }
-  .navbar-username-text { color: #e4e4e4; font-size: 1.05rem; margin-right: 1rem; }
+  
 }
 
 /* Tablet Screens (701px to 1150px) */
@@ -470,6 +574,7 @@ nav.navbar {
     width: 100%;
     margin-bottom: 1rem;
     padding: 0.5rem;
+    display: none !important;
   }
 
   .navbar-logo-placeholder {

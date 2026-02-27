@@ -46,6 +46,22 @@
   text-align: center;
 }
 
+/* Weather display styling */
+.weather-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 8px 0 4px 0;
+  padding: 0;
+}
+
+.weather-label {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
 
 @media screen and (min-width: 700px) and (max-width: 1150px) {
   .section-eco {

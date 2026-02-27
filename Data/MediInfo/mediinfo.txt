@@ -1,4 +1,3 @@
-
 General Information:
 
     Yola is the capital of Adamawa State, Nigeria, and is located within the Yola South Local Government Area.
@@ -237,8 +236,55 @@ Despite efforts, the healthcare sector in Yola and Adamawa State faces significa
 
     Impact of Insurgency/Displacement: Yola, as the state capital, has been a refuge for internally displaced persons (IDPs) from conflict-affected areas. This influx puts additional strain on existing healthcare services, and IDPs often have unmet psychosocial and health needs due to limited access to services and direct exposure to violence.
 
+---
+FAQs (MediInfo Section)
 
+Q: What are the main hospitals and clinics in Yola?
+A: Major facilities include Modibbo Adama University Teaching Hospital, Bako PHC, Nana-Asma'u Maternity Clinic, and several private clinics and diagnostic centers.
 
+Q: How can I access emergency medical care in Yola?
+A: For emergencies, visit MAUTH or call their emergency numbers. Many clinics also offer 24/7 emergency services.
 
+Q: What are the common health challenges in Yola?
+A: Challenges include high maternal and infant mortality, inadequate infrastructure, high cost of medications, and limited insurance coverage.
 
-Consult the Internet for answers to users' requests, by google search and other methods.
+Q: Are there public health programs in Yola?
+A: Yes, the Ministry of Health and MAUTH run programs on immunization, maternal health, disease surveillance, and health education.
+
+Q: Where can I get affordable medicines or health supplies?
+A: Many clinics and hospitals have pharmacies. For agricultural health (veterinary, farm health), see the links below for agro-related health services.
+
+Q: Where is the orthopaedic hospital in Yola?
+A: The Federal Medical Centre Yola has an orthopaedic unit that provides specialized care for bone and joint conditions.
+
+Q: What are the symptoms of malaria?
+A: Common symptoms of malaria include fever, chills, headache, nausea, and muscle pain. Seek medical attention if these symptoms occur.
+
+Q: How to find a general practitioner?
+A: General practitioners can be found at the Yola Central Dispensary or through private clinics in the Jimeta area.
+
+---
+Local Data Links (MediInfo Section)
+
+- details/Medi/alfijr-pharmacy.html
+- details/Medi/fortland-hospital.html
+- details/Medi/galbose-hospital.html
+- details/Medi/german-hospital.html
+- details/Medi/jasar-pharmacy.html
+- details/Medi/jds-pharmacy.html
+- details/Medi/kerion-pharmacy.html
+- details/Medi/kingblaise-pharmacy.html
+- details/Medi/lekki-pharmacy.html
+- details/Medi/malamre-clinic.html
+- details/Medi/mauth-yola.html
+- details/Medi/meddy-clinic.html
+- details/Medi/meddy-pharmacy.html
+- details/Medi/mufami-pharmacy.html
+- details/Medi/nets-distribution.html
+- details/Medi/newboshang-hospital.html
+- details/Medi/polio-immunization.html
+- details/Medi/redcross-awareness.html
+- details/Medi/shekinah-pharmacy.html
+- details/Medi/specialist-hospital.html
+- details/Medi/valli-clinic.html
+- details/Medi/yola-dispensary.html

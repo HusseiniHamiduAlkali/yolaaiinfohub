@@ -6,83 +6,532 @@
   <title>Profile | Yola AI Info Hub</title>
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/navbar.css">
-  <style>
-    .profile-container { max-width: 760px; margin: 5rem auto; background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.4);}    
-    .profile-header { display:flex; gap:1rem; align-items:center; }
-    .profile-avatar { width:96px; height:96px; border-radius:50%; overflow:hidden; background:#f3f4f6; display:flex; align-items:center; justify-content:center; }
-    .profile-avatar img { width:100%; height:100%; object-fit:cover; }
-    .profile-meta { display:flex; flex-direction:column; }
-    .profile-meta h2 { margin:0; }
-    .profile-details { margin-top:1.2rem; display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
-    .profile-field { background:#f8fafc; padding:0.8rem; border-radius:8px; }
-  </style>
+  <link rel="stylesheet" href="../details/details.css">
+  <link rel="stylesheet" href="pages.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
 </head>
 <body>
   <div id="navbar"></div>
+  
+  <nav class="minimal-nav">
+    <div class="minimal-nav-content">
+      <div href="../index.html" class="nav-logo">
+        <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+        <span>Yola AI Info Hub</span>
+      </div>
+      <a href="../index.html" class="return-home">
+        <i class="fas fa-home"></i>
+        <span>Return Home</span>
+      </a>
+    </div>
+  </nav>
+
   <main>
     <div class="profile-container">
+      <div class="success-message" id="success-message">
+        <i class="fas fa-check-circle"></i> Profile updated successfully!
+      </div>
+      
       <div class="profile-header">
-        <div class="profile-avatar" id="profile-avatar"></div>
+        <div class="profile-avatar-wrapper">
+          <div class="profile-avatar" id="profile-avatar"></div>
+          <div class="profile-avatar-upload-hint" id="avatar-upload-hint" title="Click to change profile picture">
+            <i class="fas fa-camera"></i>
+          </div>
+          <input type="file" id="profile-picture-input" accept="image/*">
+        </div>
+        
         <div class="profile-meta">
           <h2 id="profile-name">Profile</h2>
-          <div id="profile-username" style="color:#718096">@username</div>
+          <div class="profile-username-display">
+            <span id="profile-username" style="color:#718096">@username</span>
+          </div>
+          <div class="profile-actions" style="margin-top:8px">
+            <button id="btn-delete-account" title="Delete account" style="display:none;background:#ef4444;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer">Delete account</button>
+          </div>
+          
+
+          
         </div>
       </div>
-      <div class="profile-details" id="profile-details">
-        <div class="profile-field" id="pf-email">Email: -</div>
-        <div class="profile-field" id="pf-phone">Phone: -</div>
-        <div class="profile-field" id="pf-state">State: -</div>
-        <div class="profile-field" id="pf-lga">LGA: -</div>
-        <div class="profile-field" id="pf-address" style="grid-column:1 / -1">Address: -</div>
+      
+      <!-- View Mode -->
+      <div id="profile-view-mode">
+        <div class="profile-details" id="profile-details">
+          <div class="profile-field" id="pf-email">
+            <div class="profile-field-header">
+              <strong>Email</strong>
+              <button class="edit-icon-btn" data-field="email" title="Edit email">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+            <div class="profile-field-value">-</div>
+          </div>
+          <div class="profile-field" id="pf-phone">
+            <div class="profile-field-header">
+              <strong>Phone</strong>
+              <button class="edit-icon-btn" data-field="phone" title="Edit phone">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+            <div class="profile-field-value">-</div>
+          </div>
+          <div class="profile-field" id="pf-state">
+            <div class="profile-field-header">
+              <strong>State</strong>
+              <button class="edit-icon-btn" data-field="state" title="Edit state">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+            <div class="profile-field-value">-</div>
+          </div>
+          <div class="profile-field" id="pf-lga">
+            <div class="profile-field-header">
+              <strong>LGA</strong>
+              <button class="edit-icon-btn" data-field="lga" title="Edit LGA">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+            <div class="profile-field-value">-</div>
+          </div>
+          <div class="profile-field" id="pf-address" style="grid-column:1 / -1">
+            <div class="profile-field-header">
+              <strong>Address</strong>
+              <button class="edit-icon-btn" data-field="address" title="Edit address">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+            <div class="profile-field-value">-</div>
+          </div>
+        </div>
       </div>
-    </div>
+      
+    
   </main>
   <script>
     // Render navbar if available
     window.Navbar && window.Navbar.render && window.Navbar.render();
+    
     const params = new URLSearchParams(window.location.search);
     const u = params.get('u');
-    const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
+    const API_BASE = window.API_BASE || (function(){ 
+      try{ 
+        const h = window.location.hostname; 
+        if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; 
+        return ''; 
+      } catch(e) { 
+        return 'http://localhost:4000' 
+      } 
+    })();
+    
+    let currentUserData = null;
+    let isEditMode = false;
+    
+    // Elements (guarded - some elements may not exist in this template)
+    const btnEditProfile = document.getElementById('btn-edit-profile');
+    const btnCancelEdit = document.getElementById('btn-cancel-edit');
+    const btnCancelForm = document.getElementById('btn-cancel-form');
+    const profileForm = document.getElementById('profile-edit-form');
+    const profileViewMode = document.getElementById('profile-view-mode');
+    const successMessage = document.getElementById('success-message');
+    const avatarUploadHint = document.getElementById('avatar-upload-hint');
+    const profilePictureInput = document.getElementById('profile-picture-input');
+    const editProfilePictureInput = document.getElementById('edit-profile-picture-input');
+    const btnDeleteAccount = document.getElementById('btn-delete-account');
+
+    // Event listeners (only attach if element exists)
+    if (btnEditProfile) btnEditProfile.addEventListener('click', enterEditMode);
+    if (btnCancelEdit) btnCancelEdit.addEventListener('click', exitEditMode);
+    if (btnCancelForm) btnCancelForm.addEventListener('click', exitEditMode);
+    if (profileForm) profileForm.addEventListener('submit', saveProfile);
+    if (avatarUploadHint && profilePictureInput) avatarUploadHint.addEventListener('click', () => profilePictureInput.click());
+    if (profilePictureInput) profilePictureInput.addEventListener('change', handleAvatarUpload);
+    if (editProfilePictureInput) editProfilePictureInput.addEventListener('change', handleEditAvatarUpload);
+    if (btnDeleteAccount) btnDeleteAccount.addEventListener('click', handleDeleteAccountClick);
+    
     async function loadProfile() {
       try {
-        if (u) {
-          // attempt to fetch public profile endpoint (not implemented) fallback to /api/me if matches session
-          const meRes = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
-          const me = await meRes.json();
-          if (me.loggedIn && me.username === u) {
-            fillProfile(me);
-            return;
-          }
-          // no public endpoint; show basic 'username' only
-          document.getElementById('profile-name').textContent = u;
-          document.getElementById('profile-username').textContent = '@' + u;
+        console.log('loadProfile started, u param:', u);
+        const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
+        const data = await res.json();
+        console.log('API response:', data);
+        if (data.loggedIn) {
+          currentUserData = data;
+          fillProfile(data);
         } else {
-          const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
-          const data = await res.json();
-          if (data.loggedIn) {
-            fillProfile(data);
-          } else {
-            document.getElementById('profile-name').textContent = 'Not signed in';
-            document.getElementById('profile-username').textContent = '';
-          }
+          document.getElementById('profile-name').textContent = 'Not signed in';
+          document.getElementById('profile-username').textContent = '';
+          btnEditProfile.style.display = 'none';
         }
       } catch (err) {
         console.error('Profile load error', err);
       }
     }
+    
     function fillProfile(data) {
+      console.log('fillProfile called with data:', data);
       document.getElementById('profile-name').textContent = data.name || data.username || 'User';
       document.getElementById('profile-username').textContent = '@' + (data.username || '');
+      
       const avatarWrap = document.getElementById('profile-avatar');
       const avatarUrl = data.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || data.username)}&background=3182ce&color=fff`;
       avatarWrap.innerHTML = `<img src="${avatarUrl}" alt="avatar"/>`;
-      document.getElementById('pf-email').textContent = 'Email: ' + (data.email || '-');
-      document.getElementById('pf-phone').textContent = 'Phone: ' + (data.phone || '-');
-      document.getElementById('pf-state').textContent = 'State: ' + (data.state || '-');
-      document.getElementById('pf-lga').textContent = 'LGA: ' + (data.lga || '-');
-      document.getElementById('pf-address').textContent = 'Address: ' + (data.address || '-');
+      
+      // Fill view mode
+      fillField('pf-email', 'Email', data.email);
+      fillField('pf-phone', 'Phone', data.phone);
+      fillField('pf-state', 'State', data.state);
+      fillField('pf-lga', 'LGA', data.lga);
+      fillField('pf-address', 'Address', data.address);
+      
+      // Fill form mode
+      document.getElementById('edit-name').value = data.name || '';
+      document.getElementById('edit-email').value = data.email || '';
+      document.getElementById('edit-phone').value = data.phone || '';
+      document.getElementById('edit-state').value = data.state || '';
+      document.getElementById('edit-lga').value = data.lga || '';
+      document.getElementById('edit-address').value = data.address || '';
     }
+    
+    function fillField(elementId, label, value) {
+      const element = document.getElementById(elementId);
+      if (!element) return;
+      
+      // Convert value to string and check if it has content
+      const strValue = value ? String(value).trim() : '';
+      const hasValue = strValue && strValue !== '' && strValue !== 'undefined' && strValue !== 'null';
+      
+      element.className = hasValue ? 'profile-field' : 'profile-field empty';
+      element.innerHTML = `
+        <div class="profile-field-header">
+          <strong>${label}</strong>
+          <button class="edit-icon-btn" data-field="${elementId.replace('pf-', '')}" title="Edit ${label.toLowerCase()}">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+        <div class="profile-field-value">${hasValue ? strValue : '-'}</div>
+      `;
+      
+      // Add event listener to the edit button for inline editing
+      const editBtn = element.querySelector('.edit-icon-btn');
+      if (editBtn) {
+        editBtn.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          makeFieldEditable(element, elementId.replace('pf-', ''));
+        });
+      }
+    }
+
+    function makeFieldEditable(fieldElement, fieldKey) {
+      // Prevent multiple inline editors
+      if (fieldElement.classList.contains('editing')) return;
+      fieldElement.classList.add('editing');
+
+      const valueDiv = fieldElement.querySelector('.profile-field-value');
+      const headerBtn = fieldElement.querySelector('.edit-icon-btn');
+      const currentText = valueDiv ? valueDiv.textContent.trim() : '';
+
+      // Create input or textarea for address
+      let inputEl;
+      if (fieldKey === 'address') {
+        inputEl = document.createElement('textarea');
+        inputEl.rows = 3;
+      } else {
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+      }
+      inputEl.className = 'inline-edit-input';
+      inputEl.value = (currentText === '-' ? '' : currentText);
+
+      // Replace value with input
+      if (valueDiv) valueDiv.innerHTML = '';
+      valueDiv.appendChild(inputEl);
+      inputEl.focus();
+
+      // Replace edit button with save button
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'save-icon-btn';
+      saveBtn.title = 'Save';
+      saveBtn.dataset.field = fieldKey;
+      saveBtn.innerHTML = '<i class="fas fa-check"></i>';
+
+      // Optional cancel button (small X)
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'cancel-icon-btn';
+      cancelBtn.title = 'Cancel';
+      cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
+
+      if (headerBtn && headerBtn.parentNode) {
+        headerBtn.parentNode.replaceChild(saveBtn, headerBtn);
+        headerBtn.parentNode.insertBefore(cancelBtn, saveBtn.nextSibling);
+      }
+
+      // Handlers
+      saveBtn.addEventListener('click', function () { saveFieldInline(fieldElement, fieldKey, inputEl, saveBtn, cancelBtn); });
+      cancelBtn.addEventListener('click', function () { cancelInlineEdit(fieldElement, fieldKey); });
+
+      // Save on Enter for single-line inputs
+      inputEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && inputEl.tagName.toLowerCase() === 'input') {
+          e.preventDefault();
+          saveBtn.click();
+        } else if (e.key === 'Escape') {
+          cancelBtn.click();
+        }
+      });
+    }
+
+    async function saveFieldInline(fieldElement, fieldKey, inputEl, saveBtn, cancelBtn) {
+      const newValue = inputEl.value.trim();
+
+      // small optimistic UI change: disable buttons
+      saveBtn.disabled = true;
+      cancelBtn.disabled = true;
+
+      const formData = new FormData();
+      formData.append(fieldKey, newValue);
+
+      try {
+        const res = await fetch(`${API_BASE}/api/update-profile`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        const data = await res.json();
+        if (res.ok) {
+          // update displayed value
+          const valueDiv = fieldElement.querySelector('.profile-field-value');
+          valueDiv.textContent = newValue || '-';
+
+          // restore edit button
+          restoreEditButton(fieldElement, fieldKey);
+          fieldElement.classList.remove('editing');
+
+          // update local cached user data if present
+          if (currentUserData) currentUserData[fieldKey] = newValue;
+          if (window.updateAuthUI && typeof window.updateAuthUI === 'function') window.updateAuthUI(currentUserData);
+
+          // show small inline success indicator next to the field (transient)
+          showInlineSavedIndicator(fieldElement);
+        } else {
+          alert((data && data.error) || 'Failed to save field');
+          saveBtn.disabled = false;
+          cancelBtn.disabled = false;
+        }
+      } catch (err) {
+        console.error('Inline save error', err);
+        alert('Error saving field. Please try again.');
+        saveBtn.disabled = false;
+        cancelBtn.disabled = false;
+      }
+    }
+
+    function showInlineSavedIndicator(fieldElement) {
+      try {
+        const header = fieldElement.querySelector('.profile-field-header');
+        if (!header) return;
+        // create indicator
+        const indicator = document.createElement('span');
+        indicator.className = 'inline-save-indicator';
+        indicator.style.marginLeft = '8px';
+        indicator.style.color = '#16a34a';
+        indicator.style.display = 'inline-flex';
+        indicator.style.alignItems = 'center';
+        indicator.style.gap = '6px';
+        indicator.innerHTML = '<i class="fas fa-check-circle"></i><span style="font-size:0.85em">Saved</span>';
+        header.appendChild(indicator);
+        setTimeout(() => { indicator.remove(); }, 2200);
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    function cancelInlineEdit(fieldElement, fieldKey) {
+      // restore original display
+      const valueDiv = fieldElement.querySelector('.profile-field-value');
+      const inputEl = valueDiv ? valueDiv.querySelector('.inline-edit-input') : null;
+      const originalText = inputEl ? (inputEl.defaultValue || inputEl.value) : '-';
+      if (valueDiv) valueDiv.textContent = originalText || '-';
+      restoreEditButton(fieldElement, fieldKey);
+      fieldElement.classList.remove('editing');
+    }
+
+    function restoreEditButton(fieldElement, fieldKey) {
+      const header = fieldElement.querySelector('.profile-field-header');
+      if (!header) return;
+      // remove any save/cancel buttons
+      const existingSave = header.querySelector('.save-icon-btn');
+      const existingCancel = header.querySelector('.cancel-icon-btn');
+      if (existingSave) existingSave.remove();
+      if (existingCancel) existingCancel.remove();
+
+      // create and insert edit button
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-icon-btn';
+      editBtn.title = 'Edit';
+      editBtn.dataset.field = fieldKey;
+      editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+      header.appendChild(editBtn);
+      editBtn.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        makeFieldEditable(fieldElement, fieldKey);
+      });
+    }
+    
+    // Delete account flow
+    function handleDeleteAccountClick(e) {
+      e.preventDefault();
+      deleteAccount();
+    }
+
+    async function deleteAccount() {
+      // require typing DELETE to confirm
+      const confirmation = prompt('Type DELETE to confirm account deletion. This action cannot be undone.');
+      if (!confirmation || confirmation.trim() !== 'DELETE') {
+        alert('Account deletion cancelled.');
+        return;
+      }
+
+      if (!confirm('Are you absolutely sure? This will permanently delete your account.')) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/delete-account`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        const data = await res.json();
+        if (res.ok) {
+          // redirect to home or signout
+          alert('Account deleted. Redirecting to home.');
+          window.location.href = '../index.html';
+        } else {
+          alert((data && data.error) || 'Failed to delete account.');
+        }
+      } catch (err) {
+        console.error('Delete account error', err);
+        alert('Error deleting account. Please try again.');
+      }
+    }
+    
+    function handleFieldEditClick(e) {
+      e.preventDefault();
+      const fieldName = e.currentTarget.dataset.field;
+      
+      // Focus the corresponding input in edit form and enter edit mode
+      enterEditMode();
+      
+      // Scroll to and focus the field
+      const inputSelector = `#edit-${fieldName === 'lga' ? 'lga' : fieldName === 'phone' ? 'phone' : fieldName === 'state' ? 'state' : fieldName === 'address' ? 'address' : fieldName === 'email' ? 'email' : fieldName}`;
+      const inputElement = document.querySelector(inputSelector);
+      if (inputElement) {
+        setTimeout(() => {
+          inputElement.focus();
+          inputElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+      }
+    }
+    
+    function enterEditMode() {
+      isEditMode = true;
+      profileViewMode.style.display = 'none';
+      profileForm.classList.add('active');
+      btnEditProfile.style.display = 'none';
+      btnCancelEdit.style.display = 'inline-flex';
+      avatarUploadHint.style.display = 'flex';
+      document.querySelector('.profile-avatar-wrapper').style.cursor = 'pointer';
+      if (btnDeleteAccount) btnDeleteAccount.style.display = 'inline-flex';
+    }
+    
+    function exitEditMode() {
+      isEditMode = false;
+      profileForm.classList.remove('active');
+      profileViewMode.style.display = 'block';
+      btnEditProfile.style.display = 'inline-flex';
+      btnCancelEdit.style.display = 'none';
+      avatarUploadHint.style.display = 'none';
+      document.querySelector('.profile-avatar-wrapper').style.cursor = 'default';
+      successMessage.classList.remove('show');
+      if (btnDeleteAccount) btnDeleteAccount.style.display = 'none';
+    }
+    
+    function handleAvatarUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          document.getElementById('profile-avatar').innerHTML = `<img src="${event.target.result}" alt="avatar"/>`;
+          document.getElementById('edit-profile-picture-input').files = e.target.files;
+          enterEditMode();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    function handleEditAvatarUpload(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          document.getElementById('profile-avatar').innerHTML = `<img src="${event.target.result}" alt="avatar"/>`;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    async function saveProfile(e) {
+      e.preventDefault();
+      
+      const formData = new FormData();
+      formData.append('name', document.getElementById('edit-name').value);
+      formData.append('email', document.getElementById('edit-email').value);
+      formData.append('phone', document.getElementById('edit-phone').value);
+      formData.append('state', document.getElementById('edit-state').value);
+      formData.append('lga', document.getElementById('edit-lga').value);
+      formData.append('address', document.getElementById('edit-address').value);
+      
+      const fileInput = document.getElementById('edit-profile-picture-input');
+      if (fileInput.files.length > 0) {
+        formData.append('profilePicture', fileInput.files[0]);
+      }
+      
+      try {
+        const response = await fetch(`${API_BASE}/api/update-profile`, {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          currentUserData = { ...currentUserData, ...data };
+          fillProfile(currentUserData);
+          
+          // Update navbar if available
+          if (window.updateAuthUI && typeof window.updateAuthUI === 'function') {
+            window.updateAuthUI(currentUserData);
+          }
+          
+          // Show success message
+          successMessage.classList.add('show');
+          setTimeout(() => {
+            successMessage.classList.remove('show');
+          }, 3000);
+          
+          exitEditMode();
+        } else {
+          const errorMsg = data.error || 'Failed to update profile';
+          alert('Error: ' + errorMsg);
+        }
+      } catch (err) {
+        console.error('Save profile error', err);
+        alert('Error saving profile. Please try again.');
+      }
+    }
+    
     loadProfile();
   </script>
+
 </body>
 </html>

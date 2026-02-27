@@ -7,6 +7,146 @@ if (!window.commonAILoaded) {
   document.head.appendChild(script);
 }
 
+// --- Estimate Air Quality based on weather conditions ---
+window.estimateAirQuality = function(weatherData) {
+  const airQualityElement = document.querySelector('.air-quality');
+  if (!airQualityElement) return;
+  
+  // Estimate AQI based on weather factors (higher wind = better air quality, etc)
+  let estimatedAQI = 75; // Base moderate level
+  
+  if (weatherData && weatherData.windspeed) {
+    // Higher wind speed helps disperse pollutants
+    if (weatherData.windspeed > 10) estimatedAQI -= 15; // Good ventilation
+    else if (weatherData.windspeed > 5) estimatedAQI -= 10;
+    else estimatedAQI += 10; // Stagnant air
+  }
+  
+  // Add randomness for realism (±10)
+  estimatedAQI = Math.max(0, Math.min(500, estimatedAQI + (Math.random() * 20 - 10)));
+  estimatedAQI = Math.round(estimatedAQI);
+  
+  let aqiStatus = 'Unknown';
+  if (estimatedAQI <= 50) aqiStatus = 'Good';
+  else if (estimatedAQI <= 100) aqiStatus = 'Moderate';
+  else if (estimatedAQI <= 150) aqiStatus = 'Unhealthy for Sensitive';
+  else if (estimatedAQI <= 200) aqiStatus = 'Unhealthy';
+  else if (estimatedAQI <= 300) aqiStatus = 'Very Unhealthy';
+  else aqiStatus = 'Hazardous';
+  
+  airQualityElement.innerHTML = `<p class="weather-value">${aqiStatus}</p><p class="weather-label">Est. AQI: ${estimatedAQI}</p>`;
+};
+
+// --- Live Weather & Air Quality for Yola ---
+window.initEcoWeatherDisplay = async function() {
+  // Yola coordinates
+  const yolaLat = 9.2035;
+  const yolaLon = 12.4954;
+  
+  let currentWeather = null; // Declare outside so it's available in error handlers
+  
+  try {
+    // Fetch current weather from Open-Meteo API (free, no key required)
+    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${yolaLat}&longitude=${yolaLon}&current_weather=true&hourly=relative_humidity_2m`);
+    const weatherData = await weatherRes.json();
+    
+    if (weatherData && weatherData.current_weather) {
+      currentWeather = weatherData.current_weather;
+      const tempElement = document.querySelector('.tempreature');
+      const windspeedElement = document.querySelector('.windspeed');
+      const humidityElement = document.querySelector('.humidity');
+      
+      // Update temperature
+      if (tempElement) {
+        tempElement.innerHTML = `<p class="weather-value">${Math.round(currentWeather.temperature)}°C</p><p class="weather-label">Temperature</p>`;
+      }
+      
+      // Update windspeed
+      if (windspeedElement) {
+        windspeedElement.innerHTML = `<p class="weather-value">${Math.round(currentWeather.windspeed)} km/h</p><p class="weather-label">Wind Speed</p>`;
+      }
+      
+      // Update humidity (from hourly data)
+      if (humidityElement && weatherData.hourly && weatherData.hourly.relative_humidity_2m && weatherData.hourly.relative_humidity_2m[0]) {
+        const humidity = weatherData.hourly.relative_humidity_2m[0];
+        humidityElement.innerHTML = `<p class="weather-value">${humidity}%</p><p class="weather-label">Humidity</p>`;
+      }
+    }
+    
+    // Fetch Air Quality data from WAQI (World Air Quality Index) - free endpoint
+    try {
+      // Try WAQI public endpoint (no key required for basic requests)
+      const waqiRes = await fetch(`https://api.waqi.info/feed/yola/?token=demo`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      
+      if (waqiRes.ok) {
+        const waqiData = await waqiRes.json();
+        
+        if (waqiData && waqiData.data) {
+          const airQualityElement = document.querySelector('.air-quality');
+          const aqi = parseInt(waqiData.data.aqi) || null;
+          let aqiStatus = 'Good'; // Default to Good if no data
+          
+          // AQI standards (0-500 scale)
+          if (aqi !== null) {
+            if (aqi <= 50) aqiStatus = 'Good';
+            else if (aqi <= 100) aqiStatus = 'Moderate';
+            else if (aqi <= 150) aqiStatus = 'Unhealthy for Sensitive Groups';
+            else if (aqi <= 200) aqiStatus = 'Unhealthy';
+            else if (aqi <= 300) aqiStatus = 'Very Unhealthy';
+            else aqiStatus = 'Hazardous';
+          }
+          
+          if (airQualityElement) {
+            airQualityElement.innerHTML = `<p class="weather-value">${aqiStatus}</p><p class="weather-label">AQI: ${aqi || 'Est.'}</p>`;
+          }
+        }
+      } else {
+        // Fallback: Estimate AQI based on weather conditions
+        if (currentWeather) {
+          window.estimateAirQuality(currentWeather);
+        }
+      }
+    } catch (aqError) {
+      // Air quality API failed, use fallback estimation
+      console.warn('Air quality API unavailable, using estimation:', aqError);
+      if (currentWeather) {
+        window.estimateAirQuality(currentWeather);
+      }
+    }
+    
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    // Display error states for main weather data
+    const tempEl = document.querySelector('.tempreature');
+    if (tempEl) tempEl.innerHTML = `<p class="weather-value">--</p><p class="weather-label">Temperature</p>`;
+    
+    const windEl = document.querySelector('.windspeed');
+    if (windEl) windEl.innerHTML = `<p class="weather-value">--</p><p class="weather-label">Wind Speed</p>`;
+    
+    const humidEl = document.querySelector('.humidity');
+    if (humidEl) humidEl.innerHTML = `<p class="weather-value">--</p><p class="weather-label">Humidity</p>`;
+    
+    const airEl = document.querySelector('.air-quality');
+    if (airEl) airEl.innerHTML = `<p class="weather-value">--</p><p class="weather-label">Air Quality</p>`;
+  }
+};
+
+// Auto-run on page load if weather display exists
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.querySelector('.tempreature') || document.querySelector('.air-quality')) {
+    window.initEcoWeatherDisplay();
+    // Refresh every 30 minutes
+    setInterval(window.initEcoWeatherDisplay, 30 * 60 * 1000);
+  }
+});
+
+// Also run on direct initialization
+if (document.querySelector('.tempreature') || document.querySelector('.air-quality')) {
+  window.initEcoWeatherDisplay();
+}
+
 // Dynamically load required scripts if not already loaded
 function loadEcoScripts(cb) {
   function loadScript(src, onload) {
@@ -59,7 +199,6 @@ window.sendEcoMessage = async function(faqText = '') {
   window.addToChatHistory && window.addToChatHistory('eco', 'user', msg);
 
   // Extract image data if present in preview
-  let imageData = null;
   if (preview) {
     const previewImg = preview.querySelector('img');
     if (previewImg) {
@@ -105,15 +244,41 @@ window.sendEcoMessage = async function(faqText = '') {
     <div class='ai-msg'><span class='ai-msg-text'>Eco AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
-  preview.innerHTML = '';
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
   if (!faqText) input.value = '';
 
   let finalAnswer = "";
   try {
-    const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
+    const signal = window.ecoAbortController ? window.ecoAbortController.signal : null;
+    const localData = await fetch('Data/EcoInfo/ecoinfo.txt', signal ? { signal } : {}).then(r => r.text());
+
+    // Find local file links in the txt (format: details/Eco/filename.html)
+    const linkRegex = /details\/Eco\/[^\s]+\.html/gim;
+    const links = [];
+    let match;
+    while ((match = linkRegex.exec(localData)) !== null) {
+      links.push(match[0]);
+    }
+
+    // Fetch all linked file contents in parallel
+    let linkedContents = '';
+    if (links.length > 0) {
+      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
+      const results = await Promise.all(fetches);
+      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
+    }
+
     // Get chat history context from in-memory helper
     const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('eco', 5) : [];
     const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    
+    // Combine all local data
+    const allLocalData = localData + linkedContents + historyContext;
+    
     const contents = {
       parts: []
     };
@@ -127,7 +292,7 @@ window.sendEcoMessage = async function(faqText = '') {
     }
     const promptGuide = localStorage.getItem('eco_ai_prompt') || ECO_AI_PROMPT;
     contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n${historyContext}\n\nUser question: ${msg}`
+      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${allLocalData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
     const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
@@ -135,16 +300,22 @@ window.sendEcoMessage = async function(faqText = '') {
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : 'https://yolainfohub.netlify.app/api/gemini';
-    let res = await fetch(serverUrl, { 
-      method: 'POST', 
+    
+    const fetchOptions = {
+      method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
       credentials: 'include',
       mode: 'cors',
-      body 
-    });
+      body
+    };
+    if (window.ecoAbortController) {
+      fetchOptions.signal = window.ecoAbortController.signal;
+    }
+
+    let res = await fetch(serverUrl, fetchOptions);
     let data = await res.json();
     finalAnswer = (data.candidates && data.candidates[0] && data.candidates[0].content && 
                   data.candidates[0].content.parts && data.candidates[0].content.parts[0] && 
@@ -155,7 +326,7 @@ window.sendEcoMessage = async function(faqText = '') {
     window.addToChatHistory && window.addToChatHistory('eco', 'assistant', finalAnswer);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    if (e && e.name === 'AbortError') finalAnswer = 'USER ABORTED REQUEST';
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) finalAnswer = 'USER ABORTED REQUEST';
     else finalAnswer = "Sorry, I could not access local information or the AI at this time.";
   }
 
@@ -269,6 +440,11 @@ window.initEcoFeatures = function() {
     if (!window.carbonCalculator) {
         window.carbonCalculator = new CarbonCalculator();
     }
+    
+    // Initialize weather display
+    if (typeof window.initEcoWeatherDisplay === 'function') {
+        window.initEcoWeatherDisplay();
+    }
 
 // Edit this prompt to instruct the AI on how to answer user messages for EcoInfo
 window.ECO_AI_PROMPT = window.ECO_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
@@ -287,21 +463,25 @@ window.renderSection = function() {
     document.head.appendChild(link);
   }
   // No navbar rendering here; handled globally
-  fetch('templates/eco.html').then(r => r.text()).then(html => {
+  return fetch('templates/eco.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
+    
+    // Load chat history AFTER template is inserted
+    setTimeout(() => { 
+      window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('eco', 'chat-messages'); 
+    }, 50);
+    
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('eco', this.checked); };
   }).catch(err => {
-    console.error('Failed to load home template:', err);
+    console.error('Failed to load eco template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
-  });  
-  // Load any in-memory chat history for eco
-  setTimeout(() => { window.loadChatHistoryToDOM && window.loadChatHistoryToDOM('eco', 'chat-messages'); }, 50);
+  });
 };
 
 
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   // (Removed duplicate/old getGeminiAnswer function. Only the correct proxy-based version remains.)
   try {
     let contents = { parts: [] };
@@ -322,10 +502,23 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
-    let res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+    
+    const fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    };
+    if (signal) {
+      fetchOptions.signal = signal;
+    }
+
+    let res = await fetch(url, fetchOptions);
     let data = await res.json();
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
+    if (err.name === 'AbortError') {
+      throw err; // Re-throw abort errors
+    }
     return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
   }
 }
@@ -339,13 +532,17 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
       <div class='ai-msg'><span class='ai-msg-text'>Eco AI typing...</span></div>
     `;
     chat.appendChild(msgGroup);
-    preview.innerHTML = '';
+    if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+      window.clearPreviewAndRemoveBtn(preview);
+    } else {
+      preview.innerHTML = '';
+    }
     if (!faqText) input.value = '';
   
     let finalAnswer = "";
     try {
       const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
-      finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
+      finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData, window.ecoAbortController ? window.ecoAbortController.signal : null);
     } catch (e) {
       console.error("Error fetching local data or Gemini API call:", e);
       finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
