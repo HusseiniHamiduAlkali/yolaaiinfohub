@@ -5,6 +5,8 @@ function renderNavbar() {
   const nav = document.createElement('nav');
   nav.className = 'navbar';
 
+  console.log('%c🎨 renderNavbar() called, window.currentUser:', 'color: #9333ea; font-weight: bold;', window.currentUser);
+
   // Create the auth buttons container that will be reused
   let authButtonsHTML = `
     <div class="navbar-auth" id="navbar-auth">
@@ -15,12 +17,15 @@ function renderNavbar() {
   `;
   // If user is signed in, show username and logout button
   if (window.currentUser && window.currentUser.username) {
+    console.log('%c✅ renderNavbar: User IS logged in, rendering logged-in navbar', 'color: #10b981;', window.currentUser.username);
     authButtonsHTML = `
       <div class="navbar-auth" id="navbar-auth" style="display:flex;align-items:center;gap:0.7rem;">
       <!--  <span class="navbar-username" style="font-weight:600;color:#205080;font-size:1.08rem;">${window.currentUser.username}</span>   -->
         <button id="logout-btn" class="auth-btn" onclick="window.logoutUser()">Logout</button>
       </div>
     `;
+  } else {
+    console.log('%c❌ renderNavbar: User NOT logged in, rendering login buttons', 'color: #ef4444;');
   }
 
   const logoHTML = `
@@ -403,10 +408,12 @@ function renderNavbar() {
 // Export as Navbar global for compatibility
 window.Navbar = {
   render: () => {
+    console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;');
     renderNavbar();
     // If auth UI was updated before this script loaded, ensure navbar picks it up
     if (window.updateAuthUI && window.__lastUser) {
-      try { window.updateAuthUI(window.__lastUser); } catch (e) { /* ignore */ }
+      console.log('%c♻️ window.Navbar.render(): Reapplying __lastUser to updateAuthUI', 'color: #8b5cf6;', window.__lastUser);
+      try { window.updateAuthUI(window.__lastUser); } catch (e) { console.error('Error reapplying lastUser:', e); }
     }
   }
 };

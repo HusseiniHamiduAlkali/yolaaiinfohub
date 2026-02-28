@@ -35,6 +35,8 @@ const corsOptions = {
       'http://localhost:5500',
       'http://127.0.0.1:5502',
       'http://localhost:5502',
+      'http://127.0.0.1:5503',
+      'http://localhost:5503',
       'http://127.0.0.1:4000',
       'http://localhost:4000',
       'http://127.0.0.1:3000',

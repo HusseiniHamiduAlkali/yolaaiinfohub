@@ -68,7 +68,7 @@ window.updateAuthUI = function(user) {
   window.currentUser = user || null;
   // Keep a short-lived copy so navbar scripts that load later can pick up
   // the most recent auth state even if they were not present when updateAuthUI ran.
-//*  window.__lastUser = window.currentUser; *//
+  window.__lastUser = window.currentUser;
   // Persist user session in localStorage
   if (user && user.username) {
     try {
@@ -132,7 +132,10 @@ window.updateAuthUI = function(user) {
     }
     // If navbar exists, re-render to pick up username on PC views
     if (window.Navbar && typeof window.Navbar.render === 'function') {
-      try { window.Navbar.render(); } catch(e) { /* ignore render errors */ }
+      console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-in user:', 'color: #3182ce; font-weight: bold;', user.username);
+      try { window.Navbar.render(); } catch(e) { console.error('Navbar render error:', e); }
+    } else {
+      console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
     }
   } else {
     // User is logged out
@@ -148,7 +151,10 @@ window.updateAuthUI = function(user) {
       if (logoutBtn) logoutBtn.style.display = 'none';
     } catch (e) { /* ignore */ }
     if (window.Navbar && typeof window.Navbar.render === 'function') {
-      try { window.Navbar.render(); } catch(e) { /* ignore render errors */ }
+      console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-out user', 'color: #e53e3e; font-weight: bold;');
+      try { window.Navbar.render(); } catch(e) { console.error('Navbar render error:', e); }
+    } else {
+      console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
     }
   }
 };
