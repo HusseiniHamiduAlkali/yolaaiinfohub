@@ -102,8 +102,12 @@ function renderNavbar() {
     
     // Restore to original PC layout before making any changes
     // This is the layout at the time renderNavbar() was called (with current login state)
-    if (originalPCLayout) {
-      document.querySelector('.navbar').innerHTML = originalPCLayout;
+    const navbarEl = document.querySelector('.navbar');
+    if (originalPCLayout && navbarEl) {
+      navbarEl.innerHTML = originalPCLayout;
+    } else if (!navbarEl) {
+      console.warn('handleResponsiveLayout: .navbar element not found, skipping layout update.');
+      return;
     }
 
     // Re-select elements after innerHTML change
@@ -409,11 +413,29 @@ function renderNavbar() {
 window.Navbar = {
   render: () => {
     console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;');
+    // Restore user from localStorage if present
+    let restoredUser = null;
+    try {
+      const stored = localStorage.getItem('currentUser');
+      if (stored) {
+        restoredUser = JSON.parse(stored);
+      }
+    } catch (e) { /* ignore */ }
+    if (restoredUser && restoredUser.username) {
+      window.currentUser = restoredUser;
+      window.__lastUser = restoredUser;
+    }
     renderNavbar();
     // If auth UI was updated before this script loaded, ensure navbar picks it up
+    // Only reapply if currentUser is null but we have a remembered user, or they differ
     if (window.updateAuthUI && window.__lastUser) {
-      console.log('%c♻️ window.Navbar.render(): Reapplying __lastUser to updateAuthUI', 'color: #8b5cf6;', window.__lastUser);
-      try { window.updateAuthUI(window.__lastUser); } catch (e) { console.error('Error reapplying lastUser:', e); }
+      const current = window.currentUser || null;
+      if (!current || (current.username !== window.__lastUser.username)) {
+        console.log('%c♻️ window.Navbar.render(): Reapplying __lastUser to updateAuthUI', 'color: #8b5cf6;', window.__lastUser);
+        try { window.updateAuthUI(window.__lastUser); } catch (e) { console.error('Error reapplying lastUser:', e); }
+      } else {
+        console.log('%c⏭️ window.Navbar.render(): currentUser already matches __lastUser, skipping reapply', 'color: #94a3b8;');
+      }
     }
   }
 };

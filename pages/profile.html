@@ -151,6 +151,33 @@
     if (btnDeleteAccount) btnDeleteAccount.addEventListener('click', handleDeleteAccountClick);
     
     async function loadProfile() {
+      // Try to restore user from localStorage first
+      let restoredUser = null;
+      try {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) {
+          restoredUser = JSON.parse(stored);
+        }
+      } catch (e) { /* ignore */ }
+      if (restoredUser && restoredUser.username) {
+        currentUserData = restoredUser;
+        fillProfile(restoredUser);
+        if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
+        // Optionally, check backend for fresher data, but do NOT overwrite if backend returns loggedIn: false
+        try {
+          const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
+          const data = await res.json();
+          console.log('API response:', data);
+          if (data.loggedIn && data.username === restoredUser.username) {
+            currentUserData = data;
+            fillProfile(data);
+          }
+        } catch (err) {
+          console.error('Profile backend check error', err);
+        }
+        return;
+      }
+      // Fallback to server check if no local user
       try {
         console.log('loadProfile started, u param:', u);
         const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
@@ -159,10 +186,11 @@
         if (data.loggedIn) {
           currentUserData = data;
           fillProfile(data);
+          if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
         } else {
           document.getElementById('profile-name').textContent = 'Not signed in';
           document.getElementById('profile-username').textContent = '';
-          btnEditProfile.style.display = 'none';
+          if (btnEditProfile) btnEditProfile.style.display = 'none';
         }
       } catch (err) {
         console.error('Profile load error', err);

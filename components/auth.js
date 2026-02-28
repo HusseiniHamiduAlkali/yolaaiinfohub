@@ -176,11 +176,17 @@ window.logoutUser = async function() {
     });
     // Always clear localStorage user on logout
     window.updateAuthUI(null);
+    if (window.Navbar && typeof window.Navbar.render === 'function') {
+      window.Navbar.render();
+    }
     if (!response.ok) {
       console.error('Logout failed:', await response.text());
     }
   } catch (error) {
     window.updateAuthUI(null);
+    if (window.Navbar && typeof window.Navbar.render === 'function') {
+      window.Navbar.render();
+    }
     console.error('Logout error:', error);
   }
 };
