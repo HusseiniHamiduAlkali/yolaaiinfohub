@@ -311,7 +311,8 @@ Wednesday, July 30, 2025
 
 /* ensure message group aligns its children to the bottom so action buttons stay at bubble base */
 .chat-message-group {
-  display: block;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 0.5rem;
 }
 
@@ -352,7 +353,7 @@ Wednesday, July 30, 2025
   max-width: 85%;
   position: relative;
   text-align: left;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.3rem;
   box-sizing: border-box;
   width: fit-content;
   display: inline-block;

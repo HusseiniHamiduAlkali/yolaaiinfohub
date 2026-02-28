@@ -3,7 +3,8 @@
 // Cache version: v2-login-handler-fix-2026-02-20
 
 // Determine API base depending on environment (dev -> localhost backend, prod -> same-origin)
-const API_BASE = (function() {
+// Prefer any existing value set on window (such as via apiConfig.js or build-time injection)
+const API_BASE = window.API_BASE || (function() {
   try {
     const host = window.location.hostname;
     // treat localhost/127.0.0.1 and typical LAN IPs as dev
