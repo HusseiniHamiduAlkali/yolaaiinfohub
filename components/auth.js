@@ -13,8 +13,8 @@ const API_BASE = (function() {
     if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.startsWith('192.') || host.startsWith('10.')) {
       return `http://${host}:4000`;
     }
-    // otherwise assume API is proxied or available at the same origin
-    return '';
+    // otherwise use the Render backend in production
+    return 'https://yolaaiinfohub-backend.onrender.com';
   } catch (e) {
     return 'http://localhost:4000';
   }
