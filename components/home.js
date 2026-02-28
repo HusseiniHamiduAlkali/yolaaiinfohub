@@ -44,6 +44,17 @@ window.renderSection = function() {
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('home', this.checked); };
+
+    // Add Enter key handler to chat input - ensures attachments and text are sent together
+    const homeInput = document.getElementById('home-chat-input');
+    if (homeInput) {
+      homeInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          window.sendHomeMessage();
+        }
+      });
+    }
   }).catch(err => {
     console.error('Failed to load home template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
@@ -159,13 +170,10 @@ async function tryGeminiAPI(msg, localData, imageData) {
     if (error.name === 'AbortError') {
       throw error; // Re-throw abort errors
     }
-    console.log('Falling back to Gemini 1.5...');
-    try {
-      return await tryGeminiModel('gemini-1.5-flash');
-    } catch (error2) {
-      console.error('Both Gemini models failed:', error2);
-      return "Sorry, I'm having trouble connecting to the AI at the moment. Please try again later.";
-    }
+    console.error('Gemini 2.5 failed, error:', error);
+    // The server.js will handle fallback automatically, so this shouldn't be reached
+    // but keep it for safety in case the error is network-related
+    return "Sorry, I'm having trouble connecting to the AI at the moment. Please try again later.";
   }
 }
 
@@ -195,30 +203,8 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   if (!msg && !attach) return;
 
   // Cancel any ongoing request
-  if (window.homeAbortController) {
-    window.homeAbortController.abort();
-  }
-  window.homeAbortController = new AbortController();
-
-  if (submitBtn) {
-    submitBtn.classList.add('sending');
-    submitBtn.textContent = 'Stop';
-    submitBtn.style.backgroundColor = '#ff4444';
-
-    // Add click handler to stop response
-    const stopHandler = (e) => {
-      if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      if (window.homeAbortController) {
-        window.homeAbortController.abort();
-        window.homeAbortController = null;
-      }
-      submitBtn.removeEventListener('click', stopHandler);
-      submitBtn.classList.remove('sending');
-      submitBtn.textContent = 'Send';
-      submitBtn.style.backgroundColor = '';
-    };
-    submitBtn.addEventListener('click', stopHandler);
-  }
+  // Setup stop button with commonAI utility
+  window.setupStopButton({ sendBtn: submitBtn, section: 'home' });
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';

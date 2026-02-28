@@ -65,6 +65,9 @@ window.triggerOfflineLogout = function() {
 window.updateAuthUI = function(user) {
   // Keep a global reference to the current user for other components (navbar)
   window.currentUser = user || null;
+  // Keep a short-lived copy so navbar scripts that load later can pick up
+  // the most recent auth state even if they were not present when updateAuthUI ran.
+//*  window.__lastUser = window.currentUser; *//
   // Persist user session in localStorage
   if (user && user.username) {
     try {
@@ -389,14 +392,14 @@ function showAuthModal(type) {
       window.updateAuthUI(userData);
       console.log('%cwindow.currentUser after updateAuthUI:', 'color: green; font-weight: bold;', window.currentUser);
       window.userLoggedInTime = new Date().toISOString();
+      // Mark that we just successfully logged in (prevents checkLoginStatus from downgrading within 5 seconds)
+      window.__justLoggedIn = true;
+      setTimeout(() => { window.__justLoggedIn = false; }, 5000);
       if (type === 'signup') {
         console.log('🎉 New user registered:', data.username);
       }
-      // Verify with server
-      console.log('%cCalling checkLoginStatus to verify with server...', 'color: purple; font-weight: bold;');
-      if (window.checkLoginStatus) {
-        await window.checkLoginStatus();
-      }
+      // Do NOT call checkLoginStatus immediately after login - we already have confirmed user data.
+      // The session is being set by the server. If needed, checkLoginStatus will run on next page load.
       modal.remove();
     } else {
       console.error('❌ Login failed:', data.error);
@@ -422,6 +425,7 @@ window.checkLoginStatus = async function() {
   } catch (e) { /* ignore */ }
 
   // Then, verify with server for security and up-to-date info
+  // BUT: Don't downgrade from logged-in to logged-out if we just successfully logged in.
   try {
     const res = await fetch(`${API_BASE}/api/me?t=${Date.now()}`, { 
       credentials: 'include'
@@ -442,13 +446,18 @@ window.checkLoginStatus = async function() {
       });
     } else {
       console.log('%cℹ️ User not logged in', 'color: #95a5a6;');
-      window.updateAuthUI(null);
+      // SAFEGUARD: If we just logged in, don't call updateAuthUI(null) yet - give session time to stabilize
+      if (!window.__justLoggedIn) {
+        window.updateAuthUI(null);
+      } else {
+        console.log('%c⏳ Skipping logout because we just logged in (session may still be settling)', 'color: #f39c12;');
+      }
     }
   } catch (err) {
     console.warn('%c⚠️ Could not verify login status (offline?): %c' + err.message, 'color: #e74c3c; font-weight: bold;', 'color: #c0392b;');
     console.log('%c💡 If offline, use: window.triggerOfflineLogin()', 'color: #f39c12; font-size: 11px;');
-    // If offline, keep localStorage user if present
-    if (!restoredUser) window.updateAuthUI(null);
+    // If offline and didn't just log in, keep localStorage user if present
+    if (!restoredUser && !window.__justLoggedIn) window.updateAuthUI(null);
   }
 };
 

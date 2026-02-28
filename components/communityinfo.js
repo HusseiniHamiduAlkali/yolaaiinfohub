@@ -23,55 +23,10 @@ if (!window.commonAILoaded) {
 
 
 // Global text-to-speech variables and functions
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null) {
-  try {
-    const contents = {
-      parts: []
-    };
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1]
-        }
-      });
-    }
-    const promptGuide = localStorage.getItem('community_ai_prompt') || COMMUNITY_AI_PROMPT;
-    contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
-    });
-    const modelVersion = 'gemini-2.5-flash';
-    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    
-    const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? 'http://localhost:3001/api/gemini'
-      : '/api/gemini';
-      
-    let res = await fetch(apiUrl, { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' },
-      body 
-    });
-    
-    let data = await res.json();
-    
-    if (data.error && window.useGemini25 && !imageData) {
-      // fallback to 1.5
-      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(apiUrl, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body 
-      });
-      data = await res.json();
-    }
-    
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
-  } catch (err) {
-    console.error("Gemini API error:", err);
-    return "Sorry, there was an error contacting the AI service.";
-  }
-}
+// The actual `getGeminiAnswer` implementation with optional `signal` is defined
+// later in this file. The duplicate no-signal variant above has been removed
+// to ensure the AbortController signal is respected and to avoid function
+// definition conflicts.
 
 // Edit this prompt to instruct the AI on how to answer user messages for CommunityInfo
 window.COMMUNITY_AI_PROMPT = window.COMMUNITY_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
@@ -99,30 +54,34 @@ window.renderSection = function() {
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('community', this.checked); };
+
+    // Add Enter key handler to chat input - ensures attachments and text are sent together
+    const communityInput = document.getElementById('chat-input') || document.querySelector('.chat-input-area input[type="text"]');
+    if (communityInput) {
+      communityInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          window.sendCommunityMessage();
+        }
+      });
+    }
   }).catch(err => {
     console.error('Failed to load home template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
   });  
 };
 
-window.stopCommunityResponse = function() {
-  if (window.communityAbortController) {
-    window.communityAbortController.abort();
-    window.communityAbortController = null;
-  }
-  const sendBtn = document.querySelector('.send-button');
-  if (sendBtn) {
-    sendBtn.classList.remove('sending');
-    sendBtn.textContent = 'Send';
-    sendBtn.style.backgroundColor = '';
-  }
-};
+// stopCommunityResponse is now handled by setupStopButton in commonAI.js
 
 window.sendCommunityMessage = async function(faqText = '') {
-  const input = document.getElementById('chat-input');
+  let input = document.getElementById('chat-input') || document.querySelector('.chat-input-area input[type="text"]');
+  if (!input) {
+    console.warn('Community input element not found; aborting sendCommunityMessage');
+    return;
+  }
   const chat = document.getElementById('chat-messages');
   const preview = document.getElementById('chat-preview');
-  const sendBtn = document.querySelector('.send-button');
+  const sendBtn = document.querySelector('#chat-input + .send-button-group .send-button') || document.querySelector('.send-button');
 
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
@@ -136,38 +95,22 @@ window.sendCommunityMessage = async function(faqText = '') {
     msg = msg + "\nPlease analyze this image and provide relevant community information or suggestions.";
   }
 
-  // Reset previous abort controller if it exists
-  if (window.communityAbortController) {
-    window.communityAbortController.abort();
-    window.communityAbortController = null;
-  }
-  
-  // Create new abort controller
-  window.communityAbortController = new AbortController();
-
-  if (sendBtn) {
-    sendBtn.classList.add('sending');
-    sendBtn.textContent = 'Stop';
-    sendBtn.style.backgroundColor = '#ff4444';
-
-    // Remove any existing click listeners by cloning, then switch to a non-submit button
-    const newBtn = sendBtn.cloneNode(true);
-    // ensure clicking 'Stop' does not re-submit the form
-    newBtn.type = 'button';
-    sendBtn.parentNode.replaceChild(newBtn, sendBtn);
-    
-    // Add click handler to stop response (prevent default form submission)
-    const stopHandler = (e) => {
-      if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      window.stopCommunityResponse();
-    };
-    newBtn.addEventListener('click', stopHandler);
+  // Setup stop button with commonAI utility (creates AbortController) and capture controller
+  const controller = window.setupStopButton({ sendBtn, section: 'community' });
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>Community AI typing...</span></div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Community AI typing...</span></div>
+    <span class='msg-actions' data-msg-id='${mid}'>
+      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    </span>
   `;
   chat.appendChild(msgGroup);
   if (typeof window.clearPreviewAndRemoveBtn === 'function') {
@@ -179,8 +122,8 @@ window.sendCommunityMessage = async function(faqText = '') {
 
   let finalAnswer = "";
   try {
-    // Fetch the main .txt file
-    const signal = window.communityAbortController ? window.communityAbortController.signal : null;
+    // Fetch the main .txt file using controller's signal when available
+    const signal = controller ? controller.signal : (window.communityAbortController ? window.communityAbortController.signal : null);
     const localDataTxt = await fetch('Data/CommunityInfo/communityinfo.txt', signal ? { signal } : {}).then(r => r.text());
 
     // Extract local data links (lines starting with '-')
@@ -211,7 +154,7 @@ window.sendCommunityMessage = async function(faqText = '') {
         history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
     }
 
-    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, imageData, window.communityAbortController ? window.communityAbortController.signal : null);
+    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, imageData, signal);
 
     // Update history with AI response
     history.push({ user: msg, ai: finalAnswer });
@@ -233,7 +176,7 @@ window.sendCommunityMessage = async function(faqText = '') {
   chat.scrollTop = chat.scrollHeight;
 
   // Reset the button state
-  const currentBtn = document.querySelector('.send-button');
+  const currentBtn = document.querySelector('#chat-input + .send-button-group .send-button') || document.querySelector('.send-button');
   if (currentBtn) {
     // Replace to clear listeners
     const restoredBtn = currentBtn.cloneNode(true);
@@ -313,5 +256,4 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
     console.error("Gemini API error:", err);
     return "Sorry, I could not access local information or the AI at this time. Please check your internet connection!";
   }
-}
 }

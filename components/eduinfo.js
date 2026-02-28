@@ -30,6 +30,17 @@ window.renderSection = function() {
         // Wire model toggle after template is inserted
         const mt = document.getElementById('model-toggle');
         if (mt) mt.onchange = function() { window.toggleGeminiModel('edu', this.checked); };
+
+        // Add Enter key handler to chat input - ensures attachments and text are sent together
+        const eduInput = document.getElementById('edu-chat-input');
+        if (eduInput) {
+          eduInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              window.sendEduMessage();
+            }
+          });
+        }
     }).catch(err => {
         console.error('Failed to load home template:', err);
         document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
@@ -51,42 +62,29 @@ window.sendEduMessage = async function(faqText = '') {
     const input = document.getElementById('edu-chat-input');
     const chat = document.getElementById('eduinfo-chat-messages');
     const preview = document.getElementById('eduinfo-chat-preview');
-    const sendBtn = document.querySelector('#eduinfo-chat-container .send-button');
-    const stopBtn = document.querySelector('#eduinfo-chat-container .stop-button');
+    const sendBtn = document.querySelector('#edu-chat-input + .send-button-group .send-button');
+    const stopBtn = document.querySelector('#edu-chat-input + .send-button-group .stop-button');
 
     let msg = faqText || input.value.trim();
     let attach = preview.innerHTML;
     if (!msg && !attach) return;
 
-    if (window.eduAbortController) {
-        window.eduAbortController.abort();
-    }
-    window.eduAbortController = new AbortController();
-
-    if (sendBtn) {
-        sendBtn.classList.add('sending');
-        sendBtn.textContent = 'Stop';
-        sendBtn.style.backgroundColor = '#ff4444';
-
-        // Add click handler to stop response
-        const stopHandler = () => {
-            if (window.eduAbortController) {
-                window.eduAbortController.abort();
-                window.eduAbortController = null;
-            }
-            sendBtn.removeEventListener('click', stopHandler);
-            sendBtn.classList.remove('sending');
-            sendBtn.textContent = 'Send';
-            sendBtn.style.backgroundColor = '';
-        };
-        sendBtn.addEventListener('click', stopHandler);
-    }
+    // Setup stop button with commonAI utility
+    window.setupStopButton({ sendBtn, section: 'edu' });
 
     const msgGroup = document.createElement('div');
     msgGroup.className = 'chat-message-group';
+    // generate a temporary message id now so we can reuse for actions
+    const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+    msgGroup.setAttribute('data-msg-id', mid);
     msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>Edu AI typing...</span></div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Edu AI typing...</span></div>
+    <span class='msg-actions' data-msg-id='${mid}'>
+      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    </span>
   `;
     chat.appendChild(msgGroup);
     const imageData = preview.querySelector('img') ? preview.querySelector('img').src : null;
@@ -103,7 +101,8 @@ window.sendEduMessage = async function(faqText = '') {
   let finalAnswer = "";
     try {
         const signal = window.eduAbortController ? window.eduAbortController.signal : null;
-        const localData = await fetch('Data/EduInfo/eduinfo.txt', signal ? { signal } : {}).then(r => r.text());
+        const response = await fetch('Data/EduInfo/eduinfo.txt', signal ? { signal } : {});
+        const localData = await response.text();
         
         // Get chat history for this section
         const chatHistory = window.getChatHistory('edu') || [];

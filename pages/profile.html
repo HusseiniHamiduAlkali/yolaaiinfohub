@@ -185,13 +185,13 @@
       fillField('pf-lga', 'LGA', data.lga);
       fillField('pf-address', 'Address', data.address);
       
-      // Fill form mode
-      document.getElementById('edit-name').value = data.name || '';
-      document.getElementById('edit-email').value = data.email || '';
-      document.getElementById('edit-phone').value = data.phone || '';
-      document.getElementById('edit-state').value = data.state || '';
-      document.getElementById('edit-lga').value = data.lga || '';
-      document.getElementById('edit-address').value = data.address || '';
+      // Fill form mode (guarded - the page may not include the edit form)
+      const elEditName = document.getElementById('edit-name'); if (elEditName) elEditName.value = data.name || '';
+      const elEditEmail = document.getElementById('edit-email'); if (elEditEmail) elEditEmail.value = data.email || '';
+      const elEditPhone = document.getElementById('edit-phone'); if (elEditPhone) elEditPhone.value = data.phone || '';
+      const elEditState = document.getElementById('edit-state'); if (elEditState) elEditState.value = data.state || '';
+      const elEditLga = document.getElementById('edit-lga'); if (elEditLga) elEditLga.value = data.lga || '';
+      const elEditAddress = document.getElementById('edit-address'); if (elEditAddress) elEditAddress.value = data.address || '';
     }
     
     function fillField(elementId, label, value) {
@@ -229,7 +229,8 @@
       fieldElement.classList.add('editing');
 
       const valueDiv = fieldElement.querySelector('.profile-field-value');
-      const headerBtn = fieldElement.querySelector('.edit-icon-btn');
+      const header = fieldElement.querySelector('.profile-field-header');
+      const headerBtn = header ? header.querySelector('.edit-icon-btn') : null;
       const currentText = valueDiv ? valueDiv.textContent.trim() : '';
 
       // Create input or textarea for address
@@ -262,9 +263,18 @@
       cancelBtn.title = 'Cancel';
       cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
 
-      if (headerBtn && headerBtn.parentNode) {
-        headerBtn.parentNode.replaceChild(saveBtn, headerBtn);
-        headerBtn.parentNode.insertBefore(cancelBtn, saveBtn.nextSibling);
+      if (header && headerBtn) {
+        try {
+          header.replaceChild(saveBtn, headerBtn);
+          header.insertBefore(cancelBtn, saveBtn.nextSibling);
+        } catch (e) {
+          // fallback: append buttons
+          header.appendChild(saveBtn);
+          header.appendChild(cancelBtn);
+        }
+      } else if (header) {
+        header.appendChild(saveBtn);
+        header.appendChild(cancelBtn);
       }
 
       // Handlers
@@ -289,39 +299,94 @@
       saveBtn.disabled = true;
       cancelBtn.disabled = true;
 
-      const formData = new FormData();
-      formData.append(fieldKey, newValue);
+      // Build payload including other required fields from currentUserData so server validation passes
+      const requiredKeys = ['name', 'nin', 'termsAccepted', 'lga', 'state', 'address', 'phone', 'email'];
+      const payload = {};
+      // set the field being edited
+      payload[fieldKey] = newValue;
 
+      const missing = [];
+      requiredKeys.forEach(k => {
+        if (k === fieldKey) return;
+        const v = currentUserData ? currentUserData[k] : undefined;
+        if (v !== undefined && v !== null && String(v).trim() !== '') {
+          payload[k] = v;
+        } else {
+          missing.push(k);
+        }
+      });
+
+      if (missing.length > 0) {
+        // render inline inputs for missing fields so user can quickly complete them without leaving inline mode
+        saveBtn.disabled = false;
+        cancelBtn.disabled = false;
+        renderInlineMissingFields(fieldElement, missing, payload, fieldKey, inputEl, saveBtn, cancelBtn);
+        return;
+      }
+
+      // all required fields present, post payload
+      postProfileData(fieldElement, payload, fieldKey, saveBtn, cancelBtn);
+    }
+
+    function renderInlineMissingFields(fieldElement, missingKeys, payload, fieldKey, inputEl, saveBtn, cancelBtn) {
+      // For each missing key, enable inline editing on its own profile field (pf-<key>)
+      const enabled = [];
+      missingKeys.forEach(k => {
+        const pf = document.getElementById('pf-' + k);
+        if (pf) {
+          // if not already editing, make it editable
+          if (!pf.classList.contains('editing')) {
+            makeFieldEditable(pf, k);
+            enabled.push(k);
+          } else {
+            // focus existing input
+            const inp = pf.querySelector('.inline-edit-input');
+            if (inp) inp.focus();
+            enabled.push(k);
+          }
+        }
+      });
+
+      if (enabled.length === 0) {
+        // no corresponding fields on page; fallback to alert and open full edit mode
+        alert('Please complete missing profile fields in the full edit form.');
+        enterEditMode();
+      } else {
+        alert('Please fill the highlighted fields inline and save each one.');
+      }
+    }
+
+    async function postProfileData(fieldElement, payload, fieldKey, saveBtn, cancelBtn, container) {
       try {
+        const fd = new FormData();
+        Object.keys(payload).forEach(k => {
+          if (payload[k] !== undefined && payload[k] !== null) fd.append(k, payload[k]);
+        });
         const res = await fetch(`${API_BASE}/api/update-profile`, {
           method: 'POST',
           credentials: 'include',
-          body: formData
+          body: fd
         });
         const data = await res.json();
         if (res.ok) {
-          // update displayed value
+          // update local cache
+          currentUserData = { ...(currentUserData || {}), ...data };
+          // update displayed value for the edited field
           const valueDiv = fieldElement.querySelector('.profile-field-value');
-          valueDiv.textContent = newValue || '-';
-
-          // restore edit button
+          valueDiv.textContent = payload[fieldKey] || '-';
           restoreEditButton(fieldElement, fieldKey);
           fieldElement.classList.remove('editing');
-
-          // update local cached user data if present
-          if (currentUserData) currentUserData[fieldKey] = newValue;
           if (window.updateAuthUI && typeof window.updateAuthUI === 'function') window.updateAuthUI(currentUserData);
-
-          // show small inline success indicator next to the field (transient)
           showInlineSavedIndicator(fieldElement);
+          // nothing to clean up for inline editors (they are rendered on their own fields)
         } else {
-          alert((data && data.error) || 'Failed to save field');
+          alert((data && data.error) || 'Failed to save profile.');
           saveBtn.disabled = false;
           cancelBtn.disabled = false;
         }
       } catch (err) {
-        console.error('Inline save error', err);
-        alert('Error saving field. Please try again.');
+        console.error('postProfileData error', err);
+        alert('Error saving profile. Please try again.');
         saveBtn.disabled = false;
         cancelBtn.disabled = false;
       }
@@ -434,24 +499,26 @@
     
     function enterEditMode() {
       isEditMode = true;
-      profileViewMode.style.display = 'none';
-      profileForm.classList.add('active');
-      btnEditProfile.style.display = 'none';
-      btnCancelEdit.style.display = 'inline-flex';
-      avatarUploadHint.style.display = 'flex';
-      document.querySelector('.profile-avatar-wrapper').style.cursor = 'pointer';
+      if (profileViewMode) profileViewMode.style.display = 'none';
+      if (profileForm && profileForm.classList) profileForm.classList.add('active');
+      if (btnEditProfile) btnEditProfile.style.display = 'none';
+      if (btnCancelEdit) btnCancelEdit.style.display = 'inline-flex';
+      if (avatarUploadHint) avatarUploadHint.style.display = 'flex';
+      const avatarWrap = document.querySelector('.profile-avatar-wrapper');
+      if (avatarWrap) avatarWrap.style.cursor = 'pointer';
       if (btnDeleteAccount) btnDeleteAccount.style.display = 'inline-flex';
     }
     
     function exitEditMode() {
       isEditMode = false;
-      profileForm.classList.remove('active');
-      profileViewMode.style.display = 'block';
-      btnEditProfile.style.display = 'inline-flex';
-      btnCancelEdit.style.display = 'none';
-      avatarUploadHint.style.display = 'none';
-      document.querySelector('.profile-avatar-wrapper').style.cursor = 'default';
-      successMessage.classList.remove('show');
+      if (profileForm && profileForm.classList) profileForm.classList.remove('active');
+      if (profileViewMode) profileViewMode.style.display = 'block';
+      if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
+      if (btnCancelEdit) btnCancelEdit.style.display = 'none';
+      if (avatarUploadHint) avatarUploadHint.style.display = 'none';
+      const avatarWrap2 = document.querySelector('.profile-avatar-wrapper');
+      if (avatarWrap2) avatarWrap2.style.cursor = 'default';
+      if (successMessage && successMessage.classList) successMessage.classList.remove('show');
       if (btnDeleteAccount) btnDeleteAccount.style.display = 'none';
     }
     

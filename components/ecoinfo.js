@@ -178,8 +178,8 @@ window.sendEcoMessage = async function(faqText = '') {
   const input = document.getElementById('eco-chat-input');
   const chat = document.getElementById('chat-messages');
   const preview = document.getElementById('eco-chat-preview');
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
+  const sendBtn = document.querySelector('#eco-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#eco-chat-input + .send-button-group .stop-button');
 
   // Get message from input or FAQ
   // Always extract attachment from preview before clearing
@@ -207,41 +207,22 @@ window.sendEcoMessage = async function(faqText = '') {
     }
   }
 
-  // Handle abort controller
-  if (window.ecoAbortController) {
-    window.ecoAbortController.abort();
-  }
-  window.ecoAbortController = new AbortController();
-
-  // Update UI state
-  if (sendBtn) {
-    const originalType = sendBtn.type;
-    const stopHandler = (e) => {
-      if (e && e.preventDefault) e.preventDefault();
-      if (window.ecoAbortController) {
-        window.ecoAbortController.abort();
-        window.ecoAbortController = null;
-      }
-      sendBtn.removeEventListener('click', stopHandler);
-      sendBtn.type = originalType;
-      sendBtn.classList.remove('sending');
-      sendBtn.textContent = 'Send';
-      sendBtn.style.backgroundColor = '';
-    };
-
-    sendBtn.classList.add('sending');
-    sendBtn.textContent = 'Stop';
-    sendBtn.style.backgroundColor = '#ff4444';
-    // make the active button non-submit to avoid re-submission
-    sendBtn.type = 'button';
-    sendBtn.addEventListener('click', stopHandler);
-  }
+  // Handle abort controller - use commonAI utility
+  window.setupStopButton({ sendBtn, section: 'eco' });
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>Eco AI typing...</span></div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Eco AI typing...</span></div>
+    <span class='msg-actions' data-msg-id='${mid}'>
+      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    </span>
   `;
   chat.appendChild(msgGroup);
   if (typeof window.clearPreviewAndRemoveBtn === 'function') {
@@ -254,7 +235,8 @@ window.sendEcoMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const signal = window.ecoAbortController ? window.ecoAbortController.signal : null;
-    const localData = await fetch('Data/EcoInfo/ecoinfo.txt', signal ? { signal } : {}).then(r => r.text());
+    const response = await fetch('Data/EcoInfo/ecoinfo.txt', signal ? { signal } : {});
+    const localData = await response.text();
 
     // Find local file links in the txt (format: details/Eco/filename.html)
     const linkRegex = /details\/Eco\/[^\s]+\.html/gim;
@@ -341,21 +323,7 @@ window.sendEcoMessage = async function(faqText = '') {
   window.ecoAbortController = null;
 };
 
-// Add stopEcoResponse function
-window.stopEcoResponse = function() {
-  if (window.ecoAbortController) {
-    window.ecoAbortController.abort();
-    window.ecoAbortController = null;
-  }
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
-  if (sendBtn) {
-    sendBtn.classList.remove('sending');
-    sendBtn.textContent = 'Send';
-    sendBtn.disabled = false;
-  }
-  if (stopBtn) stopBtn.style.display = 'none';
-};
+// stopEcoResponse is now handled by setupStopButton in commonAI.js
 
 // Existing renderSection logic continues here
 if (!document.getElementById('global-css')) {
@@ -474,6 +442,17 @@ window.renderSection = function() {
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('eco', this.checked); };
+
+    // Add Enter key handler to chat input - ensures attachments and text are sent together
+    const ecoInput = document.getElementById('eco-chat-input');
+    if (ecoInput) {
+      ecoInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          window.sendEcoMessage();
+        }
+      });
+    }
   }).catch(err => {
     console.error('Failed to load eco template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';

@@ -34,31 +34,31 @@ window.renderSection = function() {
       // Wire model toggle after template is inserted
       const mt = document.getElementById('model-toggle');
       if (mt) mt.onchange = function() { window.toggleGeminiModel('medi', this.checked); };
+
+      // Add Enter key handler to chat input - ensures attachments and text are sent together
+      const mediInput = document.getElementById('medi-chat-input');
+      if (mediInput) {
+        mediInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            window.sendMediMessage();
+          }
+        });
+      }
     }).catch(err => {
       console.error('Failed to load medi template:', err);
       document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
   });  
 };
 
-window.stopMediResponse = function() {
-  if (window.mediAbortController) {
-    window.mediAbortController.abort();
-    window.mediAbortController = null;
-  }
-  const sendBtn = document.querySelector('.send-button');
-  if (sendBtn) {
-    sendBtn.classList.remove('sending');
-    sendBtn.textContent = 'Send';
-    sendBtn.style.backgroundColor = '';
-  }
-};
+// stopMediResponse is now handled by setupStopButton in commonAI.js
 
 window.sendMediMessage = async function(faqText = '') {
   const input = document.getElementById('medi-chat-input');
   const chat = document.getElementById('medi-chat-messages');
   const preview = document.getElementById('medi-chat-preview');
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
+  const sendBtn = document.querySelector('#medi-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#medi-chat-input + .send-button-group .stop-button');
 
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
@@ -71,44 +71,22 @@ window.sendMediMessage = async function(faqText = '') {
   }
   if (!msg && !attach) return;
 
-  if (window.mediAbortController) {
-    window.mediAbortController.abort();
-  }
-  window.mediAbortController = new AbortController();
-
-  if (sendBtn) {
-    // preserve original type and onclick so we can restore them
-    const originalType = sendBtn.type;
-    const originalClickHandler = sendBtn.onclick;
-
-    sendBtn.classList.add('sending');
-    sendBtn.textContent = 'Stop';
-    sendBtn.style.backgroundColor = '#ff4444';
-    // make it a non-submit while stopping to avoid form resubmission
-    sendBtn.type = 'button';
-
-    // Add click handler to stop response
-    const stopHandler = (e) => {
-      if (e && e.preventDefault) e.preventDefault();
-      if (window.mediAbortController) {
-        window.mediAbortController.abort();
-        window.mediAbortController = null;
-      }
-      // restore original behavior
-      sendBtn.onclick = originalClickHandler;
-      sendBtn.type = originalType;
-      sendBtn.classList.remove('sending');
-      sendBtn.textContent = 'Send';
-      sendBtn.style.backgroundColor = '';
-    };
-    sendBtn.onclick = stopHandler;
-  }
+  // Setup stop button with commonAI utility
+  window.setupStopButton({ sendBtn, section: 'medi' });
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>Medi AI typing...</span></div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Medi AI typing...</span></div>
+    <span class='msg-actions' data-msg-id='${mid}'>
+      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    </span>
   `;
   chat.appendChild(msgGroup);
   if (typeof window.clearPreviewAndRemoveBtn === 'function') {
@@ -127,7 +105,8 @@ window.sendMediMessage = async function(faqText = '') {
   try {
     // Fetch main local data
     const signal = window.mediAbortController ? window.mediAbortController.signal : null;
-    const localData = await fetch('Data/MediInfo/mediinfo.txt', signal ? { signal } : {}).then(r => r.text());
+    const response = await fetch('Data/MediInfo/mediinfo.txt', signal ? { signal } : {});
+    const localData = await response.text();
 
     // Find local file links in the txt (format: details/Medi/filename.html)
     const linkRegex = /^-\s*(details\/Medi\/[^\s]+\.html)$/gim;
@@ -211,12 +190,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
 
     let res = await fetch(url, fetchOptions);
     let data = await res.json();
-    if (data.error && window.useGemini25 && !imageData) {
-      // fallback to 1.5
-      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      res = await fetch(url, fetchOptions);
-      data = await res.json();
-    }
+    // Server will automatically handle fallback from 2.5 to 1.5 if needed
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
     if (err.name === 'AbortError') {

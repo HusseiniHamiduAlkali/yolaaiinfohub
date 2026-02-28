@@ -100,14 +100,12 @@ app.post('/api/gemini', async (req, res) => {
     }
     
     // Normalize model names for v1 API compatibility
-    // Don't convert between models - use what the client requests
-    // The backend just passes through the model name the frontend requests
     let normalizedModel = model;
     
     // Only map obviously invalid names (like old legacy names)
     const modelMap = {
-      'gemini-pro-vision': 'gemini-1.5-flash',
-      'gemini-pro': 'gemini-1.5-flash'
+      'gemini-pro-vision': 'gemini-2.5-flash',
+      'gemini-pro': 'gemini-2.5-flash'
     };
     
     if (modelMap[model]) {
@@ -116,10 +114,10 @@ app.post('/api/gemini', async (req, res) => {
     }
     
     // Try v1 endpoint first (more stable), fall back to v1beta
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${API_KEY}`;
+    let geminiUrl = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${API_KEY}`;
     
     console.log(`Calling Gemini API with model: ${normalizedModel} (requested: ${model})`);
-    const response = await fetch(geminiUrl, {
+    let response = await fetch(geminiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -127,7 +125,25 @@ app.post('/api/gemini', async (req, res) => {
       body: JSON.stringify({ contents })
     });
 
-    const data = await response.json();
+    let data = await response.json();
+    
+    // If primary model fails with 404 (model not found), fall back to gemini-1.5-flash
+    if (!response.ok && data.error?.code === 404 && normalizedModel === 'gemini-2.5-flash') {
+      console.log('Model gemini-2.5-flash not available, falling back to gemini-1.5-flash');
+      const fallbackModel = 'gemini-1.5-flash';
+      geminiUrl = `https://generativelanguage.googleapis.com/v1/models/${fallbackModel}:generateContent?key=${API_KEY}`;
+      
+      console.log(`Retrying with fallback model: ${fallbackModel}`);
+      response = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contents })
+      });
+      
+      data = await response.json();
+    }
     
     if (!response.ok) {
       console.error('Gemini API error response:', JSON.stringify(data, null, 2));
@@ -356,8 +372,8 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
 
     // Build a safe reset URL: use FRONTEND_URL from env, or force production domain if in production
     // Never use request origin for email links - it may be localhost/127.0.0.1
-    const frontendUrl = process.env.FRONTEND_URL || process.env.FRONT_END_URL || (isProduction ? 'https://yolaaiinfohub.netlify.app' : 'http://localhost:5500');
-    const origin = frontendUrl.replace(/\/$/, '');
+    // Always use the live frontend URL for reset links
+    const origin = (process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app').replace(/\/$/, '');
     // User's site uses pages/reset-password.html as the reset page; build link accordingly
   const resetUrl = `${origin}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
   // store for debugging
@@ -367,68 +383,9 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
     const mailOptions = {
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       to: email,
-      subject: 'Yola AI Info Hub - Password Reset',
-      headers: {
-        'Content-Type': 'text/html; charset=UTF-8',
-        'Content-Transfer-Encoding': '8bit'
-      },
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          </head>
-          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-              <h2 style="color: #2c3e50;">Password Reset Request</h2>
-              
-              <p>Hello ${user.name},</p>
-              
-              <p>You requested a password reset for your Yola AI Info Hub account. Click the button below to reset your password:</p>
-              
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${resetUrl}" style="display: inline-block; background-color: #3498db; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                  Reset Password
-                </a>
-              </div>
-              
-              <p>Or copy and paste this link in your browser:</p>
-              <p style="background-color: #f5f5f5; padding: 10px; word-break: break-all; border-radius: 3px; font-size: 12px;">
-                <code>${resetUrl}</code>
-              </p>
-              
-              <p style="color: #e74c3c;"><strong>⚠️ This link will expire in 1 hour.</strong></p>
-              
-              <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-              
-              <p style="color: #7f8c8d; font-size: 12px;">If you did not request this password reset, please ignore this email or contact our support team.</p>
-              
-              <p style="color: #7f8c8d; font-size: 12px;">
-                Best regards,<br>
-                <strong>Yola AI Info Hub Team</strong>
-              </p>
-            </div>
-          </body>
-        </html>
-      `,
-      text: `
-        Password Reset Request
-        
-        Hello ${user.name},
-        
-        You requested a password reset for your Yola AI Info Hub account.
-        
-        Click the link below or copy it to your browser to reset your password:
-        ${resetUrl}
-        
-        This link will expire in 1 hour.
-        
-        If you did not request this password reset, please ignore this email or contact our support team.
-        
-        Best regards,
-        Yola AI Info Hub Team
-      `
+      subject: 'Password Reset - Yola AI Info Hub',
+      html: `<html><body style="font-family:Arial,sans-serif;"><div style="max-width:600px;margin:30px auto;"><h2>Password Reset</h2><p>Hi User,</p><p>Click the button below to reset your password:</p><div style="text-align:center;margin:30px 0;"><a href="${resetUrl}" style="background:#3498db;color:white;padding:12px 30px;text-decoration:none;border-radius:4px;display:inline-block;font-weight:bold;">Reset Password</a></div><p>This link expires in 1 hour.</p><p style="margin:25px 0;">If the button doesn't work, copy this link to your browser:</p><p style="background:#f0f0f0;padding:12px;word-break:break-all;">${resetUrl}</p><hr style="margin:25px 0;"><p style="color:#666;font-size:13px;">If you didn't request this reset, you can ignore this email.</p><p style="color:#666;font-size:13px;">Best regards,<br>Yola AI Info Hub Team</p></div></body></html>`,
+      text: `Password Reset Request\n\nHi User,\n\nClick this link to reset your password:\n${resetUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, ignore this email.\n\nBest regards,\nYola AI Info Hub Team`
     };
 
     // Send email if transporter is configured; otherwise log the reset URL for manual testing

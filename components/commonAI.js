@@ -79,6 +79,96 @@ document.addEventListener('click', function(e) {
     console.warn('Global stop handler error', err);
   }
 });
+
+/**
+ * Setup Stop button functionality for a section with proper abort handling.
+ * Call this during message sending to automatically wire up the Stop button.
+ * @param {Object} opts - Options object
+ * @param {HTMLElement} opts.sendBtn - The Send/Stop button element to wire up
+ * @param {string} opts.section - Section name (e.g., 'home', 'edu', 'agro', etc.)
+ * @param {string} [opts.controllerName] - Global controller variable name (defaults to `${section}AbortController`)
+ * @returns {AbortController} - The abort controller instance
+ */
+window.setupStopButton = function({ sendBtn, section, controllerName }) {
+  if (!sendBtn) return null;
+  
+  // Determine controller variable name
+  const ctrlName = controllerName || (section + 'AbortController');
+  
+  // Create or reset the abort controller
+  if (window[ctrlName]) {
+    try { window[ctrlName].abort(); } catch (e) { /* ignore */ }
+  }
+  window[ctrlName] = new AbortController();
+  
+  // Set up the button UI and handler
+  sendBtn.classList.add('sending');
+  sendBtn.textContent = 'Stop';
+  sendBtn.style.backgroundColor = '#ff4444';
+  
+  // Store original type for restoration
+  const originalType = sendBtn.type;
+  sendBtn.type = 'button'; // Prevent form submission during stop
+  
+  // Store controller info on the button itself for delegation
+  sendBtn.dataset.aborting = 'true';
+  sendBtn.dataset.section = section;
+  sendBtn.dataset.ctrlName = ctrlName;
+  
+  // Create stop handler with proper event handling
+  const stopHandler = (e) => {
+    // Only handle if this is actually being stopped
+    if (sendBtn.dataset.aborting !== 'true') return;
+    
+    if (e) {
+      if (typeof e.preventDefault === 'function') {
+        e.preventDefault();
+      }
+      if (typeof e.stopPropagation === 'function') {
+        e.stopPropagation();
+      }
+    }
+    
+    // Abort the controller
+    if (window[ctrlName]) {
+      try { 
+        window[ctrlName].abort();
+      } catch (err) { /* ignore */ }
+      window[ctrlName] = null;
+    }
+    
+    // Clean up - mark as not aborting so handler doesn't re-trigger
+    sendBtn.dataset.aborting = 'false';
+    
+    // Reset button UI
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+    sendBtn.type = originalType;
+  };
+  
+  // Add the click handler - will be called every time until removed
+  sendBtn.addEventListener('click', stopHandler);
+  
+  // Return the controller so the calling function can use it
+  return window[ctrlName];
+};
+
+/**
+ * Helper to safely fetch with abort signal, properly handling AbortError.
+ * @param {string} url - URL to fetch
+ * @param {AbortSignal} [signal] - Abort signal from AbortController
+ * @param {Object} [options] - Additional fetch options
+ * @returns {Promise<Response>}
+ */
+window.fetchWithSignal = async function(url, signal, options = {}) {
+  const fetchOptions = {
+    ...options,
+    ...(signal && { signal })
+  };
+  return fetch(url, fetchOptions);
+};
+
 // commonAI.js
 // Shared utility functions for AI sections (Home, Edu, Agro, etc.)
 
@@ -861,6 +951,83 @@ window.uploadFile = function(e, section) {
     reader.readAsDataURL(file);
 };
 
+// Show copy tooltip notification
+window.showCopyTooltip = function(element, message = 'Copied!') {
+  const tooltip = document.createElement('div');
+  tooltip.className = 'copy-tooltip';
+  tooltip.textContent = message;
+  tooltip.style.position = 'fixed';
+  tooltip.style.backgroundColor = '#111827';
+  tooltip.style.color = '#fff';
+  tooltip.style.padding = '6px 8px';
+  tooltip.style.borderRadius = '6px';
+  tooltip.style.fontSize = '12px';
+  tooltip.style.zIndex = '9999';
+  tooltip.style.pointerEvents = 'none';
+  
+  document.body.appendChild(tooltip);
+  
+  // Position near element
+  const rect = element.getBoundingClientRect();
+  tooltip.style.top = (rect.top - 30) + 'px';
+  tooltip.style.left = (rect.left - tooltip.offsetWidth / 2 + element.offsetWidth / 2) + 'px';
+  
+  setTimeout(() => tooltip.remove(), 2000);
+};
+
+// Confirm and delete a message from history
+window.confirmDeleteMessage = function(section, containerId, messageId) {
+  const ok = confirm('Delete this message? This action cannot be undone.');
+  if (!ok) return;
+  
+  // Remove from DOM with animation
+  const msgElement = document.querySelector(`[data-msg-id="${messageId}"]`);
+  if (msgElement && msgElement.closest('.chat-message-group')) {
+    const msgGroup = msgElement.closest('.chat-message-group');
+    msgGroup.style.opacity = '0.5';
+    setTimeout(() => msgGroup.remove(), 300);
+  }
+  
+  // Remove from history
+  window.deleteFromChatHistory(section, messageId);
+};
+
+// Text-to-speech helper
+window.speakText = function(text, btnElement) {
+  // Remove emoji and special characters from text
+  const cleanText = text.replace(/[🔊📋🗑️\s]+$/g, '').trim();
+  
+  if (!cleanText) return;
+  
+  // Cancel any ongoing speech
+  window.speechSynthesis.cancel();
+  
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.rate = 1;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+  
+  // Visual feedback
+  if (btnElement) {
+    btnElement.classList.add('speaking-active');
+  }
+  
+  utterance.onend = () => {
+    if (btnElement) {
+      btnElement.classList.remove('speaking-active');
+    }
+  };
+  
+  utterance.onerror = (event) => {
+    console.error('Speech synthesis error:', event);
+    if (btnElement) {
+      btnElement.classList.remove('speaking-active');
+    }
+  };
+  
+  window.speechSynthesis.speak(utterance);
+};
+
 // Common function to format AI responses
 function formatAIResponse(text) {
   let formatted = text
@@ -970,9 +1137,8 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
 
-    // Choose model based on user preference and image presence
-    modelVersion = imageData ? 'gemini-pro-vision' : 
-                        (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    // Choose model - always use gemini-2.5-flash as primary; server will handle fallback to 1.5 if needed
+    modelVersion = imageData ? 'gemini-pro-vision' : 'gemini-2.5-flash';
 
     // Use backend proxy instead of direct Gemini API
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'

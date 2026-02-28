@@ -118,8 +118,8 @@ exports.handler = async function(event, context) {
     }
 
     // Make request to Gemini API
-    const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
-    const response = await fetch(url, {
+    let url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+    let response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents }),
@@ -127,7 +127,7 @@ exports.handler = async function(event, context) {
     });
 
     // Handle non-JSON responses
-    const contentType = response.headers.get('content-type');
+    let contentType = response.headers.get('content-type');
     let data;
     
     if (contentType && contentType.includes('application/json')) {
@@ -137,6 +137,31 @@ exports.handler = async function(event, context) {
       data = {
         error: `API returned non-JSON response (${response.status}): ${text.substring(0, 100)}`
       };
+    }
+
+    // If primary model fails with 404 (model not found), fall back to gemini-1.5-flash
+    if (!response.ok && data.error?.code === 404 && model === 'gemini-2.5-flash') {
+      console.log('Model gemini-2.5-flash not available, falling back to gemini-1.5-flash');
+      const fallbackModel = 'gemini-1.5-flash';
+      url = `https://generativelanguage.googleapis.com/v1/models/${fallbackModel}:generateContent?key=${apiKey}`;
+      
+      console.log(`Retrying with fallback model: ${fallbackModel}`);
+      response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents }),
+        timeout: 30000
+      });
+      
+      contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        data = {
+          error: `API returned non-JSON response (${response.status}): ${text.substring(0, 100)}`
+        };
+      }
     }
 
     // Handle API errors

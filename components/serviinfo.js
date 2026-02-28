@@ -36,24 +36,24 @@ window.renderSection = function() {
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('servi', this.checked); };
+
+    // Add Enter key handler to chat input - ensures attachments and text are sent together
+    const serviInput = document.getElementById('servi-chat-input');
+    if (serviInput) {
+      serviInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          window.sendServiMessage();
+        }
+      });
+    }
   }).catch(err => {
     console.error('Failed to load servi template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
   });
 };
 
-window.stopServiResponse = function() {
-  if (window.serviAbortController) {
-    window.serviAbortController.abort();
-    window.serviAbortController = null;
-  }
-  const sendBtn = document.querySelector('.send-button');
-  if (sendBtn) {
-    sendBtn.classList.remove('sending');
-    sendBtn.textContent = 'Send';
-    sendBtn.style.backgroundColor = '';
-  }
-};
+// stopServiResponse is now handled by setupStopButton in commonAI.js
 
 // Common helper for Gemini API call
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
@@ -132,8 +132,8 @@ window.sendServiMessage = async function(faqText = '') {
   const input = document.getElementById('servi-chat-input');
   const chat = document.getElementById('servi-chat-messages');
   const preview = document.getElementById('servi-chat-preview');
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
+  const sendBtn = document.querySelector('#servi-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#servi-chat-input + .send-button-group .stop-button');
 
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
@@ -146,39 +146,24 @@ window.sendServiMessage = async function(faqText = '') {
   }
   if (!msg && !attach) return;
 
-  if (window.serviAbortController) {
-    window.serviAbortController.abort();
-  }
-  window.serviAbortController = new AbortController();
-
+  // Setup stop button with commonAI utility (creates AbortController)
   if (sendBtn) {
-    const originalType = sendBtn.type;
-    const stopHandler = (e) => {
-      if (e && e.preventDefault) e.preventDefault();
-      if (window.serviAbortController) {
-        window.serviAbortController.abort();
-        window.serviAbortController = null;
-      }
-      sendBtn.removeEventListener('click', stopHandler);
-      sendBtn.type = originalType;
-      sendBtn.classList.remove('sending');
-      sendBtn.textContent = 'Send';
-      sendBtn.style.backgroundColor = '';
-    };
-
-    sendBtn.classList.add('sending');
-    sendBtn.textContent = 'Stop';
-    sendBtn.style.backgroundColor = '#ff4444';
-    // prevent form re-submission while stopping
-    sendBtn.type = 'button';
-    sendBtn.addEventListener('click', stopHandler);
+    window.setupStopButton({ sendBtn, section: 'servi' });
   }
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>Servi AI typing...</span></div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Servi AI typing...</span></div>
+    <span class='msg-actions' data-msg-id='${mid}'>
+      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    </span>
   `;
   chat.appendChild(msgGroup);
   window.clearPreviewAndRemoveBtn(preview);
@@ -187,7 +172,8 @@ window.sendServiMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const signal = window.serviAbortController ? window.serviAbortController.signal : null;
-    const localData = await fetch('Data/ServiInfo/serviinfo.txt', signal ? { signal } : {}).then(r => r.text());
+    const response = await fetch('Data/ServiInfo/serviinfo.txt', signal ? { signal } : {});
+    const localData = await response.text();
 
     // Find local file links in the txt (format: details/Servi/filename.html)
     const linkRegex = /details\/Servi\/[^\s]+\.html/gim;
@@ -228,76 +214,3 @@ window.sendServiMessage = async function(faqText = '') {
   window.serviAbortController = null;
 };
 
-window.sendServiMessage = async function(faqText = '') {
-  const input = document.getElementById('servi-chat-input');
-  const chat = document.getElementById('servi-chat-messages');
-  const preview = document.getElementById('servi-chat-preview');
-  const sendBtn = document.querySelector('.send-button');
-  
-  let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
-  if (!msg && !attach) return;
-
-  // Init in-memory history and add user entry
-  window.initChatHistory && window.initChatHistory('servi', 10);
-  window.addToChatHistory && window.addToChatHistory('servi', 'user', msg);
-
-  if (window.serviAbortController) {
-    window.serviAbortController.abort();
-  }
-  window.serviAbortController = new AbortController();
-
-  if (sendBtn) {
-    sendBtn.classList.add('sending');
-    sendBtn.textContent = 'Stop';
-    sendBtn.style.backgroundColor = '#ff4444';
-
-    // Add click handler to stop response
-    const stopHandler = () => {
-      if (window.serviAbortController) {
-        window.serviAbortController.abort();
-        window.serviAbortController = null;
-      }
-      sendBtn.removeEventListener('click', stopHandler);
-      sendBtn.classList.remove('sending');
-      sendBtn.textContent = 'Send';
-      sendBtn.style.backgroundColor = '';
-    };
-    sendBtn.addEventListener('click', stopHandler);
-  }
-
-  const msgGroup = document.createElement('div');
-  msgGroup.className = 'chat-message-group';
-  msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>Servi AI typing...</span></div>
-  `;
-  chat.appendChild(msgGroup);
-  const imageData = preview.querySelector('img') ? preview.querySelector('img').src : null;
-  window.clearPreviewAndRemoveBtn(preview);
-  if (!faqText) input.value = '';
-
-  let finalAnswer = "";
-  try {
-    const localData = await fetch('Data/ServiInfo/serviinfo.txt').then(r => r.text());
-    // Get history context from in-memory pairs
-    const pairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('servi', 5) : [];
-    const historyContext = pairs.length > 0 ? '\n\nRecent chat history:\n' + pairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
-    finalAnswer = await getGeminiAnswer(localData + historyContext, msg, window.GEMINI_API_KEY, imageData);
-    // Append assistant reply to in-memory history
-    window.addToChatHistory && window.addToChatHistory('servi', 'assistant', finalAnswer);
-  } catch (e) {
-    console.error("Error fetching local data or Gemini API call:", e);
-    finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
-  }
-
-  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
-  chat.scrollTop = chat.scrollHeight;
-
-  if (sendBtn) {
-    sendBtn.classList.remove('sending');
-    sendBtn.textContent = 'Send';
-    sendBtn.style.backgroundColor = '';
-  }
-  window.serviAbortController = null;
-};

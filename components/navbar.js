@@ -83,8 +83,12 @@ function renderNavbar() {
   document.getElementById('navbar').innerHTML = ''; // Clear existing content
   document.getElementById('navbar').appendChild(nav);
 
-  // Store the original PC layout HTML to revert to it later
-  originalPCLayout = nav.innerHTML;
+  // Store the original PC layout HTML AFTER the nav is fully constructed
+  // This captures the CURRENT login state (logged-in or logged-out)
+  // Do this in a small timeout to ensure DOM is stable
+  setTimeout(() => {
+    originalPCLayout = document.querySelector('.navbar').innerHTML;
+  }, 10);
 
   // Main function to handle all responsive layouts
   function handleResponsiveLayout() {
@@ -92,6 +96,7 @@ function renderNavbar() {
     const navbarContainer = document.querySelector('.navbar-container');
     
     // Restore to original PC layout before making any changes
+    // This is the layout at the time renderNavbar() was called (with current login state)
     if (originalPCLayout) {
       document.querySelector('.navbar').innerHTML = originalPCLayout;
     }
@@ -399,5 +404,9 @@ function renderNavbar() {
 window.Navbar = {
   render: () => {
     renderNavbar();
+    // If auth UI was updated before this script loaded, ensure navbar picks it up
+    if (window.updateAuthUI && window.__lastUser) {
+      try { window.updateAuthUI(window.__lastUser); } catch (e) { /* ignore */ }
+    }
   }
 };

@@ -44,7 +44,15 @@
     
     <div class="section-extra">
     <h2>Yola Map</h2>
-    <div id="tomtom-map">Maps loading...</div>
+    <div id="tomtom-map" style="height: 500px; width: 100%; border: 1px solid #ccc; position: relative; display: flex; align-items: center; justify-content: center; background-color: #f0f0f0;">
+      <span style="font-size: 18px; color: #666;">MAPS LOADING...</span>
+      <iframe id="google-maps-iframe" 
+        style="width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0;" 
+        frameborder="0" 
+        allowfullscreen="" 
+        loading="lazy">
+      </iframe>
+    </div>
     </div>
 
     <div class="section2">

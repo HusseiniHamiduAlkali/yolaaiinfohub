@@ -38,22 +38,7 @@ And if a user clearly requests information on education, navigation, community, 
 
 window.agroAbortController = window.agroAbortController || null;
 
-window.stopAgroResponse = function() {
-  if (window.agroAbortController) {
-    window.agroAbortController.abort();
-    window.agroAbortController = null;
-  }
-  const sendBtn = document.querySelector('.send-button');
-  const aiMsgText = document.querySelector('.ai-msg-text');
-  if (sendBtn) {
-    sendBtn.classList.remove('sending');
-    sendBtn.textContent = 'Send';
-    sendBtn.style.backgroundColor = '';
-  }
-  if (aiMsgText) {
-    aiMsgText.innerHTML = "Response stopped by user.";
-  }
-};
+// stopAgroResponse is now handled by setupStopButton in commonAI.js
 
 window.renderSection = function() {
   ensureNavbarLoaded();
@@ -70,6 +55,17 @@ window.renderSection = function() {
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('home', this.checked); };
+
+    // Add Enter key handler to chat input - ensures attachments and text are sent together
+    const agroInput = document.getElementById('agro-chat-input');
+    if (agroInput) {
+      agroInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          window.sendAgroMessage();
+        }
+      });
+    }
   }).catch(err => {
     console.error('Failed to load home template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
@@ -80,8 +76,8 @@ window.sendAgroMessage = async function(faqText = '') {
   const input = document.getElementById('agro-chat-input');
   const chat = document.getElementById('agro-chat-messages');
   const preview = document.getElementById('agro-chat-preview');
-  const sendBtn = document.querySelector('.send-button');
-  const stopBtn = document.querySelector('.stop-button');
+  const sendBtn = document.querySelector('#agro-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#agro-chat-input + .send-button-group .stop-button');
 
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
@@ -94,35 +90,22 @@ window.sendAgroMessage = async function(faqText = '') {
   }
   if (!msg && !attach) return;
 
-  if (window.agroAbortController) {
-    window.agroAbortController.abort();
-  }
-  window.agroAbortController = new AbortController();
-
-  if (sendBtn) {
-    sendBtn.classList.add('sending');
-    sendBtn.textContent = 'Stop';
-    sendBtn.style.backgroundColor = '#ff4444';
-
-    // Add click handler to stop response
-    const stopHandler = () => {
-      if (window.agroAbortController) {
-        window.agroAbortController.abort();
-        window.agroAbortController = null;
-      }
-      sendBtn.removeEventListener('click', stopHandler);
-      sendBtn.classList.remove('sending');
-      sendBtn.textContent = 'Send';
-      sendBtn.style.backgroundColor = '';
-    };
-    sendBtn.addEventListener('click', stopHandler);
-  }
+  // Setup stop button with commonAI utility and capture controller
+  const controller = window.setupStopButton({ sendBtn, section: 'agro' });
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg'><span class='ai-msg-text'>Agro AI typing...</span></div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Agro AI typing...</span></div>
+    <span class='msg-actions' data-msg-id='${mid}'>
+      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    </span>
   `;
   chat.appendChild(msgGroup);
   if (typeof window.clearPreviewAndRemoveBtn === 'function') {
@@ -139,9 +122,10 @@ window.sendAgroMessage = async function(faqText = '') {
 
   let finalAnswer = "";
   try {
-    // Fetch main local data
-    const signal = window.agroAbortController ? window.agroAbortController.signal : null;
-    const localData = await fetch('Data/AgroInfo/agroinfo.txt', signal ? { signal } : {}).then(r => r.text());
+    // Fetch main local data using controller signal when available
+    const signal = controller ? controller.signal : (window.agroAbortController ? window.agroAbortController.signal : null);
+    const response = await fetch('Data/AgroInfo/agroinfo.txt', signal ? { signal } : {});
+    const localData = await response.text();
 
     // Find local file links in the txt (format: details/Agro/filename.html)
     const linkRegex = /^-\s*(details\/Agro\/[^\s]+\.html)$/gim;
@@ -167,7 +151,7 @@ window.sendAgroMessage = async function(faqText = '') {
     // Combine all local data
     const allLocalData = localData + linkedContents + historyContext;
     try {
-      finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, imageData, window.agroAbortController ? window.agroAbortController.signal : null);
+      finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, imageData, signal);
       // Store in chat history (keep last 10 messages)
       window.addToChatHistory && window.addToChatHistory('agro', 'user', msg);
       window.addToChatHistory && window.addToChatHistory('agro', 'assistant', finalAnswer);
@@ -219,6 +203,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
   contents.parts.push({
     text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
   });
+  // Always use gemini-2.5-flash as primary; server will handle fallback to 1.5 if needed
   const modelVersion = 'gemini-2.5-flash';
   let body = JSON.stringify({ model: modelVersion, contents: [contents] });
   const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -239,12 +224,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
     response = await fetch(url, fetchOptions);
     
     let data = await response.json();
-    if (data.error && window.useGemini25 && !imageData) {
-      // fallback to 1.5
-      body = JSON.stringify({ model: 'gemini-1.5-flash', contents: [contents] });
-      response = await fetch(url, fetchOptions);
-      data = await response.json();
-    }
+    // Server will automatically handle fallback, so we don't need client-side fallback
     return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
     if (err.name === 'AbortError') {
