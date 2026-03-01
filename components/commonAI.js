@@ -1310,6 +1310,43 @@ window.speakText = function(text, btnElement) {
   window.speechSynthesis.speak(utterance);
 };
 
+// Attach action button listeners to a message group
+window.attachAIActionListeners = function(msgGroup, section, containerId) {
+  if (!msgGroup) return;
+  const speakBtn = msgGroup.querySelector('.read-aloud-btn');
+  if (speakBtn) {
+    speakBtn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
+      if (txt) window.speakText(txt, speakBtn);
+    });
+  }
+  const copyBtn = msgGroup.querySelector('.copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
+      if (!txt) return;
+      try {
+        await navigator.clipboard.writeText(txt);
+        window.showCopyTooltip(copyBtn, 'Message copied!');
+      } catch (err) {
+        console.warn('Copy failed', err);
+      }
+    });
+  }
+  const deleteBtn = msgGroup.querySelector('.delete-msg-btn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const msgId = deleteBtn.getAttribute('data-msg-id');
+      if (section && containerId && msgId) {
+        window.confirmDeleteMessage(section, containerId, msgId);
+      }
+    });
+  }
+};
+
 // Common function to format AI responses
 function formatAIResponse(text) {
   let formatted = text

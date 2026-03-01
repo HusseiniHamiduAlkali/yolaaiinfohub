@@ -173,16 +173,22 @@
       submitBtn.disabled = true;
       
       try {
+        // Detect if input is email or username
+        const isEmail = /^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(username);
+        const loginBody = { password };
+        if (isEmail) {
+          loginBody.email = username;
+        } else {
+          loginBody.username = username;
+        }
+
         const response = await fetch(`${API_BASE}/api/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           credentials: 'include',
-          body: JSON.stringify({
-            username: username,
-            password: password
-          })
+          body: JSON.stringify(loginBody)
         });
         
         // Check if response is OK first

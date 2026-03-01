@@ -227,7 +227,7 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   }
 
   const msgGroup = document.createElement('div');
-  msgGroup.className = 'chat-message-group';
+  msgGroup.className = 'chat-message-group pending';
   // generate a temporary message id now so we can reuse for actions
   const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
   msgGroup.setAttribute('data-msg-id', mid);
@@ -286,37 +286,11 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
-  // attach event listeners for the action buttons on this newly created group
-  const speakBtn = msgGroup.querySelector('.read-aloud-btn');
-  if (speakBtn) {
-    speakBtn.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      const txt = msgGroup.querySelector('.ai-msg-text') ? msgGroup.querySelector('.ai-msg-text').textContent : '';
-      if (txt) window.speakText(txt, speakBtn);
-    });
+  // attach listeners and mark group as ready
+  if (typeof window.attachAIActionListeners === 'function') {
+    window.attachAIActionListeners(msgGroup, 'home', 'home-chat-messages');
   }
-  const copyBtn = msgGroup.querySelector('.copy-btn');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', async (e) => {
-      e.preventDefault(); e.stopPropagation();
-      const txt = msgGroup.querySelector('.ai-msg-text') ? msgGroup.querySelector('.ai-msg-text').textContent : '';
-      if (!txt) return;
-      try {
-        await navigator.clipboard.writeText(txt);
-        window.showCopyTooltip(copyBtn, 'Message copied!');
-      } catch (err) {
-        console.warn('Copy failed', err);
-      }
-    });
-  }
-  const deleteBtn = msgGroup.querySelector('.delete-msg-btn');
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      const msgId = deleteBtn.getAttribute('data-msg-id') || mid;
-      window.confirmDeleteMessage('home', 'home-chat-messages', msgId);
-    });
-  }
+  msgGroup.classList.remove('pending');
   chat.scrollTop = chat.scrollHeight;
 
   // Store messages in chat history

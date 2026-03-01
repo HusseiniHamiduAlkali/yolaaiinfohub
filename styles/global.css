@@ -311,9 +311,13 @@ Wednesday, July 30, 2025
 
 /* ensure message group aligns its children to the bottom so action buttons stay at bubble base */
 .chat-message-group {
-  display: flex;
-  flex-direction: column;
+  display: block;
   margin-bottom: 0.5rem;
+}
+
+/* hide action buttons while AI is typing/pending response */
+.chat-message-group.pending .msg-actions {
+  display: none;
 }
 
 /* Chat message bubbles */
