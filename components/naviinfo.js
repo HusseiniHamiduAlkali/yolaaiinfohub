@@ -563,7 +563,7 @@ window.sendNaviMessage = async function(faqText = '') {
   if (!msg && !attach) return;
 
   let controller = null;
-  if (sendBtn) {
+  if (sendBtn && typeof window.setupStopButton === 'function') {
     // Setup stop button with commonAI utility (creates AbortController) and capture controller
     controller = window.setupStopButton({ sendBtn, section: 'navi' });
   }

@@ -127,12 +127,13 @@
     
     let currentUserData = null;
     let isEditMode = false;
+    let isOwnProfile = false;  // Track if viewing own profile
     
     // Elements (guarded - some elements may not exist in this template)
-    const btnEditProfile = document.getElementById('btn-edit-profile');
-    const btnCancelEdit = document.getElementById('btn-cancel-edit');
-    const btnCancelForm = document.getElementById('btn-cancel-form');
-    const profileForm = document.getElementById('profile-edit-form');
+    const btnEditProfile = null;  // This profile uses inline editing, not a separate edit mode
+    const btnCancelEdit = null;
+    const btnCancelForm = null;
+    const profileForm = null;
     const profileViewMode = document.getElementById('profile-view-mode');
     const successMessage = document.getElementById('success-message');
     const avatarUploadHint = document.getElementById('avatar-upload-hint');
@@ -159,16 +160,26 @@
           restoredUser = JSON.parse(stored);
         }
       } catch (e) { /* ignore */ }
+      
+      // If user is logged in, load their own profile (ignore u parameter)
       if (restoredUser && restoredUser.username) {
         currentUserData = restoredUser;
+        isOwnProfile = true;
+        
+        // Warn if user tried to access a different profile
+        if (u && u !== restoredUser.username) {
+          console.log('%c⚠️ User tried to access another profile while logged in: ' + u + ' → showing ' + restoredUser.username, 'color: #f59e0b; font-weight: bold;');
+        }
+        
+        console.log('%c✅ User found in localStorage, setting isOwnProfile = true', 'color: #10b981; font-weight: bold;', restoredUser.username);
         fillProfile(restoredUser);
         if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
-        // Optionally, check backend for fresher data, but do NOT overwrite if backend returns loggedIn: false
+        // Optionally, check backend for fresher data
         try {
           const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
           const data = await res.json();
           console.log('API response:', data);
-          if (data.loggedIn && data.username === restoredUser.username) {
+          if (data.username === restoredUser.username) {
             currentUserData = data;
             fillProfile(data);
           }
@@ -177,24 +188,76 @@
         }
         return;
       }
-      // Fallback to server check if no local user
+      
+      // Check backend for logged-in user (session)
+      let backendUser = null;
       try {
-        console.log('loadProfile started, u param:', u);
+        console.log('Checking /api/me for logged-in user');
         const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
         const data = await res.json();
-        console.log('API response:', data);
-        if (data.loggedIn) {
-          currentUserData = data;
-          fillProfile(data);
-          if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
-        } else {
-          document.getElementById('profile-name').textContent = 'Not signed in';
-          document.getElementById('profile-username').textContent = '';
-          if (btnEditProfile) btnEditProfile.style.display = 'none';
+        console.log('API /me response:', data);
+        if (data.username) {
+          backendUser = data;
+          // Check if accessing own profile (u parameter matches logged-in user)
+          if (u && u === data.username) {
+            console.log('%c✅ User accessing own profile via /api/me', 'color: #10b981; font-weight: bold;');
+            currentUserData = data;
+            isOwnProfile = true;
+            fillProfile(data);
+            if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
+            return;
+          } else if (!u) {
+            // No u parameter and user is logged in - show their own profile
+            console.log('%c✅ User accessing own profile (no u parameter)', 'color: #10b981; font-weight: bold;');
+            currentUserData = data;
+            isOwnProfile = true;
+            fillProfile(data);
+            if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
+            return;
+          } else if (u && u !== data.username) {
+            // User tried to view another profile while logged in - redirect to own profile
+            console.log('%c⚠️ User tried to access another profile while logged in: ' + u + ' → showing ' + data.username, 'color: #f59e0b; font-weight: bold;');
+            currentUserData = data;
+            isOwnProfile = true;
+            fillProfile(data);
+            if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
+            return;
+          }
         }
       } catch (err) {
-        console.error('Profile load error', err);
+        console.error('Profile backend check error', err);
       }
+      
+      // User is NOT logged in - check for public profile (u parameter)
+      if (u) {
+        try {
+          console.log('Loading public profile for username:', u);
+          const res = await fetch(`${API_BASE}/api/user/${u}`, { credentials: 'include' });
+          const data = await res.json();
+          console.log('Public profile data:', data);
+          if (data.username) {
+            currentUserData = data;
+            isOwnProfile = false;
+            fillProfile(data);
+            // Hide edit button for public profiles
+            if (btnEditProfile) btnEditProfile.style.display = 'none';
+          } else {
+            document.getElementById('profile-name').textContent = 'User not found';
+            document.getElementById('profile-username').textContent = '';
+            if (btnEditProfile) btnEditProfile.style.display = 'none';
+          }
+        } catch (err) {
+          console.error('Public profile load error:', err);
+          document.getElementById('profile-name').textContent = 'Error loading profile';
+          if (btnEditProfile) btnEditProfile.style.display = 'none';
+        }
+        return;
+      }
+      
+      // No logged-in user and no u parameter
+      document.getElementById('profile-name').textContent = 'Not signed in';
+      document.getElementById('profile-username').textContent = '';
+      if (btnEditProfile) btnEditProfile.style.display = 'none';
     }
     
     function fillProfile(data) {
@@ -231,23 +294,31 @@
       const hasValue = strValue && strValue !== '' && strValue !== 'undefined' && strValue !== 'null';
       
       element.className = hasValue ? 'profile-field' : 'profile-field empty';
+      
+      // Show edit buttons only if viewing own profile
+      const showEditButton = isOwnProfile;
+      
+      console.log(`%c📝 fillField: ${elementId}, showEditButton=${showEditButton}, isOwnProfile=${isOwnProfile}`, 'color: #8b5cf6;');
+      
       element.innerHTML = `
         <div class="profile-field-header">
           <strong>${label}</strong>
-          <button class="edit-icon-btn" data-field="${elementId.replace('pf-', '')}" title="Edit ${label.toLowerCase()}">
+          ${showEditButton ? `<button class="edit-icon-btn" data-field="${elementId.replace('pf-', '')}" title="Edit ${label.toLowerCase()}">
             <i class="fas fa-edit"></i>
-          </button>
+          </button>` : ''}
         </div>
         <div class="profile-field-value">${hasValue ? strValue : '-'}</div>
       `;
       
-      // Add event listener to the edit button for inline editing
-      const editBtn = element.querySelector('.edit-icon-btn');
-      if (editBtn) {
-        editBtn.addEventListener('click', function (ev) {
-          ev.preventDefault();
-          makeFieldEditable(element, elementId.replace('pf-', ''));
-        });
+      // Add event listener to the edit button only if viewing own profile
+      if (showEditButton) {
+        const editBtn = element.querySelector('.edit-icon-btn');
+        if (editBtn) {
+          editBtn.addEventListener('click', function (ev) {
+            ev.preventDefault();
+            makeFieldEditable(element, elementId.replace('pf-', ''));
+          });
+        }
       }
     }
 
@@ -327,32 +398,20 @@
       saveBtn.disabled = true;
       cancelBtn.disabled = true;
 
-      // Build payload including other required fields from currentUserData so server validation passes
-      const requiredKeys = ['name', 'nin', 'termsAccepted', 'lga', 'state', 'address', 'phone', 'email'];
+      // Build minimal payload with just the field being edited
       const payload = {};
-      // set the field being edited
       payload[fieldKey] = newValue;
 
-      const missing = [];
-      requiredKeys.forEach(k => {
-        if (k === fieldKey) return;
-        const v = currentUserData ? currentUserData[k] : undefined;
-        if (v !== undefined && v !== null && String(v).trim() !== '') {
-          payload[k] = v;
-        } else {
-          missing.push(k);
-        }
-      });
-
-      if (missing.length > 0) {
-        // render inline inputs for missing fields so user can quickly complete them without leaving inline mode
-        saveBtn.disabled = false;
-        cancelBtn.disabled = false;
-        renderInlineMissingFields(fieldElement, missing, payload, fieldKey, inputEl, saveBtn, cancelBtn);
-        return;
+      // Include any existing data from currentUserData to preserve other fields
+      if (currentUserData) {
+        ['name', 'email', 'phone', 'state', 'lga', 'address'].forEach(k => {
+          if (k !== fieldKey && currentUserData[k]) {
+            payload[k] = currentUserData[k];
+          }
+        });
       }
 
-      // all required fields present, post payload
+      // Post the payload
       postProfileData(fieldElement, payload, fieldKey, saveBtn, cancelBtn);
     }
 
@@ -407,6 +466,26 @@
           if (window.updateAuthUI && typeof window.updateAuthUI === 'function') window.updateAuthUI(currentUserData);
           showInlineSavedIndicator(fieldElement);
           // nothing to clean up for inline editors (they are rendered on their own fields)
+        } else if (res.status === 401 && isOwnProfile) {
+          // Fallback to localStorage save if session expired but user is viewing own profile
+          console.log('%c⚠️ Backend session expired, saving to localStorage instead', 'color: #f59e0b; font-weight: bold;');
+          currentUserData = { ...(currentUserData || {}), ...payload };
+          // Save to localStorage
+          try {
+            localStorage.setItem('currentUser', JSON.stringify(currentUserData));
+            // update displayed value for the edited field
+            const valueDiv = fieldElement.querySelector('.profile-field-value');
+            valueDiv.textContent = payload[fieldKey] || '-';
+            restoreEditButton(fieldElement, fieldKey);
+            fieldElement.classList.remove('editing');
+            showInlineSavedIndicator(fieldElement);
+            alert('Profile saved locally. Please log in again to sync with server.');
+          } catch (err) {
+            console.error('localStorage save error:', err);
+            alert('Could not save profile.');
+            saveBtn.disabled = false;
+            cancelBtn.disabled = false;
+          }
         } else {
           alert((data && data.error) || 'Failed to save profile.');
           saveBtn.disabled = false;

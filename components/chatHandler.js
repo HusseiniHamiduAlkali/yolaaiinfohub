@@ -3,6 +3,61 @@
 // Use a backend proxy (/api/gemini) or Netlify function that holds the GEMINI key.
 window.GEMINI_API_KEY = window.GEMINI_API_KEY || null;
 
+// Global attachment tracking for each section
+// Stores metadata about attached files in the current message
+window.sectionAttachments = window.sectionAttachments || {};
+
+// Initialize attachment storage for a section
+window.initAttachmentStorage = function(section) {
+  if (!window.sectionAttachments[section]) {
+    window.sectionAttachments[section] = [];
+  }
+};
+
+// Add attachment metadata
+window.addAttachment = function(section, file) {
+  window.initAttachmentStorage(section);
+  const attachment = {
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    timestamp: Date.now(),
+    id: Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+  };
+  window.sectionAttachments[section].push(attachment);
+  return attachment;
+};
+
+// Get attachments for a section
+window.getAttachments = function(section) {
+  window.initAttachmentStorage(section);
+  return window.sectionAttachments[section];
+};
+
+// Clear attachments for a section (after message is sent)
+window.clearAttachments = function(section) {
+  if (window.sectionAttachments[section]) {
+    window.sectionAttachments[section] = [];
+  }
+};
+
+// Format attachment info for display
+window.getAttachmentSummary = function(section) {
+  const attachments = window.getAttachments(section);
+  if (!attachments || attachments.length === 0) return '';
+  
+  const summary = attachments.map(att => {
+    const typeIcon = att.type.startsWith('image/') ? '🖼️' : 
+                     att.type.startsWith('audio/') ? '🎵' :
+                     att.type.startsWith('video/') ? '🎥' :
+                     att.type === 'application/pdf' ? '📄' : '📎';
+    const sizeKB = (att.size / 1024).toFixed(1);
+    return `${typeIcon} ${att.name} (${sizeKB}KB)`;
+  }).join(' | ');
+  
+  return `<div class="attachment-metadata" style="font-size:12px; color:#718096; margin-top:6px; padding-top:6px; border-top:1px solid #e2e8f0;">📎 Attachments: ${summary}</div>`;
+};
+
 // Global text-to-speech variables and functions
 window.currentSpeech = window.currentSpeech || null;
 
@@ -142,28 +197,6 @@ function formatAIResponse(text) {
   return `
     <div class="ai-response">
       ${formatted}
-      <button onclick="window.speakText(this.parentElement.textContent)" class="read-aloud-btn" title="Listen to Response">
-        🔊 Listen
-      </button>
-      <style>
-        .read-aloud-btn {
-          background: transparent;
-          border: 1px solid #cbd5e0;
-          border-radius: 6px;
-          padding: 4px 8px;
-          margin-top: 8px;
-          cursor: pointer;
-          transition: all 0.2s;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 0.9em;
-        }
-        .read-aloud-btn:hover {
-          background: #e2e8f0;
-          transform: translateY(-1px);
-        }
-      </style>
     </div>
   `;
 }
@@ -271,6 +304,10 @@ window.recordAudio = function(section) {
 window.uploadFile = function(e, section) {
   const file = e.target.files[0];
   if (!file) return;
+  
+  // Track attachment metadata
+  window.addAttachment(section, file);
+  
   const reader = new FileReader();
   reader.onload = function(ev) {
     const preview = document.getElementById(section + '-chat-preview');
@@ -307,6 +344,10 @@ window.sendMessage = async function(section, faqText = '') {
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
 
+  // Get attachment summary
+  const attachmentSummary = window.getAttachmentSummary(section);
+  const fullMessage = attachmentSummary ? msg + attachmentSummary : msg;
+
   // Extract image data if present
   let imageData = null;
   const previewImg = preview.querySelector('img');
@@ -330,16 +371,21 @@ window.sendMessage = async function(section, faqText = '') {
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
   msgGroup.innerHTML = `
-    <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='user-msg'>${fullMessage}${attach ? "<br>" + attach : ""}</div>
     <div class='ai-msg'><span class='ai-msg-text'>...</span></div>
   `;
   chat.appendChild(msgGroup);
-  // Clear preview using centralized helper so remove button and any state are cleaned
+  
+  // Clear preview and attachments using centralized helper so remove button and any state are cleaned
   if (typeof window.clearPreviewAndRemoveBtn === 'function') {
     window.clearPreviewAndRemoveBtn(preview);
   } else {
     preview.innerHTML = '';
   }
+  
+  // Clear attachments after message is sent
+  window.clearAttachments(section);
+  
   if (!faqText) input.value = '';
 
   try {

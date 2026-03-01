@@ -175,7 +175,7 @@ nav.navbar {
 .navbar-auth {
   display: inline-flex;
   flex-direction: row;
-  align-items: left;
+  align-items: center;
   height: fit-content;
   margin-right: 5px;
   gap: 0.7rem;

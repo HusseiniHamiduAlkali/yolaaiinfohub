@@ -31,6 +31,12 @@ window.renderSection = function() {
       return html;
     }).then(html => {
       document.getElementById('main-content').innerHTML = html;
+      
+      // Load chat history AFTER template is inserted
+      setTimeout(() => {
+        window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('medi', 'medi-chat-messages');
+      }, 50);
+      
       // Wire model toggle after template is inserted
       const mt = document.getElementById('model-toggle');
       if (mt) mt.onchange = function() { window.toggleGeminiModel('medi', this.checked); };
@@ -71,8 +77,10 @@ window.sendMediMessage = async function(faqText = '') {
   }
   if (!msg && !attach) return;
 
-  // Setup stop button with commonAI utility
-  window.setupStopButton({ sendBtn, section: 'medi' });
+  // Setup stop button with commonAI utility (with fallback if not loaded)
+  if (typeof window.setupStopButton === 'function') {
+    window.setupStopButton({ sendBtn, section: 'medi' });
+  }
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';

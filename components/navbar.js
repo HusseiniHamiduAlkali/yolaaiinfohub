@@ -2,6 +2,23 @@
 let originalPCLayout = null;
 
 function renderNavbar() {
+  // Always restore user from localStorage before rendering
+  let restoredUser = null;
+  try {
+    const stored = localStorage.getItem('currentUser');
+    if (stored) {
+      restoredUser = JSON.parse(stored);
+    }
+  } catch (e) { /* ignore */ }
+  
+  if (restoredUser && restoredUser.username) {
+    window.currentUser = restoredUser;
+    window.__lastUser = restoredUser;
+  } else {
+    // No stored user - explicitly clear currentUser
+    window.currentUser = null;
+  }
+
   const nav = document.createElement('nav');
   nav.className = 'navbar';
 
@@ -421,10 +438,16 @@ window.Navbar = {
         restoredUser = JSON.parse(stored);
       }
     } catch (e) { /* ignore */ }
+    
     if (restoredUser && restoredUser.username) {
       window.currentUser = restoredUser;
       window.__lastUser = restoredUser;
+    } else {
+      // No stored user - explicitly clear currentUser and __lastUser
+      window.currentUser = null;
+      window.__lastUser = null;  // IMPORTANT: Clear __lastUser on logout!
     }
+    
     renderNavbar();
     // If auth UI was updated before this script loaded, ensure navbar picks it up
     // Only reapply if currentUser is null but we have a remembered user, or they differ

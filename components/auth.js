@@ -137,6 +137,11 @@ window.updateAuthUI = function(user) {
     } else {
       console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
     }
+    
+    // Load chat histories from backend for this logged-in user
+    if (window.loadAllChatHistoriesFromBackend) {
+      window.loadAllChatHistoriesFromBackend().catch(e => console.warn('Error loading chat histories:', e));
+    }
   } else {
     // User is logged out
     if (authButtons) authButtons.style.display = 'flex';
@@ -175,18 +180,26 @@ window.logoutUser = async function() {
       }
     });
     // Always clear localStorage user on logout
+    // This will call Navbar.render() internally via updateAuthUI
     window.updateAuthUI(null);
-    if (window.Navbar && typeof window.Navbar.render === 'function') {
-      window.Navbar.render();
+    
+    // Clear all chat histories for this user on logout
+    if (window.clearAllChatHistories && typeof window.clearAllChatHistories === 'function') {
+      window.clearAllChatHistories();
     }
+    
     if (!response.ok) {
       console.error('Logout failed:', await response.text());
     }
   } catch (error) {
+    // updateAuthUI will call Navbar.render() internally
     window.updateAuthUI(null);
-    if (window.Navbar && typeof window.Navbar.render === 'function') {
-      window.Navbar.render();
+    
+    // Clear all chat histories for this user on logout (even on error)
+    if (window.clearAllChatHistories && typeof window.clearAllChatHistories === 'function') {
+      window.clearAllChatHistories();
     }
+    
     console.error('Logout error:', error);
   }
 };

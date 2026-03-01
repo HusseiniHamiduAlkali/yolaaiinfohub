@@ -6,7 +6,10 @@ window.MAPS_API_KEY = window.MAPS_API_KEY || null;
 // Ensure navbar is loaded
 function ensureNavbarLoaded() {
   return new Promise((resolve) => {
-    if (typeof window.renderNavbar === 'function') {
+    if (typeof window.Navbar === 'object' && typeof window.Navbar.render === 'function') {
+      window.Navbar.render();
+      resolve();
+    } else if (typeof window.renderNavbar === 'function') {
       window.renderNavbar();
       resolve();
     } else {
@@ -15,10 +18,12 @@ function ensureNavbarLoaded() {
         script.src = 'components/navbar.js';
         script.id = 'navbar-js';
         script.onload = () => {
-          if (typeof window.renderNavbar === 'function') {
+          if (typeof window.Navbar === 'object' && typeof window.Navbar.render === 'function') {
+            window.Navbar.render();
+          } else if (typeof window.renderNavbar === 'function') {
             window.renderNavbar();
-            resolve();
           }
+          resolve();
         };
         document.body.appendChild(script);
       }

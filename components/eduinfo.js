@@ -69,8 +69,10 @@ window.sendEduMessage = async function(faqText = '') {
     let attach = preview.innerHTML;
     if (!msg && !attach) return;
 
-    // Setup stop button with commonAI utility
-    window.setupStopButton({ sendBtn, section: 'edu' });
+    // Setup stop button with commonAI utility (with fallback if not loaded)
+    if (typeof window.setupStopButton === 'function') {
+      window.setupStopButton({ sendBtn, section: 'edu' });
+    }
 
     const msgGroup = document.createElement('div');
     msgGroup.className = 'chat-message-group';

@@ -207,8 +207,10 @@ window.sendEcoMessage = async function(faqText = '') {
     }
   }
 
-  // Handle abort controller - use commonAI utility
-  window.setupStopButton({ sendBtn, section: 'eco' });
+  // Handle abort controller - use commonAI utility (with fallback if not loaded)
+  if (typeof window.setupStopButton === 'function') {
+    window.setupStopButton({ sendBtn, section: 'eco' });
+  }
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';

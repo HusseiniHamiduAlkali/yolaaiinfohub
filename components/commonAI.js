@@ -1,3 +1,17 @@
+// --- API CONFIGURATION ---
+// Detect if running on live URL or localhost and set API base accordingly
+window.getAPIBase = function() {
+  // Check if running on production/live URL
+  if (window.location.hostname.includes('netlify.app') || window.location.hostname.includes('yolaaiinfohub')) {
+    // Production: use Render backend
+    return 'https://yolaaiinfohub-backend.onrender.com';
+  }
+  // Development: use localhost
+  return 'http://localhost:4000';
+};
+
+window.API_BASE = window.API_BASE || window.getAPIBase();
+
 // --- SHARED STOP BUTTON ABORT LOGIC ---
 /**
  * Shared handler for Stop button abort logic in all AI chat sections.
@@ -178,8 +192,8 @@ window.useGemini25 = window.useGemini25 || false;
 // Chat history management with localStorage persistence
 // In-memory storage for chat histories
 window.chatHistories = window.chatHistories || {};
-window.chatHistoriesMaxMessages = 20; // Max 20 messages per section
-window.chatStorageKey = 'chatHistories_v2'; // localStorage key
+window.chatHistoriesMaxMessages = 20; // Max 20 messages per section per user (auto-clear older ones)
+window.chatStorageKey = 'chatHistories_v3'; // localStorage key
 
 // Load all chat histories from localStorage on startup
 window.loadChatHistoriesFromStorage = function() {
@@ -187,36 +201,221 @@ window.loadChatHistoriesFromStorage = function() {
     const stored = localStorage.getItem(window.chatStorageKey);
     if (stored) {
       window.chatHistories = JSON.parse(stored);
+      let totalMessages = 0;
+      for (const key in window.chatHistories) {
+        if (Array.isArray(window.chatHistories[key])) {
+          totalMessages += window.chatHistories[key].length;
+        }
+      }
+      console.log(`%c📂 Loaded from localStorage: ${Object.keys(window.chatHistories).length} sections, ${totalMessages} total messages`, 'color: #8b5cf6; font-weight: bold;');
+    } else {
+      console.log('%c📂 No previous chat history found in localStorage (fresh start)', 'color: #6b7280;');
     }
   } catch (e) {
-    console.warn('Failed to load chat histories from storage', e);
+    console.error('❌ Failed to load chat histories from storage:', e);
   }
 };
 
 // Save all chat histories to localStorage
 window.saveChatHistoriesToStorage = function() {
   try {
-    localStorage.setItem(window.chatStorageKey, JSON.stringify(window.chatHistories));
+    const dataToStore = {};
+    let totalMessages = 0;
+    for (const key in window.chatHistories) {
+      if (Array.isArray(window.chatHistories[key])) {
+        dataToStore[key] = window.chatHistories[key];
+        totalMessages += window.chatHistories[key].length;
+      }
+    }
+    localStorage.setItem(window.chatStorageKey, JSON.stringify(dataToStore));
+    console.log(`%c💾 Saved to localStorage: ${Object.keys(dataToStore).length} sections, ${totalMessages} total messages`, 'color: #6366f1; font-weight: bold;');
+    
+    // Also sync to backend if user is logged in
+    window.syncChatHistoriesToBackend();
   } catch (e) {
-    console.warn('Failed to save chat histories to storage', e);
+    console.error('❌ Failed to save chat histories to storage:', e);
   }
 };
 
-// Initialize chat history for a section
-window.initChatHistory = function(section, maxMessages = 20) {
-  if (!window.chatHistories[section]) {
-    window.chatHistories[section] = [];
+// Sync chat history for a specific section to backend (optional - fails silently)
+window.syncChatHistoryToBackend = async function(section) {
+  const user = window.getLoggedInUser();
+  if (!user) return; // Only sync for logged-in users
+  
+  try {
+    const key = window.getChatHistoryKey(section);
+    const messages = window.chatHistories[key] || [];
+    
+    const res = await fetch(`${window.API_BASE}/api/chat-history/${section}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ messages }),
+      timeout: 2000
+    });
+    
+    // Silently fail if endpoint doesn't exist - localStorage is the primary storage
+    if (!res.ok) {
+      return;
+    }
+  } catch (e) {
+    // Silently ignore - backend sync is optional
   }
-  window.chatHistories[section].maxMessages = maxMessages || window.chatHistoriesMaxMessages;
+};
+
+// Sync all chat histories to backend (debounced)
+window.syncChatHistoriesToBackend = (function() {
+  let timeout = null;
+  return function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(async () => {
+      const user = window.getLoggedInUser();
+      if (!user) return;
+      
+      // Sync all sections
+      const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'about'];
+      for (const section of sections) {
+        window.syncChatHistoryToBackend(section);
+      }
+    }, 1000); // Debounce: sync 1 second after last message
+  };
+})();
+
+// Load chat history for a section from backend
+// Note: This is optional - falls back to localStorage if backend endpoints don't exist
+window.loadChatHistoryFromBackend = async function(section) {
+  const user = window.getLoggedInUser();
+  if (!user) return null;
+  
+  try {
+    const res = await fetch(`${window.API_BASE}/api/chat-history/${section}`, {
+      method: 'GET',
+      credentials: 'include',
+      timeout: 2000 // Quick timeout
+    });
+    
+    if (!res.ok) {
+      // Silently fail for 404 - endpoint doesn't exist yet, use localStorage
+      return null;
+    }
+    
+    const data = await res.json();
+    return data.messages || [];
+  } catch (e) {
+    // Silently fail - app works fine with localStorage
+    return null;
+  }
+};
+
+// Initialize chat history from backend on login (optional - fails silently if endpoints don't exist)
+window.loadAllChatHistoriesFromBackend = async function() {
+  const user = window.getLoggedInUser();
+  if (!user) return;
+  
+  // Silently attempt to load from backend
+  // If backend doesn't have endpoints, localStorage will be used instead
+  const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'about'];
+  let loadedCount = 0;
+  
+  for (const section of sections) {
+    try {
+      const backendMessages = await window.loadChatHistoryFromBackend(section);
+      if (backendMessages && backendMessages.length > 0) {
+        const key = window.getChatHistoryKey(section);
+        window.chatHistories[key] = backendMessages;
+        loadedCount++;
+      }
+    } catch (e) {
+      // Silently ignore - localStorage will be used
+    }
+  }
+  
+  // Only save to localStorage if we actually loaded something from backend
+  if (loadedCount > 0) {
+    window.saveChatHistoriesToStorage();
+  }
+};
+
+
+// Get the current logged-in user
+window.getLoggedInUser = function() {
+  try {
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      return user && user.username ? user.username : null;
+    }
+  } catch (e) { /* ignore */ }
+  return null;
+};
+
+// Generate storage key for a section-user combination
+window.getChatHistoryKey = function(section) {
+  const user = window.getLoggedInUser();
+  if (user) {
+    return `${section}_${user}`;
+  }
+  // For non-logged-in users, use the section name directly
+  return section;
+};
+
+// Initialize chat history for a section (specific to current user)
+window.initChatHistory = function(section, maxMessages = 50) {
+  const key = window.getChatHistoryKey(section);
+  
+  // Skip if already initialized for this section
+  if (window.chatHistories[key] && window.chatHistories[key].length > 0) {
+    return;
+  }
+  
+  if (!window.chatHistories[key]) {
+    // Try to load from localStorage first
+    if (window.chatStorageKey) {
+      try {
+        const stored = localStorage.getItem(window.chatStorageKey);
+        if (stored) {
+          const histories = JSON.parse(stored);
+          if (histories[key]) {
+            window.chatHistories[key] = histories[key];
+          }
+        }
+      } catch (e) {
+        // If load fails, start fresh
+      }
+    }
+    
+    // If still empty, initialize empty array
+    if (!window.chatHistories[key]) {
+      window.chatHistories[key] = [];
+    }
+  }
+  
+  window.chatHistories[key].maxMessages = maxMessages || window.chatHistoriesMaxMessages;
   
   // Create global variables for each section for backward compatibility
   const globalName = section + 'ChatHistory';
-  window[globalName] = window.chatHistories[section];
+  window[globalName] = window.chatHistories[key];
+  
+  if (window.chatHistories[key].length > 0) {
+    console.log(`%c📝 Chat history loaded for ${section} (${key}) - ${window.chatHistories[key].length} messages`, 'color: #10b981; font-weight: bold;');
+  }
+};
+
+// Initialize chat history AND restore previous messages to DOM
+window.initAndRestoreSectionHistory = function(section, elementId) {
+  // Initialize the in-memory history
+  window.initChatHistory(section);
+  
+  // Load existing messages from history to the DOM
+  window.loadChatHistoryToDOM(section, elementId);
+  
+  console.log(`%c🔄 Restored ${section} chat history to DOM`, 'color: #f59e0b; font-weight: bold;');
 };
 
 // Add a message to chat history with persistent storage
 window.addToChatHistory = function(section, role, content) {
-  if (!window.chatHistories[section]) {
+  const key = window.getChatHistoryKey(section);
+  if (!window.chatHistories[key]) {
     window.initChatHistory(section);
   }
   
@@ -229,18 +428,20 @@ window.addToChatHistory = function(section, role, content) {
     deleted: false // Flag for manually deleted messages
   };
   
-  window.chatHistories[section].push(message);
+  window.chatHistories[key].push(message);
+  console.log(`%c➕ Added to history (${key}): ${role.toUpperCase()} - ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`, 'color: #059669;');
   
   // Keep only the last maxMessages - auto-delete oldest
-  const maxMessages = window.chatHistories[section].maxMessages || window.chatHistoriesMaxMessages;
-  if (window.chatHistories[section].length > maxMessages) {
+  const maxMessages = window.chatHistories[key].maxMessages || window.chatHistoriesMaxMessages;
+  if (window.chatHistories[key].length > maxMessages) {
     // Remove oldest message
-    window.chatHistories[section].shift();
+    window.chatHistories[key].shift();
+    console.log(`%c🗑️ Auto-deleted oldest message (limit: ${maxMessages})`, 'color: #dc2626;');
   }
   
   // Update global variable
   const globalName = section + 'ChatHistory';
-  window[globalName] = window.chatHistories[section];
+  window[globalName] = window.chatHistories[key];
   
   // Persist to localStorage
   window.saveChatHistoriesToStorage();
@@ -248,23 +449,31 @@ window.addToChatHistory = function(section, role, content) {
 
 // Get chat history for a section
 window.getChatHistory = function(section) {
-  if (!window.chatHistories[section]) {
+  const key = window.getChatHistoryKey(section);
+  if (!window.chatHistories[key]) {
     window.initChatHistory(section);
   }
-  return window.chatHistories[section];
+  return window.chatHistories[key];
+};
+
+// Get raw chat history array (for API calls)
+window.getChatHistoryArray = function(section) {
+  const history = window.getChatHistory(section);
+  return history && Array.isArray(history) ? history.filter(msg => !msg.deleted) : [];
 };
 
 // Delete a specific message from chat history
 window.deleteFromChatHistory = function(section, messageId) {
-  if (!window.chatHistories[section]) return;
+  const key = window.getChatHistoryKey(section);
+  if (!window.chatHistories[key]) return;
   
-  const index = window.chatHistories[section].findIndex(msg => msg.id === messageId);
+  const index = window.chatHistories[key].findIndex(msg => msg.id === messageId);
   if (index !== -1) {
-    window.chatHistories[section].splice(index, 1);
+    window.chatHistories[key].splice(index, 1);
     
     // Update global variable
     const globalName = section + 'ChatHistory';
-    window[globalName] = window.chatHistories[section];
+    window[globalName] = window.chatHistories[key];
     
     // Persist to localStorage
     window.saveChatHistoriesToStorage();
@@ -274,18 +483,73 @@ window.deleteFromChatHistory = function(section, messageId) {
   return false;
 };
 
-// Get active user for chat history tracking
-window.getCurrentUser = function() {
-  // Check if user is logged in from localStorage or auth state
-  try {
-    const userStr = localStorage.getItem('userEmail') || localStorage.getItem('currentUser');
-    return userStr ? JSON.parse(userStr) : null;
-  } catch (e) {
-    return null;
+// Clear all chat history for a section
+window.clearChatHistory = function(section) {
+  const key = window.getChatHistoryKey(section);
+  window.chatHistories[key] = [];
+  
+  // Update global variable
+  const globalName = section + 'ChatHistory';
+  window[globalName] = [];
+  
+  // Persist to localStorage
+  window.saveChatHistoriesToStorage();
+  
+  console.log(`%c🗑️ Chat history cleared for ${section}`, 'color: #ef4444; font-weight: bold;');
+};
+
+// Clear all chat histories for the current user (on logout)
+window.clearAllChatHistories = function() {
+  const user = window.getLoggedInUser();
+  if (user) {
+    // Remove all histories for this user
+    Object.keys(window.chatHistories).forEach(key => {
+      if (key.includes(`_${user}`)) {
+        delete window.chatHistories[key];
+      }
+    });
+  } else {
+    // Clear all non-user histories
+    const sections = ['home', 'edu', 'agro', 'medi', 'eco', 'community', 'servi', 'navi'];
+    sections.forEach(section => {
+      if (window.chatHistories[section]) {
+        delete window.chatHistories[section];
+      }
+    });
   }
+  window.saveChatHistoriesToStorage();
+  console.log('%c🗑️ All chat histories cleared', 'color: #ef4444; font-weight: bold;');
 };
 
 // --- MESSAGE RENDERING HELPER ---
+// Load and render previous chat history for a section
+window.loadAndRenderChatHistory = function(section, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  // Initialize history if not already done
+  window.initChatHistory(section);
+  
+  // Get all messages for this section
+  const history = window.getChatHistoryArray(section);
+  
+  console.log(`%c📚 Loading ${history.length} messages for ${section}`, 'color: #8b5cf6; font-weight: bold;');
+  
+  // Clear the container first
+  container.innerHTML = '';
+  
+  // Render all messages
+  history.forEach(message => {
+    const msgElement = window.createMessageElement(message, section, containerId);
+    if (msgElement) {
+      container.appendChild(msgElement);
+    }
+  });
+  
+  // Scroll to bottom
+  container.scrollTop = container.scrollHeight;
+};
+
 // Unified function to create message DOM elements with speak, copy, delete buttons for AI messages
 window.createMessageElement = function(message, section, containerId) {
   const msgGroup = document.createElement('div');
@@ -294,6 +558,10 @@ window.createMessageElement = function(message, section, containerId) {
   msgGroup.setAttribute('data-msg-id', mid);
   const isUser = message && message.role === 'user';
   let contentHtml = message && message.content ? message.content : '';
+  
+  // Check if this is a "typing" message (no action buttons needed)
+  const isTypingMessage = contentHtml.includes('typing') || contentHtml.includes('Typing');
+  
   if (!isUser && contentHtml) {
     // remove any buttons that may have been included in earlier formats
     const tmp = document.createElement('div');
@@ -315,55 +583,67 @@ window.createMessageElement = function(message, section, containerId) {
       </div>
     `;
   } else {
-    // AI message: content in ai-msg and actions placed below bubble
-    msgGroup.innerHTML = `
-      <div class='ai-msg' data-msg-id='${mid}'>
-        <span class='ai-msg-text msg-text'>${contentHtml}</span>
-      </div>
-      <span class='msg-actions' data-msg-id='${mid}'>
-        <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
-        <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
-        <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
-      </span>
-    `;
+    // AI message: content in ai-msg and actions placed below bubble (but only if NOT typing)
+    if (isTypingMessage) {
+      // No action buttons for typing messages
+      msgGroup.innerHTML = `
+        <div class='ai-msg' data-msg-id='${mid}'>
+          <span class='ai-msg-text msg-text'>${contentHtml}</span>
+        </div>
+      `;
+    } else {
+      // Add action buttons for actual responses
+      msgGroup.innerHTML = `
+        <div class='ai-msg' data-msg-id='${mid}'>
+          <span class='ai-msg-text msg-text'>${contentHtml}</span>
+        </div>
+        <span class='msg-actions' data-msg-id='${mid}'>
+          <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+          <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+          <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+        </span>
+      `;
 
-    // Attach event listeners for AI message actions
-    // Speak
-    const speakBtn = msgGroup.querySelector('.read-aloud-btn');
-    if (speakBtn) {
-      speakBtn.addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
-        if (txt) window.speakText(txt, speakBtn);
-      });
-    }
-    // Copy
-    const copyBtn = msgGroup.querySelector('.copy-btn');
-    if (copyBtn) {
-      copyBtn.addEventListener('click', async (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
-        if (!txt) return;
-        try {
-          await navigator.clipboard.writeText(txt);
-          window.showCopyTooltip(copyBtn, 'Message copied!');
-        } catch (err) {
-          console.warn('Copy failed', err);
-        }
-      });
-    }
-    // Delete
-    const deleteBtn = msgGroup.querySelector('.delete-msg-btn');
-    if (deleteBtn) {
-      deleteBtn.addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const msgId = deleteBtn.getAttribute('data-msg-id') || mid;
-        window.confirmDeleteMessage(section, containerId, msgId);
-      });
+      // Attach event listeners for AI message actions
+      // Speak
+      const speakBtn = msgGroup.querySelector('.read-aloud-btn');
+      if (speakBtn) {
+        speakBtn.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
+          if (txt) window.speakText(txt, speakBtn);
+        });
+      }
+      // Copy
+      const copyBtn = msgGroup.querySelector('.copy-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
+          if (!txt) return;
+          try {
+            await navigator.clipboard.writeText(txt);
+            window.showCopyTooltip(copyBtn, 'Message copied!');
+          } catch (err) {
+            console.warn('Copy failed', err);
+          }
+        });
+      }
+      // Delete
+      const deleteBtn = msgGroup.querySelector('.delete-msg-btn');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const msgId = deleteBtn.getAttribute('data-msg-id') || mid;
+          window.confirmDeleteMessage(section, containerId, msgId);
+        });
+      }
     }
   }
   return msgGroup;
 };
+
+
 
 // Load chat history to DOM
 window.loadChatHistoryToDOM = function(section, elementId) {
@@ -674,6 +954,8 @@ window.removePreview = function(section) {
   try {
     const preview = document.getElementById(section + '-chat-preview');
     if (preview) window.clearPreviewAndRemoveBtn(preview);
+    // Also clear attachments from registry
+    window.clearAttachments(section);
   } catch (e) {
     console.warn('removePreview error', e);
   }

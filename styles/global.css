@@ -1226,3 +1226,45 @@ main {
   display: inline-flex !important;
 }
 
+/* Attachment metadata display styles */
+.attachment-metadata {
+  font-size: 12px;
+  color: #718096;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.attachment-metadata-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  background-color: #edf2f7;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.attachment-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: #e6fffa;
+  color: #234e52;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  margin: 2px 0;
+}
+
+.attachment-filename {
+  word-break: break-word;
+  max-width: 200px;
+  font-family: 'Courier New', monospace;
+}

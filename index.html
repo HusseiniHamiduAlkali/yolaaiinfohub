@@ -76,7 +76,7 @@
       } else {
         // Restore full navbar if it was replaced by minimal appbar
         if (!navbarDiv.querySelector('.navbar')) {
-          navbarDiv.innerHTML = Navbar.render();
+          Navbar.render();
           // previously we cleared auth UI here, but that overwrote a logged-in navbar
           // now we simply rely on Navbar.render or updateAuthUI caller to set state.
         }
@@ -161,7 +161,7 @@
       return window.__performLoadSection(section);
     };
     // Render the navbar only once on initial load
-    document.getElementById('navbar').innerHTML = Navbar.render();
+    Navbar.render();
     // note: do NOT clear auth state here, it would immediately override a logged-in navbar
     // Load saved section if available (restores from details page back-button), otherwise default to home
     (function(){

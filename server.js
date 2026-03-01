@@ -289,6 +289,24 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
+// Chat History Schema - stores per-user, per-section chat histories
+const chatHistorySchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  username: { type: String, required: true }, // For quick lookup
+  section: { type: String, required: true }, // home, edu, agro, medi, navi, eco, servi, community, about
+  messages: [{
+    id: String,
+    role: { type: String, enum: ['user', 'assistant'], required: true },
+    content: String,
+    timestamp: { type: Date, default: Date.now },
+    deleted: { type: Boolean, default: false }
+  }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+chatHistorySchema.index({ userId: 1, section: 1 }, { unique: true });
+const ChatHistory = mongoose.model('ChatHistory', chatHistorySchema);
+
 // Signup
 app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
   // Check for validation errors
@@ -636,6 +654,141 @@ app.post('/api/update-profile', async (req, res) => {
   } catch (error) {
     console.error('Profile update error:', error);
     res.status(500).json({ error: 'Error updating profile' });
+  }
+});
+
+// Chat History Endpoints
+// Save/Update chat history for a section
+app.post('/api/chat-history/:section', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { section } = req.params;
+    const { messages } = req.body;
+
+    if (!section || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid section or messages' });
+    }
+
+    // Get user
+    const user = await User.findById(req.session.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Keep only the last 20 messages
+    const trimmedMessages = messages.slice(-20);
+
+    // Update or create chat history
+    let chatHistory = await ChatHistory.findOne({
+      userId: req.session.userId,
+      section: section
+    });
+
+    if (chatHistory) {
+      chatHistory.messages = trimmedMessages;
+      chatHistory.updatedAt = new Date();
+    } else {
+      chatHistory = new ChatHistory({
+        userId: req.session.userId,
+        username: user.username,
+        section: section,
+        messages: trimmedMessages
+      });
+    }
+
+    await chatHistory.save();
+    res.json({ success: true, count: trimmedMessages.length });
+  } catch (error) {
+    console.error('Chat history save error:', error);
+    res.status(500).json({ error: 'Error saving chat history' });
+  }
+});
+
+// Get chat history for a section
+app.get('/api/chat-history/:section', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { section } = req.params;
+
+    if (!section) {
+      return res.status(400).json({ error: 'Invalid section' });
+    }
+
+    const chatHistory = await ChatHistory.findOne({
+      userId: req.session.userId,
+      section: section
+    });
+
+    if (!chatHistory) {
+      // Return empty history if none exists
+      return res.json({ messages: [] });
+    }
+
+    // Filter out deleted messages
+    const activeMessages = chatHistory.messages.filter(m => !m.deleted);
+    res.json({ messages: activeMessages });
+  } catch (error) {
+    console.error('Chat history fetch error:', error);
+    res.status(500).json({ error: 'Error fetching chat history' });
+  }
+});
+
+// Delete a specific message from chat history
+app.post('/api/chat-history/:section/delete/:messageId', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { section, messageId } = req.params;
+
+    const chatHistory = await ChatHistory.findOne({
+      userId: req.session.userId,
+      section: section
+    });
+
+    if (!chatHistory) {
+      return res.status(404).json({ error: 'Chat history not found' });
+    }
+
+    // Mark message as deleted
+    const message = chatHistory.messages.find(m => m.id === messageId);
+    if (message) {
+      message.deleted = true;
+      await chatHistory.save();
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Message delete error:', error);
+    res.status(500).json({ error: 'Error deleting message' });
+  }
+});
+
+// Clear entire chat history for a section
+app.post('/api/chat-history/:section/clear', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { section } = req.params;
+
+    await ChatHistory.findOneAndUpdate(
+      { userId: req.session.userId, section: section },
+      { messages: [] }
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Chat history clear error:', error);
+    res.status(500).json({ error: 'Error clearing chat history' });
   }
 });
 

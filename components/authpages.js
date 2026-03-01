@@ -20,6 +20,29 @@ window.SigninPage = {
       } else {
         body = { username: usernameOrEmail, password };
       }
+      
+      // Check if a different user is already logged in
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (currentUser && currentUser.username) {
+        const targetUsername = body.username || usernameOrEmail;
+        if (currentUser.username !== targetUsername) {
+          console.log(`%c🔄 Auto-logout: User switching from ${currentUser.username} to ${targetUsername}`, 'color: #f59e0b; font-weight: bold;');
+          // Automatically log out the previous user
+          try {
+            await fetch((window.API_BASE || 'http://localhost:4000') + '/api/logout', {
+              method: 'POST',
+              credentials: 'include'
+            });
+          } catch (err) {
+            console.warn('Logout failed during user switch:', err);
+          }
+          // Clear localStorage and reset UI
+          localStorage.removeItem('currentUser');
+          if (window.clearAllChatHistories) window.clearAllChatHistories();
+          if (window.Navbar && window.Navbar.render) window.Navbar.render();
+        }
+      }
+      
       try {
   const res = await fetch((window.API_BASE || 'http://localhost:4000') + '/api/login', {
           method: 'POST',
@@ -43,7 +66,43 @@ window.SigninPage = {
 
         const data = await res.json();
         if (data.success) {
-          window.updateAuthUI({ username: data.username, name: data.name });
+          // Fetch complete user data from /api/me
+          try {
+            const meRes = await fetch((window.API_BASE || 'http://localhost:4000') + '/api/me', {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json'
+              },
+              credentials: 'include'
+            });
+            
+            if (meRes.ok) {
+              const meData = await meRes.json();
+              if (meData.loggedIn) {
+                // Update UI with complete user data
+                window.updateAuthUI({
+                  username: meData.username,
+                  name: meData.name,
+                  email: meData.email,
+                  phone: meData.phone,
+                  state: meData.state,
+                  lga: meData.lga,
+                  address: meData.address,
+                  profilePicture: meData.profilePicture,
+                  avatar: meData.avatar
+                });
+              }
+            } else {
+              // Fallback to the login response data if /api/me fails
+              window.updateAuthUI({ username: data.username, name: data.name });
+            }
+          } catch (err) {
+            console.warn('Failed to fetch complete user data:', err);
+            // Fallback to the login response data
+            window.updateAuthUI({ username: data.username, name: data.name });
+          }
+          
+          // Load home section after navbar is updated
           window.loadSection('home');
         } else {
           throw new Error(data.error || 'Login failed');
@@ -218,6 +277,27 @@ window.SignupPage = {
         return;
       }
 
+      // Check if a different user is already logged in
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (currentUser && currentUser.username) {
+        if (currentUser.username !== username) {
+          console.log(`%c🔄 Auto-logout: User switching from ${currentUser.username} to ${username}`, 'color: #f59e0b; font-weight: bold;');
+          // Automatically log out the previous user
+          try {
+            await fetch((window.API_BASE || 'http://localhost:4000') + '/api/logout', {
+              method: 'POST',
+              credentials: 'include'
+            });
+          } catch (err) {
+            console.warn('Logout failed during user switch:', err);
+          }
+          // Clear localStorage and reset UI
+          localStorage.removeItem('currentUser');
+          if (window.clearAllChatHistories) window.clearAllChatHistories();
+          if (window.Navbar && window.Navbar.render) window.Navbar.render();
+        }
+      }
+
       try {
   const res = await fetch((window.API_BASE || 'http://localhost:4000') + '/api/signup', {
           method: 'POST',
@@ -263,7 +343,43 @@ window.SignupPage = {
 
         const data = await res.json();
         if (data.success) {
-          window.updateAuthUI({ username: data.username, name: data.name });
+          // Fetch complete user data from /api/me
+          try {
+            const meRes = await fetch((window.API_BASE || 'http://localhost:4000') + '/api/me', {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json'
+              },
+              credentials: 'include'
+            });
+            
+            if (meRes.ok) {
+              const meData = await meRes.json();
+              if (meData.loggedIn) {
+                // Update UI with complete user data
+                window.updateAuthUI({
+                  username: meData.username,
+                  name: meData.name,
+                  email: meData.email,
+                  phone: meData.phone,
+                  state: meData.state,
+                  lga: meData.lga,
+                  address: meData.address,
+                  profilePicture: meData.profilePicture,
+                  avatar: meData.avatar
+                });
+              }
+            } else {
+              // Fallback to the signup response data if /api/me fails
+              window.updateAuthUI({ username: data.username, name: data.name });
+            }
+          } catch (err) {
+            console.warn('Failed to fetch complete user data:', err);
+            // Fallback to the signup response data
+            window.updateAuthUI({ username: data.username, name: data.name });
+          }
+          
+          // Load home section after navbar is updated
           window.loadSection('home');
         } else {
           throw new Error(data.error || 'Signup failed');

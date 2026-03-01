@@ -146,8 +146,8 @@ window.sendServiMessage = async function(faqText = '') {
   }
   if (!msg && !attach) return;
 
-  // Setup stop button with commonAI utility (creates AbortController)
-  if (sendBtn) {
+  // Setup stop button with commonAI utility (creates AbortController) - with fallback if not loaded
+  if (sendBtn && typeof window.setupStopButton === 'function') {
     window.setupStopButton({ sendBtn, section: 'servi' });
   }
 

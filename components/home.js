@@ -6,7 +6,12 @@ if (!window.commonAILoaded) {
   document.head.appendChild(script);
 }
 
-window.HOME_AI_PROMPT = window.HOME_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.\nRespond to greetings politely, and offer to help the user with any information about Yola, Adamawa State, Nigeria.\nAnswer the user's question using the information provided below, and the internet. If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local authority for further help."\nIf a user clearly requests information on agriculture, education, navigation, community, health, jobs, or environment, refer them to AgroInfo, EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo, as the case may be.
+window.HOME_AI_PROMPT = window.HOME_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
+You help users with information about Yola, Adamawa State, Nigeria.
+IMPORTANT: Only greet the user if they greet you first (e.g., "hello", "hi", "greetings"). Do NOT add greetings to every response.
+Answer the user's questions directly and helpfully using the information provided and the internet.
+If the answer is not in your local database, reply: "Sorry, I do not have that specific information in my local database. Please contact a local authority for further help."
+If users ask about agriculture, education, navigation, community, health, jobs, or environment, refer them to AgroInfo, EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo.
 
 Previous conversation history:
 {history}
@@ -203,8 +208,23 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   if (!msg && !attach) return;
 
   // Cancel any ongoing request
-  // Setup stop button with commonAI utility
-  window.setupStopButton({ sendBtn: submitBtn, section: 'home' });
+  // Setup stop button with commonAI utility (with fallback if not loaded)
+  if (typeof window.setupStopButton === 'function') {
+    window.setupStopButton({ sendBtn: submitBtn, section: 'home' });
+  } else {
+    // Fallback: ensure commonAI is loaded
+    if (!window.commonAILoaded) {
+      const script = document.createElement('script');
+      script.src = 'components/commonAI.js?v=' + Date.now();
+      script.onload = () => { 
+        window.commonAILoaded = true;
+        if (typeof window.setupStopButton === 'function') {
+          window.setupStopButton({ sendBtn: submitBtn, section: 'home' });
+        }
+      };
+      document.head.appendChild(script);
+    }
+  }
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';

@@ -151,6 +151,24 @@
         return;
       }
       
+      // Check if a different user is already logged in - AUTO LOGOUT
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (currentUser && currentUser.username && currentUser.username !== username) {
+        console.log(`%c🔄 Auto-logout: User switching from ${currentUser.username} to ${username}`, 'color: #f59e0b; font-weight: bold;');
+        // Auto-logout the previous user
+        try {
+          await fetch(`${API_BASE}/api/logout`, {
+            method: 'POST',
+            credentials: 'include'
+          });
+        } catch (err) {
+          console.warn('Logout failed during user switch:', err);
+        }
+        // Clear localStorage
+        localStorage.removeItem('currentUser');
+        if (window.clearAllChatHistories) window.clearAllChatHistories();
+      }
+      
       // Disable button during request
       submitBtn.disabled = true;
       
@@ -181,6 +199,41 @@
         
         const data = await response.json();
         if (data.success) {
+          // Fetch complete user data from /api/me
+          try {
+            const meRes = await fetch(`${API_BASE}/api/me`, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json'
+              },
+              credentials: 'include'
+            });
+            
+            if (meRes.ok) {
+              const meData = await meRes.json();
+              if (meData.username) {
+                // Update localStorage with complete user data
+                localStorage.setItem('currentUser', JSON.stringify({
+                  username: meData.username,
+                  name: meData.name,
+                  email: meData.email,
+                  phone: meData.phone,
+                  state: meData.state,
+                  lga: meData.lga,
+                  address: meData.address,
+                  profilePicture: meData.profilePicture,
+                  avatar: meData.avatar
+                }));
+              }
+            }
+          } catch (err) {
+            console.warn('Failed to fetch complete user data:', err);
+            // Fallback to saving basic login data
+            localStorage.setItem('currentUser', JSON.stringify({
+              username: data.username,
+              name: data.name
+            }));
+          }
           window.location.href = '../index.html'; // Redirect to homepage on success
         } else {
           let errorMessage = 'An error occurred while signing in.';

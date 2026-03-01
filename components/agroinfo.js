@@ -52,6 +52,12 @@ window.renderSection = function() {
   // Load HTML template from file for separation of concerns
   return fetch('templates/agro.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
+    
+    // Load chat history AFTER template is inserted
+    setTimeout(() => {
+      window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('agro', 'agro-chat-messages');
+    }, 50);
+    
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('home', this.checked); };
@@ -90,8 +96,11 @@ window.sendAgroMessage = async function(faqText = '') {
   }
   if (!msg && !attach) return;
 
-  // Setup stop button with commonAI utility and capture controller
-  const controller = window.setupStopButton({ sendBtn, section: 'agro' });
+  // Setup stop button with commonAI utility and capture controller (with fallback if not loaded)
+  let controller = null;
+  if (typeof window.setupStopButton === 'function') {
+    controller = window.setupStopButton({ sendBtn, section: 'agro' });
+  }
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
@@ -171,9 +180,6 @@ window.sendAgroMessage = async function(faqText = '') {
   msgGroup.querySelector('.ai-msg-text').innerHTML = `
     <div class="ai-response">
       ${finalAnswer.replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>').replace(/\n/g, '<br>')}
-      <button onclick="window.speakText(this.parentElement.textContent)" class="read-aloud-btn" title="Listen to Response">
-        🔊
-      </button>
     </div>
   `;
   chat.scrollTop = chat.scrollHeight;

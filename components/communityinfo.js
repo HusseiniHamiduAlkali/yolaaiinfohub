@@ -51,6 +51,12 @@ window.renderSection = function() {
   }
   return fetch('templates/community.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
+    
+    // Load chat history AFTER template is inserted
+    setTimeout(() => {
+      window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('community', 'community-chat-messages');
+    }, 50);
+    
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
     if (mt) mt.onchange = function() { window.toggleGeminiModel('community', this.checked); };
@@ -95,8 +101,11 @@ window.sendCommunityMessage = async function(faqText = '') {
     msg = msg + "\nPlease analyze this image and provide relevant community information or suggestions.";
   }
 
-  // Setup stop button with commonAI utility (creates AbortController) and capture controller
-  const controller = window.setupStopButton({ sendBtn, section: 'community' });
+  // Setup stop button with commonAI utility (creates AbortController) and capture controller (with fallback if not loaded)
+  let controller = null;
+  if (typeof window.setupStopButton === 'function') {
+    controller = window.setupStopButton({ sendBtn, section: 'community' });
+  }
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
