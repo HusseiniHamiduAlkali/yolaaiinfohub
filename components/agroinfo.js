@@ -110,11 +110,6 @@ window.sendAgroMessage = async function(faqText = '') {
   msgGroup.innerHTML = `
     <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
     <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Agro AI typing...</span></div>
-    <span class='msg-actions' data-msg-id='${mid}'>
-      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
-      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
-      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
-    </span>
   `;
   chat.appendChild(msgGroup);
   if (typeof window.clearPreviewAndRemoveBtn === 'function') {
@@ -182,6 +177,9 @@ window.sendAgroMessage = async function(faqText = '') {
       ${finalAnswer.replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>').replace(/\n/g, '<br>')}
     </div>
   `;
+  if (typeof window.addActionsToMsgGroup === 'function') {
+    window.addActionsToMsgGroup(msgGroup, 'agro', 'agro-chat-messages');
+  }
   chat.scrollTop = chat.scrollHeight;
 
   if (sendBtn) {

@@ -208,11 +208,12 @@ app.use(session({
   saveUninitialized: false,
   proxy: true, // Required for secure cookies behind a proxy/load balancer
   cookie: { 
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // http in development
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'lax',
     path: '/'
+    // Note: domain is intentionally not set to allow cookies on both localhost and 127.0.0.1
   }
 }));
 
@@ -357,7 +358,10 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
     });
 
     req.session.userId = user._id;
-    res.json({ success: true, username: user.username, name: user.name });
+    req.session.save((err) => {
+      if (err) console.error('Session save error on signup:', err);
+      res.json({ success: true, username: user.username, name: user.name });
+    });
   } catch (error) {
     console.error('Signup error:', error);
     let msg = 'Error creating account';
@@ -540,7 +544,15 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     console.log(`   IP: ${req.ip}`);
     console.log(`   User Agent: ${req.get('user-agent')}\n`);
     
-    res.json({ success: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar });
+    console.log('💾 Saving session for user:', user.username, 'sessionID:', req.sessionID);
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Session save error on login:', err);
+        return res.status(500).json({ error: 'Failed to establish session' });
+      }
+      console.log('✅ Session saved successfully. Setting Set-Cookie header');
+      res.json({ success: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar });
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Error processing login' });
@@ -565,6 +577,13 @@ app.get('/api/me', async (req, res) => {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   
+  console.log('🔍 /api/me called - Session info:', { 
+    hasSession: !!req.session,
+    userId: req.session?.userId,
+    sessionId: req.sessionID,
+    cookies: req.headers.cookie 
+  });
+  
   if (!req.session.userId) return res.json({ loggedIn: false });
   const user = await User.findById(req.session.userId);
   if (!user) return res.json({ loggedIn: false });
@@ -579,9 +598,13 @@ app.get('/api/user/:username', async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+    
+    // Check if the requesting user is viewing their own profile
+    const isOwnProfile = req.session.userId && req.session.userId === user._id.toString();
+    
     const avatar = user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
     res.json({ 
-      loggedIn: false, 
+      loggedIn: isOwnProfile,  // Return true only if viewing own profile while authenticated
       username: user.username, 
       name: user.name, 
       email: user.email, 

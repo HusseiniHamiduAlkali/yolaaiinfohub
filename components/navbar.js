@@ -430,6 +430,17 @@ function renderNavbar() {
 window.Navbar = {
   render: () => {
     console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;');
+    
+    // IMPORTANT: On initial index.html load, only render navbar ONCE
+    // If we already rendered during initial auth check, skip unless explicitly updating for login/logout
+    if (window.__initialNavbarRendered && !window.__forceNavbarRerender) {
+      console.log('%c⏭️ Navbar.render(): Already rendered on initial load and not forced - skipping', 'color: #94a3b8;');
+      return;
+    }
+    
+    // Clear the force rerender flag if it was set
+    window.__forceNavbarRerender = false;
+    
     // Restore user from localStorage if present
     let restoredUser = null;
     try {

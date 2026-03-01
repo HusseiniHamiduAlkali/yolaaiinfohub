@@ -160,9 +160,72 @@
       }
       return window.__performLoadSection(section);
     };
-    // Render the navbar only once on initial load
-    Navbar.render();
-    // note: do NOT clear auth state here, it would immediately override a logged-in navbar
+    // CHECK AUTH STATUS FIRST, THEN RENDER NAVBAR ONCE
+    // This ensures navbar displays correct logged-in state on initial page load
+    (async function initNavbarWithAuth() {
+      // Determine API base
+      const API_BASE = window.API_BASE || (function() {
+        try {
+          const host = window.location.hostname;
+          if (!host || host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.startsWith('192.') || host.startsWith('10.')) {
+            return `http://${host}:4000`;
+          }
+          return 'https://yolaaiinfohub-backend.onrender.com';
+        } catch (e) {
+          return 'http://localhost:4000';
+        }
+      })();
+      
+      // Try to get current user from backend
+      let userFromBackend = null;
+      try {
+        const response = await fetch(`${API_BASE}/api/me`, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (response.ok) {
+          try {
+            const data = await response.json();
+            if (data && data.loggedIn && data.username) {
+              userFromBackend = {
+                username: data.username,
+                name: data.name || data.username,
+                email: data.email || '',
+                phone: data.phone || '',
+                state: data.state || '',
+                lga: data.lga || '',
+                address: data.address || '',
+                profilePicture: data.profilePicture || null,
+                avatar: data.avatar || null
+              };
+              // Update global state and localStorage before rendering navbar
+              window.currentUser = userFromBackend;
+              window.__lastUser = userFromBackend;
+              try {
+                localStorage.setItem('currentUser', JSON.stringify(userFromBackend));
+              } catch (e) { /* ignore */ }
+            }
+          } catch (parseError) {
+            console.error('Failed to parse /api/me response:', parseError);
+          }
+        }
+      } catch (fetchError) {
+        // Network error - continue with null user
+        console.warn('Auth check via /api/me failed:', fetchError);
+      }
+      
+      // NOW render navbar with the correct auth state
+      if (window.Navbar && typeof window.Navbar.render === 'function') {
+        window.Navbar.render();
+      } else if (typeof window.renderNavbar === 'function') {
+        renderNavbar();
+      }
+      
+      // Mark that initial navbar render is complete to prevent re-rendering
+      window.__initialNavbarRendered = true;
+    })();
+    
     // Load saved section if available (restores from details page back-button), otherwise default to home
     (function(){
       const pendingSection = sessionStorage.getItem('lastSection');

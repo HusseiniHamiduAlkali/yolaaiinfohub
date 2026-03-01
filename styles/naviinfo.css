@@ -11,7 +11,6 @@
   background-color: transparent;
   display: block !important;
   border: 1px solid #ccc;
-  overflow: hidden;
   flex-shrink: 0;
   min-height: 500px;
   position: relative;
@@ -110,3 +109,45 @@
   color: #333;
 }
 */
+
+
+
+
+
+
+
+
+
+
+
+
+/* Pegman Button Styling */
+.pegman-toggle {
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    cursor: pointer;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.pegman-toggle:hover {
+    background-color: #f1f1f1;
+}
+
+.pegman-icon {
+    width: 24px;
+    height: 24px;
+    /* This is a standard Pegman SVG icon */
+    background-image: url('https://maps.gstatic.com/tactile/pegman/2x/runway-24.png');
+    background-size: 24px;
+    background-repeat: no-repeat;
+}

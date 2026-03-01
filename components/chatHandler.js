@@ -398,10 +398,16 @@ window.sendMessage = async function(section, faqText = '') {
     );
 
     msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+    if (typeof window.addActionsToMsgGroup === 'function') {
+      window.addActionsToMsgGroup(msgGroup, section, `${section}-chat-messages`);
+    }
     chat.scrollTop = chat.scrollHeight;
   } catch (e) {
     console.error(`Error in ${section} chat:`, e);
     msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse("Sorry, I encountered an error while processing your request.");
+    if (typeof window.addActionsToMsgGroup === 'function') {
+      window.addActionsToMsgGroup(msgGroup, section, `${section}-chat-messages`);
+    }
   }
 
   if (sendBtn) {

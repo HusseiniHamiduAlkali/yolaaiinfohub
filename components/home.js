@@ -227,18 +227,13 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   }
 
   const msgGroup = document.createElement('div');
-  msgGroup.className = 'chat-message-group pending';
+  msgGroup.className = 'chat-message-group';
   // generate a temporary message id now so we can reuse for actions
   const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
   msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
     <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
     <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Home AI typing...</span></div>
-    <span class='msg-actions' data-msg-id='${mid}'>
-      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
-      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
-      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
-    </span>
   `;
   chat.appendChild(msgGroup);
   // Replace direct clearing of preview with the shared function
@@ -286,11 +281,10 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
-  // attach listeners and mark group as ready
-  if (typeof window.attachAIActionListeners === 'function') {
-    window.attachAIActionListeners(msgGroup, 'home', 'home-chat-messages');
+  // add and wire up action buttons now that we have a real response
+  if (typeof window.addActionsToMsgGroup === 'function') {
+    window.addActionsToMsgGroup(msgGroup, 'home', 'home-chat-messages');
   }
-  msgGroup.classList.remove('pending');
   chat.scrollTop = chat.scrollHeight;
 
   // Store messages in chat history

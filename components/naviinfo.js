@@ -252,42 +252,48 @@ async function drawRouteAndCalculateMetrics(origin, destination) {
 
 
 
-// Function to initialize NaviInfo section
+// Function to initialize NaviInfo section with Google Maps Pegman (Street View) support
 window.initNaviInfo = () => {
-    const naviSection = document.getElementById('naviinfo-content');
-    if (!naviSection) { return; }
-    
-    // Create section content if it doesn't exist
-    if (!naviSection.querySelector('.section-content')) {
-      naviSection.innerHTML = `
-        <div class="section-content">
-          <h1>Navigation Information</h1>
-          <p>Get directions, distances, and transportation information for Yola, Adamawa State.</p>
-                
-          <div id="naviinfo-chat-container" class="chat-container">
-            <div id="naviinfo-chat-messages" class="chat-messages"></div>
-            <div id="naviinfo-chat-preview"></div>
-            <div class="chat-input-area">
-              <input type="text" id="naviinfo-chat-input" placeholder="Ask for directions, locations, or transport info...">
-              <div class="send-button-group">
-                <button type="submit" class="send-button" onclick="sendMessage('naviinfo')">Send</button>
-              </div>
-            </div>
-          </div>
+  const naviSection = document.getElementById('naviinfo-content');
+  if (!naviSection) return;
 
-          <div id="map-section">
-            <div id="tomtom-map" style="height: 500px; width: 100%; border: 1px solid #ccc; position: relative;">
-              <iframe id="google-maps-iframe" 
-                style="width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0;" 
-                frameborder="0" 
-                allowfullscreen="" 
-                loading="lazy">
-              </iframe>
+  if (!naviSection.querySelector('.section-content')) {
+    naviSection.innerHTML = `
+      <div class="section-content">
+        <h1>Navigation Information</h1>
+        <p>Get directions, distances, and transportation information for Yola, Adamawa State.</p>
+
+        <div id="naviinfo-chat-container" class="chat-container">
+          <div id="naviinfo-chat-messages" class="chat-messages"></div>
+          <div id="naviinfo-chat-preview"></div>
+          <div class="chat-input-area">
+            <input type="text" id="naviinfo-chat-input" placeholder="Ask for directions, locations, or transport info...">
+            <div class="send-button-group">
+              <button type="submit" class="send-button" onclick="sendMessage('naviinfo')">Send</button>
             </div>
           </div>
         </div>
-      `;
-    }
+
+        <div id="map-section">
+          <div class="map-controls" style="margin-bottom: 8px;">
+            <button onclick="window.resetMapCenter && window.resetMapCenter()">Center on Yola</button>
+            <span style="margin-left: 1em; color: #888; font-size: 0.95em;">Drag the yellow Pegman for 360° Street View</span>
+          </div>
+          <div style="height: 500px; width: 100%; border: 1px solid #ccc; position: relative;">
+            <iframe
+              id="google-maps-pegman"
+              style="width: 100%; height: 100%; border: none;"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126489.0192326256!2d12.400000000000002!3d9.233333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1053d1b1b1b1b1b1%3A0x1b1b1b1b1b1b1b1b!2sYola%2C%20Nigeria!5e0!3m2!1sen!2sng!4v${Date.now()}&layer=c"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              aria-label="Google Maps with Pegman Street View"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 };
 
 // --- Google Maps Initialization ---
@@ -307,14 +313,15 @@ window.initGoogleMaps = function() {
   const lat = 9.2182;
   const lng = 12.4818;
 
-  // 'layer=c' adds the Street View (Pegman) layer
-  // 't=k' keeps it in Satellite mode
-  const googleMapsUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=14&t=k&layer=c&output=embed`;
+  // 'layer=c' adds the Street View (Pegman) layer, if available
+  // 'll' centers the map without adding a marker, which may restore the controls
+  const googleMapsUrl = `https://maps.google.com/maps?ll=${lat},${lng}&z=14&t=h&layer=c&output=embed`;
   
   mapIframe.src = googleMapsUrl;
   mapIframe.style.display = 'block';
   console.log('✓ Pegman layer enabled via layer=c');
 };
+
 
 
 
@@ -576,11 +583,6 @@ window.sendNaviMessage = async function(faqText = '') {
   msgGroup.innerHTML = `
     <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
     <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Navi AI typing...</span></div>
-    <span class='msg-actions' data-msg-id='${mid}'>
-      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
-      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
-      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
-    </span>
   `;
   chat.appendChild(msgGroup);
   if (typeof window.clearPreviewAndRemoveBtn === 'function') {
@@ -654,6 +656,9 @@ window.sendNaviMessage = async function(faqText = '') {
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+  if (typeof window.addActionsToMsgGroup === 'function') {
+    window.addActionsToMsgGroup(msgGroup, 'navi', 'navi-chat-messages');
+  }
   chat.scrollTop = chat.scrollHeight;
 
   if (sendBtn) {

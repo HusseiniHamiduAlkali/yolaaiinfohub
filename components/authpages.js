@@ -39,6 +39,7 @@ window.SigninPage = {
           // Clear localStorage and reset UI
           localStorage.removeItem('currentUser');
           if (window.clearAllChatHistories) window.clearAllChatHistories();
+          window.__forceNavbarRerender = true;
           if (window.Navbar && window.Navbar.render) window.Navbar.render();
         }
       }
@@ -294,6 +295,7 @@ window.SignupPage = {
           // Clear localStorage and reset UI
           localStorage.removeItem('currentUser');
           if (window.clearAllChatHistories) window.clearAllChatHistories();
+          window.__forceNavbarRerender = true;
           if (window.Navbar && window.Navbar.render) window.Navbar.render();
         }
       }

@@ -122,6 +122,8 @@ async function initializeApp() {
     }
 
     // Then check authentication state
+    // Note: index.html already does initial auth check and navbar render,
+    // but we call this again to update UI if auth state changed since initial load
   const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
   try {
     const response = await fetch(`${API_BASE}/api/me`, {
@@ -132,13 +134,21 @@ async function initializeApp() {
       try {
         const data = await response.json();
         if (data && data.loggedIn) {
-          window.updateAuthUI({
-            username: data.username,
-            name: data.name,
-            email: data.email
-          });
+          // Only call updateAuthUI if current user state differs from what we have
+          // This prevents unnecessary navbar rerenders
+          const currentUser = window.currentUser;
+          if (!currentUser || currentUser.username !== data.username) {
+            window.updateAuthUI({
+              username: data.username,
+              name: data.name,
+              email: data.email
+            });
+          }
         } else {
-          window.updateAuthUI(null);
+          // Not logged in
+          if (window.currentUser) {
+            window.updateAuthUI(null);
+          }
         }
       } catch (jsonError) {
         console.error('Failed to parse auth response:', jsonError);
@@ -146,12 +156,16 @@ async function initializeApp() {
       }
     } else {
       // API not available or not authenticated - treat as not logged in
-      window.updateAuthUI(null);
+      if (window.currentUser) {
+        window.updateAuthUI(null);
+      }
     }
   } catch (e) {
     // Network error or API unavailable - treat as not logged in
     console.warn('Auth check failed:', e);
-    window.updateAuthUI(null);
+    if (window.currentUser) {
+      window.updateAuthUI(null);
+    }
   }
 
     // Determine the section to load based on the URL path

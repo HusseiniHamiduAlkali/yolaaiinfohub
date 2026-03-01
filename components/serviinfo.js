@@ -159,11 +159,6 @@ window.sendServiMessage = async function(faqText = '') {
   msgGroup.innerHTML = `
     <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
     <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Servi AI typing...</span></div>
-    <span class='msg-actions' data-msg-id='${mid}'>
-      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
-      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
-      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
-    </span>
   `;
   chat.appendChild(msgGroup);
   window.clearPreviewAndRemoveBtn(preview);
@@ -204,6 +199,9 @@ window.sendServiMessage = async function(faqText = '') {
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+  if (typeof window.addActionsToMsgGroup === 'function') {
+    window.addActionsToMsgGroup(msgGroup, 'servi', 'servi-chat-messages');
+  }
   chat.scrollTop = chat.scrollHeight;
 
   if (sendBtn) {

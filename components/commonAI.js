@@ -1274,6 +1274,53 @@ window.confirmDeleteMessage = function(section, containerId, messageId) {
   window.deleteFromChatHistory(section, messageId);
 };
 
+// Add speak/copy/delete action buttons to an AI message group (called after response arrives)
+window.addActionsToMsgGroup = function(msgGroup, section, containerId) {
+  if (!msgGroup || msgGroup.querySelector('.msg-actions')) return;
+  const mid = msgGroup.getAttribute('data-msg-id') || '';
+  const actions = document.createElement('span');
+  actions.className = 'msg-actions';
+  if (mid) actions.setAttribute('data-msg-id', mid);
+  actions.innerHTML = `
+    <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+    <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+    <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+  `;
+  msgGroup.appendChild(actions);
+
+  // wire events
+  const speakBtn = actions.querySelector('.read-aloud-btn');
+  if (speakBtn) {
+    speakBtn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = msgGroup.querySelector('.ai-msg-text') ? msgGroup.querySelector('.ai-msg-text').textContent : '';
+      if (txt) window.speakText(txt, speakBtn);
+    });
+  }
+  const copyBtn = actions.querySelector('.copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = msgGroup.querySelector('.ai-msg-text') ? msgGroup.querySelector('.ai-msg-text').textContent : '';
+      if (!txt) return;
+      try {
+        await navigator.clipboard.writeText(txt);
+        window.showCopyTooltip(copyBtn, 'Message copied!');
+      } catch (err) {
+        console.warn('Copy failed', err);
+      }
+    });
+  }
+  const deleteBtn = actions.querySelector('.delete-msg-btn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const msgId = deleteBtn.getAttribute('data-msg-id') || mid;
+      window.confirmDeleteMessage(section, containerId, msgId);
+    });
+  }
+};
+
 // Text-to-speech helper
 window.speakText = function(text, btnElement) {
   // Remove emoji and special characters from text
@@ -1308,43 +1355,6 @@ window.speakText = function(text, btnElement) {
   };
   
   window.speechSynthesis.speak(utterance);
-};
-
-// Attach action button listeners to a message group
-window.attachAIActionListeners = function(msgGroup, section, containerId) {
-  if (!msgGroup) return;
-  const speakBtn = msgGroup.querySelector('.read-aloud-btn');
-  if (speakBtn) {
-    speakBtn.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
-      if (txt) window.speakText(txt, speakBtn);
-    });
-  }
-  const copyBtn = msgGroup.querySelector('.copy-btn');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', async (e) => {
-      e.preventDefault(); e.stopPropagation();
-      const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
-      if (!txt) return;
-      try {
-        await navigator.clipboard.writeText(txt);
-        window.showCopyTooltip(copyBtn, 'Message copied!');
-      } catch (err) {
-        console.warn('Copy failed', err);
-      }
-    });
-  }
-  const deleteBtn = msgGroup.querySelector('.delete-msg-btn');
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      const msgId = deleteBtn.getAttribute('data-msg-id');
-      if (section && containerId && msgId) {
-        window.confirmDeleteMessage(section, containerId, msgId);
-      }
-    });
-  }
 };
 
 // Common function to format AI responses

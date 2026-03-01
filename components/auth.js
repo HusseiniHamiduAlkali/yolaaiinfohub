@@ -133,6 +133,8 @@ window.updateAuthUI = function(user) {
     // If navbar exists, re-render to pick up username on PC views
     if (window.Navbar && typeof window.Navbar.render === 'function') {
       console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-in user:', 'color: #3182ce; font-weight: bold;', user.username);
+      // Force navbar rerender for login action
+      window.__forceNavbarRerender = true;
       try { window.Navbar.render(); } catch(e) { console.error('Navbar render error:', e); }
     } else {
       console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
@@ -157,6 +159,8 @@ window.updateAuthUI = function(user) {
     } catch (e) { /* ignore */ }
     if (window.Navbar && typeof window.Navbar.render === 'function') {
       console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-out user', 'color: #e53e3e; font-weight: bold;');
+      // Force navbar rerender for logout action
+      window.__forceNavbarRerender = true;
       try { window.Navbar.render(); } catch(e) { console.error('Navbar render error:', e); }
     } else {
       console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });

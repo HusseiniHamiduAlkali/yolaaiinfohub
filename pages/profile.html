@@ -189,65 +189,72 @@
         return;
       }
       
-      // Check backend for logged-in user (session)
-      let backendUser = null;
-      try {
-        console.log('Checking /api/me for logged-in user');
-        const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
-        const data = await res.json();
-        console.log('API /me response:', data);
-        if (data.username) {
-          backendUser = data;
-          // Check if accessing own profile (u parameter matches logged-in user)
-          if (u && u === data.username) {
-            console.log('%c✅ User accessing own profile via /api/me', 'color: #10b981; font-weight: bold;');
-            currentUserData = data;
-            isOwnProfile = true;
-            fillProfile(data);
-            if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
-            return;
-          } else if (!u) {
-            // No u parameter and user is logged in - show their own profile
-            console.log('%c✅ User accessing own profile (no u parameter)', 'color: #10b981; font-weight: bold;');
-            currentUserData = data;
-            isOwnProfile = true;
-            fillProfile(data);
-            if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
-            return;
-          } else if (u && u !== data.username) {
-            // User tried to view another profile while logged in - redirect to own profile
-            console.log('%c⚠️ User tried to access another profile while logged in: ' + u + ' → showing ' + data.username, 'color: #f59e0b; font-weight: bold;');
+      // Load profile by u parameter or logged-in user
+      // Always allow editing - backend will validate ownership
+      let profileUsername = u;
+      
+      // If no u parameter, try to get logged-in user
+      if (!u) {
+        try {
+          console.log('No u parameter, checking /api/me for logged-in user');
+          const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
+          const data = await res.json();
+          console.log('API /me response:', data);
+          if (data.username) {
+            profileUsername = data.username;
             currentUserData = data;
             isOwnProfile = true;
             fillProfile(data);
             if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
             return;
           }
+        } catch (err) {
+          console.error('Profile backend check error', err);
         }
-      } catch (err) {
-        console.error('Profile backend check error', err);
+        
+        // Fallback: Check localStorage for currentUser
+        const localStorageUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (localStorageUser && localStorageUser.username) {
+          console.log('%c✅ Using localStorage user:', 'color: #10b981; font-weight: bold;', localStorageUser.username);
+          profileUsername = localStorageUser.username;
+          currentUserData = localStorageUser;
+          isOwnProfile = true;
+          fillProfile(localStorageUser);
+          if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
+          return;
+        }
       }
       
-      // User is NOT logged in - check for public profile (u parameter)
-      if (u) {
+      // Load profile by username (either from u parameter or determined above)
+      if (profileUsername) {
         try {
-          console.log('Loading public profile for username:', u);
-          const res = await fetch(`${API_BASE}/api/user/${u}`, { credentials: 'include' });
+          console.log('Loading profile for username:', profileUsername);
+          const res = await fetch(`${API_BASE}/api/user/${profileUsername}`, { credentials: 'include' });
           const data = await res.json();
-          console.log('Public profile data:', data);
+          console.log('Profile data loaded:', data);
+          console.log('%c📌 Session check: loggedIn=' + data.loggedIn + ', isOwnProfile will be set to:', 'color: #3182ce; font-weight: bold;', data.loggedIn);
           if (data.username) {
             currentUserData = data;
-            isOwnProfile = false;
+            // Use the loggedIn status from the backend to determine if viewing own profile
+            isOwnProfile = data.loggedIn === true;
+            console.log('%c✅ isOwnProfile set based on backend loggedIn status:', 'color: #10b981;', isOwnProfile);
             fillProfile(data);
-            // Hide edit button for public profiles
-            if (btnEditProfile) btnEditProfile.style.display = 'none';
+            if (btnEditProfile) {
+              if (isOwnProfile) {
+                btnEditProfile.style.display = 'inline-flex';
+                console.log('%c📝 Edit button shown - user is viewing own profile', 'color: #8b5cf6;');
+              } else {
+                btnEditProfile.style.display = 'none';
+                console.log('%c🔒 Edit button hidden - user is NOT viewing own profile', 'color: #ef4444;');
+              }
+            }
           } else {
             document.getElementById('profile-name').textContent = 'User not found';
             document.getElementById('profile-username').textContent = '';
             if (btnEditProfile) btnEditProfile.style.display = 'none';
           }
         } catch (err) {
-          console.error('Public profile load error:', err);
+          console.error('Profile load error:', err);
           document.getElementById('profile-name').textContent = 'Error loading profile';
           if (btnEditProfile) btnEditProfile.style.display = 'none';
         }
@@ -445,6 +452,7 @@
 
     async function postProfileData(fieldElement, payload, fieldKey, saveBtn, cancelBtn, container) {
       try {
+        console.log('%c🔄 Posting profile data:', 'color: #06b6d4; font-weight: bold;', payload);
         const fd = new FormData();
         Object.keys(payload).forEach(k => {
           if (payload[k] !== undefined && payload[k] !== null) fd.append(k, payload[k]);
@@ -455,7 +463,9 @@
           body: fd
         });
         const data = await res.json();
+        console.log('%c📡 Profile update response status:', 'color: #06b6d4;', res.status, 'response:', data);
         if (res.ok) {
+          console.log('%c✅ Profile updated successfully!', 'color: #10b981; font-weight: bold;');
           // update local cache
           currentUserData = { ...(currentUserData || {}), ...data };
           // update displayed value for the edited field
@@ -466,23 +476,35 @@
           if (window.updateAuthUI && typeof window.updateAuthUI === 'function') window.updateAuthUI(currentUserData);
           showInlineSavedIndicator(fieldElement);
           // nothing to clean up for inline editors (they are rendered on their own fields)
-        } else if (res.status === 401 && isOwnProfile) {
-          // Fallback to localStorage save if session expired but user is viewing own profile
-          console.log('%c⚠️ Backend session expired, saving to localStorage instead', 'color: #f59e0b; font-weight: bold;');
-          currentUserData = { ...(currentUserData || {}), ...payload };
-          // Save to localStorage
-          try {
-            localStorage.setItem('currentUser', JSON.stringify(currentUserData));
-            // update displayed value for the edited field
-            const valueDiv = fieldElement.querySelector('.profile-field-value');
-            valueDiv.textContent = payload[fieldKey] || '-';
-            restoreEditButton(fieldElement, fieldKey);
-            fieldElement.classList.remove('editing');
-            showInlineSavedIndicator(fieldElement);
-            alert('Profile saved locally. Please log in again to sync with server.');
-          } catch (err) {
-            console.error('localStorage save error:', err);
-            alert('Could not save profile.');
+        } else if (res.status === 401) {
+          // Session expired
+          console.log('%c❌ 401 Unauthorized - Session expired!', 'color: #ef4444; font-weight: bold;');
+          console.log('%c📌 Debug info: isOwnProfile=' + isOwnProfile + ', currentUserData=', 'color: #f59e0b;', currentUserData);
+          
+          if (isOwnProfile) {
+            // Fallback to localStorage save if session expired but user is viewing own profile
+            console.log('%c⚠️ Backend session expired, saving to localStorage instead', 'color: #f59e0b; font-weight: bold;');
+            currentUserData = { ...(currentUserData || {}), ...payload };
+            // Save to localStorage
+            try {
+              localStorage.setItem('currentUser', JSON.stringify(currentUserData));
+              // update displayed value for the edited field
+              const valueDiv = fieldElement.querySelector('.profile-field-value');
+              valueDiv.textContent = payload[fieldKey] || '-';
+              restoreEditButton(fieldElement, fieldKey);
+              fieldElement.classList.remove('editing');
+              showInlineSavedIndicator(fieldElement);
+              alert('Profile saved locally. Please log in again to sync with server.');
+            } catch (err) {
+              console.error('localStorage save error:', err);
+              alert('Could not save profile.');
+              saveBtn.disabled = false;
+              cancelBtn.disabled = false;
+            }
+          } else {
+            // 401 but not own profile - user is trying to edit someone else's profile
+            console.log('%c🔒 Unauthorized - Not own profile', 'color: #ef4444;');
+            alert((data && data.error) || 'You cannot edit this profile.');
             saveBtn.disabled = false;
             cancelBtn.disabled = false;
           }

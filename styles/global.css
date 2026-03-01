@@ -82,7 +82,6 @@ Wednesday, July 30, 2025
   min-height: 320px;
   height: 500px;
   margin: 1.2em auto 0 auto;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -311,13 +310,9 @@ Wednesday, July 30, 2025
 
 /* ensure message group aligns its children to the bottom so action buttons stay at bubble base */
 .chat-message-group {
-  display: block;
+  display: flex;
+  flex-direction: column;
   margin-bottom: 0.5rem;
-}
-
-/* hide action buttons while AI is typing/pending response */
-.chat-message-group.pending .msg-actions {
-  display: none;
 }
 
 /* Chat message bubbles */

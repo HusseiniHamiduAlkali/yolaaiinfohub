@@ -219,7 +219,7 @@
               const meData = await meRes.json();
               if (meData.username) {
                 // Update localStorage with complete user data
-                localStorage.setItem('currentUser', JSON.stringify({
+                const userData = {
                   username: meData.username,
                   name: meData.name,
                   email: meData.email,
@@ -229,17 +229,24 @@
                   address: meData.address,
                   profilePicture: meData.profilePicture,
                   avatar: meData.avatar
-                }));
+                };
+                console.log('💾 Saving complete user data to localStorage:', userData);
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                console.log('✅ localStorage after save:', JSON.parse(localStorage.getItem('currentUser')));
               }
             }
           } catch (err) {
             console.warn('Failed to fetch complete user data:', err);
             // Fallback to saving basic login data
-            localStorage.setItem('currentUser', JSON.stringify({
+            const fallbackData = {
               username: data.username,
               name: data.name
-            }));
+            };
+            console.log('💾 Saving fallback user data to localStorage:', fallbackData);
+            localStorage.setItem('currentUser', JSON.stringify(fallbackData));
+            console.log('✅ localStorage after fallback save:', JSON.parse(localStorage.getItem('currentUser')));
           }
+          console.log('🔄 Login successful, redirecting to homepage...');
           window.location.href = '../index.html'; // Redirect to homepage on success
         } else {
           let errorMessage = 'An error occurred while signing in.';

@@ -220,11 +220,6 @@ window.sendEcoMessage = async function(faqText = '') {
   msgGroup.innerHTML = `
     <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
     <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Eco AI typing...</span></div>
-    <span class='msg-actions' data-msg-id='${mid}'>
-      <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
-      <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
-      <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
-    </span>
   `;
   chat.appendChild(msgGroup);
   if (typeof window.clearPreviewAndRemoveBtn === 'function') {
@@ -315,7 +310,9 @@ window.sendEcoMessage = async function(faqText = '') {
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
-  chat.scrollTop = chat.scrollHeight;
+    if (typeof window.addActionsToMsgGroup === 'function') {
+      window.addActionsToMsgGroup(msgGroup, 'eco', 'ecoinfo-chat-messages');
+    }
 
   if (sendBtn) {
     sendBtn.classList.remove('sending');
@@ -530,6 +527,9 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
     }
   
     msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+    if (typeof window.addActionsToMsgGroup === 'function') {
+      window.addActionsToMsgGroup(msgGroup, 'eco', 'ecoinfo-chat-messages');
+    }
     
     // Add speech button if supported
     if ('speechSynthesis' in window) {
