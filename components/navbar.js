@@ -28,6 +28,9 @@ function renderNavbar() {
   let authButtonsHTML = `
     <div class="navbar-auth" id="navbar-auth">
       <span class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
+      <button class="dark-mode-toggle" onclick="window.toggleDarkMode()" title="Toggle Dark Mode">
+        <span id="dark-mode-icon">🌙</span>
+      </button>
       <button id="signin-btn" class="auth-btn" type="button">Sign in</button>
       <button id="signup-btn" class="auth-btn" type="button">Sign up</button>
     </div>
@@ -38,6 +41,9 @@ function renderNavbar() {
     authButtonsHTML = `
       <div class="navbar-auth" id="navbar-auth" style="display:flex;align-items:center;gap:0.7rem;">
       <!--  <span class="navbar-username" style="font-weight:600;color:#205080;font-size:1.08rem;">${window.currentUser.username}</span>   -->
+        <button class="dark-mode-toggle" onclick="window.toggleDarkMode()" title="Toggle Dark Mode">
+          <span id="dark-mode-icon">🌙</span>
+        </button>
         <button id="logout-btn" class="auth-btn" onclick="window.logoutUser()">Logout</button>
       </div>
     `;
@@ -54,16 +60,18 @@ function renderNavbar() {
 
   nav.innerHTML = `
     <div class="navbar-container">
-      <div class="navbar-left">
-        ${logoHTML}
-      </div>
-      <div class="hamburger" id="hamburger">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </div>
-      <div class="navbar-right">
-        <div class="navbar-top-section">
+  <!-- <div class="navbar-top-section">  -->
+        <div class="navbar-left">
+          ${logoHTML}
+        </div>
+        <div class="hamburger" id="hamburger">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </div>
+        
+        <div class="navbar-right">
+        
           <div class="navbar-username-container" id="navbar-username-container">
             ${window.currentUser && window.currentUser.username ? `
               <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link" id="navbar-profile-link">
@@ -76,20 +84,26 @@ function renderNavbar() {
             ` : ''}
           </div>
           ${authButtonsHTML}
+        
+
+<!--      </div>  -->
+
+          <div class="navbar-links-container">
+          <ul class="navbar-links">
+            <li><button onclick="window.loadSection('home')">Home</button></li>
+            <li><button onclick="window.loadSection('eduinfo')">EduInfo</button></li>
+            <li><button onclick="window.loadSection('ecoinfo')">EcoInfo</button></li>
+            <li><button onclick="window.loadSection('agroinfo')">AgroInfo</button></li>
+            <li><button onclick="window.loadSection('mediinfo')">MediInfo</button></li>
+            <li><button onclick="window.loadSection('naviinfo')">NaviInfo</button></li>
+            <li><button onclick="window.loadSection('communityinfo')">CommunityInfo</button></li>
+            <li><button onclick="window.loadSection('serviinfo')">ServiInfo</button></li>
+            <li><button onclick="window.loadSection('aboutinfo')">About</button></li>
+          </ul>
+          </div>
+
         </div>
-        <div class="navbar-links-container">
-        <ul class="navbar-links">
-          <li><button onclick="window.loadSection('home')">Home</button></li>
-          <li><button onclick="window.loadSection('eduinfo')">EduInfo</button></li>
-          <li><button onclick="window.loadSection('ecoinfo')">EcoInfo</button></li>
-          <li><button onclick="window.loadSection('agroinfo')">AgroInfo</button></li>
-          <li><button onclick="window.loadSection('mediinfo')">MediInfo</button></li>
-          <li><button onclick="window.loadSection('naviinfo')">NaviInfo</button></li>
-          <li><button onclick="window.loadSection('communityinfo')">CommunityInfo</button></li>
-          <li><button onclick="window.loadSection('serviinfo')">ServiInfo</button></li>
-          <li><button onclick="window.loadSection('aboutinfo')">About</button></li>
-        </ul>
-        </div>
+
       </div>
     </div>
   `;

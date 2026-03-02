@@ -63,6 +63,30 @@ const corsOptions = {
 // Apply CORS first
 app.use(cors(corsOptions));
 
+// Enable gzip compression for responses
+app.use(require('compression')());
+
+// Cache control middleware for static assets
+app.use((req, res, next) => {
+  // Images: cache for 7 days
+  if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(req.path)) {
+    res.set('Cache-Control', 'public, max-age=604800'); // 7 days
+  }
+  // CSS and JS: cache for 1 day (or update versioning in HTML as you deploy)
+  else if (/\.(css|js)$/i.test(req.path)) {
+    res.set('Cache-Control', 'public, max-age=86400'); // 1 day
+  }
+  // HTML: cache for 1 hour to pick up updates
+  else if (/\.html$/i.test(req.path)) {
+    res.set('Cache-Control', 'public, max-age=3600'); // 1 hour
+  }
+  // API responses: no cache
+  else if (req.path.startsWith('/api/')) {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+  next();
+});
+
 // Then other middleware (json parser already configured above with 50mb limit)
 app.use(express.json({ limit: '50mb', extended: true }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -104,10 +128,12 @@ app.post('/api/gemini', async (req, res) => {
     // Normalize model names for v1 API compatibility
     let normalizedModel = model;
     
-    // Only map obviously invalid names (like old legacy names)
+    // Only map obviously invalid or friendly names (like old legacy names)
+    // new client code may request 'gemini-2.5-pro' when sending multimodal attachments
     const modelMap = {
       'gemini-pro-vision': 'gemini-2.5-flash',
-      'gemini-pro': 'gemini-2.5-flash'
+      'gemini-pro': 'gemini-2.5-flash',
+      'gemini-2.5-pro': 'gemini-2.5-pro'
     };
     
     if (modelMap[model]) {

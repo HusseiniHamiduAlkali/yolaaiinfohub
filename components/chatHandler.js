@@ -14,16 +14,19 @@ window.initAttachmentStorage = function(section) {
   }
 };
 
-// Add attachment metadata
+// Add attachment metadata (accepts File or manual object with dataURL)
 window.addAttachment = function(section, file) {
   window.initAttachmentStorage(section);
   const attachment = {
-    name: file.name,
-    type: file.type,
-    size: file.size,
+    name: file.name || file.filename || 'attachment',
+    type: file.type || file.mimeType || '',
+    size: file.size || 0,
     timestamp: Date.now(),
     id: Date.now() + '_' + Math.random().toString(36).substr(2, 9)
   };
+  if (file.dataURL) {
+    attachment.dataURL = file.dataURL;
+  }
   window.sectionAttachments[section].push(attachment);
   return attachment;
 };
@@ -147,18 +150,30 @@ window.loadChatHistoryToDOM = window.loadChatHistoryToDOM || function(section, c
   chat.scrollTop = chat.scrollHeight;
 };
 
-// Common helper for Gemini API call
-async function getGeminiAnswer(prompt, msg, section, apiKey, imageData = null) {
+// Common helper for Gemini API call, supports attachments (image/audio/files)
+async function getGeminiAnswer(prompt, msg, section, apiKey, attachments = []) {
   try {
-    const contents = {
-      parts: []
-    };
+    const contents = { parts: [] };
 
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1]
+    // include any attachments as separate parts
+    if (attachments && attachments.length) {
+      attachments.forEach(att => {
+        if (att.dataURL) {
+          const mime = att.type || (att.dataURL.match(/:(.*?);/)||[])[1] || '';
+          const base64 = att.dataURL.split(',')[1];
+          if (mime.startsWith('image/') || mime.startsWith('audio/') || mime.startsWith('video/')) {
+            contents.parts.push({
+              inlineData: {
+                mimeType: mime,
+                data: base64
+              }
+            });
+          } else {
+            // other file types just describe in text so model can reason
+            contents.parts.push({
+              text: `Attached file ${att.name} of type ${mime} (data omitted).`
+            });
+          }
         }
       });
     }
@@ -169,7 +184,15 @@ async function getGeminiAnswer(prompt, msg, section, apiKey, imageData = null) {
       text: `${prompt}\n\n--- LOCAL DATA ---\n${localData}\n\nUser question: ${msg}`
     });
 
-    const model = imageData ? 'gemini-pro-vision' : 'gemini-1.5-flash';
+    // choose model
+    let model;
+    const hasImage = attachments.some(a => a.type && a.type.startsWith('image/'));
+    if (hasImage) {
+      // use a vision-capable model if there are images
+      model = window.useGemini25 ? 'gemini-2.5-pro' : 'gemini-pro-vision';
+    } else {
+      model = window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash';
+    }
 
     // Use backend proxy to call Gemini so the key remains on server-side
     const proxyPayload = { model, contents: [contents] };
@@ -237,6 +260,8 @@ window.captureImage = function(section) {
     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageDataURL = canvas.toDataURL('image/png');
     document.getElementById(section + '-chat-preview').innerHTML = `<img src='${imageDataURL}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Captured Image' />`;
+    // record as attachment
+    window.addAttachment(section, { name: 'camera.png', type: 'image/png', size: 0, dataURL: imageDataURL });
     overlay.remove();
     if (stream) stream.getTracks().forEach(t => t.stop());
   };
@@ -277,6 +302,12 @@ window.recordAudio = function(section) {
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         const audioURL = URL.createObjectURL(audioBlob);
         document.getElementById(section + '-chat-preview').innerHTML = `<audio src='${audioURL}' controls style='max-width:120px;vertical-align:middle;margin:4px 0;'></audio>`;
+        // convert blob to dataURL and add as attachment
+        const reader2 = new FileReader();
+        reader2.onload = (e) => {
+          window.addAttachment(section, { name: 'recording.webm', type: 'audio/webm', size: audioBlob.size, dataURL: e.target.result });
+        };
+        reader2.readAsDataURL(audioBlob);
         overlay.remove();
         if (stream) stream.getTracks().forEach(t => t.stop());
       };
@@ -328,6 +359,12 @@ window.uploadFile = function(e, section) {
     container.innerHTML = html + `<button class="remove-btn" onclick="window.removePreview('${section}')" title="Remove">x</button>`;
     preview.innerHTML = '';
     preview.appendChild(container);
+    // Save dataURL on last attachment entry
+    const attachments = window.getAttachments(section);
+    if (attachments && attachments.length) {
+      const last = attachments[attachments.length - 1];
+      last.dataURL = ev.target.result;
+    }
   };
   reader.readAsDataURL(file);
 };
@@ -348,11 +385,18 @@ window.sendMessage = async function(section, faqText = '') {
   const attachmentSummary = window.getAttachmentSummary(section);
   const fullMessage = attachmentSummary ? msg + attachmentSummary : msg;
 
-  // Extract image data if present
+  // Gather attachments metadata with dataURL
+  const attachments = window.getAttachments(section) || [];
+  // if a preview image exists keep backwards compatibility
   let imageData = null;
-  const previewImg = preview.querySelector('img');
-  if (previewImg) {
-    imageData = previewImg.src;
+  if (attachments.length) {
+    attachments.forEach(att => {
+      if (att.dataURL && att.type && att.type.startsWith('image/')) {
+        imageData = att.dataURL; // pick first image for old API call
+      }
+    });
+  }
+  if (imageData) {
     msg = (msg || '') + "\nPlease analyze this image and provide relevant information.";
   }
 
@@ -394,7 +438,7 @@ window.sendMessage = async function(section, faqText = '') {
       msg,
       section,
       window.GEMINI_API_KEY,
-      imageData
+      attachments
     );
 
     msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
