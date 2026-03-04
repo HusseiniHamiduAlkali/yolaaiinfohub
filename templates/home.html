@@ -1,23 +1,23 @@
 
     <section class="info-section">
-      <h2>Welcome to Yola AI Info Hub</h2>
-      <p>Ask anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the About section.</p>
+      <h2 data-i18n="home_title">Welcome to Yola AI Info Hub</h2>
+      <p data-i18n="home_description">Ask anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the About section.</p>
       <div class="chat-container">
         <div class="chat-header">
-          <span>Home AI Chat</span>
+          <span data-i18n="home_chat_header">Home AI Chat</span>
           <div class="model-switch">
             <label class="switch">
-              <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('home', this.checked)">
+              <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('home', this.checked)">
               <span class="slider round"></span>
             </label>
-            <span class="model-label">Using Gemini 1.5 Flash</span>
+            <span class="model-label" data-i18n="model_label_flash">Using Gemini 1.5 Flash</span>
           </div>
         </div>
         <div class="chat-messages" id="home-chat-messages"></div>
         <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendHomeMessage();">
           <div id="home-chat-preview" class="chat-preview"></div>
-          <input type="text" id="home-chat-input" placeholder="Ask anything..." required />
-          <button type="submit" class="send-button">Send</button>
+          <input type="text" id="home-chat-input" data-i18n-placeholder="chat_placeholder" placeholder="Ask anything..." required />
+          <button type="submit" class="send-button" data-i18n="send">Send</button>
         </form>
         <div class="input-options">
           <button type="button" onclick="window.captureImage('home')" title="Capture Image" ><span>📷</span></button>
@@ -28,32 +28,32 @@
           </label>
         </div>
         <div class="faq-list">
-        <h3>General FAQs</h3>
+        <h3 data-i18n="general_faqs">General FAQs</h3>
         <ul>
-          <li><a class="faq-link" onclick="window.sendHomeMessage('What is the capital of Adamawa State?')">The capital of Adamawa State</a></li>
-          <li><a class="faq-link" onclick="window.sendHomeMessage('What is the current time in Yola?')">What is the current time in Yola</a></li>
-          <li><a class="faq-link" onclick="window.sendHomeMessage('What are popular places to visit in Yola?')">What are popular places to visit</a></li>
-          <li><a class="faq-link" onclick="window.sendHomeMessage('What is the brief history of Yola?')">Brief history of Yola</a></li>
-          <li><a class="faq-link" onclick="window.sendHomeMessage('What is the origin of Yola?')">What is the origin of Yola</a></li>
-          <li><a class="faq-link" onclick="window.sendHomeMessage('Emergency services contact information')">Emergency contact information</a></li>
+          <li><a class="faq-link" data-i18n="faq_1" onclick="window.sendFAQInCurrentLang('faq_1', 'Home')">The capital of Adamawa State</a></li>
+          <li><a class="faq-link" data-i18n="faq_2" onclick="window.sendFAQInCurrentLang('faq_2', 'Home')">What is the current time in Yola</a></li>
+          <li><a class="faq-link" data-i18n="faq_3" onclick="window.sendFAQInCurrentLang('faq_3', 'Home')">What are popular places to visit</a></li>
+          <li><a class="faq-link" data-i18n="faq_4" onclick="window.sendFAQInCurrentLang('faq_4', 'Home')">Brief history of Yola</a></li>
+          <li><a class="faq-link" data-i18n="faq_5" onclick="window.sendFAQInCurrentLang('faq_5', 'Home')">What is the origin of Yola</a></li>
+          <li><a class="faq-link" data-i18n="faq_6" onclick="window.sendFAQInCurrentLang('faq_6', 'Home')">Emergency contact information</a></li>
         </ul>
       </div>
       </div>
       
       <div class="section2" >
-        <h2 style="margin-bottom: 25px;" >History of Yola</h2>
+        <h2 style="margin-bottom: 25px;" data-i18n="history_of_yola">History of Yola</h2>
         <div class="section2-home-image-placeholder" >
           <img class="section2-home-img1" src="Data/Images/palace3.jpg" alt="Yola Palace"  loading="lazy" />
           <img class="section2-home-img2" src="Data/Images/palace.jpg" alt="Yola Palace"  loading="lazy" />
         </div>
-        <p style="margin-top: 1.5rem; line-height: 1.6; color: #2d3748;">
+        <p data-i18n="history_of_yola_paragraph" style="margin-top: 1.5rem; line-height: 1.6; color: #2d3748;">
           Yola, the capital city of Adamawa State, has a rich history dating back to its establishment as the capital of the Fulani state of Adamawa in 1841. 
           Founded by Modibbo Adama, it served as an important center for Islamic learning and trade. The city's strategic location along the Benue River 
           made it a vital commercial hub. Today, Yola continues to be a significant cultural and administrative center, blending its historical heritage 
           with modern development.
         </p>
           <div style="display:flex;">
-            <a href="details/Home/yolaadamawa.html" class="section4-home-a">Explore more →</a>
+            <a data-i18n="learn_more" href="details/Home/yolaadamawa.html" class="section4-home-a" data-i18n="explore_more">Explore more →</a>
           </div>
         </a>
       </div>
@@ -92,7 +92,7 @@
               <div style=" display:flex; flex-direction: column;">
                 <h4>Meet the cabinet of the Executive governor of Adamawa state, His excellency Rt. Hon. Ahmadu Umaru Fintiri OON. And the state executive council (ADSEC).<h4>
                 <h4 style="height: auto;">
-                  <a href="details/Home/adamawaexecutivecouncil.html" >Explore more →</a>
+                  <a data-i18n="learn_more" href="details/Home/adamawaexecutivecouncil.html" >Explore more →</a>
                 </h4>
               </div>
               

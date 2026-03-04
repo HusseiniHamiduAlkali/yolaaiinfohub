@@ -1,22 +1,22 @@
 
 <section class="info-section">
-    <h2>CommunityInfo - Community Help</h2>
-    <p>Ask about local events, organizations, or community services in Yola.</p>
+    <h2 data-i18n="communityinfo_header">CommunityInfo - Community Help</h2>
+    <p data-i18n="communityinfo_desc">Ask about local events, organizations, or community services in Yola.</p>
     <div class="chat-container">
     <div class="chat-header">
-        <span>CommunityInfo AI Chat</span>
+        <span data-i18n="communityinfo_chat_header">CommunityInfo AI Chat</span>
         <div class="model-switch">
         <label class="switch">
-            <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('community', this.checked)">
+            <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('community', this.checked)">
             <span class="slider round"></span>
         </label>
-        <span class="model-label">Using Gemini 1.5 Flash</span>
+        <span class="model-label" data-i18n="model_label_flash">Using Gemini 1.5 Flash</span>
         </div>
     </div>
     <div class="chat-messages" id="chat-messages"></div>
     <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendCommunityMessage();">
         <div id="chat-preview" class="chat-preview"></div>
-        <input type="text" id="chat-input" placeholder="Ask about community..." required />
+        <input type="text" id="chat-input" title="Community Chat Input" placeholder="Ask about community..." data-i18n-placeholder="communityinfo_chat_placeholder" required />
         <div class="send-button-group">
         <button type="submit" class="send-button">Send</button>
         </div>
@@ -30,14 +30,14 @@
         </label>
     </div>
     <div class="faq-list">
-    <h3>CommunityInfo FAQs</h3>
+    <h3 data-i18n="communityinfo_faq_title">CommunityInfo FAQs</h3>
     <ul>
-        <li><a class="faq-link" onclick="window.sendCommunityMessage('What are the major community events in Yola?')">What are the major community events in Yola</a></li>
-        <li><a class="faq-link" onclick="window.sendCommunityMessage('How do I join a local organization?')">How do I join a local organization</a></li>
-        <li><a class="faq-link" onclick="window.sendCommunityMessage('How do I report a community issue?')">How do I report a community issue</a></li>
-        <li><a class="faq-link" onclick="window.sendCommunityMessage('Where can I find information about volunteering?')">Where can I find information about volunteering</a></li>
-        <li><a class="faq-link" onclick="window.sendCommunityMessage('What are the support groups in Yola?')">What are the support groups in Yola</a></li>
-        <li><a class="faq-link" onclick="window.sendCommunityMessage('How can I organize a community event?')">How to organize a community event</a></li>
+        <li><a class="faq-link" data-i18n="communityinfo_faq_1" onclick="window.sendFAQInCurrentLang('communityinfo_faq_1', 'Community')">What are the major community events in Yola</a></li>
+        <li><a class="faq-link" data-i18n="communityinfo_faq_2" onclick="window.sendFAQInCurrentLang('communityinfo_faq_2', 'Community')">How do I join a local organization</a></li>
+        <li><a class="faq-link" data-i18n="communityinfo_faq_3" onclick="window.sendFAQInCurrentLang('communityinfo_faq_3', 'Community')">How do I report a community issue</a></li>
+        <li><a class="faq-link" data-i18n="communityinfo_faq_4" onclick="window.sendFAQInCurrentLang('communityinfo_faq_4', 'Community')">Where can I find information about volunteering</a></li>
+        <li><a class="faq-link" data-i18n="communityinfo_faq_5" onclick="window.sendFAQInCurrentLang('communityinfo_faq_5', 'Community')">What are the support groups in Yola</a></li>
+        <li><a class="faq-link" data-i18n="communityinfo_faq_6" onclick="window.sendFAQInCurrentLang('communityinfo_faq_6', 'Community')">How to organize a community event</a></li>
     </ul>
     </div>
     </div>
@@ -142,7 +142,7 @@
             </div>
             <h3>Nigerian Red Cross Society - Yola Branch</h3>
             <p>Leading humanitarian organization in Yola providing emergency response, first aid training, disaster relief, and community health services. Active in blood donation drives, emergency preparedness, and local community support programs.</p>
-            <a href="details/Community/redcross-society.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/redcross-society.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -151,7 +151,7 @@
             </div>
             <h3>Yola Renewal Foundation</h3>
             <p>Empowering young people through education and skill development.</p>
-            <a href="details/Community/yola-renewal-foundation.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/yola-renewal-foundation.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -160,7 +160,7 @@
             </div>
             <h3>Youth And Women Empowerment Foundation (YAWEF), Yola</h3>
             <p>Dedicated organization supporting women and youth development in Yola through education, vocational training, business mentorship, and social programs. Offers micro-loans, skills acquisition workshops, and entrepreneurship guidance.</p>
-            <a href="details/Community/yawef.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/yawef.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -204,7 +204,7 @@
             </div>
             <h3>UNDP Vocational Training Program</h3>
             <p>Skills development initiative providing vocational training to empower local youth and adults in Yola.</p>
-            <a href="details/Community/undp-training.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/undp-training.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -213,7 +213,7 @@
             </div>
             <h3>Lead Generation Initiative (LGI) Workshop</h3>
             <p>LGI Organises leadership training for 500 youth in Yola.</p>
-            <a href="details/Community/lgi-workshop.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/lgi-workshop.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -269,7 +269,7 @@
             </div>
             <h3>Governor's Cup Football Competition</h3>
             <p>Annual football tournament bringing together teams from across Yola and promoting sports development.</p>
-            <a href="details/Community/governors-cup.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/governors-cup.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -278,7 +278,7 @@
             </div>
             <h3>Community Cleaning Day</h3>
             <p>Monthly community cleaning and beautification program.</p>
-            <a href="details/Community/cleaning-day.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/cleaning-day.html">Learn more →</a>
         </div>
 
         </div>
@@ -359,7 +359,7 @@
         </div>
         <h3>Mahmudu Ribadu Square, Yola</h3>
         <p>Venue for cultural events, exhibitions, and traditional performances.</p>
-        <a href="details/Community/ribadu-square.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Community/ribadu-square.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -368,7 +368,7 @@
             </div>
             <h3>Digital Multipurpose Hall Yola</h3>
             <p>Modern event venue equipped with digital facilities for conferences, seminars, and community gatherings.</p>
-            <a href="details/Community/digital-hall.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/digital-hall.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -377,7 +377,7 @@
             </div>
             <h3>AUN Community Hall, Yola</h3>
             <p>University-owned venue hosting academic events, community programs, and cultural activities.</p>
-            <a href="details/Community/aun-hall.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/aun-hall.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -386,7 +386,7 @@
             </div>
             <h3>Banquet Hall, Government House Yola</h3>
             <p>Prestigious state venue for official functions, ceremonies and high-profile events.</p>
-            <a href="details/Community/banquet-hall.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/banquet-hall.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -395,7 +395,7 @@
             </div>
             <h3>Crystal Palace Event Center, Yola.</h3>
             <p>Modern event facility offering space for weddings, parties, and corporate functions.</p>
-            <a href="details/Community/crystal-palace.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/crystal-palace.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -404,7 +404,7 @@
             </div>
             <h3>Federal Collece Of Education (FCE) Yola, Multipurpose hall</h3>
             <p>Educational institution's hall hosting academic ceremonies, student events and community programs.</p>
-            <a href="details/Community/fce-hall.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/fce-hall.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -413,7 +413,7 @@
             </div>
             <h3>Aliyu Musdafa College (AMC) Yola, Multipurpose hall.</h3>
             <p>School facility used for educational activities, meetings and community gatherings.</p>
-            <a href="details/Community/amc-hall.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/amc-hall.html">Learn more →</a>
         </div>
 
 
@@ -423,7 +423,7 @@
             </div>
             <h3>Fastnet Movie Theatre, Yola.</h3>
             <p>Modern cinema complex showing latest movies and providing entertainment to the community.</p>
-            <a href="details/Community/fastnet.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/fastnet.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -432,7 +432,7 @@
             </div>
             <h3>Lamido Cinema, Yola.</h3>
             <p>Local movie theater offering film screenings and entertainment services to residents.</p>
-            <a href="details/Community/lamido-cinema.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/lamido-cinema.html">Learn more →</a>
         </div>
 
 
@@ -449,7 +449,7 @@
             </div>
             <h3>Pulaaku FM Radio Yola.</h3>
             <p>A local Radio station offering in local languages.</p>
-            <a href="details/Community/pulaakufm.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/pulaakufm.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -458,7 +458,7 @@
             </div>
             <h3>Fombina FM Radio Yola.</h3>
             <p>Local radio station providing news, entertainment, music, and community information to listeners.</p>
-            <a href="details/Community/fombinafm.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/fombinafm.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -467,7 +467,7 @@
             </div>
             <h3>Gotel FM Yola.</h3>
             <p>Popular radio station broadcasting news, sports, entertainment, and community programming for Yola listeners.</p>
-            <a href="details/Community/gotelfm.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/gotelfm.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -476,7 +476,7 @@
             </div>
             <h3>Adamawa Broadcasting Coperation (ABC), Yola.</h3>
             <p>State-owned broadcasting corporation providing television and radio services with news and entertainment.</p>
-            <a href="details/Community/abcyola.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/abcyola.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -484,7 +484,7 @@
             </div>
             <h3>NAS FM Radio Yola.</h3>
             <p>A private radio station broadcasting news, advertisement e.tc.</p>
-            <a href="details/Community/nasfm.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/nasfm.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -493,7 +493,7 @@
             </div>
             <h3>Usaku FM Yola.</h3>
             <p>Community-focused radio station broadcasting local news, music, and cultural programming to Yola residents.</p>
-            <a href="details/Community/usakufm.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/usakufm.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -502,7 +502,7 @@
             </div>
             <h3>National Television Authority NTA Yola.</h3>
             <p>National television station broadcasting news, documentaries, educational programs, and entertainment nationwide.</p>
-            <a href="details/Community/ntayola.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/ntayola.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -511,7 +511,7 @@
             </div>
             <h3>ATV Yola.</h3>
             <p>Local television station broadcasting news, entertainment, sports, and community-focused programs for viewers.</p>
-            <a href="details/Community/atv.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/atv.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -520,7 +520,7 @@
             </div>
             <h3>TV Gotel Yola.</h3>
             <p>As part of Gotel communications, it is a private tv station broadcasting news, advertisement e.tc.</p>
-            <a href="details/Community/tvgotel.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Community/tvgotel.html">Learn more →</a>
         </div>
 
         </div>

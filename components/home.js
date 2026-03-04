@@ -27,7 +27,19 @@ function loadHomeChatHistory() {
     console.error('Error loading chat history:', e);
   }
 }
-
+// Robust navbar loader
+function ensureNavbarLoaded(cb) {
+  if (typeof window.renderNavbar === 'function') {
+    window.renderNavbar();
+    if (cb) cb();
+  } else if (window.Navbar && typeof window.Navbar.render === 'function') {
+    window.Navbar.render();
+    if (cb) cb();
+  } else {
+    console.warn('Navbar not yet available, deferring render');
+    if (cb) cb();
+  }
+}
 window.renderSection = function() {
   ensureNavbarLoaded();
   if (!document.getElementById('global-css')) {
@@ -44,6 +56,8 @@ window.renderSection = function() {
     // Load chat history AFTER template is inserted
     setTimeout(() => {
       window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('home', 'home-chat-messages');
+      // Ensure auto-scroll observer is attached for this section
+      window.observeChatContainers && window.observeChatContainers();
     }, 50);
     
     // Wire model toggle after template is inserted
@@ -226,6 +240,18 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
     }
   }
 
+  // Extract media data from preview (image, audio, or file)
+  let mediaData = null;
+  if (preview && preview.innerHTML) {
+    const imgElement = preview.querySelector('img');
+    const audioElement = preview.querySelector('audio');
+    if (imgElement && imgElement.src) {
+      mediaData = imgElement.src;
+    } else if (audioElement && audioElement.src) {
+      mediaData = audioElement.src;
+    }
+  }
+
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
   // generate a temporary message id now so we can reuse for actions
@@ -247,7 +273,7 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   try {
     const signal = window.homeAbortController ? window.homeAbortController.signal : null;
     const localData = await fetch('Data/HomeInfo/homeinfo.txt', signal ? { signal } : {}).then(r => r.text()); // Assuming a local data file for HomeInfo
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, null, signal);
+    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, mediaData, signal);
   } catch (e) {
     if (e.name === 'AbortError') {
       finalAnswer = "USER ABORTED REQUEST";

@@ -1,0 +1,104 @@
+{
+  "name": "Yola AI Info Hub",
+  "short_name": "Yola AI Hub",
+  "description": "Your trusted AI assistant for information about Yola, Adamawa State. Get instant answers about education, agriculture, healthcare, navigation, community, environment, and services.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2196F3",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "Data/Images/jippujam.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "Data/Images/jippujam.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "Data/Images/jippujam.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    },
+    {
+      "src": "Data/Images/jippujam.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": [
+    {
+      "src": "Data/Images/jippujam.jpg",
+      "sizes": "540x720",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "Data/Images/jippujam.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Education Help",
+      "short_name": "Education",
+      "description": "Get educational information and resources",
+      "url": "/index.html?section=edu",
+      "icons": [
+        {
+          "src": "Data/Images/jippujam.jpg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Agriculture Help",
+      "short_name": "Agriculture",
+      "description": "Get farming and agricultural information",
+      "url": "/index.html?section=agro",
+      "icons": [
+        {
+          "src": "Data/Images/jippujam.jpg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Medical Help",
+      "short_name": "Medical",
+      "description": "Get healthcare and medical information",
+      "url": "/index.html?section=medi",
+      "icons": [
+        {
+          "src": "Data/Images/jippujam.jpg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "media",
+          "accept": ["image/*", "audio/*"]
+        }
+      ]
+    }
+  }
+}

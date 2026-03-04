@@ -56,6 +56,8 @@ window.renderSection = function() {
     // Load chat history AFTER template is inserted
     setTimeout(() => {
       window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('agro', 'agro-chat-messages');
+      // Ensure auto-scroll observer is attached for this section
+      window.observeChatContainers && window.observeChatContainers();
     }, 50);
     
     // Wire model toggle after template is inserted
@@ -88,11 +90,12 @@ window.sendAgroMessage = async function(faqText = '') {
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
-  let imageData = null;
+  let mediaData = null;
   if (preview) {
     const img = preview.querySelector('img');
-    if (img) imageData = img.src;
-    // You can add similar logic for audio/video if needed
+    const audio = preview.querySelector('audio');
+    if (img && img.src) mediaData = img.src;
+    else if (audio && audio.src) mediaData = audio.src;
   }
   if (!msg && !attach) return;
 
@@ -155,7 +158,7 @@ window.sendAgroMessage = async function(faqText = '') {
     // Combine all local data
     const allLocalData = localData + linkedContents + historyContext;
     try {
-      finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, imageData, signal);
+      finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal);
       // Store in chat history (keep last 10 messages)
       window.addToChatHistory && window.addToChatHistory('agro', 'user', msg);
       window.addToChatHistory && window.addToChatHistory('agro', 'assistant', finalAnswer);

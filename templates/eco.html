@@ -1,26 +1,26 @@
 
 <section class="info-section">
-    <h2>EcoInfo - Environmental Help</h2>
+    <h2 data-i18n="ecoinfo_title">EcoInfo - Environmental Help</h2>
     
-    <p>Ask about recycling, waste, or environmental services in Yola.</p>
+    <p data-i18n="ecoinfo_description">Ask about recycling, waste, or environmental services in Yola.</p>
     <div class="chat-container">
     <div class="chat-header">
-        <span>EcoInfo AI Chat</span>
+        <span data-i18n="eco_chat_header">EcoInfo AI Chat</span>
         <div class="model-switch">
         <label class="switch">
-            <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('eco', this.checked)">
+            <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('eco', this.checked)">
             <span class="slider round"></span>
         </label>
-        <span class="model-label">Using Gemini 1.5 Flash</span>
+        <span class="model-label" data-i18n="model_label_flash">Using Gemini 1.5 Flash</span>
         </div>
     </div>
     <div class="chat-messages" id="chat-messages"></div>
     <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendEcoMessage();">
         <div id="eco-chat-preview" class="chat-preview"></div>
-        <input type="text" id="eco-chat-input" placeholder="Ask about environment..." required />
+        <input type="text" id="eco-chat-input" data-i18n-placeholder="eco_chat_placeholder" placeholder="Ask about environment..." required />
         <div class="send-button-group">
-        <button type="submit" class="send-button">
-            <span class="send-text">Send</span>
+        <button type="submit" class="send-button" data-i18n="send">
+            <span class="send-text" data-i18n="send">Send</span>
 
         </button>
         <button type="button" class="stop-button" style="display:none" onclick="window.stopEcoResponse()">Stop</button>
@@ -36,14 +36,14 @@
     </div>
     
     <div class="faq-list">
-    <h3>EcoInfo FAQs</h3>
+    <h3 data-i18n="eco_faqs">EcoInfo FAQs</h3>
     <ul>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('How do I recycle waste in Yola?')">How do I recycle waste in Yola</a></li>
-        <li><a class="faq-link" onclick="window.sendHomeMessage('Current weather in Yola')">Current weather in Yola</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('Where are the parks and green spaces?')">Where are the parks and green spaces</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('How can I report illegal dumping?')">How can I report illegal dumping</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('What are the environmental organizations in Yola?')">What are the environmental organizations in Yola</a></li>
-        <li><a class="faq-link" onclick="window.sendEcoMessage('How do I start a community garden?')">Where to get nursery plants</a></li>
+        <li><a class="faq-link" data-i18n="eco_faq_1" onclick="window.sendFAQInCurrentLang('eco_faq_1', 'Eco')">How do I recycle waste in Yola</a></li>
+        <li><a class="faq-link" data-i18n="eco_faq_2" onclick="window.sendFAQInCurrentLang('eco_faq_2', 'Eco')">Current weather in Yola</a></li>
+        <li><a class="faq-link" data-i18n="eco_faq_3" onclick="window.sendFAQInCurrentLang('eco_faq_3', 'Eco')">Where are the parks and green spaces</a></li>
+        <li><a class="faq-link" data-i18n="eco_faq_4" onclick="window.sendFAQInCurrentLang('eco_faq_4', 'Eco')">How can I report illegal dumping</a></li>
+        <li><a class="faq-link" data-i18n="eco_faq_5" onclick="window.sendFAQInCurrentLang('eco_faq_5', 'Eco')">What are the environmental organizations in Yola</a></li>
+        <li><a class="faq-link" data-i18n="eco_faq_6" onclick="window.sendFAQInCurrentLang('eco_faq_6', 'Eco')">Where to get nursery plants</a></li>
         
     </ul>
     </div>
@@ -89,7 +89,7 @@
             </div>
             <h3>Yola Domestic Waste Collectors.</h3>
             <p>Licensed waste management service specializing in domestic waste collection and disposal in Yola.</p>
-            <a href="details/Eco/yola-domestic-waste-collectors.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/yola-domestic-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
         </div>
 
         
@@ -99,7 +99,7 @@
             </div>
             <h3>Plastic Waste Collectors, Yola.</h3>
             <p>Specialized service for collecting and recycling plastic waste materials throughout Yola metropolitan area.</p>
-            <a href="details/Eco/plastic-waste-collectors.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/plastic-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
         </div>
 
         
@@ -109,7 +109,7 @@
             </div>
             <h3>Metal Waste and Scraps Collectors, Yola.</h3>
             <p>Professional metal waste collection service focusing on scrap metal recycling and responsible disposal in Yola region.</p>
-            <a href="details/Eco/metal-waste-collectors.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/metal-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -118,7 +118,7 @@
             </div>
             <h3>Yola Plastics and Polythenes Waste Recycling Company.</h3>
             <p>Leading plastic recycling facility in Yola specializing in processing and recycling all types of plastics and polythene materials.</p>
-        <a href="details/Eco/green-cycle-solutions.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Eco/green-cycle-solutions.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -127,7 +127,7 @@
         </div>
         <h3>EcoWaste Management</h3>
         <p>Professional industrial and commercial waste recycling services with eco-friendly practices and sustainable disposal methods.</p>
-        <a href="details/Eco/ecowaste-management.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Eco/ecowaste-management.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -136,7 +136,7 @@
         </div>
         <h3>Adamawa Waste To Wealth Recyclers Limited.</h3>
         <p>Leading recycling company providing industrial and commercial waste processing services with commitment to environmental sustainability and waste resource recovery in Adamawa.</p></p>
-        <a href="details/Eco/adamawa-waste-to-wealth.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Eco/adamawa-waste-to-wealth.html">Learn more →</a>
         </div>
 
     </div>
@@ -153,7 +153,7 @@
             </div>
             <h3>Green Environment Solutons Initiative, Yola.</h3>
             <p>Community-based organization working on environmental protection, conservation, and public awareness campaigns for sustainable practices in Yola.</p>
-            <a href="details/Eco/eco-warriors.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/eco-warriors.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -162,7 +162,7 @@
             </div>
             <h3>National Environmental Standards And Regulations Enforcement Agency, Yola.</h3>
             <p>Government agency responsible for enforcing environmental standards, ensuring city cleanliness, and promoting sustainable urban development in Yola and Adamawa State.</p></p>
-            <a href="details/Eco/clean-yola-project.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/clean-yola-project.html">Learn more →</a>
         </div>
     
         <div class="section4">
@@ -171,7 +171,7 @@
             </div>
             <h3>Association Of Plastic Recyclers, Yola.</h3>
             <p>Non-profit organization focused on environmental education, plastic waste reduction, conservation of natural resources, and community awareness in Yola.</p></p>
-            <a href="details/Eco/association-of-plastic-recyclers.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/association-of-plastic-recyclers.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -180,7 +180,7 @@
             </div>
             <h3>UNDP 'Go Green' Initiative Yola</h3>
             <p>United Nations Development Programme initiative focused on environmental education, green development, and sustainability conservation in Yola and Adamawa State.</p></p>
-            <a href="details/Eco/undp.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/undp.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -189,7 +189,7 @@
             </div>
             <h3>Waste Pickers Association Of Nigeria (WAPAN), Yola.</h3>
             <p>Community-based organization representing waste collectors and environmental workers, promoting environmental protection, waste management, and livelihood improvement in Yola.</p></p>
-            <a href="details/Eco/wapan-yola.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/wapan-yola.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -198,7 +198,7 @@
             </div>
             <h3>National Asssociation OF Scraps And Wate Pickers Of Nigeria (NASWON), Yola.</h3>
             <p>Professional association supporting scrap and waste pickers through advocacy, environmental cleanup, community sanitation, and sustainable waste management practices in Yola.</p></p>
-            <a href="details/Eco/naswon-yola.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/naswon-yola.html">Learn more →</a>
         </div>
 
         </div>
@@ -213,7 +213,7 @@
             </div>
             <h3>Yola Solar Initiative</h3>
             <p>Promoting solar energy adoption and renewable power solutions.</p>
-            <a href="details/Eco/yola-solar-initiative.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/yola-solar-initiative.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -221,7 +221,7 @@
             </div>
             <h3>Water Conservation Project</h3>
             <p>Programs for water conservation and sustainable water management.</p>
-            <a href="details/Eco/water-conservation-project.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/water-conservation-project.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -229,7 +229,7 @@
             </div>
             <h3>Yola Tree Planting Project.</h3>
             <p>Promoting eco-friendly activities in Yola.</p>
-            <a href="details/Eco/green-transport-network.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/green-transport-network.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -238,7 +238,7 @@
             </div>
             <h3>Community-Led Environmental Conservation Project, Yola.</h3>
             <p>Grassroots initiative engaging local communities in environmental conservation efforts and sustainable practices.</p>
-            <a href="details/Eco/community-conservation.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/community-conservation.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -246,7 +246,7 @@
             </div>
             <h3>Yola 'Waste To Wealth' Initiative.</h3>
             <p>Innovative program transforming waste materials into valuable resources while creating economic opportunities for local residents.</p>
-            <a href="details/Eco/waste-to-wealth.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/waste-to-wealth.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -254,7 +254,7 @@
             </div>
             <h3>'Trash To Treasure' Initiative, Yola.</h3>
             <p>Creative upcycling program turning waste materials into art and useful products while promoting environmental awareness.</p>
-            <a href="details/Eco/trash-to-treasure.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/trash-to-treasure.html">Learn more →</a>
         </div>
 
         </div>
@@ -268,7 +268,7 @@
             </div>
             <h3>Yola Community Garden</h3>
             <p>Public garden space dedicated to community farming, environmental education, and sustainable food production for residents of Yola.</p></p>
-            <a href="details/Eco/yola-community-garden.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/yola-community-garden.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -276,7 +276,7 @@
             </div>
             <h3>Yola Eco Park</h3>
             <p>Sustainable park featuring native plants, ecological exhibits, and environmental education programs for community awareness and conservation in Yola.</p></p>
-            <a href="details/Eco/yola-eco-park.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/yola-eco-park.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -284,7 +284,7 @@
             </div>
             <h3>Benue Valley Reserve</h3>
             <p>Protected natural area with rich biodiversity featuring conservation programs, wildlife habitat protection, and ecological research initiatives.</p></p>
-            <a href="details/Eco/benue-valley-reserve.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Eco/benue-valley-reserve.html">Learn more →</a>
         </div>
         </div>
     </div>

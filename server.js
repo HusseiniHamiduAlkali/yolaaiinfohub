@@ -101,6 +101,15 @@ app.get('/api/maps-key', (req, res) => {
   res.status(200).json({ apiKey });
 });
 
+// Serve the TomTom API key for navigation
+app.get('/api/tomtom-key', (req, res) => {
+  const apiKey = process.env.TOMTOM_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'TomTom API key not set' });
+  }
+  res.status(200).json({ apiKey });
+});
+
 // Security middleware with appropriate settings for CORS
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },

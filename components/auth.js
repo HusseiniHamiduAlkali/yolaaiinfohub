@@ -290,7 +290,7 @@ window.showResetPasswordModal = function(token, email) {
       return;
     }
     if (pw1 !== pw2) {
-      document.getElementById('auth-error').textContent = 'Passwords do not match.';
+      document.getElementById('auth-error').textContent = window.t ? window.t('password_mismatch') : 'Passwords do not match.';
       return;
     }
     

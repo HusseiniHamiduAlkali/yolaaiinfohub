@@ -55,6 +55,8 @@ window.renderSection = function() {
     // Load chat history AFTER template is inserted
     setTimeout(() => {
       window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('community', 'community-chat-messages');
+      // Ensure auto-scroll observer is attached for this section
+      window.observeChatContainers && window.observeChatContainers();
     }, 50);
     
     // Wire model toggle after template is inserted
@@ -93,12 +95,15 @@ window.sendCommunityMessage = async function(faqText = '') {
   let attach = preview.innerHTML;
   if (!msg && !attach) return;
 
-  // Extract image data if present in preview
-  let imageData = null;
+  // Extract media data if present in preview
+  let mediaData = null;
   const previewImg = preview.querySelector('img');
-  if (previewImg) {
-    imageData = previewImg.src;
+  const previewAudio = preview.querySelector('audio');
+  if (previewImg && previewImg.src) {
+    mediaData = previewImg.src;
     msg = msg + "\nPlease analyze this image and provide relevant community information or suggestions.";
+  } else if (previewAudio && previewAudio.src) {
+    mediaData = previewAudio.src;
   }
 
   // Setup stop button with commonAI utility (creates AbortController) and capture controller (with fallback if not loaded)
@@ -158,7 +163,7 @@ window.sendCommunityMessage = async function(faqText = '') {
         history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
     }
 
-    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, imageData, signal);
+    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, mediaData, signal);
 
     // Update history with AI response
     history.push({ user: msg, ai: finalAnswer });

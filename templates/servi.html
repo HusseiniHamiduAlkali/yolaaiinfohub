@@ -1,22 +1,22 @@
 
 <section class="info-section">
-    <h2>ServiInfo - Find Professionals</h2>
-    <p>Ask to connect with electricians, plumbers, teachers, or other professionals in Yola.</p>
+    <h2 data-i18n="serviinfo_header">ServiInfo - Find Professionals</h2>
+    <p data-i18n="serviinfo_desc">Ask to connect with electricians, plumbers, teachers, or other professionals in Yola.</p>
     <div class="chat-container">
     <div class="chat-header">
-        <span>ServiInfo AI Chat</span>
+        <span data-i18n="serviinfo_chat_header">ServiInfo AI Chat</span>
         <div class="model-switch">
         <label class="switch">
-            <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('servi', this.checked)">
+            <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('servi', this.checked)">
             <span class="slider round"></span>
         </label>
-        <span class="model-label">Using Gemini 1.5 Flash</span>
+        <span class="model-label" data-i18n="model_label_flash">Using Gemini 1.5 Flash</span>
         </div>
     </div>
     <div class="chat-messages" id="servi-chat-messages"></div>
     <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendServiMessage();">
         <div id="servi-chat-preview" class="chat-preview"></div>
-        <input type="text" id="servi-chat-input" placeholder="Ask for a professional..." required />
+        <input type="text" id="servi-chat-input" title="Chat Input" placeholder="Type your message..." data-i18n-placeholder="serviinfo_chat_placeholder" required />
         <div class="send-button-group">
         <button type="submit" class="send-button">Send</button>
         </div>
@@ -30,14 +30,14 @@
         </label>
     </div>
     <div class="faq-list">
-    <h3>ServiInfo FAQs</h3>
+    <h3 data-i18n="serviinfo_faq_title">ServiInfo FAQs</h3>
     <ul>
-        <li><a class="faq-link" onclick="window.sendServiMessage('How to find a reliable electrician?')">How to find a reliable electrician</a></li>
-        <li><a class="faq-link" onclick="window.sendServiMessage('List of certified plumbers in Yola')">List of certified plumbers in Yola</a></li>
-        <li><a class="faq-link" onclick="window.sendServiMessage('Are there private tutors for mathematics?')">Are there private tutors for mathematics</a></li>
-        <li><a class="faq-link" onclick="window.sendServiMessage('Contact information for carpenters')">Contact information for carpenters</a></li>
-        <li><a class="faq-link" onclick="window.sendServiMessage('Security services available in Yola')">Security services available in Yola</a></li>
-        <li><a class="faq-link" onclick="window.sendServiMessage('Recommendations for house cleaners services in Yola')">Recommendations for house cleaners in Yola</a></li>
+        <li><a class="faq-link" data-i18n="serviinfo_faq_1" onclick="window.sendFAQInCurrentLang('serviinfo_faq_1', 'Servi')">How to find a reliable electrician</a></li>
+        <li><a class="faq-link" data-i18n="serviinfo_faq_2" onclick="window.sendFAQInCurrentLang('serviinfo_faq_2', 'Servi')">List of certified plumbers in Yola</a></li>
+        <li><a class="faq-link" data-i18n="serviinfo_faq_3" onclick="window.sendFAQInCurrentLang('serviinfo_faq_3', 'Servi')">Are there private tutors for mathematics</a></li>
+        <li><a class="faq-link" data-i18n="serviinfo_faq_4" onclick="window.sendFAQInCurrentLang('serviinfo_faq_4', 'Servi')">Contact information for carpenters</a></li>
+        <li><a class="faq-link" data-i18n="serviinfo_faq_5" onclick="window.sendFAQInCurrentLang('serviinfo_faq_5', 'Servi')">Security services available in Yola</a></li>
+        <li><a class="faq-link" data-i18n="serviinfo_faq_6" onclick="window.sendFAQInCurrentLang('serviinfo_faq_6', 'Servi')">Recommendations for house cleaners in Yola</a></li>
     </ul>
     </div>
     </div>
@@ -55,7 +55,7 @@
             </div>
             <h3>PC klinic, Yola</h3>
             <p>Professional computer repair, maintenance, and technical support services. Specializing in hardware repairs, software troubleshooting, and IT solutions for individuals and businesses in Yola.</p>
-            <a href="details/Servi/pc-klinic.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/pc-klinic.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -63,7 +63,7 @@
             </div>
             <h3>BitByte Technologies, Yola.</h3>
             <p>Software development company offering custom applications, web development, and IT consulting services. Providing innovative technology solutions for businesses and organizations in Yola and beyond.</p>
-            <a href="details/Servi/bitbyte-technologies.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/bitbyte-technologies.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -71,7 +71,7 @@
             </div>
             <h3>ICT Republic, Yola.</h3>
             <p>Full-service ICT company providing networking solutions, data management, cybersecurity, and telecommunications services. Supporting digital transformation for businesses in Yola.</p>
-            <a href="details/Servi/ict-republic.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/ict-republic.html">Learn more →</a>
         </div>
         </div>
     </div>
@@ -85,7 +85,7 @@
             </div>
             <h3>Jabbama Electric Solutions</h3>
             <p>Expert electrical installations, repairs and maintenance with 15+ years experience. Available 24/7 for residential and commercial electrical emergencies in Yola. Licensed and certified electricians.</p>
-            <a href="details/Servi/jabbama-electronics.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/jabbama-electronics.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -93,7 +93,7 @@
             </div>
             <h3>Alter Solar and Electronics Services</h3>
             <p>Certified solar and electrical contractors specializing in residential and commercial installations.</p>
-            <a href="details/Servi/yola-power-services.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/yola-power-services.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -101,7 +101,7 @@
             </div>
             <h3>Sun Kings Electronics Yola.</h3>
             <p>Professional electrical maintenance and smart home installation services.</p>
-            <a href="details/Servi/modern-electric.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/modern-electric.html">Learn more →</a>
         </div>
         </div>
     </div>
@@ -116,7 +116,7 @@
             </div> 
             <h3>ATM Aluminium and Metals, Yola.</h3>
             <p>Expert metal fabrication and aluminium works specializing in windows, doors, railings, and custom metal installations. Available for residential and commercial projects with 15+ years experience in Yola.</p>
-            <a href="details/Servi/atm-aluminium.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/atm-aluminium.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -124,7 +124,7 @@
             </div>
             <h3>Novelty Glass And Aluminium Works.</h3>
             <p>Professional glass and aluminium fabrication services for windows, doors, and decorative installations. Custom designs and quality craftsmanship for residential and commercial applications in Yola.</p>
-            <a href="details/Servi/novelty-glass-aluminium.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/novelty-glass-aluminium.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -132,7 +132,7 @@
             </div>
             <h3>AluminTech Solutions, Yola.</h3>
             <p>Advanced aluminium and metal solutions for architectural and industrial applications. Specializing in design, fabrication, and installation of modern metal structures and fittings in Yola.</p>
-            <a href="details/Servi/alumintech-solutions.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/alumintech-solutions.html">Learn more →</a>
         </div>
         </div>
     </div>
@@ -147,7 +147,7 @@
             </div>
             <h3>Oga Quality Plumbing Services</h3>
             <p>Expert plumbing solutions for residential and commercial properties in Yola. Specializing in repairs, installations, maintenance and 24/7 emergency services. Licensed plumbers with proven track record.</p>
-            <a href="details/Servi/quality-plumbing.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/quality-plumbing.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -155,7 +155,7 @@
             </div>
             <h3>Jameson Plumbing Services</h3>
             <p>Professional plumbing repairs and installations with guaranteed satisfaction.</p>
-            <a href="details/Servi/yola-plumbers.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/yola-plumbers.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -163,7 +163,7 @@
             </div>
             <h3>HomeServe Plumbing</h3>
             <p>Comprehensive plumbing services including maintenance and emergency repairs.</p>
-            <a href="details/Servi/homeserve-plumbing.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/homeserve-plumbing.html">Learn more →</a>
         </div>
         </div>
     </div>
@@ -177,7 +177,7 @@
             </div>
             <h3>RHS Woodworks</h3>
             <p>Premium custom furniture and carpentry services in Yola. Expert craftsmen specializing in bespoke furniture, home renovations, and architectural woodwork. Known for exceptional attention to detail and quality craftsmanship.</p>
-            <a href="details/Servi/rhs-woodworks.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/rhs-woodworks.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -185,7 +185,7 @@
             </div>
             <h3>Worksmanship carpentry solutions.</h3>
             <p>Specialized in custom furniture making and wooden interior solutions.</p>
-            <a href="details/Servi/worksmanship-furniture.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/worksmanship-furniture.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -193,7 +193,7 @@
             </div>
             <h3>Evans Carpentry, Yola.</h3>
             <p>Modern and traditional carpentry services for homes and offices.</p>
-            <a href="details/Servi/evans-carpentry.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/evans-carpentry.html">Learn more →</a>
         </div>
         </div>
     </div>
@@ -207,7 +207,7 @@
             </div>
             <h3>Virtual Assistant Freelancers</h3>
             <p>Professional virtual assistant services including administrative support, scheduling, email management, and business coordination. Remote support available for entrepreneurs and organizations in Yola.</p>
-            <a href="details/Servi/virtual-assistance-freelancers.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/virtual-assistance-freelancers.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -215,7 +215,7 @@
             </div>
             <h3>SJ Graphics, Yola.</h3>
             <p>Graphic design, content creation, and branding services.</p>
-            <a href="details/Servi/sj-graphics.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/sj-graphics.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -223,7 +223,7 @@
             </div>
             <h3>Photography Freelancing Hub</h3>
             <p>Professional photography services including event photography, portrait sessions, product photography, and videography. High-quality content creation for businesses and individuals in Yola.</p>
-        <a href="details/Servi/rm-photography.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Servi/rm-photography.html">Learn more →</a>
         </div>
     </div>
     </div>
@@ -239,7 +239,7 @@
             </div>
             <h3>National Directorate Of Employment (NDE), Yola Office.</h3>
             <p>Government agency responsible for employment generation, skills acquisition, and job creation programs in Yola.</p>
-            <a href="details/Servi/nde.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/nde.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -247,7 +247,7 @@
             </div>
             <h3>Corporate Affairs Commission (CAC), Yola Office</h3>
             <p>Government agency responsible for business registration and corporate regulations in Yola.</p>
-            <a href="details/Servi/cac.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/cac.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -255,7 +255,7 @@
             </div>
             <h3>Nigerian Postal Service (NIPOST), Yola</h3>
             <p>Official postal service provider offering mail and package delivery services in Yola.</p>
-            <a href="details/Servi/nipost.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/nipost.html">Learn more →</a>
         </div>
         </div>
     </div>
@@ -269,7 +269,7 @@
             </div>
             <h3>Red Cross Society Yola Branch</h3>
             <p>International humanitarian organization providing emergency relief, healthcare services, and community support in Yola.</p>
-            <a href="details/Servi/redcross.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/redcross.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -277,7 +277,7 @@
             </div>
             <h3>YMCA Yola Chapter</h3>
             <p>Youth development organization offering educational, recreational, and social programs for young people in Yola.</p>
-            <a href="details/Servi/ymca.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Servi/ymca.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -285,7 +285,7 @@
             </div>
             <h3>Ahmad Uthman - Purelife Foundation.</h3>
         <p>Community-based organization providing healthcare, education, and social development programs for vulnerable populations.</p>
-        <a href="details/Servi/pure-life.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Servi/pure-life.html">Learn more →</a>
         </div>
     </div>
     </div>

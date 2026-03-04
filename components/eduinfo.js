@@ -24,7 +24,9 @@ window.renderSection = function() {
         
         // Load chat history AFTER template is inserted
         setTimeout(() => { 
-          window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('edu', 'eduinfo-chat-messages'); 
+          window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('edu', 'eduinfo-chat-messages');
+          // Ensure auto-scroll observer is attached for this section
+          window.observeChatContainers && window.observeChatContainers();
         }, 50);
         
         // Wire model toggle after template is inserted
@@ -84,7 +86,15 @@ window.sendEduMessage = async function(faqText = '') {
     <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Edu AI typing...</span></div>
   `;
     chat.appendChild(msgGroup);
-    const imageData = preview.querySelector('img') ? preview.querySelector('img').src : null;
+    // Extract media data from preview (image, audio, or file)
+    let mediaData = null;
+    const imgElement = preview.querySelector('img');
+    const audioElement = preview.querySelector('audio');
+    if (imgElement && imgElement.src) {
+      mediaData = imgElement.src;
+    } else if (audioElement && audioElement.src) {
+      mediaData = audioElement.src;
+    }
     window.clearPreviewAndRemoveBtn(preview);
     if (!faqText) input.value = '';
 
@@ -128,7 +138,7 @@ window.sendEduMessage = async function(faqText = '') {
     // Combine all local data
     const allLocalData = localData + linkedContents + historyContext;
             
-  finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, imageData, window.eduAbortController ? window.eduAbortController.signal : null);
+  finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, mediaData, window.eduAbortController ? window.eduAbortController.signal : null);
   // Add user message to history
   window.addToChatHistory && window.addToChatHistory('edu', 'user', msg);
   // Add assistant reply to in-memory history

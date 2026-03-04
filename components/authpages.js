@@ -187,7 +187,7 @@ window.SignupPage = {
           matchStatus.style.color = '#4CAF50';
           return true;
         } else {
-          matchStatus.textContent = '✕ Passwords do not match';
+          matchStatus.textContent = window.t ? '✕ ' + window.t('password_mismatch') : '✕ Passwords do not match';
           matchStatus.style.color = '#f44336';
           return false;
         }
@@ -533,5 +533,6 @@ window.ForgotPage = {
 window.AuthSections = {
   signin: window.SigninPage,
   signup: window.SignupPage,
-  forgot: window.ForgotPage
+  forgot: window.ForgotPage,
+  settings: window.SettingsPage
 };

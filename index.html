@@ -3,12 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2196F3">
+  <meta name="description" content="Your trusted AI assistant for information about Yola, Adamawa State. Get instant answers about education, agriculture, healthcare, navigation, community, environment, and services.">
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" href="Data/Images/jippujam.jpg" style="overflow: hidden;object-fit: fill;width: 100%;height: 100%; border-radius:12px;"/>
+  <link rel="apple-touch-icon" href="Data/Images/jippujam.jpg">
   <title>Yola AI Info Hub</title>
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/navbar.css">
   <link rel="stylesheet" href="styles/home.css">
   <link rel="stylesheet" href="styles/dark-mode.css">
+  <link rel="stylesheet" href="styles/settings.css">
   <link rel="stylesheet" href="styles/eduinfo.css">
   <link rel="stylesheet" href="styles/agroinfo.css">
   <link rel="stylesheet" href="styles/mediinfo.css">
@@ -21,6 +26,9 @@
   <!-- <link rel="stylesheet" href="styles/mapsinfo.css"/> -->
   <link rel="stylesheet" href="styles/ecoAI.css">
   <link rel="stylesheet" href="styles/tomtom-controls-fallback.css">
+  <!-- performance hints -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -29,39 +37,81 @@
   <div id="ecoinfo-content"></div>
   <div id="eduinfo-content"></div>
   </div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
-  <!-- TomTom Maps SDK -->
-  <link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.css">
-  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js"></script>
-  <script src="components/tomtomMap.js"></script>
-  <script src="components/dark-mode.js?v=20260220001"></script>
-  <script src="components/navbar.js?v=20260220001"></script>
-  <script src="components/auth.js?v=20260220002"></script>
-  <script src="components/authpages.js?v=20260220001"></script>
-  <script src="components/home.js?v=20260220001"></script>
-  <script src="components/eduinfo.js?v=20260220001"></script>
-  <script src="components/agroinfo.js?v=20260220001"></script>
-  <script src="components/mediinfo.js?v=20260220001"></script>
-  <script src="components/naviinfo.js?v=20260220001"></script>
-  <script src="components/ecoinfo.js?v=20260220001"></script>
-  <script src="components/serviinfo.js?v=20260220001"></script>
-  <script src="components/communityinfo.js?v=20260220001"></script>
-  <script src="components/aboutinfo.js?v=20260220001"></script>
-  <script src="components/ecoClassifier.js?v=20260220001"></script>
-  <script src="components/ecoAI.js?v=20260220001"></script>
-  <script src="components/details-navigation.js?v=20260220001"></script>
-  <script src="app.js?v=20260220001"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" defer></script>
+  <!-- TomTom Maps SDK - loaded dynamically to avoid unnecessary network requests on other pages -->
+  <!-- the CSS/JS will be injected only when the navigation section is initialized -->
+  <script>
+    // ensures the TomTom SDK is loaded (local vendor copy preferred, fallback to CDN)
+    window.ensureTomTomSDK = function(){
+      if (window.tomtomSDKLoading) return window.tomtomSDKLoading;
+      window.tomtomSDKLoading = new Promise((resolve, reject) => {
+        // try local vendor path first
+        const localCss = '/vendor/tomtom/maps/maps-web.min.css';
+        const localJs = '/vendor/tomtom/maps/maps-web.min.js';
+
+        function loadJs(src){
+          const s = document.createElement('script');
+          s.src = src;
+          s.crossOrigin = 'anonymous';
+          s.onload = resolve;
+          s.onerror = () => reject(new Error('TomTom SDK failed to load: ' + src));
+          document.head.appendChild(s);
+        }
+
+        // always append CSS (no onload event)
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = localCss;
+        link.crossOrigin = 'anonymous';
+        link.onerror = () => { /* ignore */ };
+        document.head.appendChild(link);
+
+        // attempt JS - use fetch with crossorigin to avoid ORB issues
+        fetch(localJs, {method:'HEAD', mode: 'no-cors'}).then(resp => {
+          if (resp.ok) loadJs(localJs);
+          else {
+            // fallback CDN with crossorigin attribute
+            loadJs('https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js');
+          }
+        }).catch(() => {
+          // fallback CDN with crossorigin attribute
+          loadJs('https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js');
+        });
+      });
+      return window.tomtomSDKLoading;
+    };
+  </script>
+  <script src="components/tomtomMap.js" defer></script>
+  <script src="components/i18n.js?v=20260220001" defer></script>
+  <script src="components/dark-mode.js?v=20260220001" defer></script>
+  <script src="components/navbar.js?v=20260220001" defer></script>
+  <script src="components/auth.js?v=20260220002" defer></script>
+  <script src="components/authpages.js?v=20260220001" defer></script>
+  <script src="components/settings.js?v=20260220001" defer></script>
+  <script src="components/home.js?v=20260220001" defer></script>
+  <script src="components/eduinfo.js?v=20260220001" defer></script>
+  <script src="components/agroinfo.js?v=20260220001" defer></script>
+  <script src="components/mediinfo.js?v=20260220001" defer></script>
+  <script src="components/naviinfo.js?v=20260220001" defer></script>
+  <script src="components/ecoinfo.js?v=20260220001" defer></script>
+  <script src="components/serviinfo.js?v=20260220001" defer></script>
+  <script src="components/communityinfo.js?v=20260220001" defer></script>
+  <script src="components/aboutinfo.js?v=20260220001" defer></script>
+  <script src="components/ecoClassifier.js?v=20260220001" defer></script>
+  <script src="components/ecoAI.js?v=20260220001" defer></script>
+  <script src="components/details-navigation.js?v=20260220001" defer></script>
+  <script src="app.js?v=20260220001" defer></script>
   <script>
     // Section loader for auth and main pages
     // Internal loader that actually performs the section load. Returns a Promise.
     window.__performLoadSection = function(section) {
-      // Auth pages: hide full navbar, show minimal appbar
+      // shared UI handles used by both the loader and the TomTom preloader
       const navbarDiv = document.getElementById('navbar');
       const minimalAppbar = `<div class="minimal-appbar"><span class="appname">Yola AI Info Hub</span></div>`;
-      
-      // Handle section-specific styles
       const sections = ['home', 'eduinfo', 'agroinfo', 'mediinfo', 'naviinfo', 'ecoinfo', 'serviinfo', 'communityinfo', 'aboutinfo'];
+
+      // Handle auth sections first
       sections.forEach(s => {
         document.body.classList.remove(`${s}-section`);
       });
@@ -75,14 +125,18 @@
         document.getElementById('main-content').innerHTML = page.render();
         if (page.mount) page.mount();
         return Promise.resolve();
-      } else {
-        // Restore full navbar if it was replaced by minimal appbar
-        if (!navbarDiv.querySelector('.navbar')) {
+      }
+      
+      // For non-auth sections: Restore full navbar if it was replaced by minimal appbar
+      if (!navbarDiv.querySelector('.navbar')) {
+        // Wait for Navbar to be defined if it's not available yet
+        if (window.Navbar && window.Navbar.render) {
           Navbar.render();
-          // previously we cleared auth UI here, but that overwrote a logged-in navbar
-          // now we simply rely on Navbar.render or updateAuthUI caller to set state.
+        } else {
+          console.warn('Navbar not yet loaded, will retry on next navigation');
         }
       }
+      
       // Remove any previously loaded section script
       document.querySelectorAll('script[data-section-script]').forEach(s => s.remove());
       document.getElementById('main-content').innerHTML = '';
@@ -97,6 +151,7 @@
         aboutinfo: 'components/aboutinfo.js',
         ecoinfo: 'components/ecoinfo.js',
         serviinfo: 'components/serviinfo.js',
+        settings: 'components/settings.js',
       };
       return new Promise((resolve) => {
   const baseSrc = routes[section] || routes['home'];
@@ -144,6 +199,12 @@
   script.onerror = (err) => { console.error('Error loading section script', baseSrc, err); resolve(); };
         document.body.appendChild(script);
       });
+
+      // For naviinfo section, ensure TomTom SDK is loaded first
+      if (section === 'naviinfo') {
+        return promise.then(() => window.ensureTomTomSDK().catch(e => { console.warn('TomTom load failed', e); }));
+      }
+      return promise;
     };
 
     // Public loader: if a restore is in progress, queue requests (ignore 'home')
@@ -356,6 +417,31 @@
         window.loadSection('home');
       }
     })();
+  </script>
+
+  <!-- PWA and Notifications Scripts -->
+  <script src="components/notifications.js?v=20260304001"></script>
+  <script src="components/pwa-installer.js?v=20260304001"></script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    // Register service worker for offline support and PWA functionality
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => {
+            console.log('Service Worker registered successfully:', registration);
+            
+            // Check for updates periodically
+            setInterval(() => {
+              registration.update();
+            }, 60000); // Check every minute
+          })
+          .catch(err => {
+            console.warn('Service Worker registration failed:', err);
+          });
+      });
+    }
   </script>
 </body>
 </html>

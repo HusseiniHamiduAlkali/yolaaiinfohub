@@ -372,6 +372,7 @@ nav.navbar {
   padding: 0.3rem 0.8rem;
   border-radius: 8px;
   transition: all 0.3s ease;
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   display: none;
 }
@@ -778,4 +779,43 @@ nav.navbar {
 #dark-mode-icon {
     font-size: 1.2rem;
     line-height: 1;
+}
+
+/* Settings Icon Button Styles */
+.settings-icon-btn {
+    background: #4a5568;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    height: fit-content;
+    white-space: nowrap;
+}
+
+.settings-icon-btn:hover {
+    background: #5a6578;
+    border-color: #666;
+    transform: scale(1.1);
+}
+
+.settings-icon-btn span {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+body.dark-mode .settings-icon-btn {
+    background: #2d3748;
+    border-color: #666;
+    color: #fff;
+}
+
+body.dark-mode .settings-icon-btn:hover {
+    background: #3d4758;
+    border-color: #777;
 }

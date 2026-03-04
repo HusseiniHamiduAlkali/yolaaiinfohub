@@ -32,10 +32,10 @@ window.renderSection = function() {
   document.getElementById('main-content').innerHTML = `
     <section class="info-section">
       <div class="about-container">
-        <div class="about-header" style="text-align: center; margin-top: 50px; margin-bottom: 5px; font-size: 1.5rem;"><strong>About Yola AI Info Hub</strong></div>
+        <div class="about-header" data-i18n="about_header" style="text-align: center; margin-top: 50px; margin-bottom: 5px; font-size: 1.5rem;"><strong>About Yola AI Info Hub</strong></div>
         <div class="about-content">
-          <p><strong>Yola AI Info Hub</strong> is a modern, responsive web app that provides AI-powered information and assistance for education, agriculture, environment, health, community, and general inquiries in Yola, Adamawa State, Nigeria. Our goal is to make essential information accessible and easy to find for residents and visitors alike.</p>
-          <h3>Key Features:</h3>
+          <p data-i18n="about_desc_1"><strong>Yola AI Info Hub</strong> is a modern, responsive web app that provides AI-powered information and assistance for education, agriculture, environment, health, community, and general inquiries in Yola, Adamawa State, Nigeria. Our goal is to make essential information accessible and easy to find for residents and visitors alike.</p>
+          <h3 data-i18n="about_key_features">Key Features:</h3>
           <ul>
             <li><strong>AI-Powered Chat:</strong> Get instant answers to your questions across various categories.</li>
             <li><strong>Section-Specific Information:</strong> Dedicated sections for EduInfo, AgroInfo, EcoInfo, MediInfo, NaviInfo, and ServiInfo.</li>

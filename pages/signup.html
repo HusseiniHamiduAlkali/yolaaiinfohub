@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up - Yola AI Info Hub</title>
+  <title data-i18n="sign_up">Sign Up</title>
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/auth.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -14,12 +14,12 @@
     <div class="minimal-nav-content">
       <div href="../index.html" class="nav-logo">
         <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
-        <span>Yola AI Info Hub</span>
+        <span data-i18n="app_title">Yola AI Info Hub</span>
       </div>
 
       <a href="../index.html" class="return-home">
         <i class="fas fa-home"></i>
-        <span>Return Home</span>
+        <span data-i18n="return_home">Return Home</span>
       </a>
 
     </div>
@@ -27,89 +27,98 @@
 
   <main class="auth-container">
     <div class="auth-box">
-      <h2>Create Account</h2>
+      <h2 data-i18n="create_account">Create Account</h2>
       <form id="signup-form" class="auth-form">
         
         <div class="form-group">
-          <label for="username">Username*</label>
-          <input type="text" id="username" name="username" placeholder="input username" required>
+          <label for="username" data-i18n="username">Username*</label>
+          <input type="text" id="username" name="username" data-i18n-placeholder="username" placeholder="input username" required>
         </div>
         <div class="form-group">
-          <label for="email">Email*</label>
-          <input type="email" id="email" name="email" placeholder="input email" required>
+          <label for="email" data-i18n="email">Email*</label>
+          <input type="email" id="email" name="email" data-i18n-placeholder="email_label" placeholder="input email" required>
         </div>
         <div class="form-group">
-          <label for="name">Full Name*</label>
-          <input type="text" id="name" name="name" placeholder="input your full name" required>
+          <label for="name" data-i18n="full_name">Full Name*</label>
+          <input type="text" id="name" name="name" data-i18n-placeholder="full_name" placeholder="input your full name" required>
         </div>
         <div class="form-group">
-          <label for="phone">Phone Number*</label>
-          <input type="tel" id="phone" name="phone" required pattern="[0-9]{11}" title="Please enter a valid 11-digit phone number" placeholder="input phone number">
+          <label for="phone" data-i18n="phone_number">Phone Number*</label>
+          <input type="tel" id="phone" name="phone" data-i18n-placeholder="phone_placeholder" required pattern="[0-9]{11}" title="Please enter a valid 11-digit phone number" placeholder="input phone number">
         </div>
         <div class="form-group">
-          <label for="nin">NIN (11 digits)*</label>
-          <input type="text" id="nin" name="nin" required pattern="[0-9]{11}" maxlength="11" placeholder="input NIN number" >
+          <label for="nin" data-i18n="nin_label">NIN (11 digits)*</label>
+          <input type="text" id="nin" name="nin" data-i18n-placeholder="nin_placeholder" required pattern="[0-9]{11}" maxlength="11" placeholder="input NIN number" >
         </div>
         <div class="form-group checkbox-group">
-          <label for="yola-resident">Resident of Yola?</label>
+          <label for="yola-resident" data-i18n="resident_of_yola">Resident of Yola?</label>
           <input type="checkbox" id="yola-resident" name="yolaResident" onchange="handleYolaResident()" style="width: fit-content;">
         </div>
         <div class="form-group">
-          <label for="address">Address*</label>
-          <input type="text" id="address" name="address" required placeholder="input your full adress">
+          <label for="address" data-i18n="address_label">Address*</label>
+          <input type="text" id="address" name="address" data-i18n-placeholder="address_placeholder" required placeholder="input your full adress">
         </div>
         <div class="form-group">
-          <label for="state">State*</label>
-          <select id="state" name="state" required onchange="populateLGAs()">
-            <option value="">Select State</option>
+          <label for="state" data-i18n="state_label">State*</label>
+          <select id="state" name="state" data-i18n-value="select_state" required onchange="populateLGAs()">
+            <option value="" data-i18n="select_state">Select State</option>
             <!-- States will be populated by JavaScript -->
           </select>
         </div>
         <div class="form-group">
-          <label for="lga">LGA*</label>
-          <select id="lga" name="lga" required>
-            <option value="">Select LGA</option>
+          <label for="lga" data-i18n="lga_label">LGA*</label>
+          <select id="lga" name="lga" data-i18n-value="select_lga" required>
+            <option value="" data-i18n="select_lga">Select LGA</option>
             <!-- LGAs will be populated based on selected state -->
           </select>
         </div>
         <div class="form-group">
-          <label for="password">Password*</label>
+          <label for="password" data-i18n="password_label">Password*</label>
           <div class="password-field">
-            <input type="password" id="password" name="password" required placeholder="input a password">
+            <input type="password" id="password" name="password" required data-i18n-placeholder="password_placeholder" placeholder="input a password">
             <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password')">
               <i class="far fa-eye"></i>
             </button>
           </div>
         </div>
         <div class="form-group">
-          <label for="confirm-password">Confirm Password*</label>
+          <label for="confirm-password" data-i18n="confirm_password">Confirm Password*</label>
           <div class="password-field">
-            <input type="password" id="confirm-password" name="confirm-password" required placeholder="input password again">
+            <input type="password" id="confirm-password" name="confirm-password" required data-i18n-placeholder="password_placeholder" placeholder="input password again">
             <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirm-password')">
               <i class="far fa-eye"></i>
             </button>
           </div>
         </div>
         <div class="form-group checkbox-group">
-          <label for="terms">I accept the Terms and Conditions*</label>
+          <label for="terms" data-i18n="terms_and_conditions">I accept the Terms and Conditions*</label>
           <input type="checkbox" id="terms" name="termsAccepted" required style="width: fit-content;">
         </div>
-        <button type="submit" class="auth-submit">Create Account</button>
+        <button type="submit" class="auth-submit" data-i18n="create_account">Create Account</button>
         <div class="auth-links">
-          <a href="/pages/signin.html">Already have an account? Sign In</a>
+          <a href="/pages/signin.html"><span data-i18n="already_have_account">Already have an account?</span> <span data-i18n="sign_in">Sign In</span></a>
         </div>
       </form>
       <div class="skip-auth">
-        <p>Prefer not to sign up?</p>
+        <p data-i18n="prefer_not_signup">Prefer not to sign up?</p>
         <a href="/" class="skip-auth-link">
           <i class="fas fa-arrow-left"></i>
-          Return to Homepage
+          <span data-i18n="return_home">Return to Homepage</span>
         </a>
       </div>
     </div>
   </main>
 
+  <script src="/components/i18n.js"></script>
   <script src="/components/auth.js"></script>
+  <script>
+    window.addEventListener('languageChanged', () => {
+      document.title = window.t('sign_up') + ' - ' + window.t('app_title');
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      document.title = window.t('sign_up') + ' - ' + window.t('app_title');
+    });
+  </script>
   <script src="../components/states-lgas.js"></script>
   <script>
     function populateStates() {
@@ -169,7 +178,7 @@
       const username = document.getElementById('username').value;
       
       if (password !== confirmPassword) {
-        alert('Passwords do not match');
+        alert(window.t ? window.t('password_mismatch') : 'Passwords do not match');
         return;
       }
 

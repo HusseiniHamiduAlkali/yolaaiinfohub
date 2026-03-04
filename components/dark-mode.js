@@ -25,14 +25,24 @@ window.toggleDarkMode = function() {
 
 // Update the visual state of all toggle buttons
 function updateDarkModeToggleButtons() {
-    const toggles = document.querySelectorAll('.dark-mode-toggle');
+    const toggles = document.querySelectorAll('.dark-mode-toggle, .dark-mode-toggle-settings');
     const isDarkMode = document.body.classList.contains('dark-mode');
     
     toggles.forEach(toggle => {
         if (isDarkMode) {
             toggle.classList.add('active');
+            // Update text if it's a settings button
+            const textSpan = toggle.querySelector('.toggle-text');
+            if (textSpan) {
+                textSpan.textContent = 'On';
+            }
         } else {
             toggle.classList.remove('active');
+            // Update text if it's a settings button
+            const textSpan = toggle.querySelector('.toggle-text');
+            if (textSpan) {
+                textSpan.textContent = 'Off';
+            }
         }
     });
 }

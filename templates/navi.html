@@ -1,22 +1,22 @@
 
 <section class="info-section">
-    <h2>NaviInfo - Navigation Help</h2>
-    <p>Ask for directions, locations, or transportation information in Yola.</p>
+    <h2 data-i18n="naviinfo_header">NaviInfo - Navigation Help</h2>
+    <p data-i18n="naviinfo_desc">Ask for directions, locations, or transportation information in Yola.</p>
     <div class="chat-container">
     <div class="chat-header">
-        <span>NaviInfo AI Chat</span>
+        <span data-i18n="naviinfo_chat_header">NaviInfo AI Chat</span>
         <div class="model-switch">
         <label class="switch">
-            <input type="checkbox" id="model-toggle" onchange="window.toggleGeminiModel('navi', this.checked)">
+            <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('navi', this.checked)">
             <span class="slider round"></span>
         </label>
-        <span class="model-label">Using Gemini 1.5 Flash</span>
+        <span class="model-label" data-i18n="model_label_flash">Using Gemini 1.5 Flash</span>
         </div>
     </div>
     <div class="chat-messages" id="navi-chat-messages"></div>
     <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendNaviMessage();">
         <div id="navi-chat-preview" class="chat-preview"></div>
-        <input type="text" id="navi-chat-input" placeholder="Ask about navigation..." required />
+        <input type="text" id="navi-chat-input" title="Navigation Chat Input" placeholder="Ask for directions..." data-i18n-placeholder="naviinfo_chat_placeholder" required />
         <div class="send-button-group">
         <button type="submit" class="send-button">Send</button>
         </div>
@@ -30,14 +30,14 @@
         </label>
     </div>
     <div class="faq-list">
-    <h3>NaviInfo FAQs</h3>
+    <h3 data-i18n="naviinfo_faq_title">NaviInfo FAQs</h3>
     <ul>
-        <li><a class="faq-link" onclick="window.sendNaviMessage('How do I get to the lamidos Palace from the airport?')">How do I get to the lamido's palace from the airport</a></li>
-        <li><a class="faq-link" onclick="window.sendNaviMessage('Road safety officials emergency contact.')">Road safety officials emergency line</a></li>
-        <li><a class="faq-link" onclick="window.sendNaviMessage('Is there a reliable taxi service?')">Is there a reliable taxi service</a></li>
-        <li><a class="faq-link" onclick="window.sendNaviMessage('What are the public transportation options?')">What are the public transportation options</a></li>
-        <li><a class="faq-link" onclick="window.sendNaviMessage('Where is the main market in Yola?')">Where is the main market in Yola</a></li>
-        <li><a class="faq-link" onclick="window.sendNaviMessage('Traffic updates in Yola')">Traffic updates in Yola</a></li>
+        <li><a class="faq-link" data-i18n="naviinfo_faq_1" onclick="window.sendFAQInCurrentLang('naviinfo_faq_1', 'Navi')">How do I get to the lamido's palace from the airport</a></li>
+        <li><a class="faq-link" data-i18n="naviinfo_faq_2" onclick="window.sendFAQInCurrentLang('naviinfo_faq_2', 'Navi')">Road safety officials emergency line</a></li>
+        <li><a class="faq-link" data-i18n="naviinfo_faq_3" onclick="window.sendFAQInCurrentLang('naviinfo_faq_3', 'Navi')">Is there a reliable taxi service</a></li>
+        <li><a class="faq-link" data-i18n="naviinfo_faq_4" onclick="window.sendFAQInCurrentLang('naviinfo_faq_4', 'Navi')">What are the public transportation options</a></li>
+        <li><a class="faq-link" data-i18n="naviinfo_faq_5" onclick="window.sendFAQInCurrentLang('naviinfo_faq_5', 'Navi')">Where is the main market in Yola</a></li>
+        <li><a class="faq-link" data-i18n="naviinfo_faq_6" onclick="window.sendFAQInCurrentLang('naviinfo_faq_6', 'Navi')">Traffic updates in Yola</a></li>
     </ul>
     </div>
     </div>
@@ -69,7 +69,7 @@
             </div>
             <h3>Fresh Air Mass Transit Buses.</h3>
             <p>Inter-state transport service with modern buses and regular routes.</p>
-            <a href="details/Navi/fresh-air-transit.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/fresh-air-transit.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -78,7 +78,7 @@
             </div>
             <h3>Keke Napep (Tricycle).</h3>
             <p>Popular local transportation option for short distances within Yola.</p>
-            <a href="details/Navi/keke-napep.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/keke-napep.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -87,7 +87,7 @@
             </div>
             <h3>Adamawa Sunshine Motor Park.</h3>
             <p>State-owned transport terminal providing intercity bus services.</p>
-            <a href="details/Navi/adamawa-sunshine-motor.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/adamawa-sunshine-motor.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -96,7 +96,7 @@
             </div>
             <h3>Sauki Motor Park, jimeta Yola.</h3>
             <p>Major transportation hub in Jimeta area serving multiple routes.</p>
-            <a href="details/Navi/sauki-motor-park.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/sauki-motor-park.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -105,7 +105,7 @@
             </div>
             <h3>Jamubutu Motor Park, Yola.</h3>
             <p>Strategic transport terminal connecting Yola with surrounding regions.</p>
-            <a href="details/Navi/jamubutu-motor-park.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/jamubutu-motor-park.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -114,7 +114,7 @@
             </div>
             <h3>Lamido Aliyu Musdafa Int'l Airport, Yola.</h3>
             <p>An international airport with many airlines offering trips to any destinations.</p>
-            <a href="details/Navi/yola-airport.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/yola-airport.html">Learn more →</a>
         </div>
 
         </div>
@@ -129,7 +129,7 @@
             </div>
             <h3>Wetlands Park and gardens</h3>
             <p>Beautiful urban park featuring botanical gardens, event spaces, walking trails, and recreational facilities for families and visitors in Yola.</p>
-            <a href="details/Navi/wetlands-park.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/wetlands-park.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -138,7 +138,7 @@
             </div>
             <h3>Gorilla Park</h3>
             <p>Beautiful recreational park in Yola featuring green spaces, walking trails, wildlife observation areas, and children's play facilities for family recreation.</p>
-            <a href="details/Navi/gorilla-park.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/gorilla-park.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -147,7 +147,7 @@
             </div>
             <h3>Yola Zoo</h3>
             <p>City zoo featuring local and exotic animals with educational exhibits.</p>
-            <a href="details/Navi/yola-zoo.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/yola-zoo.html">Learn more →</a>
         </div>
 
         </div>
@@ -162,7 +162,7 @@
             </div>
             <h3>Jimeta Modern Market</h3>
             <p>Large commercial center offering a wide range of goods and services.</p>
-            <a href="details/Navi/jimeta-market.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/jimeta-market.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -170,7 +170,7 @@
             </div>
             <h3>Yola Old Market</h3>
             <p>Historic market known for traditional goods and local crafts.</p>
-            <a href="details/Navi/yola-market.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/yola-market.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -178,7 +178,7 @@
             </div>
             <h3>SanHusein Shopping Mall</h3>
             <p>Modern shopping mall in Yola offering diverse retail stores, textile shops, household items, and quality merchandise for shoppers.</p>
-            <a href="details/Navi/sanhusein-mall.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/sanhusein-mall.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
@@ -186,7 +186,7 @@
             </div>
             <h3>Jabbama Shopping Plaza</h3>
             <p>Leading shopping plaza in Yola featuring electronics retailers, household items, appliances, and diverse commercial services in a modern setting.</p>
-            <a href="details/Navi/jabbama-plaza.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/jabbama-plaza.html">Learn more →</a>
         </div>
     <!--    
         <div class="section4">
@@ -196,7 +196,7 @@
             <h3>Yakubu Shopping Plaza</h3>
             <h3>Yakubu Shopping Plaza</h3>
             <p>Popular shopping destination for drinks and provisions.</p>
-            <a href="details/Navi/yakubu-plaza.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/yakubu-plaza.html">Learn more →</a>
         </div>
     -->    
         <div class="section4">
@@ -205,7 +205,7 @@
             </div>
             <h3>Top10 Plaza, Yola.</h3>
             <p>Premier shopping destination in Yola featuring diverse retail stores, restaurants, entertainment venues, and quality commercial services.</p>
-            <a href="details/Navi/top10-plaza.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/top10-plaza.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -214,7 +214,7 @@
             </div>
             <h3>Jumia Pickup Shop, Yola.</h3>
             <p>Jumia retail pickup location in Yola offering online shopping delivery, special seasonal discounts, electronics, and merchandise with competitive pricing.</p>
-            <a href="details/Navi/jumia-pickup-shop.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/jumia-pickup-shop.html">Learn more →</a>
         </div>
 
         </div>
@@ -231,7 +231,7 @@
             </div>
             <h3>Muna Hotel</h3>
             <p>Luxury hotel offering comfortable accommodations and modern amenities.</p>
-            <a href="details/Navi/muna-hotel.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/muna-hotel.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -240,7 +240,7 @@
             </div>
             <h3>City Green Hotels</h3>
             <p>Premium hotel in Yola offering luxury accommodations, conference facilities, business centers, and restaurant services for corporate and leisure guests.</p>
-            <a href="details/Navi/city-green-hotel.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/city-green-hotel.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -249,7 +249,7 @@
             </div>
             <h3>Dantshoho Hotels</h3>
             <p>Family-friendly hotel in Yola featuring comfortable rooms, excellent service, central location, and amenities suitable for families and business travelers.</p>
-            <a href="details/Navi/dantshoho-hotel.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/dantshoho-hotel.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -258,7 +258,7 @@
             </div>
             <h3>AUN Hotel</h3>
             <p>Academic-oriented hotel providing convenient accommodation for visitors and professionals in Yola.</p>
-            <a href="details/Navi/aun-hotel.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/aun-hotel.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -267,7 +267,7 @@
             </div>
             <h3>Vortex Hotels</h3>
             <p>Upscale luxury hotel in Yola offering premium comfortable accommodations, modern amenities, restaurant services, and meeting facilities for distinguished guests.</p>
-            <a href="details/Navi/vortex-hotels.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/vortex-hotels.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -276,7 +276,7 @@
             </div>
             <h3>Madugu Rockview Hotel</h3>
             <p>Contemporary hotel in Yola featuring comfortable rooms, panoramic city views, restaurant services, and facilities for business and leisure travelers.</p>
-            <a href="details/Navi/madugu-rockview-hotel.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/madugu-rockview-hotel.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -285,7 +285,7 @@
             </div>
             <h3>Mamma-chare Hotel, Yola</h3>
             <p>Locally-owned hotel in Yola known for warm, welcoming hospitality, traditional ambiance, authentic local cuisine, and personalized guest service.</p>
-            <a href="details/Navi/mamma-chare-hotel.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/mamma-chare-hotel.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -294,7 +294,7 @@
             </div>
             <h3>Golden-alpihne Hotels, Yola</h3>
             <p>Upscale hotel in Yola featuring elegant rooms, premium guest services, fine dining, and facilities suitable for discerning travelers and corporate guests.</p>
-            <a href="details/Navi/golden-alpihne-hotels.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/golden-alpihne-hotels.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -303,7 +303,7 @@
             </div>
             <h3>Duragi Hotels Yola</h3>
             <p>Business-friendly hotel in Yola offering comfortable accommodations, conference facilities, meeting rooms, and services tailored for corporate travelers.</p>
-            <a href="details/Navi/duragi-hotels.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/duragi-hotels.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -312,7 +312,7 @@
             </div>
             <h3>AUN Hotel - Jabbama Restaurant</h3>
             <p>Elegant fine dining restaurant in Yola serving international and fusion cuisine in sophisticated atmosphere. Professional service and premium beverages available.</p>
-            <a href="details/Navi/aun-jabbama-restaurant.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/aun-jabbama-restaurant.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -321,7 +321,7 @@
             </div>
             <h3>Items7 restaurant</h3>
             <p>Modern casual dining restaurant in Yola offering diverse menu selections, international dishes, and comfortable atmosphere for families and friends.</p>
-            <a href="details/Navi/items7-restaurant.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/items7-restaurant.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -330,7 +330,7 @@
             </div>
             <h3>Mevish Cafe</h3>
             <p>Cozy and welcoming cafe in Yola serving premium coffee, espresso drinks, fresh pastries, light meals, and homemade desserts in a relaxed atmosphere.</p>
-            <a href="details/Navi/mevish-cafe.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/mevish-cafe.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -339,7 +339,7 @@
             </div>
             <h3>Chicken cottage Yola</h3>
             <p>Popular fast-food restaurant in Yola specializing in fried chicken, grilled chicken dishes, chicken sandwiches, sides, and quick meal packages.</p>
-            <a href="details/Navi/chicken-cottage-yola.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/chicken-cottage-yola.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -348,7 +348,7 @@
             </div>
             <h3>Uptown Exclusive Spot Yola.</h3>
             <p>High-end dining venue in Yola offering premium cuisine, exclusive atmosphere, fine wines, and sophisticated service for discerning diners.</p>
-            <a href="details/Navi/uptown-exclusive-spot.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/uptown-exclusive-spot.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -357,7 +357,7 @@
             </div>
             <h3>OASIS Bakery, Yola.</h3>
             <p>Local bakery in Yola renowned for fresh-baked bread, assorted pastries, custom cakes for special occasions, and quality baked goods with traditional recipes.</p>
-            <a href="details/Navi/oasis-bakery.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/oasis-bakery.html">Learn more →</a>
         </div>
             
         <div class="section4">
@@ -366,7 +366,7 @@
             </div>
             <h3>Marwa shawarma & grills, Yola.</h3>
             <p>Popular restaurant in Yola known for authentic shawarma, expert grilling, marinated meats, grilled platters, and Middle Eastern cuisine specialties.</p>
-            <a href="details/Navi/marwa-shawarma-grills.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/marwa-shawarma-grills.html">Learn more →</a>
         </div>
             
         <div class="section4">
@@ -375,7 +375,7 @@
             </div>
             <h3>Yahuza Suya Spot, Yola.</h3>
             <p>Famous local spot for traditional Nigerian grilled meat (suya).</p>
-            <a href="details/Navi/yahuza.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/yahuza.html">Learn more →</a>
         </div>
 
         
@@ -385,7 +385,7 @@
             </div>
             <h3>Icecream Planet, Yola</h3>
             <p>Specialty dessert shop offering various ice cream flavors and treats.</p>
-            <a href="details/Navi/icecream-planet.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/icecream-planet.html">Learn more →</a>
         </div>
 
         </div>
@@ -401,7 +401,7 @@
             </div>
             <h3>Modibbo Adama Central Mosque, Yola</h3>
             <p>A very large and historic mosque of the Lamido palace.</p>
-            <a href="details/Navi/modibbo-adama-central-mosque.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/modibbo-adama-central-mosque.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -410,7 +410,7 @@
             </div>
             <h3>Modibbo Zailani Mosque, Yola</h3>
             <p>Historic mosque with distinctive architecture and cultural significance.</p>
-            <a href="details/Navi/modibbo-zailani-mosque.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/modibbo-zailani-mosque.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -419,7 +419,7 @@
             </div>
             <h3>Agga Islamic Center, Yola</h3>
             <p>Islamic educational and worship center serving the local Muslim community.</p>
-            <a href="details/Navi/agga-islamic-center.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/agga-islamic-center.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -428,7 +428,7 @@
             </div>
             <h3>MAUTH Jumma'at Mosque, Yola.</h3>
             <p>Major mosque serving the university community with regular prayer services.</p>
-            <a href="details/Navi/mauth-mosque.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/mauth-mosque.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -437,7 +437,7 @@
             </div>
             <h3>Hajja Ammi Jumma'at Mosque, Yola.</h3>
             <p>Community mosque known for its welcoming atmosphere and regular services.</p>
-            <a href="details/Navi/hajja-ammi-mosque.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/hajja-ammi-mosque.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -446,7 +446,7 @@
             </div>
             <h3>Alibaba Jumma'at Mosque.</h3>
             <p>Local mosque providing daily prayers and community gatherings.</p>
-            <a href="details/Navi/alibaba-mosque.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/alibaba-mosque.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -455,7 +455,7 @@
             </div>
             <h3>Catholic Secreteriat, Yola.</h3>
             <p>Administrative center for the Catholic Diocese of Yola.</p>
-            <a href="details/Navi/catholic-secreteriat.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/catholic-secreteriat.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -464,7 +464,7 @@
             </div>
             <h3>Lutheran Church Of Christ (LCCN) No 1, Yola</h3>
             <p>Historic Lutheran church serving as a major Christian worship center.</p>
-            <a href="details/Navi/lccn.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/lccn.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -473,7 +473,7 @@
             </div>
             <h3>EYN Church Yola.</h3>
             <p>Church of the Brethren congregation offering regular worship services.</p>
-            <a href="details/Navi/eyn.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/eyn.html">Learn more →</a>
         </div>
 
         </div>
@@ -490,7 +490,7 @@
             </div>
             <h3>Guarantee Trust (GT) Bank, Yola</h3>
             <p>Financial institution known for its reliable services.</p>
-            <a href="details/Navi/gt-bank.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/gt-bank.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -499,7 +499,7 @@
             </div>
             <h3>Zenith Bank</h3>
             <p>Leading commercial bank providing comprehensive banking services.</p>
-            <a href="details/Navi/zenith-bank.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/zenith-bank.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -508,7 +508,7 @@
             </div>
             <h3>Fidelity Bank</h3>
             <p>Full-service bank offering personal and business banking solutions.</p>
-            <a href="details/Navi/fidelity-bank.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/fidelity-bank.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -517,7 +517,7 @@
             </div>
             <h3>Stanbic IBTC Bank, Yola Branch.</h3>
             <p>International bank providing diverse financial services and investment options.</p>
-            <a href="details/Navi/stanbic-ibtc-bank.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/stanbic-ibtc-bank.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -526,7 +526,7 @@
             </div>
             <h3>Access Bank, Yola Branch.</h3>
             <p>Leading retail bank offering digital and traditional banking services.</p>
-            <a href="details/Navi/access-bank.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/access-bank.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -535,7 +535,7 @@
             </div>
             <h3>Sterling Bank, Yola Branch.</h3>
             <p>Commercial bank providing comprehensive financial services and solutions.</p>
-            <a href="details/Navi/sterling-bank.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
         </div>
 
         </div>
@@ -555,7 +555,7 @@
         </div>
         <h3>MAU Yola sports center.</h3>
         <p>University sports complex with modern facilities for various athletic activities.</p>
-        <a href="details/Navi/mau-sports-center.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Navi/mau-sports-center.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -564,7 +564,7 @@
         </div>
         <h3>F - Fitness Gymnastics & Spa, Yola.</h3>
         <p>Modern fitness center offering gym equipment, classes and spa services.</p>
-        <a href="details/Navi/f-fitness.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Navi/f-fitness.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -573,7 +573,7 @@
         </div>
         <h3>Beast Fitness Arena, Yola.</h3>
         <p>High-intensity training facility with specialized workout equipment.</p>
-        <a href="details/Navi/beast-fitness.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Navi/beast-fitness.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -582,7 +582,7 @@
         </div>
         <h3>Gauni Sports Arena, Yola.</h3>
         <p>Multi-purpose sports facility hosting various athletic events and competitions.</p>
-        <a href="details/Navi/gauni-sports-arena.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Navi/gauni-sports-arena.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -591,7 +591,7 @@
         </div>
         <h3>Federal College of Education (FCE) Yola, Footbal Pitch</h3>
         <p>College football field used for sports events and student activities.</p>
-        <a href="details/Navi/fce-footbal-pitch.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Navi/fce-footbal-pitch.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -600,7 +600,7 @@
         </div>
         <h3>International Polo Ground, Yola</h3>
         <p>Professional polo field hosting tournaments and equestrian events.</p>
-        <a href="details/Navi/yola-polo-ground.html">Learn more →</a>
+        <a data-i18n="learn_more" href="details/Navi/yola-polo-ground.html">Learn more →</a>
         </div>
 
         </div>
@@ -616,7 +616,7 @@
             </div>
             <h3>Jabbama Jippu Jam (Yola Toll Gate)</h3>
             <p>Historic toll gate serving as a major entrance point to Yola city.</p>
-            <a href="details/Navi/jippujam.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/jippujam.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -625,7 +625,7 @@
             </div>
             <h3>Police Roundabout Flyover, Jimeta Yola.</h3>
             <p>Modern elevated roadway improving traffic flow in central Jimeta.</p>
-            <a href="details/Navi/police-roundabout-flyover.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/police-roundabout-flyover.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -634,7 +634,7 @@
             </div>
             <h3>Yola main entrance gate</h3>
             <p>Iconic welcome arch marking the main entrance to Yola city.</p>
-            <a href="details/Navi/welcome-to-yola.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/welcome-to-yola.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -643,7 +643,7 @@
             </div>
             <h3>Jambutu Flyover, Jimeta Yola.</h3>
             <p>Elevated roadway connecting Jambutu area with central Jimeta.</p>
-            <a href="details/Navi/jambutu-flyover.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/jambutu-flyover.html">Learn more →</a>
         </div>
         
         <div class="section4">
@@ -652,7 +652,7 @@
             </div>
             <h3>Ongoing Construction of Underpass at Fire Service Roundabout, Jimeta Yola.</h3>
             <p>Infrastructure development project to improve traffic flow at busy intersection.</p>
-            <a href="details/Navi/yola-underpass.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/yola-underpass.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -661,7 +661,7 @@
             </div>
             <h3>Roundabout Maishanu Jimeta, Yola.</h3>
             <p>Major traffic circle connecting multiple main roads in Jimeta area.</p>
-            <a href="details/Navi/roundabout-maishanu.html">Learn more →</a>
+            <a data-i18n="learn_more" href="details/Navi/roundabout-maishanu.html">Learn more →</a>
         </div>
 
         </div>

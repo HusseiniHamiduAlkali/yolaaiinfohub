@@ -28,11 +28,11 @@ function renderNavbar() {
   let authButtonsHTML = `
     <div class="navbar-auth" id="navbar-auth">
       <span class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
-      <button class="dark-mode-toggle" onclick="window.toggleDarkMode()" title="Toggle Dark Mode">
-        <span id="dark-mode-icon">🌙</span>
+      <button class="settings-icon-btn" onclick="window.loadSection('settings')" title="Settings">
+        <span>⚙️</span>
       </button>
-      <button id="signin-btn" class="auth-btn" type="button">Sign in</button>
-      <button id="signup-btn" class="auth-btn" type="button">Sign up</button>
+      <button id="signin-btn" class="auth-btn" type="button" data-i18n="sign_in">Sign in</button>
+      <button id="signup-btn" class="auth-btn" type="button" data-i18n="sign_up">Sign up</button>
     </div>
   `;
   // If user is signed in, show username and logout button
@@ -41,10 +41,10 @@ function renderNavbar() {
     authButtonsHTML = `
       <div class="navbar-auth" id="navbar-auth" style="display:flex;align-items:center;gap:0.7rem;">
       <!--  <span class="navbar-username" style="font-weight:600;color:#205080;font-size:1.08rem;">${window.currentUser.username}</span>   -->
-        <button class="dark-mode-toggle" onclick="window.toggleDarkMode()" title="Toggle Dark Mode">
-          <span id="dark-mode-icon">🌙</span>
+        <button class="settings-icon-btn" onclick="window.loadSection('settings')" title="Settings">
+          <span>⚙️</span>
         </button>
-        <button id="logout-btn" class="auth-btn" onclick="window.logoutUser()">Logout</button>
+        <button id="logout-btn" class="auth-btn" onclick="window.logoutUser()" data-i18n="logout">Logout</button>
       </div>
     `;
   } else {
@@ -90,15 +90,15 @@ function renderNavbar() {
 
           <div class="navbar-links-container">
           <ul class="navbar-links">
-            <li><button onclick="window.loadSection('home')">Home</button></li>
-            <li><button onclick="window.loadSection('eduinfo')">EduInfo</button></li>
-            <li><button onclick="window.loadSection('ecoinfo')">EcoInfo</button></li>
-            <li><button onclick="window.loadSection('agroinfo')">AgroInfo</button></li>
-            <li><button onclick="window.loadSection('mediinfo')">MediInfo</button></li>
-            <li><button onclick="window.loadSection('naviinfo')">NaviInfo</button></li>
-            <li><button onclick="window.loadSection('communityinfo')">CommunityInfo</button></li>
-            <li><button onclick="window.loadSection('serviinfo')">ServiInfo</button></li>
-            <li><button onclick="window.loadSection('aboutinfo')">About</button></li>
+            <li><button onclick="window.loadSection('home')" data-i18n="home">Home</button></li>
+            <li><button onclick="window.loadSection('eduinfo')" data-i18n="eduinfo">EduInfo</button></li>
+            <li><button onclick="window.loadSection('ecoinfo')" data-i18n="ecoinfo">EcoInfo</button></li>
+            <li><button onclick="window.loadSection('agroinfo')" data-i18n="agroinfo">AgroInfo</button></li>
+            <li><button onclick="window.loadSection('mediinfo')" data-i18n="mediinfo">MediInfo</button></li>
+            <li><button onclick="window.loadSection('naviinfo')" data-i18n="naviinfo">NaviInfo</button></li>
+            <li><button onclick="window.loadSection('communityinfo')" data-i18n="communityinfo">CommunityInfo</button></li>
+            <li><button onclick="window.loadSection('serviinfo')" data-i18n="serviinfo">ServiInfo</button></li>
+            <li><button onclick="window.loadSection('aboutinfo')" data-i18n="aboutinfo">About</button></li>
           </ul>
           </div>
 
@@ -118,6 +118,11 @@ function renderNavbar() {
 
   document.getElementById('navbar').innerHTML = ''; // Clear existing content
   document.getElementById('navbar').appendChild(nav);
+
+  // Apply translations to navbar
+  if (window.applyTranslations) {
+    window.applyTranslations(nav);
+  }
 
   // Store the original PC layout HTML AFTER the nav is fully constructed
   // This captures the CURRENT login state (logged-in or logged-out)
@@ -363,18 +368,19 @@ function renderNavbar() {
         const linksList = document.createElement('ul');
         linksList.className = 'mobile-links';
         [
-          { name: 'Home', section: 'home' },
-          { name: 'EduInfo', section: 'eduinfo' },
-          { name: 'EcoInfo', section: 'ecoinfo' },
-          { name: 'AgroInfo', section: 'agroinfo' },
-          { name: 'MediInfo', section: 'mediinfo' },
-          { name: 'NaviInfo', section: 'naviinfo' },
-          { name: 'CommunityInfo', section: 'communityinfo' },
-          { name: 'ServiInfo', section: 'serviinfo' },
-          { name: 'About', section: 'aboutinfo' }
+          { name: 'Home', section: 'home', i18n: 'home' },
+          { name: 'EduInfo', section: 'eduinfo', i18n: 'eduinfo' },
+          { name: 'EcoInfo', section: 'ecoinfo', i18n: 'ecoinfo' },
+          { name: 'AgroInfo', section: 'agroinfo', i18n: 'agroinfo' },
+          { name: 'MediInfo', section: 'mediinfo', i18n: 'mediinfo' },
+          { name: 'NaviInfo', section: 'naviinfo', i18n: 'naviinfo' },
+          { name: 'CommunityInfo', section: 'communityinfo', i18n: 'communityinfo' },
+          { name: 'ServiInfo', section: 'serviinfo', i18n: 'serviinfo' },
+          { name: 'About', section: 'aboutinfo', i18n: 'aboutinfo' }
         ].forEach(link => {
           const li = document.createElement('li');
           const btn = document.createElement('button');
+          btn.setAttribute('data-i18n', link.i18n);
           btn.textContent = link.name;
           // Check if this is the current section
           const currentSection = localStorage.getItem('currentSection') || 'home';
@@ -394,6 +400,43 @@ function renderNavbar() {
           li.appendChild(btn);
           linksList.appendChild(li);
         });
+        
+        // Add settings icon above menu links
+        const settingsIconSection = document.createElement('div');
+        settingsIconSection.style.cssText = `
+          display: flex;
+          align-items: center;
+          padding: 1rem;
+          border-bottom: 1px solid #555;
+          gap: 1rem;
+          background: #1a202c;
+        `;
+        
+        const settingsBtn = document.createElement('button');
+        settingsBtn.className = 'mobile-settings-btn';
+        settingsBtn.onclick = () => {
+          window.loadSection('settings');
+          mobileMenu.classList.remove('show');
+          setTimeout(() => mobileMenu.remove(), 300);
+        };
+        settingsBtn.innerHTML = '⚙️ Settings';
+        settingsBtn.title = 'Go to Settings';
+        settingsBtn.style.cssText = `
+          flex: 1;
+          padding: 0.7rem 1rem;
+          background: #2d3748;
+          color: #fff;
+          border: 1px solid #555;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 1rem;
+          font-weight: 500;
+          transition: all 0.3s ease;
+        `;
+        
+        settingsIconSection.appendChild(settingsBtn);
+        mobileMenu.insertBefore(settingsIconSection, linksList);
+        
         mobileMenu.appendChild(linksList);
         document.body.appendChild(mobileMenu);
         setTimeout(() => mobileMenu.classList.add('show'), 10);

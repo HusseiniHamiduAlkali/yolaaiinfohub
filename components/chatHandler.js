@@ -231,8 +231,8 @@ window.captureImage = function(section) {
   overlay.innerHTML = `
     <div class="camera-modal">
       <video id="camera-feed" autoplay playsinline></video>
-      <button id="snap-btn">Capture Photo</button>
-      <button id="close-camera">Close</button>
+      <button id="snap-btn" data-i18n="capture_photo">Capture Photo</button>
+      <button id="close-camera" data-i18n="close">Close</button>
     </div>
   `;
   document.body.appendChild(overlay);
@@ -249,7 +249,7 @@ window.captureImage = function(section) {
     })
     .catch(err => {
       console.error("Error accessing camera:", err);
-      alert("Could not access camera. Please ensure you have a camera and have granted permission.");
+      alert(window.t ? window.t('capture_camera_error') : "Could not access camera. Please ensure you have a camera and have granted permission.");
       overlay.remove();
     });
 
@@ -278,9 +278,9 @@ window.recordAudio = function(section) {
   overlay.className = 'overlay';
   overlay.innerHTML = `
     <div class="audio-modal">
-      <p>Recording...</p>
-      <button id="stop-recording">Stop Recording</button>
-      <button id="close-audio">Close</button>
+      <p data-i18n="recording_text">Recording...</p>
+      <button id="stop-recording" data-i18n="stop_recording">Stop Recording</button>
+      <button id="close-audio" data-i18n="close">Close</button>
     </div>
   `;
   document.body.appendChild(overlay);
@@ -315,7 +315,7 @@ window.recordAudio = function(section) {
     })
     .catch(err => {
       console.error("Error accessing audio:", err);
-      alert("Could not access microphone. Please ensure you have a microphone and have granted permission.");
+      alert(window.t ? window.t('microphone_error') : "Could not access microphone. Please ensure you have a microphone and have granted permission.");
       overlay.remove();
     });
 
@@ -433,8 +433,10 @@ window.sendMessage = async function(section, faqText = '') {
   if (!faqText) input.value = '';
 
   try {
+    const systemPrompt = window[`${section.toUpperCase()}_AI_PROMPT`] || '';
+    const localizedPrompt = (window.localizeAIRequest && typeof window.localizeAIRequest === 'function') ? window.localizeAIRequest(systemPrompt) : systemPrompt;
     const finalAnswer = await getGeminiAnswer(
-      window[`${section.toUpperCase()}_AI_PROMPT`],
+      localizedPrompt,
       msg,
       section,
       window.GEMINI_API_KEY,

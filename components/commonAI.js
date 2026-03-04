@@ -1288,6 +1288,13 @@ window.addActionsToMsgGroup = function(msgGroup, section, containerId) {
   `;
   msgGroup.appendChild(actions);
 
+  // Send notification if app is in background
+  if (window.NotificationManager && window.NotificationManager.notifyMessageReceived) {
+    const aiMessage = msgGroup.querySelector('.ai-msg-text');
+    const preview = aiMessage ? aiMessage.textContent.substring(0, 100) : 'New response received';
+    window.NotificationManager.notifyMessageReceived(section, preview);
+  }
+
   // wire events
   const speakBtn = actions.querySelector('.read-aloud-btn');
   if (speakBtn) {
@@ -1432,20 +1439,33 @@ function ensureNavbarLoaded(cb) {
 }
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
+async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal = null) {
   let modelVersion;
   try {
     const contents = {
       parts: []
     };
 
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1] // Remove data URL prefix
+    if (mediaData) {
+      // mediaData can be image, audio, or file - extract MIME type and data
+      const dataUrl = Array.isArray(mediaData) ? mediaData[0] : mediaData;
+      if (dataUrl && dataUrl.startsWith('data:')) {
+        const [header, data] = dataUrl.split(',');
+        const mimeType = header.match(/data:([^;]+)/)?.[1] || 'application/octet-stream';
+        contents.parts.push({
+          inlineData: {
+            mimeType: mimeType,
+            data: data
+          }
+        });
+        // Add acknowledgment text about what was sent
+        msg = msg || '';
+        if (msg && !msg.includes('uploaded')) {
+          msg = `[${mimeType.split('/')[0].toUpperCase()} file attached]\n${msg}`;
+        } else if (!msg) {
+          msg = `[${mimeType.split('/')[0].toUpperCase()} file attached - please analyze and describe it]`;
         }
-      });
+      }
     }
 
     // Format chat history
@@ -1466,8 +1486,8 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
 
-    // Choose model - always use gemini-2.5-flash as primary; server will handle fallback to 1.5 if needed
-    modelVersion = imageData ? 'gemini-pro-vision' : 'gemini-2.5-flash';
+    // Choose model - use gemini-2.5-pro for multimodal support (images, audio, files); fallback to flash for text-only
+    modelVersion = mediaData ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
 
     // Use backend proxy instead of direct Gemini API
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'

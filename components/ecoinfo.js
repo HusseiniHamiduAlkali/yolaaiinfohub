@@ -185,11 +185,12 @@ window.sendEcoMessage = async function(faqText = '') {
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
   let attach = preview.innerHTML;
-  let imageData = null;
+  let mediaData = null;
   if (preview) {
     const img = preview.querySelector('img');
-    if (img) imageData = img.src;
-    // You can add similar logic for audio/video if needed
+    const audio = preview.querySelector('audio');
+    if (img && img.src) mediaData = img.src;
+    else if (audio && audio.src) mediaData = audio.src;
   }
   if (!msg && !attach) return;
 
@@ -435,7 +436,9 @@ window.renderSection = function() {
     
     // Load chat history AFTER template is inserted
     setTimeout(() => { 
-      window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('eco', 'chat-messages'); 
+      window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('eco', 'chat-messages');
+      // Ensure auto-scroll observer is attached for this section
+      window.observeChatContainers && window.observeChatContainers();
     }, 50);
     
     // Wire model toggle after template is inserted
@@ -520,7 +523,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
     let finalAnswer = "";
     try {
       const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
-      finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData, window.ecoAbortController ? window.ecoAbortController.signal : null);
+      finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, mediaData, window.ecoAbortController ? window.ecoAbortController.signal : null);
     } catch (e) {
       console.error("Error fetching local data or Gemini API call:", e);
       finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
