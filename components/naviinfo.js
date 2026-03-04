@@ -1,3 +1,7 @@
+// Ensure navigation API key globals exist (can be set manually for dev)
+window.TOMTOM_API_KEY = window.TOMTOM_API_KEY || null;
+window.NAVI_MAP_API_KEY = window.NAVI_MAP_API_KEY || null;
+
 // Load common AI utilities first
 if (!window.commonAILoaded) {
   const script = document.createElement('script');
@@ -124,6 +128,48 @@ For queries outside navigation (health, education, community, environment, jobs,
 /*  Maps initializations  */
 
 
+
+// --- Helper for backend URL and key retrieval ---
+// Determine where to fetch API endpoints from. Similar logic used in other
+// components (e.g. Gemini calls) so we mirror that behavior here. It allows
+// local testing with a separate Node backend on port 4000 as well as
+// production builds where the API is co-hosted or proxied.
+function getApiBase() {
+  if (window.API_BASE) return window.API_BASE;
+  try {
+    const h = window.location.hostname;
+    if (!h || h === 'localhost' || h === '127.0.0.1' || h.startsWith('192.') || h.startsWith('10.') || h === '::1') {
+      return 'http://localhost:4000';
+    }
+  } catch (e) {}
+  // empty string means "same origin" which works for Netlify functions
+  return '';
+}
+
+async function fetchTomTomKeyFromServer() {
+  // return the key stored in memory if already available
+  if (window.TOMTOM_API_KEY || window.NAVI_MAP_API_KEY) {
+    return window.TOMTOM_API_KEY || window.NAVI_MAP_API_KEY;
+  }
+
+  const base = getApiBase();
+  const paths = ['/api/tomtom-key', '/api/maps-key']; // try the more specific endpoint first
+  for (const p of paths) {
+    const url = base + p;
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.apiKey) return data.apiKey;
+      }
+    } catch (err) {
+      console.warn('fetchTomTomKeyFromServer: failed to fetch', url, err);
+      // continue to next path
+    }
+  }
+  return null;
+}
+
 // NEW: Detect two place names in user message with flexible location matching
   // Supports Nigerian LGAs, Adamawa State wards, Yola communities, and landmarks
   // Also includes geographic coordinates for wards
@@ -226,21 +272,16 @@ async function drawRouteAndCalculateMetrics(origin, destination) {
   try {
     console.log('📍 Calculating route metrics from', origin, 'to', destination);
     
-    // Ensure TomTom API key is available
+    // Ensure TomTom API key is available (may already be set by init code)
     if (!window.NAVI_MAP_API_KEY && !window.TOMTOM_API_KEY) {
       console.warn('⚠️ TomTom API key not available yet. Attempting to fetch...');
-      try {
-        const response = await fetch('http://localhost:4000/api/maps-key');
-        if (response.ok) {
-          const data = await response.json();
-          if (data.apiKey) {
-            window.NAVI_MAP_API_KEY = data.apiKey;
-            window.TOMTOM_API_KEY = data.apiKey;
-            console.log('✓ TomTom API key fetched on demand');
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch TomTom API key:', err);
+      const key = await fetchTomTomKeyFromServer();
+      if (key) {
+        window.NAVI_MAP_API_KEY = key;
+        window.TOMTOM_API_KEY = key;
+        console.log('✓ TomTom API key fetched on demand');
+      } else {
+        console.error('Failed to retrieve TomTom API key from server');
         return '';
       }
     }
@@ -709,7 +750,16 @@ window.searchLocation = async function(query) {
 // Function to calculate distance and travel time using TomTom Routing
 window.calculateDistanceAndTime = async function(origin, destination) {
   try {
-    const apiKey = window.NAVI_MAP_API_KEY || window.TOMTOM_API_KEY;
+    // ensure we have a key, try fetching from backend if necessary
+    let apiKey = window.NAVI_MAP_API_KEY || window.TOMTOM_API_KEY;
+    if (!apiKey) {
+      apiKey = await fetchTomTomKeyFromServer();
+      if (apiKey) {
+        window.NAVI_MAP_API_KEY = apiKey;
+        window.TOMTOM_API_KEY = apiKey;
+        console.log('✓ TomTom API key retrieved inside calculateDistanceAndTime');
+      }
+    }
     if (!apiKey) {
       console.error('❌ TomTom API key not available');
       throw new Error('API key not available');
@@ -804,28 +854,23 @@ window.renderSection = function() {
       });
     }
     
-    // Fetch TomTom key for distance/time calculations and map initialization
-    const tomtomFetch = fetch('http://localhost:4000/api/tomtom-key')
-      .then(r => r.ok ? r.json() : null)
-      .catch(() => {
-        // Fallback to maps-key endpoint
-        return fetch('http://localhost:4000/api/maps-key').then(r => r.ok ? r.json() : null);
-      });
+    // Fetch TomTom key for distance/time calculations and map initialization.
+    // This uses the helper above so it automatically picks the correct base
+    // URL (localhost backend during dev, same‑origin /api path in prod).
+    const tomtomFetch = fetchTomTomKeyFromServer();
 
-    Promise.all([tomtomFetch]).then(([tomtomData]) => {
-      if (tomtomData && tomtomData.apiKey) {
-        window.NAVI_MAP_API_KEY = tomtomData.apiKey;
-        window.TOMTOM_API_KEY = tomtomData.apiKey;
-        console.log('✓ TomTom API key fetched successfully');
+    tomtomFetch.then(key => {
+      if (key) {
+        window.NAVI_MAP_API_KEY = key;
+        window.TOMTOM_API_KEY = key;
+        console.log('✓ TomTom API key acquired (server or environment)');
       } else {
-        // Fallback: If backend doesn't have key, check if it's already in window from env config
         if (!window.TOMTOM_API_KEY) {
-          console.warn('⚠️ TomTom API key not available - maps will not work properly');
+          console.warn('⚠️ TomTom API key not available – maps will not work properly');
         } else {
           console.log('✓ TomTom API key available from environment');
         }
       }
-      
       // Delay Google Maps initialization to ensure DOM is ready
       setTimeout(() => {
         window.initGoogleMaps && window.initGoogleMaps();

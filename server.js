@@ -296,7 +296,15 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('Successfully connected to MongoDB.'))
 .catch(err => {
   console.error('MongoDB connection error:', err);
-  process.exit(1);
+  // don't kill the entire server just because the database is unreachable;
+  // many features (like navigation key serving) still work without Mongo.
+  // process.exit(1);
+});
+
+// Prevent unhandled promise rejections from crashing the process during dev
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // note: not calling process.exit to keep server alive
 });
 
 const userSchema = new mongoose.Schema({
