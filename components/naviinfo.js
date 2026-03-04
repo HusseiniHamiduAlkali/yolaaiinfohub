@@ -148,24 +148,30 @@ function getApiBase() {
 
 async function fetchTomTomKeyFromServer() {
   // return the key stored in memory if already available
-  if (window.TOMTOM_API_KEY || window.NAVI_MAP_API_KEY) {
-    return window.TOMTOM_API_KEY || window.NAVI_MAP_API_KEY;
+  if (window.TOMTOM_API_KEY && !window.TOMTOM_API_KEY.startsWith('AIza')) {
+    // only return if it looks like a TomTom key (doesn't start with Google's 'AIza')
+    return window.TOMTOM_API_KEY;
+  }
+  if (window.NAVI_MAP_API_KEY && !window.NAVI_MAP_API_KEY.startsWith('AIza')) {
+    return window.NAVI_MAP_API_KEY;
   }
 
   const base = getApiBase();
-  const paths = ['/api/tomtom-key', '/api/maps-key']; // try the more specific endpoint first
-  for (const p of paths) {
-    const url = base + p;
-    try {
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.apiKey) return data.apiKey;
+  // Only fetch the TomTom-specific endpoint. Do NOT fall back to maps-key
+  // because that serves the Google API key, not the TomTom key.
+  const url = base + '/api/tomtom-key';
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.apiKey && !data.apiKey.startsWith('AIza')) {
+        // sanity check: TomTom keys should not be Google keys
+        console.log('✓ TomTom API key retrieved from server');
+        return data.apiKey;
       }
-    } catch (err) {
-      console.warn('fetchTomTomKeyFromServer: failed to fetch', url, err);
-      // continue to next path
     }
+  } catch (err) {
+    console.warn('fetchTomTomKeyFromServer: failed to fetch', url, err);
   }
   return null;
 }
@@ -855,8 +861,9 @@ window.renderSection = function() {
     }
     
     // Fetch TomTom key for distance/time calculations and map initialization.
-    // This uses the helper above so it automatically picks the correct base
-    // URL (localhost backend during dev, same‑origin /api path in prod).
+    // This uses the helper above so it automatically picks the correct base URL.
+    // IMPORTANT: We fetch ONLY the TomTom key, NOT the Google Maps key, to avoid
+    // using the wrong key for TomTom APIs (which would result in 403 errors).
     const tomtomFetch = fetchTomTomKeyFromServer();
 
     tomtomFetch.then(key => {
@@ -865,8 +872,8 @@ window.renderSection = function() {
         window.TOMTOM_API_KEY = key;
         console.log('✓ TomTom API key acquired (server or environment)');
       } else {
-        if (!window.TOMTOM_API_KEY) {
-          console.warn('⚠️ TomTom API key not available – maps will not work properly');
+        if (!window.TOMTOM_API_KEY || window.TOMTOM_API_KEY.startsWith('AIza')) {
+          console.warn('⚠️ TomTom API key not available or is a Google key – maps will not work');
         } else {
           console.log('✓ TomTom API key available from environment');
         }
