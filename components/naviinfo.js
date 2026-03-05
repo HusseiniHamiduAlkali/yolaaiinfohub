@@ -170,103 +170,70 @@ async function fetchTomTomKeyFromServer() {
   return null;
 }
 
-// NEW: Detect two place names in user message with flexible location matching
-  // Supports Nigerian LGAs, Adamawa State wards, Yola communities, and landmarks
-  // Also includes geographic coordinates for wards
-  function extractTwoPlaces(text) {
-    // Yola Wards with their approximate coordinates
-    const yolaWards = {
-      'yola north': { lat: 9.2200, lon: 12.4850, names: ['yola north', 'yolan', 'north yola', 'yola north ward'] },
-      'yola south': { lat: 9.2100, lon: 12.4900, names: ['yola south', 'yolas', 'south yola', 'yola south ward'] },
-      'jimeta': { lat: 9.2050, lon: 12.5000, names: ['jimeta', 'jimeta ward', 'jimeta town'] },
-      'girei': { lat: 9.1950, lon: 12.4750, names: ['girei', 'girei ward', 'gerei'] },
-      'mubi': { lat: 10.2640, lon: 13.2698, names: ['mubi', 'mubi ward', 'mubi town'] },
-      'numan': { lat: 8.5583, lon: 12.0233, names: ['numan', 'numan ward', 'numan town'] },
-      'garoua': { lat: 9.3088, lon: 13.3977, names: ['garoua', 'garoua ward'] },
-      'jabbama': { lat: 9.1900, lon: 12.5100, names: ['jabbama', 'jabbama ward', 'jabbama area', 'jabbama plaza'] },
-      'lamido': { lat: 9.2180, lon: 12.4820, names: ['lamido', 'lamido palace', 'lamido area', 'lamido ward'] },
-      'airport': { lat: 9.2350, lon: 12.4450, names: ['airport', 'yola airport', 'international airport'] },
-      'market': { lat: 9.2150, lon: 12.4950, names: ['market', 'yola market', 'main market', 'central market'] },
-      'zoo': { lat: 9.1850, lon: 12.4900, names: ['zoo', 'yola zoo', 'zoological park'] },
-      'wetlands': { lat: 9.1750, lon: 12.4800, names: ['wetlands', 'yola wetlands', 'swamp'] },
-      'gorilla': { lat: 9.1800, lon: 12.4850, names: ['gorilla', 'gorilla park', 'gorilla sanctuary'] },
-      'motor park': { lat: 9.2120, lon: 12.4880, names: ['motor park', 'motor station', 'main motor park', 'jambutu motor park'] },
-      'palace': { lat: 9.2180, lon: 12.4820, names: ['palace', 'chief palace', 'emir palace'] },
-      'government house': { lat: 9.2200, lon: 12.4900, names: ['government house', 'govt house', 'state house', 'admin'] },
-      'mosque': { lat: 9.2170, lon: 12.4880, names: ['mosque', 'central mosque', 'main mosque'] }
-    };
-  
-    // First priority: look for explicit "from X to Y" or "between X and Y" patterns
-    const fromToMatch = /(?:from|between)\s+([^,\n]+?)\s+(?:to|and)\s+([^,.\n]+)/i.exec(text);
-    if (fromToMatch) {
-      const places = [fromToMatch[1].trim(), fromToMatch[2].trim()];
-      console.log('✓ Detected two places from "from...to" pattern:', places);
-      return places;
-    }
-  
-    // Second priority: Match specific wards/locations in the Yola database
-    const lowerText = text.toLowerCase();
-    let foundPlaces = [];
-    
-    for (const [wardName, wardData] of Object.entries(yolaWards)) {
-      for (const name of wardData.names) {
-        if (lowerText.includes(name)) {
-          if (!foundPlaces.includes(wardName)) {
-            foundPlaces.push(wardName);
-          }
-          break;
-        }
+// NEW: Detect places in user message (one or more)
+function extractPlaces(text) {
+  // Yola Wards with their approximate coordinates
+  const yolaWards = {
+    'yola north': { lat: 9.2200, lon: 12.4850, names: ['yola north', 'yolan', 'north yola', 'yola north ward'] },
+    'yola south': { lat: 9.2100, lon: 12.4900, names: ['yola south', 'yolas', 'south yola', 'yola south ward'] },
+    'jimeta': { lat: 9.2050, lon: 12.5000, names: ['jimeta', 'jimeta ward', 'jimeta town'] },
+    'girei': { lat: 9.1950, lon: 12.4750, names: ['girei', 'girei ward', 'gerei'] },
+    'mubi': { lat: 10.2640, lon: 13.2698, names: ['mubi', 'mubi ward', 'mubi town'] },
+    'numan': { lat: 8.5583, lon: 12.0233, names: ['numan', 'numan ward', 'numan town'] },
+    'garoua': { lat: 9.3088, lon: 13.3977, names: ['garoua', 'garoua ward'] },
+    'jabbama': { lat: 9.1900, lon: 12.5100, names: ['jabbama', 'jabbama ward', 'jabbama area', 'jabbama plaza'] },
+    'lamido': { lat: 9.2180, lon: 12.4820, names: ['lamido', 'lamido palace', 'lamido area', 'lamido ward'] },
+    'airport': { lat: 9.2350, lon: 12.4450, names: ['airport', 'yola airport', 'international airport'] },
+    'market': { lat: 9.2150, lon: 12.4950, names: ['market', 'yola market', 'main market', 'central market'] },
+    'zoo': { lat: 9.1850, lon: 12.4900, names: ['zoo', 'yola zoo', 'zoological park'] },
+    'wetlands': { lat: 9.1750, lon: 12.4800, names: ['wetlands', 'yola wetlands', 'swamp'] },
+    'gorilla': { lat: 9.1800, lon: 12.4850, names: ['gorilla', 'gorilla park', 'gorilla sanctuary'] },
+    'motor park': { lat: 9.2120, lon: 12.4880, names: ['motor park', 'motor station', 'main motor park', 'jambutu motor park'] },
+    'palace': { lat: 9.2180, lon: 12.4820, names: ['palace', 'chief palace', 'emir palace'] },
+    'government house': { lat: 9.2200, lon: 12.4900, names: ['government house', 'govt house', 'state house', 'admin'] },
+    'mosque': { lat: 9.2170, lon: 12.4880, names: ['mosque', 'central mosque', 'main mosque'] }
+  };
+
+  const lowerText = text.toLowerCase();
+  const foundPlaces = new Set();
+
+  // Match specific wards/locations in the Yola database
+  for (const [wardName, wardData] of Object.entries(yolaWards)) {
+    for (const name of wardData.names) {
+      if (lowerText.includes(name)) {
+        foundPlaces.add(wardName);
+        break;
       }
     }
-  
-    if (foundPlaces.length >= 2) {
-      console.log('✓ Detected two wards/places (Location database):', foundPlaces.slice(0, 2));
-      return foundPlaces.slice(0, 2);
-    }
-  
-    // Third priority: look for capitalized words that might be place names
-    const capitalized = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s+(?:Ward|LGA|Community))?/g) || [];
-    if (capitalized.length >= 2) {
-      const nonPlaceWords = ['I', 'A', 'The', 'Is', 'From', 'To', 'And', 'Between', 'Can', 'Please', 'How', 'What', 'Where', 'Show', 'Draw', 'Route', 'Get', 'Find', 'Take', 'Go', 'Me', 'You', 'He', 'She', 'It', 'We', 'They', 'My', 'Your', 'Do', 'Did'];
-      const places = capitalized.filter(word => !nonPlaceWords.includes(word)).slice(0, 2);
-      
-      if (places.length >= 2) {
-        console.log('✓ Detected two places from capitalized words:', places);
-        return places;
-      }
-    }
-  
-    // Fourth priority: Comprehensive location database for fallback matching
-    const allLocations = [
-      'yola north', 'yola south', 'jimeta', 'girei', 'mubi', 'numan', 'garoua', 'lamido', 'jabbama',
-      'airport', 'market', 'zoo', 'wetlands', 'gorilla', 'palace', 'mosque',
-      'government house', 'motor park', 'bank', 'hospital', 'clinic', 'school',
-      'university', 'stadium', 'court', 'cinema', 'bridge', 'flyover', 'roundabout', 'junction'
-    ];
-  
-    foundPlaces = [];
-    for (const loc of allLocations) {
-      if (lowerText.includes(loc)) {
-        foundPlaces.push(loc);
-      }
-    }
-  
-    if (foundPlaces.length >= 2) {
-      console.log('✓ Detected two places from location database:', foundPlaces.slice(0, 2));
-      return foundPlaces.slice(0, 2);
-    }
-  
-    // If still not found, try matching any two words that look like place names
-    const words = text.split(/\s+/).filter(w => w.length > 2 && /^[A-Z]/.test(w));
-    if (words.length >= 2) {
-      const places = words.slice(0, 2);
-      console.log('✓ Detected two places from text words:', places);
-      return places;
-    }
-  
-    console.log('ℹ No two places detected. Try: "from [Ward 1] to [Ward 2]" or mention wards like: Yola North, Jimeta, Girei, Mubi, Numan, etc.');
-    return null;
   }
+
+  // Comprehensive location database for fallback matching
+  const allLocations = [
+    'yola north', 'yola south', 'jimeta', 'girei', 'mubi', 'numan', 'garoua', 'lamido', 'jabbama',
+    'airport', 'market', 'zoo', 'wetlands', 'gorilla', 'palace', 'mosque',
+    'government house', 'motor park', 'bank', 'hospital', 'clinic', 'school',
+    'university', 'stadium', 'court', 'cinema', 'bridge', 'flyover', 'roundabout', 'junction'
+  ];
+
+  for (const loc of allLocations) {
+    if (lowerText.includes(loc)) {
+      foundPlaces.add(loc);
+    }
+  }
+
+  // Look for capitalized words that might be place names
+  const capitalized = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s+(?:Ward|LGA|Community))?/g) || [];
+  for (const cap of capitalized) {
+    const lowerCap = cap.toLowerCase();
+    if (!foundPlaces.has(lowerCap)) {
+      foundPlaces.add(lowerCap);
+    }
+  }
+
+  const placesArray = Array.from(foundPlaces);
+  console.log('ℹ Detected places:', placesArray);
+  return placesArray;
+}
 // NEW: Calculate distance and metrics only (no visual route drawing)
 async function drawRouteAndCalculateMetrics(origin, destination) {
   try {
@@ -281,18 +248,15 @@ async function drawRouteAndCalculateMetrics(origin, destination) {
       }
     }
 
-    const apiKey = window.TOMTOM_API_KEY;
-    const originCoords = await searchLocation(origin, apiKey);
-    const destinationCoords = await searchLocation(destination, apiKey);
-
-    if (!originCoords || !destinationCoords) {
-      console.warn('⚠️ Could not find coordinates for one or both locations. Falling back to local database.');
+    // Use the updated drawTomTomRoute from tomtomMap.js (Leaflet-based)
+    const result = await window.drawTomTomRoute(origin, destination);
+    if (result) {
+      console.log('✅ Route drawn successfully:', result);
+      return result;
+    } else {
+      console.warn('⚠️ Could not draw route. Falling back to local database.');
       return calculateMetricsFromLocalDatabase(origin, destination);
     }
-
-    console.log('📡 TomTom API: Calculating route from', origin, 'to', destination);
-    // Call TomTom API for route calculation (existing logic)
-    // ...existing code...
   } catch (err) {
     console.error('❌ Error calculating route metrics:', err);
     console.log('Falling back to local database for calculations.');
@@ -438,7 +402,11 @@ window.displayMapError = function(message) {
 window.initGoogleMaps = function() {
   const mapIframe = document.getElementById('google-maps-iframe');
   if (!mapIframe) {
-    console.error('❌ Google Maps iframe not found');
+    if (!window._googleMapsRetryCount) window._googleMapsRetryCount = 0;
+    if (window._googleMapsRetryCount < 10) {
+      window._googleMapsRetryCount++;
+      setTimeout(() => window.initGoogleMaps(), 200);
+    }
     return;
   }
 
@@ -453,11 +421,18 @@ window.initGoogleMaps = function() {
   
   mapIframe.src = googleMapsUrl;
   mapIframe.style.display = 'block';
-  console.log('✓ Pegman layer enabled via layer=c');
+  
+  // Hide TomTom map if it's visible
+  const tomtomDiv = document.getElementById('tomtom-map');
+  if (tomtomDiv) {
+    tomtomDiv.style.display = 'none';
+  }
+  
+  console.log('✓ Google Maps initialized and displayed');
 };
 
 // --- Initialize TomTom Maps ---
-window.initTomTomMap = function() {
+window.initializeTomTomMap = function() {
   const mapDiv = document.getElementById('tomtom-map');
   if (!mapDiv) {
     console.error('❌ Map container #tomtom-map not found');
@@ -470,232 +445,59 @@ window.initTomTomMap = function() {
     return;
   }
 
-  // Load TomTom Maps SDK if not already loaded
-  if (!window.tt) {
-    console.log('📦 Loading TomTom Maps SDK...');
-    
-    // Load TomTom CSS
-    if (!document.getElementById('tomtom-css')) {
-      const cssLink = document.createElement('link');
-      cssLink.id = 'tomtom-css';
-      cssLink.rel = 'stylesheet';
-      cssLink.href = 'https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps.css';
-      cssLink.crossOrigin = 'anonymous';
-      document.head.appendChild(cssLink);
-    }
-
-    // Load TomTom JS
-    const script = document.createElement('script');
-    script.src = 'https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps-web.min.js';
-    script.crossOrigin = 'anonymous';
-    script.onload = () => {
-      console.log('✅ TomTom Maps SDK loaded');
-      window.createTomTomMapInstance();
-    };
-    script.onerror = () => {
-      console.error('❌ Failed to load TomTom Maps SDK');
-      displayMapError('Failed to load TomTom Maps. Please try again.');
-    };
-    document.head.appendChild(script);
-  } else {
-    window.createTomTomMapInstance();
+  // Check if already initializing
+  if (window._tomtomInitializing) {
+    console.log('ℹ TomTom map initialization in progress');
+    return;
   }
-};
 
-// Create TomTom Map instance
-window.createTomTomMapInstance = function() {
-  const mapDiv = document.getElementById('tomtom-map');
-  if (!mapDiv || mapDiv._tomtomInit) return;
+  window._tomtomInitializing = true;
 
-  try {
-    // Check if TomTom SDK loaded successfully
-    if (typeof window.tt === 'undefined') {
-      console.error('❌ TomTom SDK not available - SDK failed to load from CDN');
-      console.log('ℹ️ This may be due to network firewall, CDN 403 error, or CORS issues');
-      displayMapError('TomTom Maps SDK failed to load. Chat-based navigation will continue.');
-      mapDiv._tomtomInit = true; // Prevent retry attempts
+  // Function to attempt initialization
+  const attemptInit = () => {
+    // Ensure Leaflet is loaded
+    if (!window.L) {
+      console.warn('⚠️ Leaflet not loaded yet, retrying...');
+      setTimeout(attemptInit, 200);
       return;
     }
 
-    const apiKey = window.TOMTOM_API_KEY || window.NAVI_MAP_API_KEY;
-    if (!apiKey) {
-      console.error('❌ TomTom API key not available');
-      displayMapError('TomTom API key not configured');
+    // Ensure tomtomMap.js is loaded
+    if (typeof window.initTomTomMap !== 'function') {
+      console.warn('⚠️ TomTom map function not loaded yet, retrying...');
+      setTimeout(attemptInit, 200);
       return;
     }
 
-    // Clear any previous map content except the loading message
-    const loadingMsg = mapDiv.querySelector('span');
-    mapDiv.innerHTML = '';
-    if (loadingMsg) mapDiv.appendChild(loadingMsg);
+    try {
+      // Clear any existing content (like Google Maps iframe)
+      mapDiv.innerHTML = '';
 
-    // Create map instance
-    window.tomtomMapInstance = tt.map({
-      key: apiKey,
-      container: 'tomtom-map',
-      style: 'https://api.tomtom.com/style/1/style/20.11.12-3/satellite.json',
-      center: [12.4818, 9.2182], // Yola coordinates (lon, lat)
-      zoom: 12,
-      pitch: 0,
-      bearing: 0
-    });
-
-    // Add navigation controls
-    if (window.tt.FullscreenControl) {
-      window.tomtomMapInstance.addControl(new tt.FullscreenControl());
+      // Initialize map using the updated tomtomMap.js (Leaflet-based)
+      const map = window.initTomTomMap('tomtom-map', [9.2035, 12.4885], 13);
+      if (map) {
+        console.log('✅ TomTom map (Leaflet) initialized');
+        mapDiv._tomtomInit = true;
+        window._tomtomInitializing = false;
+      } else {
+        console.error('❌ Failed to initialize TomTom map');
+        displayMapError('Failed to initialize map. Chat-based navigation will continue.');
+        window._tomtomInitializing = false;
+      }
+    } catch (error) {
+      console.error('❌ Error initializing map:', error);
+      displayMapError('Error initializing map. Chat-based navigation will continue.');
+      window._tomtomInitializing = false;
     }
-    if (window.tt.NavigationControl) {
-      window.tomtomMapInstance.addControl(new tt.NavigationControl());
-    }
+  };
 
-    mapDiv._tomtomInit = true;
-    console.log('✅ TomTom Map instance created successfully');
-    
-    // Remove loading message when map is loaded
-    mapDiv.style.display = 'block';
-    const loadMsg = mapDiv.querySelector('span');
-    if (loadMsg) loadMsg.remove();
-  } catch (e) {
-    console.error('❌ Error creating TomTom map:', e);
-    console.log('ℹ️ TomTom SDK may not be fully loaded due to network issues');
-    displayMapError('Error initializing TomTom Maps: ' + e.message);
-  }
+  attemptInit();
 };
 
-// Draw route on TomTom map
+// Draw route on TomTom map (now using Leaflet)
 window.drawRouteOnTomTomMap = async function(origin, destination) {
-  try {
-    // Check if TomTom SDK is available
-    if (!window.tt) {
-      console.log('🔄 Attempting to load TomTom map...');
-      window.initTomTomMap();
-      // Wait for map to initialize
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Check again after waiting
-      if (!window.tt) {
-        console.error('❌ TomTom SDK failed to load (possibly blocked by network/firewall)');
-        console.log('ℹ️ Using fallback: Google Maps for both places');
-        return null;
-      }
-    }
-
-    if (!window.tomtomMapInstance) {
-      console.log('🔄 Initializing TomTom map instance...');
-      window.createTomTomMapInstance();
-      // Wait for map instance to be created
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (!window.tomtomMapInstance) {
-        console.error('❌ TomTom map instance failed to create');
-        return null;
-      }
-    }
-
-    const apiKey = window.TOMTOM_API_KEY || window.NAVI_MAP_API_KEY;
-    if (!apiKey) {
-      console.error('❌ API key not available');
-      return null;
-    }
-
-    console.log('📍 Drawing route from', origin, 'to', destination);
-
-    // Get coordinates for origin and destination
-    let originCoords = await window.searchLocation(origin);
-    let destCoords = await window.searchLocation(destination);
-
-    if (!originCoords || !destCoords) {
-      console.error('❌ Could not find coordinates for one or both locations');
-      return null;
-    }
-
-    console.log('✅ Found coordinates - Origin:', originCoords, 'Destination:', destCoords);
-
-    // Get route from TomTom Routing API
-    const routeUrl = `https://api.tomtom.com/routing/1/calculateRoute/${originCoords.lat},${originCoords.lon}:${destCoords.lat},${destCoords.lon}/json?key=${apiKey}`;
-    
-    const response = await fetch(routeUrl);
-    const data = await response.json();
-
-    if (!data.routes || data.routes.length === 0) {
-      console.error('❌ No route found');
-      return null;
-    }
-
-    const route = data.routes[0];
-    const coordinates = route.legs.flatMap(leg => 
-      leg.points.map(p => [p.longitude, p.latitude])
-    );
-
-    // Safety check: Ensure map instance still exists before accessing it
-    if (!window.tomtomMapInstance) {
-      console.error('❌ Map instance lost during operation');
-      return null;
-    }
-
-    // Clear previous layers if they exist
-    if (window.tomtomMapInstance.getLayer && window.tomtomMapInstance.getLayer('route-line')) {
-      window.tomtomMapInstance.removeLayer('route-line');
-    }
-    if (window.tomtomMapInstance.getSource && window.tomtomMapInstance.getSource('route-source')) {
-      window.tomtomMapInstance.removeSource('route-source');
-    }
-
-    // Remove previous markers
-    const existingMarkers = document.querySelectorAll('#tomtom-map .tt-marker');
-    existingMarkers.forEach(m => m.remove());
-
-    // Add route source
-    window.tomtomMapInstance.addSource('route-source', {
-      type: 'geojson',
-      data: {
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: coordinates
-        }
-      }
-    });
-
-    // Add route layer
-    window.tomtomMapInstance.addLayer({
-      id: 'route-line',
-      type: 'line',
-      source: 'route-source',
-      paint: {
-        'line-color': '#ff0000',
-        'line-width': 4,
-        'line-opacity': 0.8
-      }
-    });
-
-    // Add markers for origin and destination
-    if (window.tt && window.tt.Marker) {
-      new tt.Marker({ color: 'green' })
-        .setLngLat([originCoords.lon, originCoords.lat])
-        .addTo(window.tomtomMapInstance)
-        .setPopup(new tt.Popup({ offset: 25 }).setText(origin));
-
-      new tt.Marker({ color: 'red' })
-        .setLngLat([destCoords.lon, destCoords.lat])
-        .addTo(window.tomtomMapInstance)
-        .setPopup(new tt.Popup({ offset: 25 }).setText(destination));
-    }
-
-    // Fit map to route bounds
-    const bounds = coordinates.reduce((bounds, coord) => {
-      return bounds.extend(coord);
-    }, new tt.LngLatBounds(coordinates[0], coordinates[0]));
-
-    window.tomtomMapInstance.fitBounds(bounds, { padding: 50 });
-
-    console.log('✅ Route drawn successfully');
-    return route;
-  } catch (e) {
-    console.error('❌ Error drawing route:', e);
-    console.log('ℹ️ TomTom Maps may be blocked by your network. Route metrics still available.');
-    return null;
-  }
+  // Use the updated drawTomTomRoute from tomtomMap.js
+  return await window.drawTomTomRoute(origin, destination);
 };
 
 // Function to center Google Maps on a single location
@@ -728,6 +530,43 @@ window.centerGoogleMapsOnLocation = async function(location) {
     console.error('❌ Error centering map on location:', e);
   }
 };
+
+// --- Map Switching Functions ---
+async function switchToTomTomMap() {
+  console.log('🔄 Switching to TomTom map for route display');
+  
+  const googleIframe = document.getElementById('google-maps-iframe');
+  const tomtomDiv = document.getElementById('tomtom-map');
+  
+  if (googleIframe) {
+    googleIframe.style.display = 'none';
+  }
+  
+  if (tomtomDiv) {
+    tomtomDiv.style.display = 'block';
+    // Initialize TomTom map if not already done
+    if (!tomtomDiv._tomtomInit) {
+      window.initializeTomTomMap();
+    }
+  }
+}
+
+async function switchToGoogleMaps() {
+  console.log('🔄 Switching to Google Maps for location display');
+  
+  const googleIframe = document.getElementById('google-maps-iframe');
+  const tomtomDiv = document.getElementById('tomtom-map');
+  
+  if (tomtomDiv) {
+    tomtomDiv.style.display = 'none';
+  }
+  
+  if (googleIframe) {
+    googleIframe.style.display = 'block';
+    // Re-initialize Google Maps if needed
+    window.initGoogleMaps();
+  }
+}
 
 // --- Fallback: Leaflet + TomTom tiles ---
 function fallbackToLeafletTomTom() {
@@ -915,11 +754,14 @@ window.renderSection = function() {
           console.log('✓ TomTom API key available from environment');
         }
       }
-      // Delay Google Maps initialization to ensure DOM is ready
-      setTimeout(() => {
-        window.initGoogleMaps && window.initGoogleMaps();
-        console.log('✓ Google Maps initialized for display');
-      }, 100);
+      // Delay map initialization to ensure DOM is ready - default to Google Maps
+      if (!window._googleMapsInitialized && !window._tomtomInitializing) {
+        window._googleMapsInitialized = true; // Set flag to prevent multiple calls
+        setTimeout(() => {
+          window.initGoogleMaps && window.initGoogleMaps();
+          console.log('✓ Google Maps initialized for display (default)');
+        }, 200);
+      }
     });
   }).catch(err => {
     console.error('Failed to load navi template:', err);
@@ -1051,29 +893,32 @@ window.sendNaviMessage = async function(faqText = '') {
     // Store in chat history (keep last 10 messages)
     window.addToChatHistory && window.addToChatHistory('navi', 'user', msg);
     
-    // NEW: Detect if user mentioned two places
-    const twoPlaces = extractTwoPlaces(msg);
-    if (twoPlaces && twoPlaces.length === 2) {
-      console.log('🎯 Two places detected:', twoPlaces);
+    // NEW: Detect places in user message and switch maps accordingly
+    const places = extractPlaces(msg);
+    if (places && places.length >= 2) {
+      console.log('🎯 Two or more places detected:', places);
       
-      // Try to draw route on TomTom map
-      const route = await window.drawRouteOnTomTomMap(twoPlaces[0], twoPlaces[1]);
+      // Switch to TomTom map for route display
+      await switchToTomTomMap();
+      
+      // Try to draw route on TomTom map between first two places
+      const route = await window.drawRouteOnTomTomMap(places[0], places[1]);
       
       // If route was drawn successfully, calculate and display metrics
       if (route) {
         // Calculate metrics
-        const metrics = await window.calculateDistanceAndTime(twoPlaces[0], twoPlaces[1]);
+        const metrics = await window.calculateDistanceAndTime(places[0], places[1]);
         
         if (metrics) {
           // Add metrics and instructions to AI response
-          const mapInstruction = `\n\n📍 **Route Details:**\n- **Distance:** ${metrics.distance} km\n- **Estimated Travel Time:** ${metrics.travelTime} minutes\n\n👇 **Scroll down to see the map with the route drawn between ${twoPlaces[0]} and ${twoPlaces[1]}**`;
+          const mapInstruction = `\n\n📍 **Route Details:**\n- **Distance:** ${metrics.distance} km\n- **Estimated Travel Time:** ${metrics.travelTime} minutes\n\n👇 **Scroll down to see the map with the route drawn between ${places[0]} and ${places[1]}**`;
           finalAnswer += mapInstruction;
           console.log('✅ Route metrics added to response');
         }
       } else {
         // TomTom map failed, but still calculate distance and time for display
         console.log('⚠️ TomTom map unavailable, trying distance calculation only...');
-        const metrics = await window.calculateDistanceAndTime(twoPlaces[0], twoPlaces[1]);
+        const metrics = await window.calculateDistanceAndTime(places[0], places[1]);
         
         if (metrics) {
           // Show metrics even if map can't be displayed
@@ -1082,20 +927,20 @@ window.sendNaviMessage = async function(faqText = '') {
           console.log('✅ Route metrics added to response (map unavailable)');
         }
       }
+    } else if (places && places.length === 1) {
+      console.log('📍 Single place detected:', places[0]);
+      
+      // Switch to Google Maps and center on the location
+      await switchToGoogleMaps();
+      await window.centerGoogleMapsOnLocation(places[0]);
+      
+      // Add instruction to scroll to map
+      const mapInstruction = `\n\n📍 **Location Details:**\nI've centered the map on **${places[0]}**. Scroll down to see the location and its details on the map.`;
+      finalAnswer += mapInstruction;
+      console.log('✅ Google Maps centered on location');
     } else {
-      // Single place or no specific location detected
-      const singlePlace = msg.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b/);
-      if (singlePlace) {
-        console.log('📍 Single place detected:', singlePlace[0]);
-        
-        // Center Google Maps on the location
-        await window.centerGoogleMapsOnLocation(singlePlace[0]);
-        
-        // Add instruction to scroll to map
-        const mapInstruction = `\n\n📍 **Location Details:**\nI've centered the map on **${singlePlace[0]}**. Scroll down to see the location and its details on the map.`;
-        finalAnswer += mapInstruction;
-        console.log('✅ Google Maps centered on location');
-      }
+      console.log('ℹ No specific places detected in message');
+      // Keep current map (default to Google Maps)
     }
 
     window.addToChatHistory && window.addToChatHistory('navi', 'assistant', finalAnswer);

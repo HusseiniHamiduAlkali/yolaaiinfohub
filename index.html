@@ -23,6 +23,8 @@
   <link rel="stylesheet" href="styles/communityinfo.css">
   <link rel="stylesheet" href="styles/aboutinfo.css">
   <link rel="stylesheet" href="styles/auth.css">
+  <!-- Leaflet CSS for TomTom maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <!-- <link rel="stylesheet" href="styles/mapsinfo.css"/> -->
   <link rel="stylesheet" href="styles/ecoAI.css">
   <link rel="stylesheet" href="styles/tomtom-controls-fallback.css">
@@ -37,7 +39,7 @@
   <div id="ecoinfo-content"></div>
   <div id="eduinfo-content"></div>
   </div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" defer></script>
   <!-- TomTom Maps SDK - loaded dynamically to avoid unnecessary network requests on other pages -->
   <!-- the CSS/JS will be injected only when the navigation section is initialized -->
