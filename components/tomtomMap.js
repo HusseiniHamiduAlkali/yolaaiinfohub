@@ -20,10 +20,11 @@
         // Initialize Leaflet map
         map = L.map(containerId).setView(center, zoom);
 
-        // Add TomTom satellite tiles with labels (hybrid)
-        L.tileLayer(`https://api.tomtom.com/map/1/tile/hybrid/main/{z}/{x}/{y}.png?key=${apiKey}`, {
-            attribution: '© TomTom',
-            maxZoom: 20
+        // Add OpenStreetMap tiles (free, no API key required)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19,
+            crossOrigin: 'anonymous'
         }).addTo(map);
 
         // Add zoom control

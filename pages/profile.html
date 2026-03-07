@@ -47,8 +47,13 @@
           <div class="profile-username-display">
             <span id="profile-username" style="color:#718096">@username</span>
           </div>
-          <div class="profile-actions" style="margin-top:8px">
-            <button id="btn-delete-account" title="Delete account" style="display:none;background:#ef4444;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer">Delete account</button>
+          <div class="profile-actions" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <button id="btn-logout" class="auth-btn" style="background:#ef4444;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:600" onclick="window.logoutUser()" title="Logout from your account">
+              <i class="fas fa-sign-out-alt" style="margin-right:6px;"></i> Logout
+            </button>
+            <button id="btn-delete-account" title="Delete account" style="display:none;background:#dc2626;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:600">
+              <i class="fas fa-trash-alt" style="margin-right:6px;"></i> Delete account
+            </button>
           </div>
           
 
@@ -140,6 +145,7 @@
     const profilePictureInput = document.getElementById('profile-picture-input');
     const editProfilePictureInput = document.getElementById('edit-profile-picture-input');
     const btnDeleteAccount = document.getElementById('btn-delete-account');
+    const btnLogout = document.getElementById('btn-logout');
 
     // Event listeners (only attach if element exists)
     if (btnEditProfile) btnEditProfile.addEventListener('click', enterEditMode);
@@ -150,6 +156,7 @@
     if (profilePictureInput) profilePictureInput.addEventListener('change', handleAvatarUpload);
     if (editProfilePictureInput) editProfilePictureInput.addEventListener('change', handleEditAvatarUpload);
     if (btnDeleteAccount) btnDeleteAccount.addEventListener('click', handleDeleteAccountClick);
+    if (btnLogout) btnLogout.addEventListener('click', () => window.logoutUser());
     
     async function loadProfile() {
       // Try to restore user from localStorage first
@@ -174,6 +181,9 @@
         console.log('%c✅ User found in localStorage, setting isOwnProfile = true', 'color: #10b981; font-weight: bold;', restoredUser.username);
         fillProfile(restoredUser);
         if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
+        // Show logout and delete buttons only on own profile
+        if (btnLogout) btnLogout.style.display = 'inline-flex';
+        if (btnDeleteAccount) btnDeleteAccount.style.display = 'inline-flex';
         // Optionally, check backend for fresher data
         try {
           const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
@@ -247,6 +257,14 @@
                 btnEditProfile.style.display = 'none';
                 console.log('%c🔒 Edit button hidden - user is NOT viewing own profile', 'color: #ef4444;');
               }
+            }
+            // Show logout and delete buttons only on own profile
+            if (isOwnProfile) {
+              if (btnLogout) btnLogout.style.display = 'inline-flex';
+              if (btnDeleteAccount) btnDeleteAccount.style.display = 'inline-flex';
+            } else {
+              if (btnLogout) btnLogout.style.display = 'none';
+              if (btnDeleteAccount) btnDeleteAccount.style.display = 'none';
             }
           } else {
             document.getElementById('profile-name').textContent = 'User not found';
@@ -636,6 +654,7 @@
       const avatarWrap = document.querySelector('.profile-avatar-wrapper');
       if (avatarWrap) avatarWrap.style.cursor = 'pointer';
       if (btnDeleteAccount) btnDeleteAccount.style.display = 'inline-flex';
+      if (btnLogout) btnLogout.style.display = 'inline-flex';
     }
     
     function exitEditMode() {
@@ -649,6 +668,7 @@
       if (avatarWrap2) avatarWrap2.style.cursor = 'default';
       if (successMessage && successMessage.classList) successMessage.classList.remove('show');
       if (btnDeleteAccount) btnDeleteAccount.style.display = 'none';
+      if (btnLogout) btnLogout.style.display = 'none';
     }
     
     function handleAvatarUpload(e) {

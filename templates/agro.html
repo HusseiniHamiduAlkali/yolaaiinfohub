@@ -384,3 +384,35 @@
     </div>
     </div>
 </section>
+
+<script>
+function getLangFolder() {
+  const langMap = {
+    'en': 'En',
+    'ar': 'Ar',
+    'fr': 'Fr',
+    'ha': 'Ha',
+    'ff': 'Fu',
+    'yo': 'Yo',
+    'ig': 'Ig',
+    'pcm': 'Pi'
+  };
+  const lang = window.getAppLanguage ? window.getAppLanguage() : 'en';
+  return langMap[lang] || 'En';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a[href^="details/"]').forEach(link => {
+    const href = link.getAttribute('href');
+    const parts = href.split('/');
+    if (parts.length >= 3) {
+      const section = parts[1];
+      const file = parts[2];
+      link.classList.add('learn-more-link');
+      link.dataset.section = section;
+      link.dataset.file = file;
+      link.setAttribute('href', `details/${section}/${getLangFolder()}/${file}`);
+    }
+  });
+});
+</script>

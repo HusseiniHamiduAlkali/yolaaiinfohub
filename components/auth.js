@@ -125,8 +125,6 @@ window.updateAuthUI = function(user) {
       if (topSection) topSection.style.display = 'flex';
       const usernameContainer = document.getElementById('navbar-username-container') || document.querySelector('.navbar-username-container');
       if (usernameContainer) usernameContainer.style.display = 'flex';
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) logoutBtn.style.display = '';
     } catch (e) {
       console.warn('Could not adjust navbar display:', e);
     }
@@ -154,8 +152,6 @@ window.updateAuthUI = function(user) {
       if (topSection) topSection.style.display = '';
       const usernameContainer = document.getElementById('navbar-username-container') || document.querySelector('.navbar-username-container');
       if (usernameContainer) usernameContainer.style.display = 'none';
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) logoutBtn.style.display = 'none';
     } catch (e) { /* ignore */ }
     if (window.Navbar && typeof window.Navbar.render === 'function') {
       console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-out user', 'color: #e53e3e; font-weight: bold;');
@@ -476,18 +472,22 @@ window.checkLoginStatus = async function() {
       });
     } else {
       console.log('%cℹ️ User not logged in', 'color: #95a5a6;');
-      // SAFEGUARD: If we just logged in, don't call updateAuthUI(null) yet - give session time to stabilize
-      if (!window.__justLoggedIn) {
+      // Avoid forcing a logout while the initial navbar/render pass is still
+      // running. If the client already has a local `window.currentUser`, keep
+      // that until the navbar/init logic completes. Only clear auth state if
+      // there is no local user AND the initial navbar render has finished.
+      if (!window.currentUser && window.__initialNavbarRendered) {
         window.updateAuthUI(null);
       } else {
-        console.log('%c⏳ Skipping logout because we just logged in (session may still be settling)', 'color: #f39c12;');
+        console.log('%c⏳ Skipping logout because navbar init not completed or local user exists', 'color: #f39c12;');
       }
     }
   } catch (err) {
     console.warn('%c⚠️ Could not verify login status (offline?): %c' + err.message, 'color: #e74c3c; font-weight: bold;', 'color: #c0392b;');
     console.log('%c💡 If offline, use: window.triggerOfflineLogin()', 'color: #f39c12; font-size: 11px;');
-    // If offline and didn't just log in, keep localStorage user if present
-    if (!restoredUser && !window.__justLoggedIn) window.updateAuthUI(null);
+    // If offline and user not already logged in, logout — but only after
+    // the initial navbar render has completed to avoid UI flashing.
+    if (!window.currentUser && window.__initialNavbarRendered) window.updateAuthUI(null);
   }
 };
 

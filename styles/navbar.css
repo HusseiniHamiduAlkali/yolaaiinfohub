@@ -208,14 +208,6 @@ nav.navbar {
   color: black;
 }
 
-#logout-btn {
-  background: #e53e3e;
-  margin-top: 5px;
-}
-
-#logout-btn:hover {
-  background: #c53030;
-}
 
 .user-avatar {
   display: inline-flex;
@@ -255,10 +247,9 @@ nav.navbar {
   .navbar-fullname { display: none; }
 }
 
-/* Small tablets: show username container and logout button */
+/* Small tablets: show username container */
 @media (min-width: 701px) and (max-width: 900px) {
   .navbar-username-container { display: flex !important; align-items: center; }
-  #logout-btn { display: inline-block !important; }
 }
   right: 1rem;
   z-index: 1000;
@@ -541,6 +532,12 @@ nav.navbar {
     justify-content: flex-end;
   }
 
+  /* when logged in, keep username and auth controls in one row */
+  .navbar.logged-in > .navbar-right {
+    flex-direction: row !important;
+    align-items: center;
+  }
+
   /* Hide mobile/tablet elements */
   .tablet-navbar-upper {
     display: none !important;
@@ -629,6 +626,10 @@ nav.navbar {
     font-size: 0.9rem;
     padding: 0.3rem 0.1rem;
     width: 60px;
+  }
+  /* hide the settings icon in the top bar; it will appear inside the mobile menu */
+  .settings-icon-btn {
+    display: none !important;
   }
 
   nav.navbar {
@@ -783,10 +784,10 @@ nav.navbar {
 
 /* Settings Icon Button Styles */
 .settings-icon-btn {
-    background: #4a5568;
-    border: 1px solid #555;
+    background: #2d3748;
+    border: none; /* 1px solid #555;  */
     color: #fff;
-    padding: 0.5rem 0.8rem;
+    /*padding: 0.5rem 0.8rem;  */
     border-radius: 6px;
     cursor: pointer;
     font-size: 1.2rem;
@@ -805,8 +806,8 @@ nav.navbar {
 }
 
 .settings-icon-btn span {
-    font-size: 1.2rem;
-    line-height: 1;
+    font-size: 1.4rem;
+    /*line-height: 1; */
 }
 
 body.dark-mode .settings-icon-btn {

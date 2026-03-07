@@ -289,6 +289,26 @@ let lastResetLink = null;
 // Control whether reset links are returned in API responses (dev-only)
 const includeResetInResponse = !isProduction && process.env.DEBUG_RESET === 'true';
 
+// Helper function to send email notifications
+async function sendEmailNotification(to, subject, htmlContent) {
+  if (!transporter || !emailConfigured) {
+    console.warn('Email not configured, skipping notification');
+    return;
+  }
+
+  try {
+    await transporter.sendMail({
+      from: `"Yola AI Info Hub" <${emailUser}>`,
+      to,
+      subject,
+      html: htmlContent
+    });
+    console.log(`Email sent to ${to}: ${subject}`);
+  } catch (error) {
+    console.error('Failed to send email:', error);
+  }
+}
+
 mongoose.connect(process.env.MONGO_URI, { 
   useNewUrlParser: true, 
   useUnifiedTopology: true 
@@ -329,7 +349,14 @@ const userSchema = new mongoose.Schema({
   profilePicture: String,
   termsAccepted: { type: Boolean, required: true },
   termsAcceptedDate: { type: Date },
-  role: { type: String, enum: ['user', 'admin', 'moderator'], default: 'user' }
+  role: { type: String, enum: ['user', 'admin', 'moderator'], default: 'user' },
+  // User settings
+  settings: {
+    language: { type: String, default: 'en' },
+    darkMode: { type: Boolean, default: false },
+    emailNotifications: { type: Boolean, default: true },
+    pushNotifications: { type: Boolean, default: true }
+  }
 });
 const User = mongoose.model('User', userSchema);
 
@@ -399,6 +426,20 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
       termsAccepted: true,
       termsAcceptedDate: new Date()
     });
+
+    // Send welcome email notification
+    const welcomeHtml = `
+      <h2>Welcome to Yola AI Info Hub!</h2>
+      <p>Dear ${name},</p>
+      <p>Thank you for signing up for Yola AI Info Hub. Your account has been created successfully.</p>
+      <p><strong>Username:</strong> ${username}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p>You can now access all features of our platform including AI chat, maps, and community resources.</p>
+      <p>If you have any questions, feel free to contact our support team.</p>
+      <br>
+      <p>Best regards,<br>Yola AI Info Hub Team</p>
+    `;
+    sendEmailNotification(email, 'Welcome to Yola AI Info Hub', welcomeHtml);
 
     req.session.userId = user._id;
     req.session.save((err) => {
@@ -569,11 +610,48 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       if (!isProduction) console.log('Login result: password mismatch for', user.username);
+      
+      // Increment login attempts
+      await User.updateOne({ _id: user._id }, { $inc: { loginAttempts: 1 } });
+      
+      // Send failed login alert if attempts exceed threshold and email notifications enabled
+      if (user.loginAttempts >= 2 && user.settings && user.settings.emailNotifications) {
+        const failedLoginHtml = `
+          <h2>Failed Login Attempt Alert</h2>
+          <p>Dear ${user.name},</p>
+          <p>We detected multiple failed login attempts on your Yola AI Info Hub account.</p>
+          <p><strong>Username:</strong> ${user.username}</p>
+          <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+          <p><strong>IP Address:</strong> ${req.ip}</p>
+          <p>If this wasn't you, please secure your account by changing your password immediately.</p>
+          <p>If you forgot your password, use the reset password feature.</p>
+          <br>
+          <p>Best regards,<br>Yola AI Info Hub Team</p>
+        `;
+        sendEmailNotification(user.email, 'Yola AI Info Hub - Security Alert', failedLoginHtml);
+      }
+      
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
   // Update login info with targeted update (avoids full-document validation)
   await User.updateOne({ _id: user._id }, { $set: { lastLogin: new Date(), loginAttempts: 0 } });
+
+    // Send login notification email if enabled
+    if (user.settings && user.settings.emailNotifications) {
+      const loginHtml = `
+        <h2>Login Notification</h2>
+        <p>Dear ${user.name},</p>
+        <p>Your account was successfully logged in to Yola AI Info Hub.</p>
+        <p><strong>Username:</strong> ${user.username}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+        <p><strong>IP Address:</strong> ${req.ip}</p>
+        <p>If this wasn't you, please contact support immediately and change your password.</p>
+        <br>
+        <p>Best regards,<br>Yola AI Info Hub Team</p>
+      `;
+      sendEmailNotification(user.email, 'Yola AI Info Hub - Login Notification', loginHtml);
+    }
 
     // Set session
     req.session.userId = user._id;
@@ -855,6 +933,58 @@ app.post('/api/chat-history/:section/clear', async (req, res) => {
   } catch (error) {
     console.error('Chat history clear error:', error);
     res.status(500).json({ error: 'Error clearing chat history' });
+  }
+});
+
+// User Settings Endpoints
+// Get user settings
+app.get('/api/settings', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const user = await User.findById(req.session.userId).select('settings');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ settings: user.settings });
+  } catch (error) {
+    console.error('Get settings error:', error);
+    res.status(500).json({ error: 'Error retrieving settings' });
+  }
+});
+
+// Update user settings
+app.post('/api/settings', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { language, darkMode, emailNotifications, pushNotifications } = req.body;
+
+    const updateData = {};
+    if (language !== undefined) updateData['settings.language'] = language;
+    if (darkMode !== undefined) updateData['settings.darkMode'] = darkMode;
+    if (emailNotifications !== undefined) updateData['settings.emailNotifications'] = emailNotifications;
+    if (pushNotifications !== undefined) updateData['settings.pushNotifications'] = pushNotifications;
+
+    const user = await User.findByIdAndUpdate(
+      req.session.userId,
+      updateData,
+      { new: true, select: 'settings' }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ settings: user.settings });
+  } catch (error) {
+    console.error('Update settings error:', error);
+    res.status(500).json({ error: 'Error updating settings' });
   }
 });
 

@@ -721,6 +721,14 @@ window.appendChatMessage = function({ section = 'home', containerId, role = 'ai'
   const msgElement = window.createMessageElement(messageObj || { id: messageId, role, content, timestamp: Date.now() }, section, containerId);
   container.appendChild(msgElement);
 
+  // Show push notification for AI responses if enabled
+  if (role === 'ai' && window.NotificationManager && document.hidden) {
+    const prefs = window.getNotificationPreferences();
+    if (prefs.push) {
+      window.NotificationManager.notifyMessageReceived(section, content.substring(0, 100));
+    }
+  }
+
   // Ensure observer is attached and scroll to bottom
   window.scrollChatToBottom(containerId, 'smooth');
 };
@@ -1526,3 +1534,19 @@ async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal 
     throw error;
   }
 }
+
+// Notification preferences helper
+window.getNotificationPreferences = function() {
+  // Check server settings first if available
+  if (window.userSettings) {
+    return {
+      email: window.userSettings.emailNotifications,
+      push: window.userSettings.pushNotifications
+    };
+  }
+  
+  // Fallback to localStorage
+  const emailEnabled = localStorage.getItem('notification-email') === 'enabled';
+  const pushEnabled = localStorage.getItem('notification-push') === 'enabled';
+  return { email: emailEnabled, push: pushEnabled };
+};

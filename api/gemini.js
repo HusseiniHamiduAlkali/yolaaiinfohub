@@ -10,6 +10,8 @@ const corsOptions = {
     'http://localhost:5500',
     'http://127.0.0.1:5502',
     'http://localhost:5502',
+    'http://127.0.0.1:5503',
+    'http://localhost:5503',
     'http://127.0.0.1:4000',
     'http://localhost:4000',
     'http://127.0.0.1:3000',
@@ -17,7 +19,8 @@ const corsOptions = {
     'http://localhost:8080',
     'http://127.0.0.1:8080',
     'https://yolaaiinfohub.netlify.app',
-    'http://0.0.0.0:0000'
+    'http://0.0.0.0:0000',
+    'http://localhost:0000'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

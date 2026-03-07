@@ -35,7 +35,7 @@ function renderNavbar() {
       <button id="signup-btn" class="auth-btn" type="button" data-i18n="sign_up">Sign up</button>
     </div>
   `;
-  // If user is signed in, show username and logout button
+  // If user is signed in, show settings button only
   if (window.currentUser && window.currentUser.username) {
     console.log('%c✅ renderNavbar: User IS logged in, rendering logged-in navbar', 'color: #10b981;', window.currentUser.username);
     authButtonsHTML = `
@@ -44,7 +44,6 @@ function renderNavbar() {
         <button class="settings-icon-btn" onclick="window.loadSection('settings')" title="Settings">
           <span>⚙️</span>
         </button>
-        <button id="logout-btn" class="auth-btn" onclick="window.logoutUser()" data-i18n="logout">Logout</button>
       </div>
     `;
   } else {
@@ -57,6 +56,10 @@ function renderNavbar() {
     </div>
     <span class="navbar-appname">Yola AI Info Hub</span>
   `;
+
+  // mark navbar element when user is logged in so we can target it with CSS
+  const isLoggedIn = window.currentUser && window.currentUser.username;
+  nav.classList.toggle('logged-in', !!isLoggedIn);
 
   nav.innerHTML = `
     <div class="navbar-container">
@@ -72,21 +75,23 @@ function renderNavbar() {
         
         <div class="navbar-right">
         
-          <div class="navbar-username-container" id="navbar-username-container">
-            ${window.currentUser && window.currentUser.username ? `
-              <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link" id="navbar-profile-link">
-                <span class="navbar-avatar" id="navbar-avatar">${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}</span>
-                <span class="navbar-names">
-                  <span class="navbar-fullname">${window.currentUser.name || window.currentUser.username}</span>
-                  <span class="navbar-username-text">@${window.currentUser.username}</span>
-                </span>
-              </a>
-            ` : ''}
+          <div class="navbar-user-section">
+            <div class="navbar-username-container" id="navbar-username-container">
+              ${window.currentUser && window.currentUser.username ? `
+                <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link" id="navbar-profile-link">
+                  <span class="navbar-avatar" id="navbar-avatar">${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}</span>
+                  <span class="navbar-names">
+                    <span class="navbar-fullname">${window.currentUser.name || window.currentUser.username}</span>
+                    <span class="navbar-username-text">@${window.currentUser.username}</span>
+                  </span>
+                </a>
+              ` : ''}
+            </div>
+            ${authButtonsHTML}
           </div>
-          ${authButtonsHTML}
-        
 
-<!--      </div>  -->
+
+
 
           <div class="navbar-links-container">
           <ul class="navbar-links">
@@ -124,15 +129,18 @@ function renderNavbar() {
     window.applyTranslations(nav);
   }
 
-  // Store the original PC layout HTML AFTER the nav is fully constructed
-  // This captures the CURRENT login state (logged-in or logged-out)
-  // Do this in a small timeout to ensure DOM is stable
-  setTimeout(() => {
-    originalPCLayout = document.querySelector('.navbar').innerHTML;
-  }, 10);
+  // Store the original PC layout HTML
+  originalPCLayout = nav.innerHTML;
+
+  // Call handleResponsiveLayout
+  handleResponsiveLayout();
 
   // Main function to handle all responsive layouts
   function handleResponsiveLayout() {
+    if (!originalPCLayout) {
+      console.log('handleResponsiveLayout: originalPCLayout not set yet, skipping.');
+      return;
+    }
     const windowWidth = window.innerWidth;
     const navbarContainer = document.querySelector('.navbar-container');
     
@@ -154,6 +162,11 @@ function renderNavbar() {
     const newNavbarLinks = document.querySelector('.navbar-links');
     const newHamburger = document.getElementById('hamburger');
     
+    if (!newNavbarLeft || !newNavbarRight || !newNavbarLinks || !newHamburger) {
+      console.warn('handleResponsiveLayout: Some navbar elements not found, skipping.');
+      return;
+    }
+    
     // Apply common styles using JS
     newNavbarContainer.style.display = '';
     newNavbarContainer.style.alignItems = '';
@@ -167,7 +180,7 @@ function renderNavbar() {
     newNavbarLinks.style.display = 'flex';
 
     // Logic for different screen sizes
-    if (windowWidth > 1150) {
+    if (windowWidth > 1024) {
       // PC View
       newNavbarContainer.style.justifyContent = '';
       newHamburger.style.display = 'none';
@@ -180,8 +193,18 @@ function renderNavbar() {
           navbarAuth.style.alignItems = 'center';
         }
       }
+      // Wrap username container and auth in a div for large screens
+      const userSection = document.createElement('div');
+      userSection.className = 'navbar-user-section-large';
+      const usernameContainer = document.querySelector('.navbar-username-container');
+      const navbarAuthEl = document.getElementById('navbar-auth');
+      if (usernameContainer && navbarAuthEl) {
+        newNavbarRight.insertBefore(userSection, usernameContainer);
+        userSection.appendChild(usernameContainer);
+        userSection.appendChild(navbarAuthEl);
+      }
 
-    } else if (windowWidth >= 701 && windowWidth <= 1150) {
+    } else if (windowWidth >= 701 && windowWidth <= 1024) {
       // Tablet View
       newNavbarContainer.style.flexDirection = 'column';
       newNavbarContainer.style.justifyContent = 'flex-start';
@@ -435,9 +458,11 @@ function renderNavbar() {
         `;
         
         settingsIconSection.appendChild(settingsBtn);
-        mobileMenu.insertBefore(settingsIconSection, linksList);
-        
+        // Append settings section first, then links list. This order avoids InsertBefore
+        // errors by not relying on a second argument that must already be a child.
+        mobileMenu.appendChild(settingsIconSection);
         mobileMenu.appendChild(linksList);
+        
         document.body.appendChild(mobileMenu);
         setTimeout(() => mobileMenu.classList.add('show'), 10);
       } else {
@@ -524,6 +549,9 @@ window.Navbar = {
       if (!current || (current.username !== window.__lastUser.username)) {
         console.log('%c♻️ window.Navbar.render(): Reapplying __lastUser to updateAuthUI', 'color: #8b5cf6;', window.__lastUser);
         try { window.updateAuthUI(window.__lastUser); } catch (e) { console.error('Error reapplying lastUser:', e); }
+        // also ensure navbar login class is in sync
+        const navbarEl = document.querySelector('nav.navbar');
+        if (navbarEl) navbarEl.classList.add('logged-in');
       } else {
         console.log('%c⏭️ window.Navbar.render(): currentUser already matches __lastUser, skipping reapply', 'color: #94a3b8;');
       }
