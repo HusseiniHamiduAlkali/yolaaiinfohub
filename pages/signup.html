@@ -217,7 +217,7 @@
       submitBtn.disabled = true;
 
       try {
-  const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
+  const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return 'https://yolaaiinfohub-backend.onrender.com'; }catch(e){return 'http://localhost:4000'} })();
   const response = await fetch(`${API_BASE}/api/signup`, {
           method: 'POST',
           headers: {
