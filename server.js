@@ -243,12 +243,12 @@ app.use(session({
   saveUninitialized: false,
   proxy: true, // Required for secure cookies behind a proxy/load balancer
   cookie: { 
-    secure: false, // http in development
+    secure: isProduction, // HTTPS in production, HTTP in dev
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-site in prod, 'lax' in dev
     path: '/'
-    // Note: domain is intentionally not set to allow cookies on both localhost and 127.0.0.1
+    // Domain not set for cross-site cookies; browser will set to backend domain
   }
 }));
 
