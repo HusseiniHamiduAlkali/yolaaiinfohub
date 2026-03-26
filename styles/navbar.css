@@ -247,9 +247,12 @@ nav.navbar {
   .navbar-fullname { display: none; }
 }
 
-/* Small tablets: show username container */
-@media (min-width: 701px) and (max-width: 900px) {
-  .navbar-username-container { display: flex !important; align-items: center; }
+/* Tablets and PC: show username container for logged-in users */
+@media (min-width: 701px) {
+  .navbar-username-container {
+    display: flex !important;
+    align-items: center;
+  }
 }
   right: 1rem;
   z-index: 1000;

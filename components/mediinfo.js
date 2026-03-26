@@ -70,14 +70,51 @@ window.sendMediMessage = async function(faqText = '') {
 
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
   let mediaData = null;
   if (preview) {
-    const img = preview.querySelector('img');
-    const audio = preview.querySelector('audio');
-    if (img && img.src) mediaData = img.src;
-    else if (audio && audio.src) mediaData = audio.src;
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe elements
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
   }
+
+  const attachments = window.getMessageAttachmentsFromPreview('medi', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+
   if (!msg && !attach) return;
 
   // Setup stop button with commonAI utility (with fallback if not loaded)
@@ -137,16 +174,18 @@ window.sendMediMessage = async function(faqText = '') {
 
     // Combine all local data
     const allLocalData = localData + linkedContents + historyContext;
-    finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, mediaData, window.mediAbortController ? window.mediAbortController.signal : null);
+    finalAnswer = await window.callGeminiAI(allLocalData, msg, window.GEMINI_API_KEY, mediaData, window.mediAbortController ? window.mediAbortController.signal : null, 'medi', attachments);
     // Store in chat history (keep last 10 messages)
     window.addToChatHistory && window.addToChatHistory('medi', 'user', msg);
     window.addToChatHistory && window.addToChatHistory('medi', 'assistant', finalAnswer);
   } catch (e) {
     if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
-        finalAnswer = "USER ABORTED REQUEST";
+        finalAnswer = "Request cancelled.";
+    } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        finalAnswer = window.friendlyAIErrorMessage(e);
     } else {
         console.error("Error fetching local data or Gemini API call:", e);
-        finalAnswer = "Sorry, I could not access local information or the AI at this time. Please try again.";
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
     }
   }
 

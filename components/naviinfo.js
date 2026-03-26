@@ -2,6 +2,73 @@
 window.TOMTOM_API_KEY = window.TOMTOM_API_KEY || null;
 window.NAVI_MAP_API_KEY = window.NAVI_MAP_API_KEY || null;
 
+// Single source of truth for Yola coordinates
+window.YOLA_COORDS = window.YOLA_COORDS || {
+  lat: 9.2182,
+  lon: 12.4818,
+  centerArray: [9.2182, 12.4818],
+  places: {
+    'yola north': { lat: 9.2230, lon: 12.4850, names: ['yola north', 'yolan', 'north yola', 'yola north ward'] },
+    'yola south': { lat: 9.2105, lon: 12.4875, names: ['yola south', 'yolas', 'south yola', 'yola south ward'] },
+    'jimeta': { lat: 9.2055, lon: 12.4945, names: ['jimeta', 'jimeta ward', 'jimeta town'] },
+    'girei': { lat: 9.2010, lon: 12.4780, names: ['girei', 'girei ward', 'gerei'] },
+    'mubi': { lat: 9.2185, lon: 12.4870, names: ['mubi', 'mubi ward', 'mubi town'] },
+    'numan': { lat: 9.2150, lon: 12.4720, names: ['numan', 'numan ward', 'numan town'] },
+    'garoua': { lat: 9.2195, lon: 12.4930, names: ['garoua', 'garoua ward'] },
+    'jabbama': { lat: 9.1905, lon: 12.5060, names: ['jabbama', 'jabbama ward', 'jabbama area', 'jabbama plaza'] },
+    'lamido': { lat: 9.2180, lon: 12.4820, names: ['lamido', 'lamido palace', 'lamido area', 'lamido ward'] },
+    'airport': { lat: 9.2350, lon: 12.4455, names: ['airport', 'yola airport', 'international airport'] },
+    'market': { lat: 9.2155, lon: 12.4950, names: ['market', 'yola market', 'main market', 'central market'] },
+    'zoo': { lat: 9.1855, lon: 12.4890, names: ['zoo', 'yola zoo', 'zoological park'] },
+    'wetlands': { lat: 9.1755, lon: 12.4810, names: ['wetlands', 'yola wetlands', 'swamp'] },
+    'gorilla': { lat: 9.1805, lon: 12.4855, names: ['gorilla', 'gorilla park', 'gorilla sanctuary'] },
+    'motor park': { lat: 9.2125, lon: 12.4885, names: ['motor park', 'motor station', 'main motor park', 'jambutu motor park'] },
+    'palace': { lat: 9.2180, lon: 12.4820, names: ['palace', 'chief palace', 'emir palace'] },
+    'government house': { lat: 9.2205, lon: 12.4885, names: ['government house', 'govt house', 'state house', 'admin'] },
+    'mosque': { lat: 9.2175, lon: 12.4875, names: ['mosque', 'central mosque', 'main mosque'] },
+    'bank': { lat: 9.2165, lon: 12.4887, names: ['bank'] },
+    'hospital': { lat: 9.2145, lon: 12.4865, names: ['hospital'] },
+    'clinic': { lat: 9.2135, lon: 12.4875, names: ['clinic'] },
+    'school': { lat: 9.2115, lon: 12.4865, names: ['school'] },
+    'university': { lat: 9.2290, lon: 12.4990, names: ['university'] },
+    'stadium': { lat: 9.2195, lon: 12.4895, names: ['stadium'] },
+    'court': { lat: 9.2200, lon: 12.4910, names: ['court'] },
+    'cinema': { lat: 9.2095, lon: 12.4820, names: ['cinema'] },
+    'bridge': { lat: 9.2005, lon: 12.4810, names: ['bridge'] },
+    'flyover': { lat: 9.2025, lon: 12.4830, names: ['flyover'] },
+    'roundabout': { lat: 9.2075, lon: 12.4855, names: ['roundabout'] },
+    'junction': { lat: 9.2065, lon: 12.4865, names: ['junction'] }
+  }
+};
+
+// Helper: resolve a place name (or alias) to YOLA_COORDS place data
+function resolveYolaPlace(name) {
+  if (!name) return null;
+  const lower = name.toLowerCase().trim();
+  const places = window.YOLA_COORDS && window.YOLA_COORDS.places ? window.YOLA_COORDS.places : {};
+
+  // Direct key match
+  if (places[lower]) return places[lower];
+
+  // Search aliases
+  for (const [key, data] of Object.entries(places)) {
+    if (!data.names) continue;
+    for (const alias of data.names) {
+      if (alias.toLowerCase() === lower) return data;
+    }
+  }
+
+  // Partial contains match (fall back)
+  for (const [key, data] of Object.entries(places)) {
+    if (!data.names) continue;
+    for (const alias of data.names) {
+      if (lower.includes(alias.toLowerCase())) return data;
+    }
+  }
+
+  return null;
+}
+
 // Load common AI utilities first
 if (!window.commonAILoaded) {
   const script = document.createElement('script');
@@ -106,6 +173,8 @@ IMPORTANT: When a user explicitly mentions TWO place names (e.g., "from Lamido P
 3. Calculate the estimated travel time in minutes
 4. Display these metrics in the chat after your response
 
+Do NOT calculate, estimate, or include distances, travel times, or route details in your response. The system handles all calculations automatically.
+
 Your role is to provide context and information about these locations and routes.
 
 Key Information You Provide:
@@ -116,7 +185,7 @@ Key Information You Provide:
 - Contact information for transport services
 
 Sample Responses:
-- "Sure! I'm showing you the route from [origin] to [destination] on the map. The journey covers [distance] km and should take about [time] minutes by car."
+- "Sure! I'm showing you the route from [origin] to [destination] on the map."
 - "Here's information about [location]: [details]. The map shows its exact position."
 - "I'll draw the fastest route for you. You can take [transportation option] or drive directly."
 
@@ -173,26 +242,7 @@ async function fetchTomTomKeyFromServer() {
 // NEW: Detect places in user message (one or more)
 function extractPlaces(text) {
   // Yola Wards with their approximate coordinates
-  const yolaWards = {
-    'yola north': { lat: 9.2200, lon: 12.4850, names: ['yola north', 'yolan', 'north yola', 'yola north ward'] },
-    'yola south': { lat: 9.2100, lon: 12.4900, names: ['yola south', 'yolas', 'south yola', 'yola south ward'] },
-    'jimeta': { lat: 9.2050, lon: 12.5000, names: ['jimeta', 'jimeta ward', 'jimeta town'] },
-    'girei': { lat: 9.1950, lon: 12.4750, names: ['girei', 'girei ward', 'gerei'] },
-    'mubi': { lat: 10.2640, lon: 13.2698, names: ['mubi', 'mubi ward', 'mubi town'] },
-    'numan': { lat: 8.5583, lon: 12.0233, names: ['numan', 'numan ward', 'numan town'] },
-    'garoua': { lat: 9.3088, lon: 13.3977, names: ['garoua', 'garoua ward'] },
-    'jabbama': { lat: 9.1900, lon: 12.5100, names: ['jabbama', 'jabbama ward', 'jabbama area', 'jabbama plaza'] },
-    'lamido': { lat: 9.2180, lon: 12.4820, names: ['lamido', 'lamido palace', 'lamido area', 'lamido ward'] },
-    'airport': { lat: 9.2350, lon: 12.4450, names: ['airport', 'yola airport', 'international airport'] },
-    'market': { lat: 9.2150, lon: 12.4950, names: ['market', 'yola market', 'main market', 'central market'] },
-    'zoo': { lat: 9.1850, lon: 12.4900, names: ['zoo', 'yola zoo', 'zoological park'] },
-    'wetlands': { lat: 9.1750, lon: 12.4800, names: ['wetlands', 'yola wetlands', 'swamp'] },
-    'gorilla': { lat: 9.1800, lon: 12.4850, names: ['gorilla', 'gorilla park', 'gorilla sanctuary'] },
-    'motor park': { lat: 9.2120, lon: 12.4880, names: ['motor park', 'motor station', 'main motor park', 'jambutu motor park'] },
-    'palace': { lat: 9.2180, lon: 12.4820, names: ['palace', 'chief palace', 'emir palace'] },
-    'government house': { lat: 9.2200, lon: 12.4900, names: ['government house', 'govt house', 'state house', 'admin'] },
-    'mosque': { lat: 9.2170, lon: 12.4880, names: ['mosque', 'central mosque', 'main mosque'] }
-  };
+  const yolaWards = window.YOLA_COORDS && window.YOLA_COORDS.places ? window.YOLA_COORDS.places : {};
 
   const lowerText = text.toLowerCase();
   const foundPlaces = new Set();
@@ -265,35 +315,21 @@ async function drawRouteAndCalculateMetrics(origin, destination) {
 }
 
 function calculateMetricsFromLocalDatabase(origin, destination) {
-  const yolaWards = {
-    'numan': { lat: 8.5583, lon: 12.0233 },
-    'market': { lat: 9.2150, lon: 12.4950 },
-    'jimeta': { lat: 9.2050, lon: 12.5000 },
-    'girei': { lat: 9.1950, lon: 12.4750 },
-    'mubi': { lat: 10.2640, lon: 13.2698 },
-    'garoua': { lat: 9.3088, lon: 13.3977 },
-    'jabbama': { lat: 9.1900, lon: 12.5100 },
-    'lamido': { lat: 9.2180, lon: 12.4820 },
-    'airport': { lat: 9.2350, lon: 12.4450 },
-    'wetlands': { lat: 9.1750, lon: 12.4800 },
-    'gorilla': { lat: 9.1800, lon: 12.4850 },
-    'motor park': { lat: 9.2120, lon: 12.4880 },
-    'palace': { lat: 9.2180, lon: 12.4820 },
-    'government house': { lat: 9.2200, lon: 12.4900 },
-    'mosque': { lat: 9.2170, lon: 12.4880 }
-  };
-
-  const originData = yolaWards[origin.toLowerCase()];
-  const destinationData = yolaWards[destination.toLowerCase()];
+  // Prefer resolving via YOLA_COORDS aliases
+  const originData = typeof origin === 'string' ? resolveYolaPlace(origin) : origin;
+  const destinationData = typeof destination === 'string' ? resolveYolaPlace(destination) : destination;
 
   if (!originData || !destinationData) {
     console.error('❌ Locations not found in local database:', origin, destination);
     return null;
   }
 
-  const distance = calculateHaversineDistance(originData, destinationData);
-  console.log(`📏 Calculated distance from ${origin} to ${destination}: ${distance} km`);
-  return { distance };
+  const distanceRaw = calculateHaversineDistance(originData, destinationData);
+  const distance = Number(distanceRaw.toFixed(1));
+  // Estimate travel time using a conservative average speed within town (30 km/h)
+  const travelTime = Math.max(1, Math.round((distance / 30) * 60));
+  console.log(`📏 Calculated distance from ${origin} to ${destination}: ${distance} km, ETA: ${travelTime} minutes`);
+  return { distance, travelTime };
 }
 
 function calculateHaversineDistance(coord1, coord2) {
@@ -345,7 +381,7 @@ window.initNaviInfo = () => {
             <iframe
               id="google-maps-pegman"
               style="width: 100%; height: 100%; border: none;"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126489.0192326256!2d12.400000000000002!3d9.233333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1053d1b1b1b1b1b1%3A0x1b1b1b1b1b1b1b1b!2sYola%2C%20Nigeria!5e0!3m2!1sen!2sng!4v${Date.now()}&layer=c"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126489.0192326256!2d${window.YOLA_COORDS.lon}!3d${window.YOLA_COORDS.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1053d1b1b1b1b1b1%3A0x1b1b1b1b1b1b1b1b!2sYola%2C%20Nigeria!5e0!3m2!1sen!2sng!4v${Date.now()}&layer=c"
               allowfullscreen=""
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
@@ -359,8 +395,38 @@ window.initNaviInfo = () => {
 };
 
 // --- Google Maps Initialization ---
+// Helper to find the Google Maps iframe (supports multiple id variants)
+function getGoogleMapsIframe() {
+  // Try to find an existing iframe by common ids
+  let iframe = document.getElementById('google-maps-iframe') || document.getElementById('google-maps-pegman');
+  if (iframe) return iframe;
+
+  // If not found, attempt to create one inside the tomtom-map container so
+  // centering still works even after the tomtom map was previously initialized.
+  const tomtomDiv = document.getElementById('tomtom-map');
+  if (!tomtomDiv) return null;
+
+  // Create iframe and append it (hidden by default until used)
+  try {
+    iframe = document.createElement('iframe');
+    iframe.id = 'google-maps-pegman';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.style.display = 'none';
+    iframe.allowFullscreen = true;
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    tomtomDiv.appendChild(iframe);
+    return iframe;
+  } catch (e) {
+    console.error('❌ Failed to create Google Maps iframe:', e);
+    return null;
+  }
+}
+
 window.initGoogleMaps = function() {
-  const mapIframe = document.getElementById('google-maps-iframe');
+  const mapIframe = getGoogleMapsIframe();
   if (!mapIframe) {
     if (!window._googleMapsRetryCount) window._googleMapsRetryCount = 0;
     if (window._googleMapsRetryCount < 10) {
@@ -372,12 +438,11 @@ window.initGoogleMaps = function() {
 
   window._googleMapsRetryCount = 0;
 
-  const lat = 9.2182;
-  const lng = 12.4818;
+  const { lat, lon } = window.YOLA_COORDS;
 
   // 'layer=c' adds the Street View (Pegman) layer, if available
   // 'll' centers the map without adding a marker, which may restore the controls
-  const googleMapsUrl = `https://maps.google.com/maps?ll=${lat},${lng}&z=14&t=h&layer=c&output=embed`;
+  const googleMapsUrl = `https://maps.google.com/maps?ll=${lat},${lon}&z=14&t=h&layer=c&output=embed`;
   
   mapIframe.src = googleMapsUrl;
   mapIframe.style.display = 'block';
@@ -400,7 +465,7 @@ window.displayMapError = function(message) {
 
 // --- Google Maps Initialization ---
 window.initGoogleMaps = function() {
-  const mapIframe = document.getElementById('google-maps-iframe');
+  const mapIframe = getGoogleMapsIframe();
   if (!mapIframe) {
     if (!window._googleMapsRetryCount) window._googleMapsRetryCount = 0;
     if (window._googleMapsRetryCount < 10) {
@@ -411,14 +476,12 @@ window.initGoogleMaps = function() {
   }
 
   window._googleMapsRetryCount = 0;
-
-  const lat = 9.2182;
-  const lng = 12.4818;
+  const { lat, lon } = window.YOLA_COORDS;
 
   // 'layer=c' adds the Street View (Pegman) layer, if available
   // 'll' centers the map without adding a marker, which may restore the controls
-  const googleMapsUrl = `https://maps.google.com/maps?ll=${lat},${lng}&z=14&t=h&layer=c&output=embed`;
-  
+  const googleMapsUrl = `https://maps.google.com/maps?ll=${lat},${lon}&z=14&t=h&layer=c&output=embed`;
+
   mapIframe.src = googleMapsUrl;
   mapIframe.style.display = 'block';
   
@@ -474,7 +537,7 @@ window.initializeTomTomMap = function() {
       mapDiv.innerHTML = '';
 
       // Initialize map using the updated tomtomMap.js (Leaflet-based)
-      const map = window.initTomTomMap('tomtom-map', [9.2035, 12.4885], 13);
+      const map = window.initTomTomMap('tomtom-map', window.YOLA_COORDS.centerArray, 13, 'satellite');
       if (map) {
         console.log('✅ TomTom map (Leaflet) initialized');
         mapDiv._tomtomInit = true;
@@ -505,14 +568,24 @@ window.centerGoogleMapsOnLocation = async function(location) {
   try {
     console.log('📍 Centering Google Maps on:', location);
     
-    const mapIframe = document.getElementById('google-maps-iframe');
+    const mapIframe = getGoogleMapsIframe();
     if (!mapIframe) {
       console.error('❌ Google Maps iframe not found');
       return;
     }
 
     // Search for location coordinates
-    const coords = await window.searchLocation(location);
+    // Prefer local YOLA database for quick centering
+    let coords = null;
+    try {
+      const local = resolveYolaPlace && typeof resolveYolaPlace === 'function' ? resolveYolaPlace(location) : null;
+      if (local && local.lat && local.lon) {
+        coords = { lat: local.lat, lon: local.lon };
+      }
+    } catch (e) {
+      coords = null;
+    }
+    if (!coords) coords = await window.searchLocation(location);
     if (!coords) {
       console.error('❌ Could not find coordinates for:', location);
       return;
@@ -525,6 +598,10 @@ window.centerGoogleMapsOnLocation = async function(location) {
     mapIframe.src = googleMapsUrl;
     mapIframe.style.display = 'block';
 
+    // Hide TomTom map if present
+    const tomtomDiv = document.getElementById('tomtom-map');
+    if (tomtomDiv) tomtomDiv.style.display = 'none';
+
     console.log('✅ Google Maps centered on location');
   } catch (e) {
     console.error('❌ Error centering map on location:', e);
@@ -535,18 +612,18 @@ window.centerGoogleMapsOnLocation = async function(location) {
 async function switchToTomTomMap() {
   console.log('🔄 Switching to TomTom map for route display');
   
-  const googleIframe = document.getElementById('google-maps-iframe');
+  const googleIframe = getGoogleMapsIframe();
   const tomtomDiv = document.getElementById('tomtom-map');
-  
-  if (googleIframe) {
-    googleIframe.style.display = 'none';
-  }
-  
+
+  if (googleIframe) googleIframe.style.display = 'none';
   if (tomtomDiv) {
     tomtomDiv.style.display = 'block';
     // Initialize TomTom map if not already done
     if (!tomtomDiv._tomtomInit) {
-      window.initializeTomTomMap();
+      // Prefer satellite tiles for route display
+      // Ensure any previous TomTom artifacts are cleared before init
+      if (window.clearTomTomMap) try { await window.clearTomTomMap(); } catch(e){}
+      window.initializeTomTomMap && window.initializeTomTomMap('satellite');
     }
   }
 }
@@ -554,13 +631,15 @@ async function switchToTomTomMap() {
 async function switchToGoogleMaps() {
   console.log('🔄 Switching to Google Maps for location display');
   
-  const googleIframe = document.getElementById('google-maps-iframe');
+  const googleIframe = getGoogleMapsIframe();
   const tomtomDiv = document.getElementById('tomtom-map');
-  
-  if (tomtomDiv) {
-    tomtomDiv.style.display = 'none';
+
+  // Clear TomTom map state (remove routes/markers) so Google iframe can be shown reliably
+  if (window.clearTomTomMap) {
+    try { await window.clearTomTomMap(); } catch (e) { console.warn('clearTomTomMap failed', e); }
   }
-  
+
+  if (tomtomDiv) tomtomDiv.style.display = 'none';
   if (googleIframe) {
     googleIframe.style.display = 'block';
     // Re-initialize Google Maps if needed
@@ -642,29 +721,39 @@ window.calculateDistanceAndTime = async function(origin, destination) {
         console.log('✓ TomTom API key retrieved inside calculateDistanceAndTime');
       }
     }
+    // If both origin and destination resolve to YOLA coordinates, prefer local calculation
+    try {
+      const originLocal = (typeof origin === 'string') ? resolveYolaPlace(origin) : (origin && origin.lat ? origin : null);
+      const destLocal = (typeof destination === 'string') ? resolveYolaPlace(destination) : (destination && destination.lat ? destination : null);
+      if (originLocal && destLocal) {
+        console.log('ℹ Using local YOLA_COORDS for distance calculation');
+        const metrics = calculateMetricsFromLocalDatabase(originLocal, destLocal);
+        if (metrics) return metrics;
+      }
+    } catch (e) {
+      console.warn('⚠️ Local YOLA_COORDS calculation failed, falling back to TomTom', e);
+    }
+
+    // Fall back to TomTom routing if we have an API key
     if (!apiKey) {
-      console.error('❌ TomTom API key not available');
-      throw new Error('API key not available');
+      console.error('❌ TomTom API key not available; cannot call routing API');
+      return null;
     }
 
     console.log('📡 TomTom API: Calculating route from', origin, 'to', destination);
-    
-    // Convert location names to coordinates if needed
+
+    // Convert location names to coordinates if needed (use searchLocation)
     let startCoords = origin;
     let endCoords = destination;
 
-    // If strings, search for coordinates using TomTom Search API
     if (typeof origin === 'string') {
-      console.log('🔍 Searching for origin coordinates:', origin);
       startCoords = await window.searchLocation(origin);
       if (!startCoords) {
         console.error('❌ Could not find coordinates for origin:', origin);
         return null;
       }
     }
-    
     if (typeof destination === 'string') {
-      console.log('🔍 Searching for destination coordinates:', destination);
       endCoords = await window.searchLocation(destination);
       if (!endCoords) {
         console.error('❌ Could not find coordinates for destination:', destination);
@@ -677,11 +766,8 @@ window.calculateDistanceAndTime = async function(origin, destination) {
       return null;
     }
 
-    console.log('📍 Route coordinates: From', startCoords, 'to', endCoords);
-    
     const routeUrl = `https://api.tomtom.com/routing/1/calculateRoute/${startCoords.lat},${startCoords.lon}:${endCoords.lat},${endCoords.lon}/json?key=${apiKey}`;
     console.log('🌐 Fetching from TomTom Routing API...');
-    
     const response = await fetch(routeUrl);
     const data = await response.json();
 
@@ -691,7 +777,7 @@ window.calculateDistanceAndTime = async function(origin, destination) {
       console.log('✅ Route calculated - Distance:', distance, 'km, Travel Time:', travelTime, 'minutes');
       return { distance, travelTime };
     }
-    
+
     console.error('❌ No route found in TomTom response');
     return null;
   } catch (error) {
@@ -823,14 +909,51 @@ window.sendNaviMessage = async function(faqText = '') {
 
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
   let mediaData = null;
   if (preview) {
-    const img = preview.querySelector('img');
-    const audio = preview.querySelector('audio');
-    if (img && img.src) mediaData = img.src;
-    else if (audio && audio.src) mediaData = audio.src;
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe elements
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
   }
+
+  const attachments = window.getMessageAttachmentsFromPreview('navi', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+
   if (!msg && !attach) return;
 
   let controller = null;
@@ -888,11 +1011,29 @@ window.sendNaviMessage = async function(faqText = '') {
     
     // Combine all local data
     const allLocalData = localData + linkedContents + historyContext;
-    finalAnswer = await getGeminiAnswer(NAVI_AI_PROMPT + "\n\n" + allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal);
-    
-    // Store in chat history (keep last 10 messages)
+
+    // Try to get an AI response but do NOT bail out on failure — routing must continue.
+    let aiText = '';
+    try {
+      aiText = await window.callGeminiAI(NAVI_AI_PROMPT + "\n\n" + allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal, 'navi', attachments);
+    } catch (aiErr) {
+      if (aiErr && (aiErr.name === 'AbortError' || aiErr.message === 'AbortError')) {
+        aiText = "Request cancelled.";
+      } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        aiText = window.friendlyAIErrorMessage(aiErr);
+      } else {
+        aiText = "The AI is currently unavailable. Please try again later.";
+      }
+      // Log but continue to run routing and metrics below
+      console.warn('Gemini AI unavailable for navi section, continuing with route calculations:', aiErr);
+    }
+
+    // Start the finalAnswer with whatever AI text (or friendly fallback) we have
+    finalAnswer = aiText;
+
+    // Store user message in chat history (keep last 10 messages)
     window.addToChatHistory && window.addToChatHistory('navi', 'user', msg);
-    
+
     // NEW: Detect places in user message and switch maps accordingly
     const places = extractPlaces(msg);
     if (places && places.length >= 2) {
@@ -904,28 +1045,15 @@ window.sendNaviMessage = async function(faqText = '') {
       // Try to draw route on TomTom map between first two places
       const route = await window.drawRouteOnTomTomMap(places[0], places[1]);
       
-      // If route was drawn successfully, calculate and display metrics
-      if (route) {
-        // Calculate metrics
-        const metrics = await window.calculateDistanceAndTime(places[0], places[1]);
-        
-        if (metrics) {
-          // Add metrics and instructions to AI response
-          const mapInstruction = `\n\n📍 **Route Details:**\n- **Distance:** ${metrics.distance} km\n- **Estimated Travel Time:** ${metrics.travelTime} minutes\n\n👇 **Scroll down to see the map with the route drawn between ${places[0]} and ${places[1]}**`;
-          finalAnswer += mapInstruction;
-          console.log('✅ Route metrics added to response');
-        }
+      // If route was drawn successfully, use TomTom metrics only
+      if (route && typeof route.distance !== 'undefined' && typeof route.time !== 'undefined') {
+        const mapInstruction = `\n\n📍 **Route Details (TomTom):**\n- **Distance:** ${route.distance.toFixed ? route.distance.toFixed(1) : route.distance} km\n- **Estimated Travel Time:** ${Math.round(route.time)} minutes\n\n👇 **Scroll down to see the map with the route drawn between ${places[0]} and ${places[1]}**`;
+        finalAnswer += mapInstruction;
+        console.log('✅ TomTom route metrics added to response');
       } else {
-        // TomTom map failed, but still calculate distance and time for display
-        console.log('⚠️ TomTom map unavailable, trying distance calculation only...');
-        const metrics = await window.calculateDistanceAndTime(places[0], places[1]);
-        
-        if (metrics) {
-          // Show metrics even if map can't be displayed
-          const mapInstruction = `\n\n📍 **Route Details:**\n- **Distance:** ${metrics.distance} km\n- **Estimated Travel Time:** ${metrics.travelTime} minutes\n\n⚠️ (Map display unavailable - may be blocked by network firewall)`;
-          finalAnswer += mapInstruction;
-          console.log('✅ Route metrics added to response (map unavailable)');
-        }
+        // TomTom route was unavailable
+        console.log('⚠️ TomTom route unavailable; not adding distance/time details from Gemini.');
+        finalAnswer += '\n\n⚠️ TomTom routing unavailable right now; no distance/time details can be shown.';
       }
     } else if (places && places.length === 1) {
       console.log('📍 Single place detected:', places[0]);
@@ -945,11 +1073,13 @@ window.sendNaviMessage = async function(faqText = '') {
 
     window.addToChatHistory && window.addToChatHistory('navi', 'assistant', finalAnswer);
   } catch (e) {
-      if (e.name === 'AbortError') {
-        finalAnswer = "USER ABORTED REQUEST";
+      if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+        finalAnswer = "Request cancelled.";
+      } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        finalAnswer = window.friendlyAIErrorMessage(e);
       } else {
         console.error("Error fetching local data or Gemini API call:", e);
-        finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
       }
   }
 

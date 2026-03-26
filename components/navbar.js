@@ -1,23 +1,21 @@
 // A global variable to store the original PC layout HTML for reliable reversion.
-let originalPCLayout = null;
+// Use a window-scoped sentinel to avoid redeclaration if the script is loaded twice.
+window.__originalPCLayout = window.__originalPCLayout || null;
+
+// Helper: derive the active section from the current browser URL.
+// This avoids any reliance on persistent storage so the navbar always
+// reflects the live address bar.
+function getSectionFromUrl() {
+  let path = window.location.pathname.replace(/^\/+/, '').toLowerCase();
+  if (!path || path === '' || path === 'index.html') return 'home';
+  path = path.split('/').pop().split('?')[0].split('#')[0];
+  const valid = ['home','eduinfo','agroinfo','mediinfo','naviinfo','ecoinfo','serviinfo','communityinfo','settings'];
+  return valid.includes(path) ? path : 'home';
+}
 
 function renderNavbar() {
-  // Always restore user from localStorage before rendering
-  let restoredUser = null;
-  try {
-    const stored = localStorage.getItem('currentUser');
-    if (stored) {
-      restoredUser = JSON.parse(stored);
-    }
-  } catch (e) { /* ignore */ }
-  
-  if (restoredUser && restoredUser.username) {
-    window.currentUser = restoredUser;
-    window.__lastUser = restoredUser;
-  } else {
-    // No stored user - explicitly clear currentUser
-    window.currentUser = null;
-  }
+  // Note: User state will be set by the server check in window.Navbar.render()
+  // Do not restore from localStorage - always check server
 
   const nav = document.createElement('nav');
   nav.className = 'navbar';
@@ -27,23 +25,16 @@ function renderNavbar() {
   // Create the auth buttons container that will be reused
   let authButtonsHTML = `
     <div class="navbar-auth" id="navbar-auth">
-      <span class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
-      <button class="settings-icon-btn" onclick="window.loadSection('settings')" title="Settings">
-        <span>⚙️</span>
-      </button>
+      <span data-i18n="login_suggestion" class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
       <button id="signin-btn" class="auth-btn" type="button" data-i18n="sign_in">Sign in</button>
       <button id="signup-btn" class="auth-btn" type="button" data-i18n="sign_up">Sign up</button>
     </div>
   `;
-  // If user is signed in, show settings button only
+  // If user is signed in, show nothing in auth section (navbar-auth)
   if (window.currentUser && window.currentUser.username) {
     console.log('%c✅ renderNavbar: User IS logged in, rendering logged-in navbar', 'color: #10b981;', window.currentUser.username);
     authButtonsHTML = `
       <div class="navbar-auth" id="navbar-auth" style="display:flex;align-items:center;gap:0.7rem;">
-      <!--  <span class="navbar-username" style="font-weight:600;color:#205080;font-size:1.08rem;">${window.currentUser.username}</span>   -->
-        <button class="settings-icon-btn" onclick="window.loadSection('settings')" title="Settings">
-          <span>⚙️</span>
-        </button>
       </div>
     `;
   } else {
@@ -52,7 +43,11 @@ function renderNavbar() {
 
   const logoHTML = `
     <div class="navbar-logo-area">
-      <div class="navbar-logo-placeholder"><img src=Data/Images/jippujam.jpg style="overflow: hidden;object-fit: fill;width: 100%;height: 100%; border-radius:12px;"></div>
+      <div class="navbar-logo-placeholder">
+        <img src="Data/Images/jippujam.jpg" 
+             onerror="this.src='Data/Images/default-logo.jpg';" 
+             style="overflow: hidden; object-fit: fill; width: 100%; height: 100%; border-radius: 12px;">
+      </div>
     </div>
     <span class="navbar-appname">Yola AI Info Hub</span>
   `;
@@ -63,37 +58,32 @@ function renderNavbar() {
 
   nav.innerHTML = `
     <div class="navbar-container">
-  <!-- <div class="navbar-top-section">  -->
-        <div class="navbar-left">
-          ${logoHTML}
-        </div>
-        <div class="hamburger" id="hamburger">
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-        </div>
-        
-        <div class="navbar-right">
-        
-          <div class="navbar-user-section">
-            <div class="navbar-username-container" id="navbar-username-container">
-              ${window.currentUser && window.currentUser.username ? `
-                <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link" id="navbar-profile-link">
-                  <span class="navbar-avatar" id="navbar-avatar">${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}</span>
-                  <span class="navbar-names">
-                    <span class="navbar-fullname">${window.currentUser.name || window.currentUser.username}</span>
-                    <span class="navbar-username-text">@${window.currentUser.username}</span>
-                  </span>
-                </a>
-              ` : ''}
-            </div>
-            ${authButtonsHTML}
+      <div class="navbar-left">
+        ${logoHTML}
+      </div>
+      <div class="hamburger" id="hamburger">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </div>
+      <div class="navbar-right">
+        <div class="navbar-user-section">
+          <div class="navbar-username-container" id="navbar-username-container">
+            ${isLoggedIn ? `
+              <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link" id="navbar-profile-link">
+                <span class="navbar-avatar" id="navbar-avatar">
+                  ${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}
+                </span>
+                <span class="navbar-names">
+                  <span class="navbar-fullname">${window.currentUser.name || window.currentUser.username}</span>
+                  <span class="navbar-username-text">@${window.currentUser.username}</span>
+                </span>
+              </a>
+            ` : ''}
           </div>
-
-
-
-
-          <div class="navbar-links-container">
+          ${!isLoggedIn ? authButtonsHTML : ''}
+        </div>
+        <div class="navbar-links-container">
           <ul class="navbar-links">
             <li><button onclick="window.loadSection('home')" data-i18n="home">Home</button></li>
             <li><button onclick="window.loadSection('eduinfo')" data-i18n="eduinfo">EduInfo</button></li>
@@ -103,15 +93,15 @@ function renderNavbar() {
             <li><button onclick="window.loadSection('naviinfo')" data-i18n="naviinfo">NaviInfo</button></li>
             <li><button onclick="window.loadSection('communityinfo')" data-i18n="communityinfo">CommunityInfo</button></li>
             <li><button onclick="window.loadSection('serviinfo')" data-i18n="serviinfo">ServiInfo</button></li>
-            <li><button onclick="window.loadSection('aboutinfo')" data-i18n="aboutinfo">About</button></li>
+            <li><button onclick="window.loadSection('about')" data-i18n="settings">Settings</button></li>
           </ul>
-          </div>
-
         </div>
-
       </div>
     </div>
   `;
+
+  // Append the navbar to the DOM
+  document.body.prepend(nav);
   
   // Wire up auth button events after DOM is in place
   setTimeout(() => {
@@ -121,23 +111,20 @@ function renderNavbar() {
     if (signupBtn) signupBtn.onclick = () => window.location.href = '/pages/signup.html';
   }, 0);
 
-  document.getElementById('navbar').innerHTML = ''; // Clear existing content
-  document.getElementById('navbar').appendChild(nav);
-
   // Apply translations to navbar
   if (window.applyTranslations) {
     window.applyTranslations(nav);
   }
 
-  // Store the original PC layout HTML
-  originalPCLayout = nav.innerHTML;
+  // Store the original PC layout HTML (store on window to avoid redeclaration issues)
+  window.__originalPCLayout = nav.innerHTML;
 
   // Call handleResponsiveLayout
   handleResponsiveLayout();
 
   // Main function to handle all responsive layouts
   function handleResponsiveLayout() {
-    if (!originalPCLayout) {
+    if (!window.__originalPCLayout) {
       console.log('handleResponsiveLayout: originalPCLayout not set yet, skipping.');
       return;
     }
@@ -147,8 +134,8 @@ function renderNavbar() {
     // Restore to original PC layout before making any changes
     // This is the layout at the time renderNavbar() was called (with current login state)
     const navbarEl = document.querySelector('.navbar');
-    if (originalPCLayout && navbarEl) {
-      navbarEl.innerHTML = originalPCLayout;
+    if (window.__originalPCLayout && navbarEl) {
+      navbarEl.innerHTML = window.__originalPCLayout;
     } else if (!navbarEl) {
       console.warn('handleResponsiveLayout: .navbar element not found, skipping layout update.');
       return;
@@ -193,15 +180,16 @@ function renderNavbar() {
           navbarAuth.style.alignItems = 'center';
         }
       }
-      // Wrap username container and auth in a div for large screens
-      const userSection = document.createElement('div');
-      userSection.className = 'navbar-user-section-large';
+      // Note: Skip moving elements around - the HTML structure is already correct
+      // Just ensure proper display settings for large screens
       const usernameContainer = document.querySelector('.navbar-username-container');
       const navbarAuthEl = document.getElementById('navbar-auth');
-      if (usernameContainer && navbarAuthEl) {
-        newNavbarRight.insertBefore(userSection, usernameContainer);
-        userSection.appendChild(usernameContainer);
-        userSection.appendChild(navbarAuthEl);
+      if (usernameContainer) {
+        usernameContainer.style.display = window.currentUser && window.currentUser.username ? 'flex' : 'none';
+      }
+      if (navbarAuthEl) {
+        navbarAuthEl.style.display = 'flex';
+        navbarAuthEl.style.alignItems = 'center';
       }
 
     } else if (windowWidth >= 701 && windowWidth <= 1024) {
@@ -327,64 +315,61 @@ function renderNavbar() {
         
         // Add username container to mobile menu if user is logged in
         if (window.currentUser && window.currentUser.username) {
-          // Create username section for mobile menu
-          const userMenuSection = document.createElement('div');
-          userMenuSection.style.cssText = `
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #555;
-            gap: 0.7rem;
-            background: #1a202c;
-            margin-bottom: 1rem;
-          `;
-          
-          // Create avatar
-          const avatarDiv = document.createElement('div');
-          avatarDiv.style.cssText = `
-            display: inline-flex;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: #fff;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            border: 2px solid #cbd5e1;
-          `;
-          const avatarImg = document.createElement('img');
-          avatarImg.src = window.currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(window.currentUser.name || window.currentUser.username)}`;
-          avatarImg.alt = 'avatar';
-          avatarImg.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
-          avatarDiv.appendChild(avatarImg);
-          
-          // Create names section
-          const namesDiv = document.createElement('div');
-          namesDiv.style.cssText = `
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.2rem;
-            flex: 1;
-          `;
-          
-          const fullnameSpan = document.createElement('span');
-          fullnameSpan.textContent = window.currentUser.name || window.currentUser.username;
-          fullnameSpan.style.cssText = 'font-weight: 600; color: #e6eef9; font-size: 0.95rem; line-height: 1.2;';
-          
-          const usernameSpan = document.createElement('span');
-          usernameSpan.textContent = '@' + window.currentUser.username;
-          usernameSpan.style.cssText = 'font-weight: 700; color: #cbd5e1; font-size: 0.95rem; letter-spacing: 0.5px;';
-          
-          namesDiv.appendChild(fullnameSpan);
-          namesDiv.appendChild(usernameSpan);
-          
-          userMenuSection.appendChild(avatarDiv);
-          userMenuSection.appendChild(namesDiv);
-          
-          mobileMenu.appendChild(userMenuSection);
+          // Clone the existing navbar-username-container for mobile menu
+          const existingUsernameContainer = document.getElementById('navbar-username-container');
+          if (existingUsernameContainer) {
+            const userMenuSection = existingUsernameContainer.cloneNode(true);
+            userMenuSection.style.cssText = `
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              padding: 1rem;
+              border-bottom: 1px solid #555;
+              gap: 0.7rem;
+              background: #1a202c;
+              margin-bottom: 1rem;
+            `;
+            // Ensure avatar styling for mobile
+            const avatarSpan = userMenuSection.querySelector('.navbar-avatar');
+            if (avatarSpan) {
+              avatarSpan.style.cssText = `
+                display: inline-flex;
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                overflow: hidden;
+                background: #fff;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                border: 2px solid #cbd5e1;
+              `;
+              const avatarImg = avatarSpan.querySelector('img');
+              if (avatarImg) {
+                avatarImg.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+              }
+            }
+            // Ensure names styling for mobile
+            const namesSpan = userMenuSection.querySelector('.navbar-names');
+            if (namesSpan) {
+              namesSpan.style.cssText = `
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.2rem;
+                flex: 1;
+              `;
+              const fullnameSpan = namesSpan.querySelector('.navbar-fullname');
+              if (fullnameSpan) {
+                fullnameSpan.style.cssText = 'font-weight: 600; color: #e6eef9; font-size: 0.95rem; line-height: 1.2;';
+              }
+              const usernameSpan = namesSpan.querySelector('.navbar-username-text');
+              if (usernameSpan) {
+                usernameSpan.style.cssText = 'font-weight: 700; color: #cbd5e1; font-size: 0.95rem; letter-spacing: 0.5px;';
+              }
+            }
+            mobileMenu.appendChild(userMenuSection);
+          }
         }
         
         // Menu links
@@ -399,16 +384,16 @@ function renderNavbar() {
           { name: 'NaviInfo', section: 'naviinfo', i18n: 'naviinfo' },
           { name: 'CommunityInfo', section: 'communityinfo', i18n: 'communityinfo' },
           { name: 'ServiInfo', section: 'serviinfo', i18n: 'serviinfo' },
-          { name: 'About', section: 'aboutinfo', i18n: 'aboutinfo' }
+          { name: 'About', section: 'settings', i18n: 'settings' }
         ].forEach(link => {
           const li = document.createElement('li');
           const btn = document.createElement('button');
           btn.setAttribute('data-i18n', link.i18n);
           btn.textContent = link.name;
-          // Check if this is the current section
-          const currentSection = localStorage.getItem('currentSection') || 'home';
+          // Check if this is the current section (use in-memory or URL fallback)
+          const currentSection = window.currentSection || getSectionFromUrl();
           if (
-            (currentSection === 'aboutinfo' && link.name === 'About') ||
+            (currentSection === 'settings' && link.name === 'Settings') ||
             (currentSection === link.section) ||
             (currentSection === 'home' && link.name === 'Home')
           ) {
@@ -424,43 +409,7 @@ function renderNavbar() {
           linksList.appendChild(li);
         });
         
-        // Add settings icon above menu links
-        const settingsIconSection = document.createElement('div');
-        settingsIconSection.style.cssText = `
-          display: flex;
-          align-items: center;
-          padding: 1rem;
-          border-bottom: 1px solid #555;
-          gap: 1rem;
-          background: #1a202c;
-        `;
-        
-        const settingsBtn = document.createElement('button');
-        settingsBtn.className = 'mobile-settings-btn';
-        settingsBtn.onclick = () => {
-          window.loadSection('settings');
-          mobileMenu.classList.remove('show');
-          setTimeout(() => mobileMenu.remove(), 300);
-        };
-        settingsBtn.innerHTML = '⚙️ Settings';
-        settingsBtn.title = 'Go to Settings';
-        settingsBtn.style.cssText = `
-          flex: 1;
-          padding: 0.7rem 1rem;
-          background: #2d3748;
-          color: #fff;
-          border: 1px solid #555;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 1rem;
-          font-weight: 500;
-          transition: all 0.3s ease;
-        `;
-        
-        settingsIconSection.appendChild(settingsBtn);
-        // Append settings section first, then links list. This order avoids InsertBefore
-        // errors by not relying on a second argument that must already be a child.
-        mobileMenu.appendChild(settingsIconSection);
+        // Append links list directly (settings already included above)
         mobileMenu.appendChild(linksList);
         
         document.body.appendChild(mobileMenu);
@@ -478,43 +427,37 @@ function renderNavbar() {
   // Listen for window resize events
   window.addEventListener('resize', handleResponsiveLayout);
 
-  // Highlight active section
+  // Highlight active section helper (invoked after navigation)
   window.highlightActiveNav = function(section) {
-    // Default to home if no section provided
+    // If no section provided, infer from URL
     if (!section || section === '' || section === 'index.html') {
-      section = 'home';
+      section = getSectionFromUrl();
     }
 
-    // Store current section in localStorage
-    localStorage.setItem('currentSection', section);
+    // keep current section in memory only
+    window.currentSection = section;
 
-    // Helper function to highlight a button if it matches current section
+    // Helper to match and highlight buttons
     const highlightButton = (btn) => {
       btn.classList.remove('active');
       const btnText = btn.textContent.trim();
-      const btnSection = btnText.toLowerCase() + (btnText.toLowerCase().endsWith('info') ? '' : 'info');
-      
-      if (
-        (section === 'aboutinfo' && btnText === 'About') ||
-        btnSection === section ||
-        (section === 'home' && btnText === 'Home')
-      ) {
+      const btnSection = btnText.toLowerCase() + (btnText.toLowerCase().endsWith('info') ? '' : (btnText.toLowerCase() === 'settings' ? '' : 'info'));
+      if ((section === 'settings' && btnText === 'Settings') || btnSection === section || (section === 'home' && btnText === 'Home')) {
         btn.classList.add('active');
       }
     };
 
-    // Highlight in both desktop and mobile menus
     document.querySelectorAll('.navbar-links button, .mobile-links button').forEach(highlightButton);
   };
 }
 
 // Export as Navbar global for compatibility
 window.Navbar = {
-  render: () => {
+  render: async () => {
     console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;');
     
     // IMPORTANT: On initial index.html load, only render navbar ONCE
-    // If we already rendered during initial auth check, skip unless explicitly updating for login/logout
+    // Subsequent calls from updateAuthUI/section loaders should be skipped unless explicitly forced
     if (window.__initialNavbarRendered && !window.__forceNavbarRerender) {
       console.log('%c⏭️ Navbar.render(): Already rendered on initial load and not forced - skipping', 'color: #94a3b8;');
       return;
@@ -523,25 +466,63 @@ window.Navbar = {
     // Clear the force rerender flag if it was set
     window.__forceNavbarRerender = false;
     
-    // Restore user from localStorage if present
-    let restoredUser = null;
+    // Fetch current user state from server instead of localStorage
     try {
-      const stored = localStorage.getItem('currentUser');
-      if (stored) {
-        restoredUser = JSON.parse(stored);
+      // Use window.API_BASE if available, otherwise build from current hostname
+      const apiBase = window.API_BASE || (function() {
+        try {
+          const h = window.location.hostname;
+          if (!h || h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.startsWith('192.') || h.startsWith('10.')) {
+            return `http://${h || 'localhost'}:4000`;
+          }
+          return 'https://yolaaiinfohub-backend.onrender.com';
+        } catch (e) { return 'http://localhost:4000'; }
+      })();
+      const response = await fetch(apiBase + '/api/me', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.loggedIn) {
+          window.currentUser = {
+            username: data.username,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            state: data.state,
+            lga: data.lga,
+            address: data.address,
+            profilePicture: data.profilePicture,
+            avatar: data.avatar
+          };
+          window.__lastUser = window.currentUser;
+          console.log('%c✅ Navbar.render(): User logged in from server', 'color: #10b981;', data.username);
+        } else {
+          // User not logged in according to server
+          window.currentUser = null;
+          window.__lastUser = null;
+          console.log('%c❌ Navbar.render(): User not logged in on server', 'color: #ef4444;');
+        }
+      } else {
+        // Error fetching user state from server
+        window.currentUser = null;
+        window.__lastUser = null;
+        console.log('%c⚠️ Navbar.render(): Failed to fetch user state from server', 'color: #f59e0b;');
       }
-    } catch (e) { /* ignore */ }
-    
-    if (restoredUser && restoredUser.username) {
-      window.currentUser = restoredUser;
-      window.__lastUser = restoredUser;
-    } else {
-      // No stored user - explicitly clear currentUser and __lastUser
+    } catch (error) {
+      console.error('%c❌ Navbar.render(): Error checking server for user state:', 'color: #ef4444;', error);
       window.currentUser = null;
-      window.__lastUser = null;  // IMPORTANT: Clear __lastUser on logout!
+      window.__lastUser = null;
     }
     
     renderNavbar();
+    // Mark navbar as rendered AFTER it's actually rendered
+    window.__initialNavbarRendered = true;
     // If auth UI was updated before this script loaded, ensure navbar picks it up
     // Only reapply if currentUser is null but we have a remembered user, or they differ
     if (window.updateAuthUI && window.__lastUser) {
@@ -558,3 +539,13 @@ window.Navbar = {
     }
   }
 };
+
+// Auto-render navbar on script load if not already rendered
+if (typeof window !== 'undefined' && !window.__initialNavbarRendered) {
+  // Use setTimeout to ensure DOM is ready
+  setTimeout(() => {
+    if (window.Navbar && typeof window.Navbar.render === 'function') {
+      window.Navbar.render();
+    }
+  }, 0);
+}

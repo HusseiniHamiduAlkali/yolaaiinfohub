@@ -16,7 +16,11 @@ And if a user clearly requests information on health, education, community, envi
 window.serviAbortController = window.serviAbortController || null;
 
 window.renderSection = function() {
-  ensureNavbarLoaded();
+  if (typeof ensureNavbarLoaded === 'function') {
+    try { ensureNavbarLoaded(); } catch (e) { console.warn('ensureNavbarLoaded() threw:', e); }
+  } else {
+    console.warn('ensureNavbarLoaded is not defined; continuing without it.');
+  }
   if (!document.getElementById('global-css')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -49,6 +53,17 @@ window.renderSection = function() {
         }
       });
     }
+
+      // Populate currency dropdowns for this newly-inserted template (if function exists)
+      if (typeof window.populateDropdown === 'function') {
+        window.populateDropdown('currency1');
+        window.populateDropdown('currency2');
+        window.populateDropdown('currency3');
+      }
+      // Setup exchange converter wiring after dropdowns are populated
+      if (typeof window.setupExchangeConverter === 'function') {
+        try { window.setupExchangeConverter(); } catch (e) { console.error('setupExchangeConverter failed:', e); }
+      }
   }).catch(err => {
     console.error('Failed to load servi template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
@@ -139,13 +154,49 @@ window.sendServiMessage = async function(faqText = '') {
 
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
   let mediaData = null;
   if (preview) {
-    const img = preview.querySelector('img');
-    const audio = preview.querySelector('audio');
-    if (img && img.src) mediaData = img.src;
-    else if (audio && audio.src) mediaData = audio.src;
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe elements
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
+  }
+
+  const attachments = window.getMessageAttachmentsFromPreview('servi', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
   }
   if (!msg && !attach) return;
 
@@ -191,13 +242,15 @@ window.sendServiMessage = async function(faqText = '') {
 
     // Combine all local data
     const allLocalData = localData + linkedContents;
-    finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal);
+    finalAnswer = await window.callGeminiAI(allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal, 'servi', attachments);
   } catch (e) {
-    if (e.name === 'AbortError') {
-      finalAnswer = 'USER ABORTED REQUEST';
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+      finalAnswer = 'Request cancelled.';
+    } else if (typeof window.friendlyAIErrorMessage === 'function') {
+      finalAnswer = window.friendlyAIErrorMessage(e);
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
-      finalAnswer = "⚠️ Sorry, I could not access local information or the AI at this time. Please check your internet connection.";
+      finalAnswer = "The AI is currently unavailable. Please try again later.";
     }
   }
 
@@ -214,4 +267,170 @@ window.sendServiMessage = async function(faqText = '') {
   }
   window.serviAbortController = null;
 };
+
+// Add currency exchange rate logic
+async function fetchExchangeRates() {
+  // Legacy function retained for manual fetch button; perform a simple conversion
+  // We'll try to convert using amount1 as source if present
+  const a1 = document.getElementById('amount1');
+  if (a1) {
+    const val = parseFloat(a1.value);
+    if (!isNaN(val)) {
+      await window.convertFrom(1);
+    }
+  }
+}
+
+// Ensure dropdowns are populated dynamically
+if (!window.populateDropdown) {
+  window.populateDropdown = (dropdownId) => {
+    const dropdown = document.getElementById(dropdownId);
+    if (!dropdown) {
+      console.error(`Dropdown with ID '${dropdownId}' not found.`);
+      return;
+    }
+    if (!window.currencies) {
+      window.currencies = [
+        'USD', 'NGN', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CNY', 'ZAR', 'XAF'
+      ];
+    }
+    window.currencies.forEach(currency => {
+      const option = document.createElement('option');
+      option.value = currency;
+      option.textContent = currency;
+      dropdown.appendChild(option);
+    });
+  };
+}
+
+// Exchange converter utilities
+window._exchangeRatesCache = window._exchangeRatesCache || {};
+
+async function getRatesForBase(base) {
+  if (!base) return null;
+  const cached = window._exchangeRatesCache[base];
+  const now = Date.now();
+  if (cached && (now - cached.ts) < 1000 * 60 * 60) { // 1 hour cache
+    return cached.rates;
+  }
+  // Try multiple public endpoints to improve reliability and handle different JSON shapes
+  const endpoints = [
+    (b) => `https://api.exchangerate.host/latest?base=${encodeURIComponent(b)}`,
+    (b) => `https://open.er-api.com/v6/latest/${encodeURIComponent(b)}`,
+    (b) => `https://api.exchangerate-api.com/v4/latest/${encodeURIComponent(b)}`
+  ];
+  for (const ep of endpoints) {
+    try {
+      const url = ep(base);
+      const res = await fetch(url);
+      if (!res.ok) {
+        console.warn('getRatesForBase: endpoint returned non-ok', url, res.status);
+        continue;
+      }
+      const data = await res.json();
+      // Normalize possible field names
+      const rates = data.rates || data.conversion_rates || data['conversion_rates'];
+      if (rates && typeof rates === 'object') {
+        window._exchangeRatesCache[base] = { rates: rates, ts: now };
+        return rates;
+      }
+      // Some APIs wrap rates differently (older or unexpected formats)
+      console.warn('getRatesForBase: endpoint returned unexpected payload', url, data);
+    } catch (err) {
+      console.warn('getRatesForBase fetch failed for endpoint, trying next:', err);
+      continue;
+    }
+  }
+  console.error('getRatesForBase error: all endpoints failed or returned invalid data');
+  return null;
+}
+
+window._ignoreExchangeInput = false;
+
+window.convertFrom = async function(index) {
+  const idx = Number(index);
+  const sel1 = document.getElementById('currency1');
+  const sel2 = document.getElementById('currency2');
+  const sel3 = document.getElementById('currency3');
+  const amt1 = document.getElementById('amount1');
+  const amt2 = document.getElementById('amount2');
+  const amt3 = document.getElementById('amount3');
+  if (!sel1 || !sel2 || !sel3 || !amt1 || !amt2 || !amt3) return;
+
+  const selMap = {1: sel1, 2: sel2, 3: sel3};
+  const amtMap = {1: amt1, 2: amt2, 3: amt3};
+  const srcSel = selMap[idx];
+  const srcAmt = parseFloat(amtMap[idx].value);
+  if (!srcSel || !srcSel.value) return;
+  if (isNaN(srcAmt)) {
+    // clear others
+    window._ignoreExchangeInput = true;
+    if (idx !== 1) amt1.value = '';
+    if (idx !== 2) amt2.value = '';
+    if (idx !== 3) amt3.value = '';
+    window._ignoreExchangeInput = false;
+    return;
+  }
+
+  const rates = await getRatesForBase(srcSel.value);
+  if (!rates) return;
+
+  window._ignoreExchangeInput = true;
+  try {
+    // compute for each target
+    for (let i = 1; i <= 3; i++) {
+      if (i === idx) continue;
+      const targetSel = selMap[i];
+      const targetAmtEl = amtMap[i];
+      if (!targetSel || !targetSel.value) {
+        targetAmtEl.value = '';
+        continue;
+      }
+      const rate = rates[targetSel.value];
+      if (typeof rate === 'number') {
+        const converted = srcAmt * rate;
+        targetAmtEl.value = Number.isFinite(converted) ? Math.round(converted * 100) / 100 : '';
+      } else {
+        targetAmtEl.value = '';
+      }
+    }
+  } finally {
+    window._ignoreExchangeInput = false;
+  }
+};
+
+window.setupExchangeConverter = function() {
+  const inputs = Array.from(document.querySelectorAll('.exchange-amount'));
+  const selects = [document.getElementById('currency1'), document.getElementById('currency2'), document.getElementById('currency3')];
+  if (inputs.length < 3 || selects.some(s => !s)) return;
+
+  inputs.forEach(inp => {
+    inp.addEventListener('input', function() {
+      if (window._ignoreExchangeInput) return;
+      const idx = Number(this.dataset.index || 1);
+      window.convertFrom(idx);
+    });
+  });
+
+  selects.forEach((sel, i) => {
+    sel.addEventListener('change', function() {
+      // when currency changes, try to recompute using the corresponding amount as source
+      const idx = i + 1;
+      window.convertFrom(idx);
+    });
+  });
+};
+
+// Attach event listener to the button (idempotent binding to avoid redeclare errors)
+(function() {
+  try {
+    const btn = document.getElementById('fetch-rates');
+    if (!btn) return;
+    if (window._servi_fetchRatesBound) return;
+    btn.addEventListener('click', fetchExchangeRates);
+    window._servi_fetchRatesBound = true;
+  } catch (e) {
+    console.error('Failed to bind fetch-rates button:', e);
+  }
+})();
 

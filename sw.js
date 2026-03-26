@@ -1,40 +1,8 @@
 // Service Worker for Yola AI Info Hub PWA
-const CACHE_NAME = 'yola-ai-hub-v1';
-const RUNTIME_CACHE = 'yola-runtime-v1';
+const CACHE_NAME = 'yola-ai-hub-v2';
+const RUNTIME_CACHE = 'yola-runtime-v2';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/app.js',
-  '/styles/global.css',
-  '/styles/navbar.css',
-  '/styles/home.css',
-  '/styles/dark-mode.css',
-  '/styles/settings.css',
-  '/styles/eduinfo.css',
-  '/styles/agroinfo.css',
-  '/styles/mediinfo.css',
-  '/styles/naviinfo.css',
-  '/styles/ecoinfo.css',
-  '/styles/serviinfo.css',
-  '/styles/communityinfo.css',
-  '/styles/aboutinfo.css',
-  '/styles/auth.css',
-  '/styles/ecoAI.css',
-  '/styles/tomtom-controls-fallback.css',
-  '/components/navbar.js',
-  '/components/auth.js',
-  '/components/home.js',
-  '/components/eduinfo.js',
-  '/components/agroinfo.js',
-  '/components/mediinfo.js',
-  '/components/naviinfo.js',
-  '/components/ecoinfo.js',
-  '/components/serviinfo.js',
-  '/components/communityinfo.js',
-  '/components/aboutinfo.js',
-  '/components/commonAI.js',
-  '/components/chatHandler.js',
-  '/Data/General/general.txt'
+  // Disabled caching - empty array for development
 ];
 
 // Install event - cache essential assets
@@ -70,73 +38,15 @@ self.addEventListener('activate', event => {
 
 // Fetch event - network first, then cache
 self.addEventListener('fetch', event => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // Skip non-GET requests
-  if (request.method !== 'GET') {
-    return;
-  }
-
-  // Skip external CDN resources (let them fail if offline)
-  if (url.origin !== location.origin) {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          // Only clone if response hasn't been consumed
-          if (response.ok && response.status === 200) {
-            // Clone before using the response
-            const responseToCache = response.clone();
-            caches.open(RUNTIME_CACHE)
-              .then(cache => {
-                // Put the cloned response in cache asynchronously
-                cache.put(request, responseToCache).catch(err => {
-                  console.warn('Failed to cache response:', err);
-                });
-              })
-              .catch(err => {
-                console.warn('Failed to open cache:', err);
-              });
-          }
-          return response;
-        })
-        .catch(() => {
-          // Return cached version if available
-          return caches.match(request)
-            .then(cached => cached || new Response('Offline - Resource unavailable', { status: 503 }));
-        })
-    );
-    return;
-  }
-
-  // For local resources: cache first, then network
+  // Development mode: bypass all caching, always fetch from network
   event.respondWith(
-    caches.match(request)
-      .then(cached => {
-        if (cached) return cached;
-        
-        return fetch(request)
-          .then(response => {
-            // Only cache successful responses
-            if (!response || response.status !== 200) {
-              return response;
-            }
-
-            const responseClone = response.clone();
-            caches.open(RUNTIME_CACHE)
-              .then(cache => {
-                cache.put(request, responseClone);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // Return offline fallback for HTML pages
-            if (request.headers.get('accept')?.includes('text/html')) {
-              return caches.match('/index.html');
-            }
-            return new Response('Offline', { status: 503 });
-          });
+    fetch(event.request)
+      .catch(err => {
+        console.warn('Fetch failed:', err);
+        if (event.request.headers.get('accept')?.includes('text/html')) {
+          return new Response('Offline', { status: 503 });
+        }
+        throw err;
       })
   );
 });

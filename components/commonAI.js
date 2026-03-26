@@ -183,6 +183,23 @@ window.fetchWithSignal = async function(url, signal, options = {}) {
   return fetch(url, fetchOptions);
 };
 
+// Map various internal/network/API errors to friendly, non-technical messages
+window.friendlyAIErrorMessage = function(err) {
+  try {
+    if (!err) return "The AI is currently unavailable. Please try again later.";
+    const msg = (err && err.message) ? err.message : '';
+    if (msg.includes('API_RATE_LIMIT')) return "The AI is receiving too many requests right now. Please try again a little later.";
+    if (msg.includes('API_SERVER_ERROR')) return "The AI service is temporarily unavailable. Please try again later.";
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) return "Can't access the AI — please check your internet connection and try again.";
+    if (msg.includes('API_BAD_REQUEST')) return "I couldn't understand that request. Please try rephrasing your question.";
+    if (msg.includes('INVALID_JSON_RESPONSE') || msg.includes('INVALID_RESPONSE_FORMAT') || msg.includes('EMPTY_RESPONSE')) return "The AI returned an unexpected response. Please try again or ask something different.";
+    if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('authentication')) return "The AI service is not configured. Please check the app settings.";
+    return "The AI is currently unavailable. Please try again later.";
+  } catch (e) {
+    return "The AI is currently unavailable. Please try again later.";
+  }
+};
+
 // commonAI.js
 // Shared utility functions for AI sections (Home, Edu, Agro, etc.)
 
@@ -272,8 +289,8 @@ window.syncChatHistoriesToBackend = (function() {
       const user = window.getLoggedInUser();
       if (!user) return;
       
-      // Sync all sections
-      const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'about'];
+      // Sync all sections (exclude About which is now Settings-only)
+      const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'settings'];
       for (const section of sections) {
         window.syncChatHistoryToBackend(section);
       }
@@ -314,7 +331,7 @@ window.loadAllChatHistoriesFromBackend = async function() {
   
   // Silently attempt to load from backend
   // If backend doesn't have endpoints, localStorage will be used instead
-  const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'about'];
+  const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'settings'];
   let loadedCount = 0;
   
   for (const section of sections) {
@@ -842,7 +859,7 @@ window.clearAllChatHistories = function() {
   window.chatHistories = {};
   window.saveChatHistoriesToStorage();
   // Clear all section-specific global variables
-  const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'community', 'about', 'eco', 'servi'];
+  const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'community', 'eco', 'servi'];
   sections.forEach(section => {
     const globalName = section + 'ChatHistory';
     window[globalName] = [];
@@ -935,7 +952,7 @@ window.clearAllChatHistories = function() {
 };
 
 // Initialize chat histories for all sections
-['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'about'].forEach(section => {
+  ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community'].forEach(section => {
   window.initChatHistory(section, 10);
 });
 
@@ -944,15 +961,62 @@ window.clearAllChatHistories = function() {
 window.clearPreviewAndRemoveBtn = function(previewElement) {
   if (!previewElement) return;
 
-  // Remove any preview children and specific remove button
   try {
-    // If a remove button exists, remove it
-    const removeBtn = previewElement.querySelector('.remove-btn');
-    if (removeBtn) removeBtn.remove();
-    // Clear remaining preview content
+    // Remove any preview children and specific remove button
+    // First, remove all remove buttons (in case there are multiple)
+    const removeButtons = previewElement.querySelectorAll('.remove-btn');
+    removeButtons.forEach(btn => {
+      try {
+        btn.remove();
+      } catch (e) {
+        // Ignore removal errors
+      }
+    });
+    
+    // Remove all preview containers
+    const containers = previewElement.querySelectorAll('.preview-container');
+    containers.forEach(container => {
+      try {
+        container.remove();
+      } catch (e) {
+        // Ignore removal errors
+      }
+    });
+
+    // Remove all remaining children to ensure complete clearing
+    while (previewElement.firstChild) {
+      try {
+        previewElement.removeChild(previewElement.firstChild);
+      } catch (e) {
+        // Ignore removal errors
+      }
+    }
+
+    // Clear all remaining content including any orphaned elements
     previewElement.innerHTML = '';
+
+    // Also clear attachment registry for this section if possible
+    try {
+      const id = previewElement.id || '';
+      const m = id.match(/^(.+)-chat-preview$/);
+      if (m && m[1] && typeof window.clearAttachments === 'function') {
+        window.clearAttachments(m[1]);
+      }
+    } catch (e) {
+      // ignore if registry clearing fails
+    }
+    // Observe and remove dynamically added remove buttons
+    const observer = new MutationObserver(() => {
+      const dynamicRemoveButtons = previewElement.querySelectorAll('.remove-btn');
+      dynamicRemoveButtons.forEach(btn => btn.remove());
+    });
+
+    observer.observe(previewElement, { childList: true, subtree: true });
+
+    // Disconnect observer after a short delay to avoid memory leaks
+    setTimeout(() => observer.disconnect(), 5000);
   } catch (e) {
-    // Fallback to clearing HTML
+    // Fallback: force clear all HTML content
     previewElement.innerHTML = '';
   }
 };
@@ -1183,32 +1247,6 @@ window.recordAudio = function(section) {
 window.uploadFile = function(e, section) {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      const preview = document.getElementById(section + '-chat-preview');
-      // Create a container with the preview and a remove button
-      const container = document.createElement('div');
-      container.className = 'preview-container';
-      let html = '';
-      if (file.type.startsWith('image/')) {
-        html = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px;margin:4px 0;' alt='Capture' />`;
-      } else if (file.type.startsWith('audio/')) {
-        html = `<audio src='${ev.target.result}' controls style='max-width:160px;margin:4px 0;'></audio>`;
-      } else {
-        html = `<div style="padding:5px; background:#f1f1f1; border-radius:5px; font-size:11px;">📄 ${file.name}</div>`;
-      }
-      container.innerHTML = `${html}<button class="remove-btn" onclick="window.removePreview('${section}')" title="Remove">x</button>`;
-      preview.innerHTML = '';
-      preview.appendChild(container);
-    };
-    reader.readAsDataURL(file);
-};
-
-
-
-window.uploadFile = function(e, section) {
-    const file = e.target.files[0];
-    if (!file) return;
 
     const reader = new FileReader();
     reader.onload = function(ev) {
@@ -1217,12 +1255,17 @@ window.uploadFile = function(e, section) {
         // Create a container for the preview and the remove button
         const container = document.createElement('div');
         container.className = 'preview-container';
+        
+        // Store the file data URL and MIME type as data attributes
+        container.setAttribute('data-file-data', ev.target.result);
+        container.setAttribute('data-file-mime', file.type);
+        container.setAttribute('data-file-name', file.name);
 
         let mediaHtml = '';
         if (file.type.startsWith('image/')) {
             mediaHtml = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;' alt='Preview' />`;
         } else if (file.type.startsWith('audio/')) {
-            mediaHtml = `<audio src='${ev.target.result}' controls style='max-width:160px; border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;' alt='Preview'></audio>`;
+            mediaHtml = `<audio src='${ev.target.result}' controls style='max-width:160px; border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;'></audio>`;
         } else {
             mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:11px;">📄 ${file.name}</div>`;
         }
@@ -1447,57 +1490,75 @@ function ensureNavbarLoaded(cb) {
 }
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal = null) {
+async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal = null, section = 'home', attachments = []) {
   let modelVersion;
   try {
     const contents = {
       parts: []
     };
 
-    if (mediaData) {
-      // mediaData can be image, audio, or file - extract MIME type and data
-      const dataUrl = Array.isArray(mediaData) ? mediaData[0] : mediaData;
-      if (dataUrl && dataUrl.startsWith('data:')) {
-        const [header, data] = dataUrl.split(',');
-        const mimeType = header.match(/data:([^;]+)/)?.[1] || 'application/octet-stream';
-        contents.parts.push({
-          inlineData: {
-            mimeType: mimeType,
-            data: data
+    // Normalize attachments from shared storage and caller-provided data.
+    if (!Array.isArray(attachments)) attachments = [];
+
+    // Attachments from section preview capture/upload (legacy + modern)
+    if (Array.isArray(attachments) && attachments.length > 0) {
+      attachments.forEach(att => {
+        if (att && att.dataURL) {
+          const mimeType = att.type || (att.dataURL.match(/data:([^;]+);/) || [])[1] || 'application/octet-stream';
+          const dataPart = att.dataURL.split(',')[1] || '';
+          if (mimeType.startsWith('image/') || mimeType.startsWith('audio/') || mimeType.startsWith('video/')) {
+            contents.parts.push({
+              inlineData: { mimeType, data: dataPart }
+            });
+          } else {
+            contents.parts.push({
+              text: `Attached file: ${att.name || 'file'} of type ${mimeType}. Please use context, ignore actual binary content.`
+            });
           }
-        });
-        // Add acknowledgment text about what was sent
-        msg = msg || '';
-        if (msg && !msg.includes('uploaded')) {
-          msg = `[${mimeType.split('/')[0].toUpperCase()} file attached]\n${msg}`;
-        } else if (!msg) {
-          msg = `[${mimeType.split('/')[0].toUpperCase()} file attached - please analyze and describe it]`;
         }
+      });
+    } else if (mediaData) {
+      // Legacy single mediaData handling (string data URL / object)
+      let dataUrl = mediaData;
+      let mimeType = 'application/octet-stream';
+      if (typeof mediaData === 'object' && mediaData.dataUrl) {
+        dataUrl = mediaData.dataUrl;
+        mimeType = mediaData.mimeType || mimeType;
+      }
+      if (typeof dataUrl === 'string' && dataUrl.startsWith('data:')) {
+        const extractedMime = dataUrl.match(/data:([^;]+)/)?.[1];
+        if (extractedMime) mimeType = extractedMime;
+        const data = dataUrl.split(',')[1] || '';
+        contents.parts.push({
+          inlineData: { mimeType, data }
+        });
       }
     }
 
-    // Format chat history
-    const historyText = window.homeChatHistory && window.homeChatHistory.map(msg => 
-      `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
-    ).join('\n');
+    // If the section has a suggestive prompt in localStorage or window variable, use it.
+    const savedPrompt = localStorage.getItem(`${section}_ai_prompt`) || window[`${section.toUpperCase()}_AI_PROMPT`] || '';
 
-    // Use the editable prompt from localStorage or fallback
-    let promptGuide = '';
-    if (historyText) {
-      promptGuide = (localStorage.getItem('home_ai_prompt') || window.HOME_AI_PROMPT || '')
-        .replace('{history}', historyText);
-    } else {
-      promptGuide = localStorage.getItem('home_ai_prompt') || window.HOME_AI_PROMPT || '';
+    // Include section-specific chat history if available for meaning compensation
+    let historyText = '';
+    if (typeof window.getChatHistory === 'function') {
+      const history = window.getChatHistory(section) || [];
+      historyText = history.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n');
+    } else if (window[`${section}ChatHistory`] && Array.isArray(window[`${section}ChatHistory`])) {
+      historyText = window[`${section}ChatHistory`].map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n');
     }
 
+    const promptGuide = historyText && savedPrompt.includes('{history}')
+      ? savedPrompt.replace('{history}', historyText)
+      : savedPrompt;
+
     contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData || ''}\n--- LOCAL DATA END ---\n\nUser question: ${msg || ''}`
     });
 
-    // Choose model - use gemini-2.5-pro for multimodal support (images, audio, files); fallback to flash for text-only
-    modelVersion = mediaData ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
+    // Determine model selection based on attachments
+    const hasNonText = (Array.isArray(attachments) && attachments.length > 0) || !!mediaData;
+    modelVersion = hasNonText ? 'gemini-2.5-pro' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
 
-    // Use backend proxy instead of direct Gemini API
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : '/api/gemini';
@@ -1550,3 +1611,6 @@ window.getNotificationPreferences = function() {
   const pushEnabled = localStorage.getItem('notification-push') === 'enabled';
   return { email: emailEnabled, push: pushEnabled };
 };
+
+// Alias for backward compatibility and easier calling
+window.callGeminiAI = getGeminiAnswer;

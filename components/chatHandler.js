@@ -61,6 +61,48 @@ window.getAttachmentSummary = function(section) {
   return `<div class="attachment-metadata" style="font-size:12px; color:#718096; margin-top:6px; padding-top:6px; border-top:1px solid #e2e8f0;">📎 Attachments: ${summary}</div>`;
 };
 
+window.getMessageAttachmentsFromPreview = function(section, preview) {
+  if (!section || !preview || !preview.querySelector) return [];
+
+  const attachments = (window.getAttachments(section) || []).slice();
+  const container = preview.querySelector('.preview-container');
+  if (!container) return attachments;
+
+  const fileData = container.getAttribute('data-file-data');
+  const fileMime = container.getAttribute('data-file-mime');
+  const fileName = container.getAttribute('data-file-name');
+
+  const addAttachment = (name, type, dataURL) => {
+    if (!dataURL || !type) return;
+    const exists = attachments.some(a => a.dataURL === dataURL && a.type === type && a.name === name);
+    if (!exists) {
+      attachments.push({ name: name || 'attachment', type, size: 0, dataURL });
+    }
+  };
+
+  if (fileData && fileMime) {
+    addAttachment(fileName || 'file', fileMime, fileData);
+    return attachments;
+  }
+
+  const img = container.querySelector('img');
+  const audio = container.querySelector('audio');
+  const video = container.querySelector('video');
+  const iframe = container.querySelector('iframe');
+
+  if (img && img.src) {
+    addAttachment(fileName || 'image', img.src.match(/data:([^;]+)/)?.[1] || 'image/jpeg', img.src);
+  } else if (audio && audio.src) {
+    addAttachment(fileName || 'audio', audio.src.match(/data:([^;]+)/)?.[1] || 'audio/webm', audio.src);
+  } else if (video && video.src) {
+    addAttachment(fileName || 'video', video.src.match(/data:([^;]+)/)?.[1] || 'video/mp4', video.src);
+  } else if (iframe && iframe.src) {
+    addAttachment(fileName || 'pdf', 'application/pdf', iframe.src);
+  }
+
+  return attachments;
+};
+
 // Global text-to-speech variables and functions
 window.currentSpeech = window.currentSpeech || null;
 
@@ -378,7 +420,16 @@ window.sendMessage = async function(section, faqText = '') {
   const stopBtn = document.querySelector(`#${section}-chat-container .stop-button`);
   
   let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
   if (!msg && !attach) return;
 
   // Get attachment summary

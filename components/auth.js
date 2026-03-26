@@ -69,16 +69,7 @@ window.updateAuthUI = function(user) {
   // Keep a short-lived copy so navbar scripts that load later can pick up
   // the most recent auth state even if they were not present when updateAuthUI ran.
   window.__lastUser = window.currentUser;
-  // Persist user session in localStorage
-  if (user && user.username) {
-    try {
-      localStorage.setItem('currentUser', JSON.stringify(user));
-    } catch (e) { /* ignore */ }
-  } else {
-    try {
-      localStorage.removeItem('currentUser');
-    } catch (e) { /* ignore */ }
-  }
+  // do not cache user in localStorage; rely on backend for state
   const authButtons = document.getElementById('auth-buttons');
   const userInfo = document.getElementById('user-info');
 
@@ -131,8 +122,10 @@ window.updateAuthUI = function(user) {
     // If navbar exists, re-render to pick up username on PC views
     if (window.Navbar && typeof window.Navbar.render === 'function') {
       console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-in user:', 'color: #3182ce; font-weight: bold;', user.username);
-      // Force navbar rerender for login action
-      window.__forceNavbarRerender = true;
+      // Only force rerender if not already rendered (prevents flashing)
+      if (!window.__initialNavbarRendered) {
+        window.__forceNavbarRerender = true;
+      }
       try { window.Navbar.render(); } catch(e) { console.error('Navbar render error:', e); }
     } else {
       console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
@@ -155,8 +148,10 @@ window.updateAuthUI = function(user) {
     } catch (e) { /* ignore */ }
     if (window.Navbar && typeof window.Navbar.render === 'function') {
       console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-out user', 'color: #e53e3e; font-weight: bold;');
-      // Force navbar rerender for logout action
-      window.__forceNavbarRerender = true;
+      // Only force rerender if not already rendered (prevents flashing)
+      if (!window.__initialNavbarRendered) {
+        window.__forceNavbarRerender = true;
+      }
       try { window.Navbar.render(); } catch(e) { console.error('Navbar render error:', e); }
     } else {
       console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
@@ -179,8 +174,7 @@ window.logoutUser = async function() {
         'Content-Type': 'application/json'
       }
     });
-    // Always clear localStorage user on logout
-    // This will call Navbar.render() internally via updateAuthUI
+    // Logout call to backend (session will be destroyed server-side)
     window.updateAuthUI(null);
     
     // Clear all chat histories for this user on logout
@@ -438,17 +432,8 @@ function showAuthModal(type) {
 
 // Function to check login status (called on page load and after login)
 window.checkLoginStatus = async function() {
-  // First, try to restore user from localStorage for instant UI update
-  let restoredUser = null;
-  try {
-    const stored = localStorage.getItem('currentUser');
-    if (stored) {
-      restoredUser = JSON.parse(stored);
-      if (restoredUser && restoredUser.username) {
-        window.updateAuthUI(restoredUser);
-      }
-    }
-  } catch (e) { /* ignore */ }
+  // Don't restore from localStorage; always fetch fresh state from backend
+  // (instant UI update handled by Navbar.render instead)
 
   // Then, verify with server for security and up-to-date info
   // BUT: Don't downgrade from logged-in to logged-out if we just successfully logged in.

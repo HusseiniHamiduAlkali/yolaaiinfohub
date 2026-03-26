@@ -68,7 +68,16 @@ window.sendEduMessage = async function(faqText = '') {
     const stopBtn = document.querySelector('#edu-chat-input + .send-button-group .stop-button');
 
     let msg = faqText || input.value.trim();
-    let attach = preview.innerHTML;
+    let attach = '';
+    const previewContainer = preview.querySelector('.preview-container');
+    if (previewContainer) {
+      const clone = previewContainer.cloneNode(true);
+      const btn = clone.querySelector('.remove-btn');
+      if (btn) btn.remove();
+      attach = clone.outerHTML;
+    } else {
+      attach = preview.innerHTML;
+    }
     if (!msg && !attach) return;
 
     // Setup stop button with commonAI utility (with fallback if not loaded)
@@ -88,14 +97,50 @@ window.sendEduMessage = async function(faqText = '') {
     chat.appendChild(msgGroup);
     // Extract media data from preview (image, audio, or file)
     let mediaData = null;
-    const imgElement = preview.querySelector('img');
-    const audioElement = preview.querySelector('audio');
-    if (imgElement && imgElement.src) {
-      mediaData = imgElement.src;
-    } else if (audioElement && audioElement.src) {
-      mediaData = audioElement.src;
+    const previewContainer2 = preview.querySelector('.preview-container');
+    
+    if (previewContainer2) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = previewContainer2.getAttribute('data-file-data');
+      const fileMime = previewContainer2.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: previewContainer2.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio elements
+        const imgElement = previewContainer2.querySelector('img');
+        const audioElement = previewContainer2.querySelector('audio');
+        const videoElement = previewContainer2.querySelector('video');
+        const iframeElement = previewContainer2.querySelector('iframe');
+
+        if (imgElement && imgElement.src) {
+          mediaData = imgElement.src;
+        } else if (audioElement && audioElement.src) {
+          mediaData = audioElement.src;
+        } else if (videoElement && videoElement.src) {
+          mediaData = videoElement.src;
+        } else if (iframeElement && iframeElement.src) {
+          mediaData = iframeElement.src;
+        }
+      }
     }
-    window.clearPreviewAndRemoveBtn(preview);
+
+    const attachments = window.getMessageAttachmentsFromPreview('edu', preview) || [];
+    if (attachments.length > 0) {
+      const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+      msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+    }
+
+    // Use shared function to clear preview and remove button
+    if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+      window.clearPreviewAndRemoveBtn(preview);
+    } else {
+      preview.innerHTML = '';
+    }
     if (!faqText) input.value = '';
 
   // Initialize in-memory history for edu and add user entry
@@ -138,18 +183,20 @@ window.sendEduMessage = async function(faqText = '') {
     // Combine all local data
     const allLocalData = localData + linkedContents + historyContext;
             
-  finalAnswer = await getGeminiAnswer(allLocalData, msg, window.GEMINI_API_KEY, mediaData, window.eduAbortController ? window.eduAbortController.signal : null);
+  finalAnswer = await window.callGeminiAI(allLocalData, msg, window.GEMINI_API_KEY, mediaData, window.eduAbortController ? window.eduAbortController.signal : null, 'edu', attachments);
   // Add user message to history
   window.addToChatHistory && window.addToChatHistory('edu', 'user', msg);
   // Add assistant reply to in-memory history
   window.addToChatHistory && window.addToChatHistory('edu', 'assistant', finalAnswer);
     } catch (e) {
-        if (e.name === 'AbortError' || e.message === 'AbortError') {
-            finalAnswer = "USER ABORTED REQUEST";
-        } else {
-            console.error("Error fetching local data or Gemini API call:", e);
-            finalAnswer = "Sorry, I could not access local information or the AI at this time. Please try again.";
-        }
+      if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+        finalAnswer = "Request cancelled.";
+      } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        finalAnswer = window.friendlyAIErrorMessage(e);
+      } else {
+        console.error("Error fetching local data or Gemini API call:", e);
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
+      }
     }
 
     msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);

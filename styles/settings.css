@@ -340,6 +340,53 @@ body.dark-mode .settings-footer {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* Feedback input styles */
+.feedback-input,
+.feedback-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  color: #2d3748;
+  box-sizing: border-box;
+}
+
+body.dark-mode .feedback-input,
+body.dark-mode .feedback-textarea {
+  background-color: #3a3a3a;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.feedback-input:focus,
+.feedback-textarea:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+body.dark-mode .feedback-input:focus,
+body.dark-mode .feedback-textarea:focus {
+  border-color: #64b5f6;
+  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
+}
+
+.feedback-textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.feedback-status {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .settings-container {

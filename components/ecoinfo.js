@@ -184,14 +184,51 @@ window.sendEcoMessage = async function(faqText = '') {
   // Get message from input or FAQ
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
   let mediaData = null;
   if (preview) {
-    const img = preview.querySelector('img');
-    const audio = preview.querySelector('audio');
-    if (img && img.src) mediaData = img.src;
-    else if (audio && audio.src) mediaData = audio.src;
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe elements
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
   }
+
+  const attachments = window.getMessageAttachmentsFromPreview('eco', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+
   if (!msg && !attach) return;
 
   // Ensure in-memory history exists for eco
@@ -199,11 +236,13 @@ window.sendEcoMessage = async function(faqText = '') {
   // Reserve slot for user message (AI will be added after response)
   window.addToChatHistory && window.addToChatHistory('eco', 'user', msg);
 
-  // Extract image data if present in preview
-  if (preview) {
-    const previewImg = preview.querySelector('img');
-    if (previewImg) {
-      imageData = previewImg.src;
+  // Add context to message if image is present
+  if (mediaData && mediaData.startsWith) {
+    // Legacy string format (data URL)
+    msg = (msg || '') + "\nPlease analyze this image and provide relevant environmental information or recommendations.";
+  } else if (mediaData && typeof mediaData === 'object' && mediaData.dataUrl) {
+    // New object format
+    if (mediaData.mimeType.startsWith('image/')) {
       msg = (msg || '') + "\nPlease analyze this image and provide relevant environmental information or recommendations.";
     }
   }
@@ -306,8 +345,9 @@ window.sendEcoMessage = async function(faqText = '') {
     window.addToChatHistory && window.addToChatHistory('eco', 'assistant', finalAnswer);
   } catch (e) {
     console.error("Error fetching local data or Gemini API call:", e);
-    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) finalAnswer = 'USER ABORTED REQUEST';
-    else finalAnswer = "Sorry, I could not access local information or the AI at this time.";
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) finalAnswer = 'Request cancelled.';
+    else if (typeof window.friendlyAIErrorMessage === 'function') finalAnswer = window.friendlyAIErrorMessage(e);
+    else finalAnswer = "The AI is currently unavailable. Please try again later.";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
@@ -462,47 +502,7 @@ window.renderSection = function() {
 };
 
 
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
-  // (Removed duplicate/old getGeminiAnswer function. Only the correct proxy-based version remains.)
-  try {
-    let contents = { parts: [] };
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1]
-        }
-      });
-    }
-    const promptGuide = localStorage.getItem('eco_ai_prompt') || ECO_AI_PROMPT;
-    contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
-    });
-    const modelVersion = 'gemini-2.5-flash';
-    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
-      : '/api/gemini';
-    
-    const fetchOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body
-    };
-    if (signal) {
-      fetchOptions.signal = signal;
-    }
 
-    let res = await fetch(url, fetchOptions);
-    let data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      throw err; // Re-throw abort errors
-    }
-    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
-  }
-}
 
   // The following code should be outside the getGeminiAnswer function
   async function handleEcoChatMessage(msg, attach, chat, preview, faqText, input, sendBtn, stopBtn, imageData) {
@@ -523,7 +523,7 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
     let finalAnswer = "";
     try {
       const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
-      finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, mediaData, window.ecoAbortController ? window.ecoAbortController.signal : null);
+      finalAnswer = await window.callGeminiAI(localData, msg, window.GEMINI_API_KEY, mediaData, window.ecoAbortController ? window.ecoAbortController.signal : null, 'eco', attachments);
     } catch (e) {
       console.error("Error fetching local data or Gemini API call:", e);
       finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";

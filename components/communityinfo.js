@@ -1,4 +1,3 @@
-
 // Load common AI utilities first
 if (!window.commonAILoaded) {
   const script = document.createElement('script');
@@ -92,18 +91,56 @@ window.sendCommunityMessage = async function(faqText = '') {
   const sendBtn = document.querySelector('#chat-input + .send-button-group .send-button') || document.querySelector('.send-button');
 
   let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
+  let attach = '';
+  const previewContainer = preview.querySelector('.preview-container');
+  if (previewContainer) {
+    const clone = previewContainer.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
   if (!msg && !attach) return;
 
   // Extract media data if present in preview
   let mediaData = null;
-  const previewImg = preview.querySelector('img');
-  const previewAudio = preview.querySelector('audio');
-  if (previewImg && previewImg.src) {
-    mediaData = previewImg.src;
-    msg = msg + "\nPlease analyze this image and provide relevant community information or suggestions.";
-  } else if (previewAudio && previewAudio.src) {
-    mediaData = previewAudio.src;
+  const previewContainer2 = preview.querySelector('.preview-container');
+  
+  if (previewContainer2) {
+    // Check if container has stored file data (for non-visual files)
+    const fileData = previewContainer2.getAttribute('data-file-data');
+    const fileMime = previewContainer2.getAttribute('data-file-mime');
+    
+    if (fileData && fileMime) {
+      mediaData = {
+        dataUrl: fileData,
+        mimeType: fileMime,
+        fileName: previewContainer2.getAttribute('data-file-name')
+      };
+    } else {
+      // Fallback to checking for image/audio/video/iframe elements
+      const previewImg = previewContainer2.querySelector('img');
+      const previewAudio = previewContainer2.querySelector('audio');
+      const previewVideo = previewContainer2.querySelector('video');
+      const previewIframe = previewContainer2.querySelector('iframe');
+      if (previewImg && previewImg.src) {
+        mediaData = previewImg.src;
+        msg = msg + "\nPlease analyze this image and provide relevant community information or suggestions.";
+      } else if (previewAudio && previewAudio.src) {
+        mediaData = previewAudio.src;
+      } else if (previewVideo && previewVideo.src) {
+        mediaData = previewVideo.src;
+      } else if (previewIframe && previewIframe.src) {
+        mediaData = previewIframe.src;
+      }
+    }
+  }
+
+  const attachments = window.getMessageAttachmentsFromPreview('community', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
   }
 
   // Setup stop button with commonAI utility (creates AbortController) and capture controller (with fallback if not loaded)
@@ -163,18 +200,20 @@ window.sendCommunityMessage = async function(faqText = '') {
         history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
     }
 
-    finalAnswer = await getGeminiAnswer(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, mediaData, signal);
+    finalAnswer = await window.callGeminiAI(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, mediaData, signal, 'community', attachments);
 
     // Update history with AI response
     history.push({ user: msg, ai: finalAnswer });
     while (history.length > 10) history.shift(); // Keep only last 10 messages
     localStorage.setItem('community_chat_history', JSON.stringify(history));
   } catch (e) {
-    if (e.name === 'AbortError' || e.message === 'AbortError') {
-      finalAnswer = "USER ABORTED REQUEST";
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+      finalAnswer = "Request cancelled.";
+    } else if (typeof window.friendlyAIErrorMessage === 'function') {
+      finalAnswer = window.friendlyAIErrorMessage(e);
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
-      finalAnswer = "Sorry, I could not access local information or the AI at this time. Please check your internet connection!";
+      finalAnswer = "The AI is currently unavailable. Please try again later.";
     }
   }
 
@@ -209,21 +248,25 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
     const contents = {
       parts: []
     };
-    if (imageData) {
+    if (imageData && typeof imageData === 'string' && imageData.includes(',')) {
       contents.parts.push({
         inlineData: {
           mimeType: "image/jpeg",
           data: imageData.split(',')[1]
         }
       });
+    } else if (imageData) {
+      console.error('Invalid imageData format:', imageData);
     }
+
     const promptGuide = localStorage.getItem('community_ai_prompt') || COMMUNITY_AI_PROMPT;
     contents.parts.push({
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
+
     const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    
+
     const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
       : 'https://yolaaiinfohub.netlify.app/api/gemini';
@@ -259,10 +302,11 @@ async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal 
     
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get a response from the AI.";
   } catch (err) {
-    if (err.name === 'AbortError') {
+    if (err && err.name === 'AbortError') {
       throw err; // Re-throw abort errors
     }
     console.error("Gemini API error:", err);
-    return "Sorry, I could not access local information or the AI at this time. Please check your internet connection!";
+    if (typeof window.friendlyAIErrorMessage === 'function') return window.friendlyAIErrorMessage(err);
+    return "The AI is currently unavailable. Please try again later.";
   }
 }

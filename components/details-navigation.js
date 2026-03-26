@@ -2,16 +2,19 @@
 // can return to the same section and scroll position.
 (function(){
   function getCurrentSection(){
-    // Prefer explicit stored value from navbar
-    const fromStorage = localStorage.getItem('currentSection');
-    if(fromStorage) return fromStorage;
+    // Prefer an in-memory value set by highlightActiveNav or loadSection
+    if(window.currentSection) return window.currentSection;
     // Fallback: look for a body class like 'home-section' or 'eduinfo-section'
     if(document && document.body && document.body.classList.length){
       for(const c of Array.from(document.body.classList)){
         if(c && c.endsWith('-section')) return c.replace(/-section$/,'');
       }
     }
-    return 'home';
+    // Finally infer from URL path
+    let path = window.location.pathname.replace(/^\/+/, '').toLowerCase();
+    if(!path || path === '' || path === 'index.html') return 'home';
+    path = path.split('/').pop().split('?')[0].split('#')[0];
+    return path;
   }
 
   function savePosition(){
@@ -67,23 +70,14 @@
 (function(){
     function saveLastPosition(){
         try{
-            const lastSection = localStorage.getItem('currentSection') || '';
+            const lastSection = window.currentSection || '';
             sessionStorage.setItem('lastSection', lastSection);
             sessionStorage.setItem('lastScroll', String(window.scrollY || window.pageYOffset || 0));
             console.log('Saved position:', {lastSection, scroll: sessionStorage.getItem('lastScroll')});
         }catch(e){ /* ignore */ }
     }
 
-    // Also save when currentSection changes in localStorage (navbar interactions)
-    window.addEventListener && window.addEventListener('storage', function(e){
-        if(e.key === 'currentSection'){
-            try{
-                sessionStorage.setItem('lastSection', e.newValue || '');
-                sessionStorage.setItem('lastScroll', String(window.scrollY || window.pageYOffset || 0));
-                console.log('Saved on storage event:', {section: e.newValue, scroll: sessionStorage.getItem('lastScroll')});
-            }catch(err){}
-        }
-    });
+    // storage event listener not needed now that we don't cache the section
 
     function handleClick(e){
         const a = e.target.closest && e.target.closest('a');

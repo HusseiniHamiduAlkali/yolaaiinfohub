@@ -29,16 +29,13 @@ function loadHomeChatHistory() {
 }
 // Robust navbar loader
 function ensureNavbarLoaded(cb) {
-  if (typeof window.renderNavbar === 'function') {
-    window.renderNavbar();
+  // Don't re-render if already rendered, just ensure it exists
+  if (document.querySelector('.navbar')) {
     if (cb) cb();
-  } else if (window.Navbar && typeof window.Navbar.render === 'function') {
-    window.Navbar.render();
-    if (cb) cb();
-  } else {
-    console.warn('Navbar not yet available, deferring render');
-    if (cb) cb();
+    return;
   }
+  // If navbar hasn't loaded yet, don't force it here - it will be rendered by index.html
+  if (cb) cb();
 }
 window.renderSection = function() {
   ensureNavbarLoaded();
@@ -82,18 +79,36 @@ window.renderSection = function() {
 };
 
 // Common helper for Gemini API call
-async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
+async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal = null) {
   let modelVersion;
   try {
     const contents = {
       parts: []
     };
 
-    if (imageData) {
+    // Handle media data (images, audio, files)
+    if (mediaData) {
+      // mediaData can be a string (data URL) or an object with { dataUrl, mimeType }
+      let dataUrl = mediaData;
+      let mimeType = "image/jpeg"; // default for legacy data URLs
+      
+      if (typeof mediaData === 'object' && mediaData.dataUrl) {
+        dataUrl = mediaData.dataUrl;
+        mimeType = mediaData.mimeType || "application/octet-stream";
+      }
+      
+      // Detect MIME type from data URL if not explicitly provided
+      if (dataUrl.includes('data:')) {
+        const match = dataUrl.match(/data:([^;]+)/);
+        if (match) {
+          mimeType = match[1];
+        }
+      }
+      
       contents.parts.push({
         inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1] // Remove data URL prefix
+          mimeType: mimeType,
+          data: dataUrl.split(',')[1] // Remove data URL prefix
         }
       });
     }
@@ -218,7 +233,16 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   const submitBtn = document.querySelector('#home-chat-input + button[type="submit"]');
 
   let msg = faqText || input.value.trim();
-  let attach = preview.innerHTML;
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
   if (!msg && !attach) return;
 
   // Cancel any ongoing request
@@ -243,12 +267,30 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   // Extract media data from preview (image, audio, or file)
   let mediaData = null;
   if (preview && preview.innerHTML) {
-    const imgElement = preview.querySelector('img');
-    const audioElement = preview.querySelector('audio');
-    if (imgElement && imgElement.src) {
-      mediaData = imgElement.src;
-    } else if (audioElement && audioElement.src) {
-      mediaData = audioElement.src;
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio elements
+        const imgElement = container.querySelector('img');
+        const audioElement = container.querySelector('audio');
+        
+        if (imgElement && imgElement.src) {
+          mediaData = imgElement.src;
+        } else if (audioElement && audioElement.src) {
+          mediaData = audioElement.src;
+        }
+      }
     }
   }
 
@@ -275,33 +317,27 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
     const localData = await fetch('Data/HomeInfo/homeinfo.txt', signal ? { signal } : {}).then(r => r.text()); // Assuming a local data file for HomeInfo
     finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, mediaData, signal);
   } catch (e) {
-    if (e.name === 'AbortError') {
-      finalAnswer = "USER ABORTED REQUEST";
+    if (e && e.name === 'AbortError') {
+      finalAnswer = "Request cancelled.";
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
-      // Provide helpful error messages based on error type
-      const errorMsg = e.message || 'Unknown error';
-      
+      const errorMsg = (e && e.message) ? e.message : '';
+
+      // Map known error types to friendly, non-technical messages
       if (errorMsg.includes('API_RATE_LIMIT')) {
-        finalAnswer = "⚠️ The AI service is currently receiving too many requests. Please wait a moment and try again.";
-      } else if (errorMsg.includes('API_BAD_REQUEST')) {
-        finalAnswer = "⚠️ Your request format is incorrect. Please try rephrasing your question.";
+        finalAnswer = "The AI is receiving too many requests right now. Please try again a little later.";
       } else if (errorMsg.includes('API_SERVER_ERROR')) {
-        finalAnswer = "⚠️ The AI service is temporarily unavailable. Please try again in a few moments.";
-      } else if (errorMsg.includes('API_ERROR')) {
-        finalAnswer = `⚠️ API Error: ${errorMsg.replace('API_ERROR: ', '')}. Please check your input and try again.`;
-      } else if (errorMsg.includes('INVALID_JSON_RESPONSE')) {
-        finalAnswer = "⚠️ Received an invalid response from the server. This might be a temporary issue. Please try again.";
-      } else if (errorMsg.includes('EMPTY_RESPONSE')) {
-        finalAnswer = "⚠️ The AI returned an empty response. This might be due to content policy or API limits. Please try rephrasing.";
-      } else if (errorMsg.includes('INVALID_RESPONSE_FORMAT')) {
-        finalAnswer = "⚠️ The API response format was unexpected. Please try again.";
-      } else if (errorMsg.includes('API key')) {
-        finalAnswer = "⚠️ API key is not configured. Please check your environment setup.";
+        finalAnswer = "The AI service is temporarily unavailable. Please try again later.";
       } else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
-        finalAnswer = "⚠️ Network error. Please check your internet connection and try again.";
+        finalAnswer = "Can't access the AI — please check your internet connection and try again.";
+      } else if (errorMsg.includes('API_BAD_REQUEST')) {
+        finalAnswer = "I couldn't understand that request. Please try rephrasing your question.";
+      } else if (errorMsg.includes('INVALID_JSON_RESPONSE') || errorMsg.includes('INVALID_RESPONSE_FORMAT') || errorMsg.includes('EMPTY_RESPONSE')) {
+        finalAnswer = "The AI returned an unexpected response. Please try again or ask something different.";
+      } else if (errorMsg.toLowerCase().includes('api key') || errorMsg.toLowerCase().includes('authentication')) {
+        finalAnswer = "The AI service is not configured. Please check the app settings.";
       } else {
-        finalAnswer = `⚠️ Error: ${errorMsg}`;
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
       }
     }
   }

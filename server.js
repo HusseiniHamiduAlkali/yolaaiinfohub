@@ -72,13 +72,19 @@ app.use((req, res, next) => {
   if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(req.path)) {
     res.set('Cache-Control', 'public, max-age=604800'); // 7 days
   }
-  // CSS and JS: cache for 1 day (or update versioning in HTML as you deploy)
+  // CSS and JS: NO CACHE - always fetch fresh
   else if (/\.(css|js)$/i.test(req.path)) {
-    res.set('Cache-Control', 'public, max-age=86400'); // 1 day
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Last-Modified', new Date().toUTCString());
   }
-  // HTML: cache for 1 hour to pick up updates
+  // HTML: NO CACHE - always fetch fresh
   else if (/\.html$/i.test(req.path)) {
-    res.set('Cache-Control', 'public, max-age=3600'); // 1 hour
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Last-Modified', new Date().toUTCString());
   }
   // API responses: no cache
   else if (req.path.startsWith('/api/')) {
@@ -212,13 +218,13 @@ const loginLimiter = rateLimit({
 
 const signupLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // 3 attempts
+  max: 10, // 3 attempts
   message: { error: 'Too many signup attempts, please try again later' }
 });
 
 const forgotPasswordLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3,
+  max: 10,
   message: { error: 'Too many password reset attempts, please try again later' }
 });
 
@@ -438,6 +444,7 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
       <p>If you have any questions, feel free to contact our support team.</p>
       <br>
       <p>Best regards,<br>Yola AI Info Hub Team</p>
+      <p>For more information, contact the developer: <br> Husseini Hamidu Alkali <br> +234 7012244240 / +234 9069530196 <br> husseinihamidualkali@gmail.com</p>
     `;
     sendEmailNotification(email, 'Welcome to Yola AI Info Hub', welcomeHtml);
 
@@ -492,7 +499,25 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       to: email,
       subject: 'Password Reset - Yola AI Info Hub',
-      html: `<html><body style="font-family:Arial,sans-serif;"><div style="max-width:600px;margin:30px auto;"><h2>Password Reset</h2><p>Hi User,</p><p>Click the button below to reset your password:</p><div style="text-align:center;margin:30px 0;"><a href="${resetUrl}" style="background:#3498db;color:white;padding:12px 30px;text-decoration:none;border-radius:4px;display:inline-block;font-weight:bold;">Reset Password</a></div><p>This link expires in 1 hour.</p><p style="margin:25px 0;">If the button doesn't work, copy this link to your browser:</p><p style="background:#f0f0f0;padding:12px;word-break:break-all;">${resetUrl}</p><hr style="margin:25px 0;"><p style="color:#666;font-size:13px;">If you didn't request this reset, you can ignore this email.</p><p style="color:#666;font-size:13px;">Best regards,<br>Yola AI Info Hub Team</p></div></body></html>`,
+      html: `<html>
+              <body style="font-family:Arial,sans-serif;">
+                <div style="max-width:600px;margin:30px auto;">
+                  <h2>Password Reset</h2>
+                    <p>Hi User,</p>
+                    <p>Click the button below to reset your password:</p>
+                    <div style="text-align:center;margin:30px 0;">
+                      <a href="${resetUrl}" style="background:#3498db;color:white;padding:12px 30px;text-decoration:none;border-radius:4px;display:inline-block;font-weight:bold;">Reset Password</a>
+                    </div>
+                    <p>This link expires in 1 hour.</p>
+                    <p style="margin:25px 0;">If the button doesn't work, copy this link to your browser:</p>
+                    <p style="background:#f0f0f0;padding:12px;word-break:break-all;">${resetUrl}</p>
+                    <hr style="margin:25px 0;">
+                    <p style="color:#666;font-size:13px;">If you didn't request this reset, you can ignore this email.</p>
+                    <p style="color:#666;font-size:13px;">Best regards,<br>Yola AI Info Hub Team</p> 
+                    <p>For more information, contact the developer: <br> Husseini Hamidu Alkali <br> +234 7012244240 / +234 9069530196 <br> husseinihamidualkali@gmail.com</p>
+                </div> 
+              </body>
+            </html>`,
       text: `Password Reset Request\n\nHi User,\n\nClick this link to reset your password:\n${resetUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, ignore this email.\n\nBest regards,\nYola AI Info Hub Team`
     };
 
@@ -627,6 +652,7 @@ app.post('/api/login', loginLimiter, async (req, res) => {
           <p>If you forgot your password, use the reset password feature.</p>
           <br>
           <p>Best regards,<br>Yola AI Info Hub Team</p>
+          <p>For more information, contact the developer: <br> Husseini Hamidu Alkali <br> +234 7012244240 / +234 9069530196 <br> husseinihamidualkali@gmail.com</p>
         `;
         sendEmailNotification(user.email, 'Yola AI Info Hub - Security Alert', failedLoginHtml);
       }
@@ -646,9 +672,10 @@ app.post('/api/login', loginLimiter, async (req, res) => {
         <p><strong>Username:</strong> ${user.username}</p>
         <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
         <p><strong>IP Address:</strong> ${req.ip}</p>
-        <p>If this wasn't you, please contact support immediately and change your password.</p>
+        <p>If this wasn't you, please contact support immediately for help on changing your password and securing your account.</p>
         <br>
         <p>Best regards,<br>Yola AI Info Hub Team</p>
+        <p>For more information, contact the developer: <br> Husseini Hamidu Alkali <br> +234 7012244240 / +234 9069530196 <br> husseinihamidualkali@gmail.com</p>
       `;
       sendEmailNotification(user.email, 'Yola AI Info Hub - Login Notification', loginHtml);
     }
@@ -985,6 +1012,54 @@ app.post('/api/settings', async (req, res) => {
   } catch (error) {
     console.error('Update settings error:', error);
     res.status(500).json({ error: 'Error updating settings' });
+  }
+});
+
+// User feedback endpoint
+app.post('/api/send-feedback', async (req, res) => {
+  try {
+    const { name, email, message, timestamp, userAgent } = req.body;
+
+    // Validate required fields
+    if (!message || message.trim() === '') {
+      return res.status(400).json({ error: 'Feedback message is required' });
+    }
+
+    // If email transporter is not configured, return error
+    if (!transporter) {
+      console.warn('Email transporter not configured. Feedback cannot be sent.');
+      return res.status(500).json({ error: 'Email service not available. Please try again later.' });
+    }
+
+    // Prepare email content
+    const emailContent = `
+      <h2>New User Feedback</h2>
+      <p><strong>From:</strong> ${name || 'Anonymous'}</p>
+      <p><strong>Email:</strong> ${email || 'Not provided'}</p>
+      <p><strong>Timestamp:</strong> ${timestamp || new Date().toISOString()}</p>
+      <p><strong>User Agent:</strong> ${userAgent || 'Not provided'}</p>
+      <hr/>
+      <h3>Feedback Message:</h3>
+      <p>${message.replace(/\n/g, '<br>')}</p>
+    `;
+
+    // Send email to both specified email addresses
+    const feedbackEmails = ['husseinihamidualkali@gmail.com', 'yolaaiinfohub.auth@gmail.com'];
+    
+    for (const recipientEmail of feedbackEmails) {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: recipientEmail,
+        subject: `[Yola AI Info Hub] New User Feedback from ${name || 'Anonymous'}`,
+        html: emailContent
+      });
+    }
+
+    console.log(`Feedback sent to ${feedbackEmails.join(', ')}`);
+    res.json({ success: true, message: 'Thank you! Your feedback has been sent successfully.' });
+  } catch (error) {
+    console.error('Error sending feedback:', error);
+    res.status(500).json({ error: 'Failed to send feedback. Please try again later.' });
   }
 });
 

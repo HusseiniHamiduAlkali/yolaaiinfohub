@@ -3,30 +3,19 @@
 window.GEMINI_API_KEY = window.GEMINI_API_KEY || null;
 window.MAPS_API_KEY = window.MAPS_API_KEY || null;
 
-// Ensure navbar is loaded
+// Ensure navbar is loaded (skip if already rendered by index.html)
 function ensureNavbarLoaded() {
   return new Promise((resolve) => {
-    if (typeof window.Navbar === 'object' && typeof window.Navbar.render === 'function') {
-      window.Navbar.render();
+    // If navbar already exists in DOM and is marked as initialized, skip
+    if (document.querySelector('.navbar') && window.__initialNavbarRendered) {
       resolve();
-    } else if (typeof window.renderNavbar === 'function') {
-      window.renderNavbar();
-      resolve();
+      return;
+    }
+    // Otherwise, if navbar hasn't rendered yet, attempt to trigger it
+    if (!window.__initialNavbarRendered && window.Navbar && typeof window.Navbar.render === 'function') {
+      window.Navbar.render().then(resolve).catch(() => resolve());
     } else {
-      if (!document.getElementById('navbar-js')) {
-        const script = document.createElement('script');
-        script.src = 'components/navbar.js';
-        script.id = 'navbar-js';
-        script.onload = () => {
-          if (typeof window.Navbar === 'object' && typeof window.Navbar.render === 'function') {
-            window.Navbar.render();
-          } else if (typeof window.renderNavbar === 'function') {
-            window.renderNavbar();
-          }
-          resolve();
-        };
-        document.body.appendChild(script);
-      }
+      resolve();
     }
   });
 }

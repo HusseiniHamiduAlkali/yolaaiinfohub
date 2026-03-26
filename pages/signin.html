@@ -228,8 +228,8 @@
             if (meRes.ok) {
               const meData = await meRes.json();
               if (meData.username) {
-                // Update localStorage with complete user data
-                const userData = {
+                // Set global user state (no persistent cache)
+                window.currentUser = {
                   username: meData.username,
                   name: meData.name,
                   email: meData.email,
@@ -240,33 +240,22 @@
                   profilePicture: meData.profilePicture,
                   avatar: meData.avatar
                 };
-                console.log('💾 Saving complete user data to localStorage:', userData);
-                localStorage.setItem('currentUser', JSON.stringify(userData));
-                console.log('✅ localStorage after save:', JSON.parse(localStorage.getItem('currentUser')));
               }
             }
           } catch (err) {
             console.warn('Failed to fetch complete user data:', err);
-            // Fallback to saving basic login data
-            const fallbackData = {
-              username: data.username,
-              name: data.name
-            };
-            console.log('💾 Saving fallback user data to localStorage:', fallbackData);
-            localStorage.setItem('currentUser', JSON.stringify(fallbackData));
-            console.log('✅ localStorage after fallback save:', JSON.parse(localStorage.getItem('currentUser')));
           }
           console.log('🔄 Login successful, redirecting to homepage...');
           window.location.href = '../index.html'; // Redirect to homepage on success
         } else {
           let errorMessage = 'An error occurred while signing in.';
           if (data.error) {
-            switch(data.error.toLowerCase()) {
+            switch (data.error.toLowerCase()) {
               case 'user not found':
                 errorMessage = 'No account found with this username or email. Please check your credentials or sign up.';
                 break;
-              case 'invalid password':
-                errorMessage = 'Incorrect password. Please try again.';
+              case 'invalid credentials':
+                errorMessage = 'Incorrect username or password. Please try again.';
                 break;
               case 'account locked':
                 errorMessage = 'Your account has been temporarily locked due to too many failed attempts. Please try again later.';

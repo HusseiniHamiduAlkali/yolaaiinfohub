@@ -18,11 +18,6 @@ function updateDarkModeToggleSettingsButton() {
 window.SettingsPage = {
   render: function() {
     return `
-    <!--
-      <div class="minimal-appbar">
-        <span class="appname" data-i18n="settings">Yola AI Info Hub - Settings</span>
-      </div>
-    -->
       <div class="settings-container">
         <div class="settings-header">
           <h1 data-i18n="settings">Settings</h1>
@@ -73,63 +68,75 @@ window.SettingsPage = {
             </div>
           </div>
 
+          <!-- User Feedback Section -->
+          <div class="settings-section">
+            <h2 class="section-title" data-i18n="user_feedback">User Feedback</h2>
+            <p data-i18n="feedback_description">We value your feedback! Please share your thoughts, suggestions, or report any issues with our application.</p>
+            <div class="settings-item">
+              <label class="settings-label" data-i18n="feedback_name">Your Name (Optional)</label>
+              <input type="text" id="feedback-name" class="feedback-input" placeholder="Enter your name">
+            </div>
+            <div class="settings-item">
+              <label class="settings-label" data-i18n="feedback_email">Your Email (Optional)</label>
+              <input type="email" id="feedback-email" class="feedback-input" placeholder="Enter your email">
+            </div>
+            <div class="settings-item">
+              <label class="settings-label" data-i18n="feedback_message">Your Feedback</label>
+              <textarea id="feedback-message" class="feedback-textarea" placeholder="Please share your feedback..." rows="6"></textarea>
+            </div>
+            <div class="settings-item">
+              <button class="settings-button settings-button-primary" onclick="window.submitUserFeedback()" data-i18n="submit_feedback">Submit Feedback</button>
+              <span id="feedback-status" class="feedback-status"></span>
+            </div>
+          </div>
+
           <!-- About Section -->
           <div class="settings-section">
-            <h2 class="section-title" data-i18n="about">About</h2>
-            <div class="settings-item">
-              <label class="settings-label" data-i18n="app_version">App Version</label>
-              <span class="settings-value">1.0.0</span>
-            </div>
-            <div class="settings-item">
-              <button class="settings-button settings-button-link" onclick="window.openAbout()" data-i18n="about">About Yola AI Info Hub</button>
-            </div>
+            <h2 class="section-title" data-i18n="about_header">About Yola AI Info Hub</h2>
+            <p data-i18n="about_desc_1"><strong>Yola AI Info Hub</strong> is a modern, responsive web app that provides AI-powered information and assistance for education, agriculture, environment, health, community, and general inquiries in Yola, Adamawa State, Nigeria. Our goal is to make essential information accessible and easy to find for residents and visitors alike.</p>
+            
+            <h3 data-i18n="about_key_features">Key Features:</h3>
+            <ul>
+              <li><strong>AI-Powered Chat:</strong> Get instant answers to your questions across various categories.</li>
+              <li><strong>Section-Specific Information:</strong> Dedicated sections for EduInfo, AgroInfo, EcoInfo, MediInfo, NaviInfo, and ServiInfo.</li>
+              <li><strong>User-Friendly Interface and Responsiveness:</strong> A clean, intuitive design for seamless navigation on different devices <br> PC above 1150px, Tab from 900px to 1150px , Mobile below 900px,<br>with Hamburger Menu on Mobile Screen.</li>
+              <li><strong>Image, Audio and Files Input:</strong> Interact with the AI using images, voice messages and other files for a richer experience.</li>
+              <li><strong>Text-To-Speech:</strong> A text-to-speech option to listen to the AI's response in any section.</li>
+              <li><strong>Local Focus:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
+              <li><strong>Multi Modality:</strong> A special functionality, enabling user to switch between two different Gemini models for their response.</li>
+              <li><strong>Chat History:</strong>Ability to remember recent chats history by the AI, for about 10 chats. For a continuous chat flow.</li>
+              <li><strong>Frequently Asked Questions FAQs:</strong> FAQs available as clickable links directly below the chat areas of every section.</li>
+            </ul>
+            
+            <h3>Section-specific Features:</h3>
+            <ul>
+              <li><strong>NaviInfo:</strong> Maps For Directions and Navigation.</li>
+              <li><strong>EcoInfo:</strong> Carbon Calculator and an Eco Classifier, which is able to classify objects (images) as recyclable or not.</li>
+            </ul>
+            
+            <h3>Contents of the Environment Variable (.env file):</h3>
+            <ul style="list-style: none;">
+              <li>1. Google Gemini API KEY.</li>
+              <li>2. Google Maps API KEY.</li>
+              <li>3. Mongodb URI For User Authentication.</li>
+              <li>4. Dedicated e-mail address.</li>
+              <li>5. E-mail. Address 'App Password' For Password Reset Route.</li>
+              <li>6. Password reset URL base.</li>
+              <li>7. Front-end Netlify URL.</li>
+              <li>8. Back-end Render URL.</li>
+            </ul>
+            
+            <h3>Major Challenges:</h3>
+            <ul>
+              <li>Power/Electricity.</li>
+              <li>Internet Access (Thanks to the Weekly Reflection Data Reward, It Has Really Cushioned This Effect).</li>
+            </ul>
+
+            <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better.</p>
+
+            <p><strong>I Husseini Hamidu Alkali the Chief Pilot, Together With GitCopilot We Are Able To Land Unto This Robust Project For My 3MTT Knowledge Showcase.</strong></p>
+            <p><strong>My Fellow ID: FE/23/1941341. Cohort 3.</strong></p>
           </div>
-
-
-          
-          
-                <!-- Account Settings Section -->                
-      <!--
-            <div class="settings-section">
-              <h2 class="section-title" data-i18n="account_settings">Account Settings</h2>
-              <div class="settings-item">
-                <label class="settings-label" data-i18n="username">Username</label>
-                <span class="settings-value" id="settings-username">Not logged in</span>
-              </div>
-              <div class="settings-item">
-                <label class="settings-label" data-i18n="email">Email</label>
-                <span class="settings-value" id="settings-email">-</span>
-              </div>
-              <div class="settings-item">
-                <label class="settings-label" data-i18n="full_name">Full Name</label>
-                <span class="settings-value" id="settings-fullname">-</span>
-              </div>
-            </div>
-      -->
-
-
-          <!-- Privacy & Security Section -->
-      <!--
-          <div class="settings-section">
-            <h2 class="section-title" data-i18n="privacy_security">Privacy & Security</h2>
-            <div class="settings-item">
-              <button class="settings-button settings-button-secondary" onclick="window.goToChangePassword()" data-i18n="change_password">Change Password</button>
-            </div>
-            <div class="settings-item">
-              <button class="settings-button settings-button-secondary" onclick="window.goToPrivacySettings()" data-i18n="privacy_settings">Privacy Settings</button>
-            </div>
-          </div>
-      -->
-
-          <!-- Danger Zone Section -->
-      <!--
-          <div class="settings-section settings-section-danger">
-            <h2 class="section-title section-title-danger" data-i18n="danger_zone">Danger Zone</h2>
-            <div class="settings-item">
-              <button class="settings-button settings-button-danger" onclick="window.logoutUser()" data-i18n="logout">Logout</button>
-            </div>
-          </div>
-      -->
 
           <!-- Back Button -->
           <div class="settings-footer">
@@ -331,6 +338,75 @@ if (!window.__toggleDarkModeOverridden) {
   window.__toggleDarkModeOverridden = true;
 }
 
+// Submit user feedback
+window.submitUserFeedback = async function() {
+  const name = document.getElementById('feedback-name').value.trim();
+  const email = document.getElementById('feedback-email').value.trim();
+  const message = document.getElementById('feedback-message').value.trim();
+  const statusSpan = document.getElementById('feedback-status');
+  
+  // Validate that at least the message is provided
+  if (!message) {
+    statusSpan.textContent = '❌ Please enter your feedback message';
+    statusSpan.style.color = 'red';
+    return;
+  }
+  
+  const API_BASE = window.API_BASE || (function(){ 
+    try { 
+      const h = window.location.hostname; 
+      if(!h || h==='localhost' || h==='127.0.0.1' || h.startsWith('192.') || h.startsWith('10.') || h==='::1') 
+        return 'http://localhost:4000'; 
+      return ''; 
+    } catch(e) { 
+      return 'http://localhost:4000' 
+    } 
+  })();
+
+  try {
+    statusSpan.textContent = '⏳ Sending feedback...';
+    statusSpan.style.color = 'blue';
+    
+    const response = await fetch(`${API_BASE}/api/send-feedback`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        name: name || 'Anonymous',
+        email: email || 'Not provided',
+        message: message,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+      })
+    });
+    
+    if (response.ok) {
+      statusSpan.textContent = '✅ Thank you! Your feedback has been sent successfully.';
+      statusSpan.style.color = 'green';
+      
+      // Clear the form
+      document.getElementById('feedback-name').value = '';
+      document.getElementById('feedback-email').value = '';
+      document.getElementById('feedback-message').value = '';
+      
+      // Clear status after 5 seconds
+      setTimeout(() => {
+        statusSpan.textContent = '';
+      }, 5000);
+    } else {
+      const errorData = await response.json();
+      statusSpan.textContent = `❌ Error: ${errorData.message || 'Failed to send feedback'}`;
+      statusSpan.style.color = 'red';
+    }
+  } catch (error) {
+    console.error('Error submitting feedback:', error);
+    statusSpan.textContent = '❌ Error sending feedback. Please try again later.';
+    statusSpan.style.color = 'red';
+  }
+};
+
 // Placeholder functions for other settings actions
 window.goToChangePassword = function() {
   alert('Change password feature coming soon!');
@@ -344,8 +420,38 @@ window.openAbout = function() {
   alert('Yola AI Info Hub v1.0.0\n\nA comprehensive information platform for Yola, Nigeria.');
 };
 
-// Export renderSection for the SPA loader
+// Settings page with merged About content
 window.renderSection = function() {
+  // Always load and render the navbar
+  function ensureNavbarLoaded(cb) {
+    if (typeof window.renderNavbar === 'function') {
+      window.renderNavbar();
+      if (cb) cb();
+    } else {
+      if (!document.getElementById('navbar-js')) {
+        const script = document.createElement('script');
+        script.src = 'components/navbar.js';
+        script.id = 'navbar-js';
+        script.onload = function() {
+          if (typeof window.renderNavbar === 'function') window.renderNavbar();
+          if (cb) cb();
+        };
+        document.body.appendChild(script);
+      } else {
+        let tries = 0;
+        (function waitForNavbar() {
+          if (typeof window.renderNavbar === 'function') {
+            window.renderNavbar();
+            if (cb) cb();
+          } else if (tries < 30) {
+            tries++;
+            setTimeout(waitForNavbar, 100);
+          }
+        })();
+      }
+    }
+  }
+  ensureNavbarLoaded();
   document.getElementById('main-content').innerHTML = window.SettingsPage.render();
   window.SettingsPage.mount();
 };

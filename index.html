@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#2196F3">
   <meta name="description" content="Your trusted AI assistant for information about Yola, Adamawa State. Get instant answers about education, agriculture, healthcare, navigation, community, environment, and services.">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="Data/Images/jippujam.jpg" style="overflow: hidden;object-fit: fill;width: 100%;height: 100%; border-radius:12px;"/>
   <link rel="apple-touch-icon" href="Data/Images/jippujam.jpg">
@@ -84,25 +87,25 @@
       return window.tomtomSDKLoading;
     };
   </script>
-  <script src="components/tomtomMap.js" defer></script>
-  <script src="components/i18n.js?v=20260220001" defer></script>
-  <script src="components/dark-mode.js?v=20260220001" defer></script>
-  <script src="components/navbar.js?v=20260220001" defer></script>
-  <script src="components/auth.js?v=20260220002" defer></script>
-  <script src="components/settings.js?v=20260220001" defer></script>
-  <script src="components/home.js?v=20260220001" defer></script>
-  <script src="components/eduinfo.js?v=20260220001" defer></script>
-  <script src="components/agroinfo.js?v=20260220001" defer></script>
-  <script src="components/mediinfo.js?v=20260220001" defer></script>
-  <script src="components/naviinfo.js?v=20260220001" defer></script>
-  <script src="components/ecoinfo.js?v=20260220001" defer></script>
-  <script src="components/serviinfo.js?v=20260220001" defer></script>
-  <script src="components/communityinfo.js?v=20260220001" defer></script>
-  <script src="components/aboutinfo.js?v=20260220001" defer></script>
-  <script src="components/ecoClassifier.js?v=20260220001" defer></script>
-  <script src="components/ecoAI.js?v=20260220001" defer></script>
-  <script src="components/details-navigation.js?v=20260220001" defer></script>
-  <script src="app.js?v=20260220001" defer></script>
+  <script src="components/tomtomMap.js?t=20260308" defer></script>
+  <script src="components/i18n.js?t=20260308" defer></script>
+  <script src="components/dark-mode.js?t=20260308" defer></script>
+  <script src="components/navbar.js?t=20260308" defer></script>
+  <script src="components/auth.js?t=20260308" defer></script>
+  <script src="components/settings.js?t=20260308" defer></script>
+  <script src="components/home.js?t=20260308" defer></script>
+  <script src="components/eduinfo.js?t=20260308" defer></script>
+  <script src="components/agroinfo.js?t=20260308" defer></script>
+  <script src="components/mediinfo.js?t=20260308" defer></script>
+  <script src="components/naviinfo.js?t=20260308" defer></script>
+  <script src="components/ecoinfo.js?t=20260308" defer></script>
+  <script src="components/serviinfo.js?t=20260308" defer></script>
+  <script src="components/communityinfo.js?t=20260308" defer></script>
+  <script src="components/ecoClassifier.js?t=20260308" defer></script>
+  <script src="components/ecoAI.js?t=20260308" defer></script>
+  <script src="components/details-navigation.js?t=20260308" defer></script>
+  <script src="app.js?t=20260308" defer></script>
+  <!-- About route now uses the Settings page; removed legacy about script -->
   <script>
     // Section loader for auth and main pages
     // Internal loader that actually performs the section load. Returns a Promise.
@@ -110,7 +113,7 @@
       // shared UI handles used by both the loader and the TomTom preloader
       const navbarDiv = document.getElementById('navbar');
       const minimalAppbar = `<div class="minimal-appbar"><span class="appname">Yola AI Info Hub</span></div>`;
-      const sections = ['home', 'eduinfo', 'agroinfo', 'mediinfo', 'naviinfo', 'ecoinfo', 'serviinfo', 'communityinfo', 'aboutinfo'];
+      const sections = ['home', 'eduinfo', 'agroinfo', 'mediinfo', 'naviinfo', 'ecoinfo', 'serviinfo', 'communityinfo', 'about', 'settings'];
 
       // Handle auth sections first
       sections.forEach(s => {
@@ -129,11 +132,11 @@
       }
       
       // For non-auth sections: Restore full navbar if it was replaced by minimal appbar
+      // But only if navbar is not already fully rendered
       if (!navbarDiv.querySelector('.navbar')) {
-        // Wait for Navbar to be defined if it's not available yet
-        if (window.Navbar && window.Navbar.render) {
+        if (window.Navbar && window.Navbar.render && !window.__initialNavbarRendered) {
           Navbar.render();
-        } else {
+        } else if (!window.__initialNavbarRendered) {
           console.warn('Navbar not yet loaded, will retry on next navigation');
         }
       }
@@ -149,12 +152,12 @@
         mediinfo: 'components/mediinfo.js',
         naviinfo: 'components/naviinfo.js',
         communityinfo: 'components/communityinfo.js',
-        aboutinfo: 'components/aboutinfo.js',
         ecoinfo: 'components/ecoinfo.js',
         serviinfo: 'components/serviinfo.js',
         settings: 'components/settings.js',
+        about: 'components/settings.js'
       };
-      return new Promise((resolve) => {
+      const promise = new Promise((resolve) => {
   const baseSrc = routes[section] || routes['home'];
   console.log('performLoadSection: requested', section, baseSrc);
   // Fast-path: if a script with this baseSrc is already present, and renderSection is defined,
@@ -197,15 +200,15 @@
           window.highlightActiveNav?.(section);
           resolve();
         };
-  script.onerror = (err) => { console.error('Error loading section script', baseSrc, err); resolve(); };
+        script.onerror = (err) => { console.error('Error loading section script', baseSrc, err); resolve(); };
         document.body.appendChild(script);
       });
 
-      // For naviinfo section, ensure TomTom SDK is loaded first
       if (section === 'naviinfo') {
         return promise.then(() => window.ensureTomTomSDK().catch(e => { console.warn('TomTom load failed', e); }));
+      } else {
+        return promise;
       }
-      return promise;
     };
 
     // Public loader: if a restore is in progress, queue requests (ignore 'home')
@@ -226,6 +229,10 @@
     };
     // CHECK AUTH STATUS FIRST, THEN RENDER NAVBAR ONCE
     // This ensures navbar displays correct logged-in state on initial page load
+    // Also purge any old storage keys previously used by the navbar
+    try { localStorage.removeItem('currentSection'); } catch(e){}
+    try { localStorage.removeItem('currentUser'); } catch(e){}
+
     (async function initNavbarWithAuth() {
       // Determine API base
       const API_BASE = window.API_BASE || (function() {
@@ -263,12 +270,9 @@
                 profilePicture: data.profilePicture || null,
                 avatar: data.avatar || null
               };
-              // Update global state and localStorage before rendering navbar
+              // Update global state before rendering navbar (no persistent cache)
               window.currentUser = userFromBackend;
               window.__lastUser = userFromBackend;
-              try {
-                localStorage.setItem('currentUser', JSON.stringify(userFromBackend));
-              } catch (e) { /* ignore */ }
             }
           } catch (parseError) {
             console.error('Failed to parse /api/me response:', parseError);
@@ -280,10 +284,15 @@
       }
       
       // NOW render navbar with the correct auth state
+      // Wait a tick for scripts to load if needed
+      if (!window.Navbar) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
       if (window.Navbar && typeof window.Navbar.render === 'function') {
-        window.Navbar.render();
+        await window.Navbar.render();
       } else if (typeof window.renderNavbar === 'function') {
-        renderNavbar();
+        window.renderNavbar();
+        window.__initialNavbarRendered = true;
       }
       
       // Mark that initial navbar render is complete to prevent re-rendering
@@ -421,8 +430,8 @@
   </script>
 
   <!-- PWA and Notifications Scripts -->
-  <script src="components/notifications.js?v=20260304001"></script>
-  <script src="components/pwa-installer.js?v=20260304001"></script>
+  <script src="components/notifications.js?t=20260308"></script>
+  <script src="components/pwa-installer.js?t=20260308"></script>
   
   <!-- Service Worker Registration -->
   <script>

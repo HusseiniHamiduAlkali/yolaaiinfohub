@@ -4,9 +4,9 @@
     <p data-i18n="eduinfo_description">Ask about schools, universities, courses, or educational services in Yola.</p>
     <div id="eduinfo-chat-container" class="chat-container">
     <div class="chat-header">
-        <span data-i18n="edu_chat_header">EduInfo AI Chat</span>
+        <span data-i18n="eduinfo_chat_header">EduInfo AI Chat</span>
         <div class="model-switch">
-        <span class="model-label" data-i18n="model_label_flash">Using Gemini 1.5 Flash</span>
+        
         <label class="switch">
             <span class="sr-only" style="display:none" id="edu-model-toggle-label">Toggle AI Model</span>
             <input type="checkbox" id="edu-model-toggle" aria-labelledby="edu-model-toggle-label" title="Toggle AI Model"
@@ -14,6 +14,7 @@
                     ${window.useGemini25 ? 'checked' : ''}>
             <span class="slider round"></span>
         </label>
+        <span class="model-label" data-i18n="model_label_flash">Using Gemini 1.5 Flash</span>
         </div>
     </div>
     <div id="eduinfo-chat-messages" class="chat-messages"></div>

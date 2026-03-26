@@ -49,7 +49,7 @@
           </div>
           <div class="profile-actions" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
             <button id="btn-logout" class="auth-btn" style="background:#ef4444;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:600" onclick="window.logoutUser()" title="Logout from your account">
-              <i class="fas fa-sign-out-alt" style="margin-right:6px;"></i> Logout
+              Logout
             </button>
             <button id="btn-delete-account" title="Delete account" style="display:none;background:#dc2626;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:600">
               <i class="fas fa-trash-alt" style="margin-right:6px;"></i> Delete account
@@ -242,35 +242,36 @@
           const res = await fetch(`${API_BASE}/api/user/${profileUsername}`, { credentials: 'include' });
           const data = await res.json();
           console.log('Profile data loaded:', data);
-          console.log('%c📌 Session check: loggedIn=' + data.loggedIn + ', isOwnProfile will be set to:', 'color: #3182ce; font-weight: bold;', data.loggedIn);
-          if (data.username) {
+          // Check if this is the logged-in user's profile by server
+          let serverUser = null;
+          try {
+            const meRes = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
+            serverUser = await meRes.json();
+          } catch (e) { serverUser = null; }
+          if (serverUser && serverUser.username && data.username && serverUser.username === data.username) {
+            isOwnProfile = true;
             currentUserData = data;
-            // Use the loggedIn status from the backend to determine if viewing own profile
-            isOwnProfile = data.loggedIn === true;
-            console.log('%c✅ isOwnProfile set based on backend loggedIn status:', 'color: #10b981;', isOwnProfile);
-            fillProfile(data);
-            if (btnEditProfile) {
-              if (isOwnProfile) {
-                btnEditProfile.style.display = 'inline-flex';
-                console.log('%c📝 Edit button shown - user is viewing own profile', 'color: #8b5cf6;');
-              } else {
-                btnEditProfile.style.display = 'none';
-                console.log('%c🔒 Edit button hidden - user is NOT viewing own profile', 'color: #ef4444;');
-              }
-            }
-            // Show logout and delete buttons only on own profile
-            if (isOwnProfile) {
-              if (btnLogout) btnLogout.style.display = 'inline-flex';
-              if (btnDeleteAccount) btnDeleteAccount.style.display = 'inline-flex';
-            } else {
-              if (btnLogout) btnLogout.style.display = 'none';
-              if (btnDeleteAccount) btnDeleteAccount.style.display = 'none';
-            }
+            console.log('%c✅ isOwnProfile set based on server /api/me match', 'color: #10b981; font-weight: bold;', data.username);
           } else {
-            document.getElementById('profile-name').textContent = 'User not found';
-            document.getElementById('profile-username').textContent = '';
-            if (btnEditProfile) btnEditProfile.style.display = 'none';
+            // fallback to localStorage check
+            let localUser = null;
+            try {
+              localUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            } catch (e) { localUser = null; }
+            if (localUser && localUser.username && data.username && localUser.username === data.username) {
+              isOwnProfile = true;
+              currentUserData = data;
+              console.log('%c✅ isOwnProfile set based on localStorage match', 'color: #10b981; font-weight: bold;', data.username);
+            } else {
+              isOwnProfile = false;
+              currentUserData = data;
+              console.log('%c❌ isOwnProfile set to false', 'color: #ef4444; font-weight: bold;', data.username);
+            }
           }
+          fillProfile(data);
+          if (btnEditProfile) btnEditProfile.style.display = isOwnProfile ? 'inline-flex' : 'none';
+          if (btnLogout) btnLogout.style.display = isOwnProfile ? 'inline-flex' : 'none';
+          if (btnDeleteAccount) btnDeleteAccount.style.display = isOwnProfile ? 'inline-flex' : 'none';
         } catch (err) {
           console.error('Profile load error:', err);
           document.getElementById('profile-name').textContent = 'Error loading profile';
@@ -764,6 +765,19 @@
         alert('Error saving profile. Please try again.');
       }
     }
+    
+    // Make profile editable and savable when logged in
+    document.addEventListener('DOMContentLoaded', function() {
+      const userLoggedIn = true; // Replace with actual login check
+      const profileForm = document.getElementById('profile-form');
+      if (userLoggedIn) {
+        profileForm.querySelectorAll('input, textarea').forEach(input => {
+          input.removeAttribute('readonly');
+        });
+        const saveButton = document.getElementById('save-profile');
+        saveButton.style.display = 'block'; // Show save button
+      }
+    });
     
     loadProfile();
   </script>
