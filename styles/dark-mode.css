@@ -141,7 +141,7 @@ body.dark-mode .auth-btn:hover {
 
 /* Links */
 body.dark-mode a {
-    color: #64b5f6;
+    color: #fff;
 }
 
 body.dark-mode a:hover {
@@ -247,4 +247,83 @@ body.dark-mode .loading-spinner {
 /* Animations - preserve during dark mode */
 body.dark-mode * {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark-mode .info-section {
+    background-color: #484343 !important;
+}
+body.dark-mode .chat-messages {
+    background-color: #484343;
+}
+
+body.dark-mode .user-msg, body.dark-mode .ai-msg {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .input-options button, body.dark-mode .file-upload-btn {
+    background-color: #484343;
+}
+
+
+body.dark-mode .faq-list {
+    background-color: #484343;
+}
+
+body.dark-mode .faq-link {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .section2 {
+    background-color: #333;
+}
+
+body.dark-mode .history-of-yola {
+    background-color: #333;
+    color: #fff !important;
+}
+
+body.dark-mode .section2-home {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .model-label {
+ 
+    color: #fff;
+}
+
+body.dark-mode .section4 {
+    background-color: #484343;
+    
+}
+
+body.dark-mode .section4 p {
+    color: #fff;
+}
+
+body.dark-mode .section-eco {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .eco-tile {
+    background-color: #484343;
+    color: #fff;
+}
+
+body.dark-mode .section-extra {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .currency-selector-item {
+    background-color: #484343;
+    color: #fff;
+}
+
+body.dark-mode .exchange-amount {
+    background-color: #333;
+    color: #fff;
 }

@@ -153,8 +153,26 @@ window.sendEduMessage = async function(faqText = '') {
   let finalAnswer = "";
     try {
         const signal = window.eduAbortController ? window.eduAbortController.signal : null;
-        const response = await fetch('Data/EduInfo/eduinfo.txt', signal ? { signal } : {});
-        const localData = await response.text();
+
+        // Fetch all .html files in details/Edu directory
+        const eduFiles = await fetch('details/Edu/', signal ? { signal } : {}).then(r => r.text());
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(eduFiles, 'text/html');
+        const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Edu/${link.getAttribute('href')}`);
+
+        const htmlContents = await Promise.all(
+          links.map(async (link) => {
+            try {
+              const res = await fetch(link, signal ? { signal } : {});
+              if (!res.ok) return '';
+              return `\n--- ${link} ---\n` + (await res.text());
+            } catch {
+              return '';
+            }
+          })
+        );
+
+        const allLocalData = htmlContents.join('\n');
         
         // Get chat history for this section
         const chatHistory = window.getChatHistory('edu') || [];
@@ -164,26 +182,10 @@ window.sendEduMessage = async function(faqText = '') {
             ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `${h.role === 'user' ? 'User' : 'AI'}: ${h.content}`).join('\n\n')
             : "";
         
-    // Find local file links in the txt (format: - School Name: details/Edu/filename.html)
-    const linkRegex = /details\/Edu\/[^\s]+\.html/gim;
-    const links = [];
-    let match;
-    while ((match = linkRegex.exec(localData)) !== null) {
-      links.push(match[0]);
-    }
-
-    // Fetch all linked file contents in parallel
-    let linkedContents = '';
-    if (links.length > 0) {
-      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
-      const results = await Promise.all(fetches);
-      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
-    }
-
-    // Combine all local data
-    const allLocalData = localData + linkedContents + historyContext;
+        // Combine all local data
+        const allLocalDataWithHistory = allLocalData + historyContext;
             
-  finalAnswer = await window.callGeminiAI(allLocalData, msg, window.GEMINI_API_KEY, mediaData, window.eduAbortController ? window.eduAbortController.signal : null, 'edu', attachments);
+  finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, window.eduAbortController ? window.eduAbortController.signal : null, 'edu', attachments);
   // Add user message to history
   window.addToChatHistory && window.addToChatHistory('edu', 'user', msg);
   // Add assistant reply to in-memory history

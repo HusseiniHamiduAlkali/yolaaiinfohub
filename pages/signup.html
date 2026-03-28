@@ -262,7 +262,7 @@
           window.location.href = '/'; // Redirect to homepage on success
         } else {
           let errorMessage = data.error || 'Error signing up. Please try again.';
-          // Map common error messages to user-friendly ones
+          // Map backend error messages to user-friendly ones
           if (data.error) {
             switch (data.error.toLowerCase()) {
               case 'username already exists':
@@ -271,14 +271,8 @@
               case 'email already exists':
                 errorMessage = 'This email is already registered. Please use a different email or sign in.';
                 break;
-              case 'invalid email':
-                errorMessage = 'Please enter a valid email address.';
-                break;
-              case 'invalid nin':
-                errorMessage = 'Please enter a valid NIN (11 digits).';
-                break;
-              case 'password too short':
-                errorMessage = 'Password must be at least 6 characters long.';
+              case 'nin already registered':
+                errorMessage = 'This NIN is already registered. Please use a different NIN or sign in.';
                 break;
               default:
                 errorMessage = data.error;

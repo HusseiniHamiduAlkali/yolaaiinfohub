@@ -1079,7 +1079,7 @@ main {
     max-width: 98vw;
   }
   .info-section {
-    /*margin-top: 1rem;*/
+    margin-top: 35px;
     width: auto;
     gap: 1rem;
   }

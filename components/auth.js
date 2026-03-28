@@ -1,4 +1,3 @@
-
 // Frontend logic for login/signup/logout modals and API, plus password reset
 // Cache version: v2-login-handler-fix-2026-02-20
 
@@ -423,7 +422,15 @@ function showAuthModal(type) {
       modal.remove();
     } else {
       console.error('❌ Login failed:', data.error);
-      document.getElementById('auth-error').textContent = data.error || 'Error';
+      let errorMessage = 'Error';
+      if (res.status === 400 && data.error === 'password mismatch') {
+        errorMessage = 'Incorrect password. Please try again.';
+      } else if (res.status === 400) {
+        errorMessage = 'Invalid login credentials. Please check your username or email and try again.';
+      } else if (res.status === 500) {
+        errorMessage = 'Server error. Please try again later.';
+      }
+      document.getElementById('auth-error').textContent = errorMessage;
       // Re-enable button on error
       submitBtn.disabled = false;
     }

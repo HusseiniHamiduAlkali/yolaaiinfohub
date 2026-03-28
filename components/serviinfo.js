@@ -221,27 +221,26 @@ window.sendServiMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const signal = window.serviAbortController ? window.serviAbortController.signal : null;
-    const response = await fetch('Data/ServiInfo/serviinfo.txt', signal ? { signal } : {});
-    const localData = await response.text();
 
-    // Find local file links in the txt (format: details/Servi/filename.html)
-    const linkRegex = /details\/Servi\/[^\s]+\.html/gim;
-    const links = [];
-    let match;
-    while ((match = linkRegex.exec(localData)) !== null) {
-      links.push(match[0]);
-    }
+    // Fetch all .html files in details/Servi directory
+    const serviFiles = await fetch('details/Servi/', signal ? { signal } : {}).then(r => r.text());
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(serviFiles, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Servi/${link.getAttribute('href')}`);
 
-    // Fetch all linked file contents in parallel
-    let linkedContents = '';
-    if (links.length > 0) {
-      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
-      const results = await Promise.all(fetches);
-      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
-    }
+    const htmlContents = await Promise.all(
+      links.map(async (link) => {
+        try {
+          const res = await fetch(link, signal ? { signal } : {});
+          if (!res.ok) return '';
+          return `\n--- ${link} ---\n` + (await res.text());
+        } catch {
+          return '';
+        }
+      })
+    );
 
-    // Combine all local data
-    const allLocalData = localData + linkedContents;
+    const allLocalData = htmlContents.join('\n');
     finalAnswer = await window.callGeminiAI(allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal, 'servi', attachments);
   } catch (e) {
     if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {

@@ -168,24 +168,26 @@ window.sendAgroMessage = async function(faqText = '') {
   try {
     // Fetch main local data using controller signal when available
     const signal = controller ? controller.signal : (window.agroAbortController ? window.agroAbortController.signal : null);
-    const response = await fetch('Data/AgroInfo/agroinfo.txt', signal ? { signal } : {});
-    const localData = await response.text();
 
-    // Find local file links in the txt (format: details/Agro/filename.html)
-    const linkRegex = /^-\s*(details\/Agro\/[^\s]+\.html)$/gim;
-    const links = [];
-    let match;
-    while ((match = linkRegex.exec(localData)) !== null) {
-      links.push(match[1]);
-    }
+    // Fetch all .html files in details/Agro directory
+    const agroFiles = await fetch('details/Agro/', signal ? { signal } : {}).then(r => r.text());
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(agroFiles, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Agro/${link.getAttribute('href')}`);
 
-    // Fetch all linked file contents in parallel
-    let linkedContents = '';
-    if (links.length > 0) {
-      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
-      const results = await Promise.all(fetches);
-      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
-    }
+    const htmlContents = await Promise.all(
+      links.map(async (link) => {
+        try {
+          const res = await fetch(link, signal ? { signal } : {});
+          if (!res.ok) return '';
+          return `\n--- ${link} ---\n` + (await res.text());
+        } catch {
+          return '';
+        }
+      })
+    );
+
+    const allLocalData = htmlContents.join('\n');
 
     // Include chat history in the context
     const historyContext = chatHistory.length > 0 
@@ -193,9 +195,9 @@ window.sendAgroMessage = async function(faqText = '') {
         : "";
 
     // Combine all local data
-    const allLocalData = localData + linkedContents + historyContext;
+    const allLocalDataWithHistory = allLocalData + historyContext;
     try {
-      finalAnswer = await window.callGeminiAI(allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal, 'agro', attachments);
+      finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'agro', attachments);
       // Store in chat history (keep last 10 messages)
       window.addToChatHistory && window.addToChatHistory('agro', 'user', msg);
       window.addToChatHistory && window.addToChatHistory('agro', 'assistant', finalAnswer);

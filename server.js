@@ -791,35 +791,40 @@ app.post('/api/update-profile', async (req, res) => {
       }
     }
 
-    // Update fields
-    if (name) user.name = name;
-    if (email) user.email = email;
-    if (phone) user.phone = phone;
-    if (state) user.state = state;
-    if (lga) user.lga = lga;
-    if (address) user.address = address;
+    // Build update object with only provided fields
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (email !== undefined) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (state !== undefined) updateData.state = state;
+    if (lga !== undefined) updateData.lga = lga;
+    if (address !== undefined) updateData.address = address;
 
     // Handle profile picture upload
     if (req.files && req.files.profilePicture) {
       const profilePic = req.files.profilePicture;
       // Convert to base64 for simplicity; in production, use cloud storage
-      user.profilePicture = `data:${profilePic.mimetype};base64,${profilePic.data.toString('base64')}`;
+      updateData.profilePicture = `data:${profilePic.mimetype};base64,${profilePic.data.toString('base64')}`;
     }
 
-    await user.save();
+    // Use updateOne to avoid full document validation
+    await User.updateOne({ _id: req.session.userId }, { $set: updateData }, { runValidators: false });
+
+    // Fetch updated user data
+    const updatedUser = await User.findById(req.session.userId);
 
     // Return updated user data
-    const avatar = user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
+    const avatar = updatedUser.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(updatedUser.name || updatedUser.username)}&background=3182ce&color=fff`;
     res.json({ 
       success: true, 
-      username: user.username, 
-      name: user.name, 
-      email: user.email, 
-      phone: user.phone, 
-      state: user.state, 
-      lga: user.lga, 
-      address: user.address,
-      profilePicture: user.profilePicture,
+      username: updatedUser.username, 
+      name: updatedUser.name, 
+      email: updatedUser.email, 
+      phone: updatedUser.phone, 
+      state: updatedUser.state, 
+      lga: updatedUser.lga, 
+      address: updatedUser.address,
+      profilePicture: updatedUser.profilePicture,
       avatar 
     });
   } catch (error) {

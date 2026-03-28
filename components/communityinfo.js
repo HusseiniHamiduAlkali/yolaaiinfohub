@@ -106,12 +106,11 @@ window.sendCommunityMessage = async function(faqText = '') {
   // Extract media data if present in preview
   let mediaData = null;
   const previewContainer2 = preview.querySelector('.preview-container');
-  
+
   if (previewContainer2) {
-    // Check if container has stored file data (for non-visual files)
     const fileData = previewContainer2.getAttribute('data-file-data');
     const fileMime = previewContainer2.getAttribute('data-file-mime');
-    
+
     if (fileData && fileMime) {
       mediaData = {
         dataUrl: fileData,
@@ -119,7 +118,6 @@ window.sendCommunityMessage = async function(faqText = '') {
         fileName: previewContainer2.getAttribute('data-file-name')
       };
     } else {
-      // Fallback to checking for image/audio/video/iframe elements
       const previewImg = previewContainer2.querySelector('img');
       const previewAudio = previewContainer2.querySelector('audio');
       const previewVideo = previewContainer2.querySelector('video');
@@ -143,7 +141,6 @@ window.sendCommunityMessage = async function(faqText = '') {
     msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
   }
 
-  // Setup stop button with commonAI utility (creates AbortController) and capture controller (with fallback if not loaded)
   let controller = null;
   if (typeof window.setupStopButton === 'function') {
     controller = window.setupStopButton({ sendBtn, section: 'community' });
@@ -151,7 +148,6 @@ window.sendCommunityMessage = async function(faqText = '') {
 
   const msgGroup = document.createElement('div');
   msgGroup.className = 'chat-message-group';
-  // generate a temporary message id now so we can reuse for actions
   const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
   msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
@@ -168,17 +164,16 @@ window.sendCommunityMessage = async function(faqText = '') {
 
   let finalAnswer = "";
   try {
-    // Fetch the main .txt file using controller's signal when available
     const signal = controller ? controller.signal : (window.communityAbortController ? window.communityAbortController.signal : null);
-    const localDataTxt = await fetch('Data/CommunityInfo/communityinfo.txt', signal ? { signal } : {}).then(r => r.text());
 
-    // Extract local data links (lines starting with '-')
-    const linkLines = localDataTxt.split('\n').filter(line => line.trim().startsWith('- '));
-    const htmlLinks = linkLines.map(line => line.replace('- ', '').trim());
+    // Fetch all .html files in details/Community directory
+    const communityFiles = await fetch('details/Community/').then(r => r.text());
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(communityFiles, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Community/${link.getAttribute('href')}`);
 
-    // Fetch all linked HTML files in parallel
     const htmlContents = await Promise.all(
-      htmlLinks.map(async (link) => {
+      links.map(async (link) => {
         try {
           const res = await fetch(link, signal ? { signal } : {});
           if (!res.ok) return '';
@@ -189,10 +184,8 @@ window.sendCommunityMessage = async function(faqText = '') {
       })
     );
 
-    // Combine all local data
-    const allLocalData = localDataTxt + '\n' + htmlContents.join('\n');
+    const allLocalData = htmlContents.join('\n');
 
-    // Get chat history context
     const history = JSON.parse(localStorage.getItem('community_chat_history') || '[]');
     let historyContext = '';
     if (history.length > 0) {
@@ -202,7 +195,6 @@ window.sendCommunityMessage = async function(faqText = '') {
 
     finalAnswer = await window.callGeminiAI(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, mediaData, signal, 'community', attachments);
 
-    // Update history with AI response
     history.push({ user: msg, ai: finalAnswer });
     while (history.length > 10) history.shift(); // Keep only last 10 messages
     localStorage.setItem('community_chat_history', JSON.stringify(history));
@@ -223,21 +215,16 @@ window.sendCommunityMessage = async function(faqText = '') {
   }
   chat.scrollTop = chat.scrollHeight;
 
-  // Reset the button state
   const currentBtn = document.querySelector('#chat-input + .send-button-group .send-button') || document.querySelector('.send-button');
   if (currentBtn) {
-    // Replace to clear listeners
     const restoredBtn = currentBtn.cloneNode(true);
-    // restore submit behaviour
     restoredBtn.type = 'submit';
     currentBtn.parentNode.replaceChild(restoredBtn, currentBtn);
-    
-    // Reset button appearance
+
     restoredBtn.classList.remove('sending');
     restoredBtn.textContent = 'Send';
     restoredBtn.style.backgroundColor = '';
-    
-    // Add the send message handler back (prevent default in case it's used as click)
+
     restoredBtn.addEventListener('click', (e) => { if (e && typeof e.preventDefault === 'function') e.preventDefault(); window.sendCommunityMessage(); });
   }
 };

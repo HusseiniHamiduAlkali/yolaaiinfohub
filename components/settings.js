@@ -81,7 +81,7 @@ window.SettingsPage = {
               <input type="email" id="feedback-email" class="feedback-input" placeholder="Enter your email">
             </div>
             <div class="settings-item">
-              <label class="settings-label" data-i18n="feedback_message">Your Feedback</label>
+              <!-- <label class="settings-label" data-i18n="feedback_message">Your Feedback</label> -->
               <textarea id="feedback-message" class="feedback-textarea" placeholder="Please share your feedback..." rows="6"></textarea>
             </div>
             <div class="settings-item">
@@ -116,26 +116,36 @@ window.SettingsPage = {
             
             <h3>Contents of the Environment Variable (.env file):</h3>
             <ul style="list-style: none;">
-              <li>1. Google Gemini API KEY.</li>
-              <li>2. Google Maps API KEY.</li>
-              <li>3. Mongodb URI For User Authentication.</li>
-              <li>4. Dedicated e-mail address.</li>
-              <li>5. E-mail. Address 'App Password' For Password Reset Route.</li>
-              <li>6. Password reset URL base.</li>
-              <li>7. Front-end Netlify URL.</li>
-              <li>8. Back-end Render URL.</li>
+              <li>1. Google Gemini API key.</li>
+              <li>2. Google Maps API key.</li>
+              <li>3. Tomrom maps API key.</li>
+              <li>4. ExchangeRates API key.</li>
+              <li>5. Mongodb URI For User Authentication.</li>
+              <li>6. Dedicated e-mail address.</li>
+              <li>7. E-mail. Address 'App Password' For Password Reset Route.</li>
+              <li>8. Password reset URL base.</li>
+              <li>9. Front-end Netlify URL.</li>
+              <li>10. Back-end Render URL.</li>
             </ul>
             
             <h3>Major Challenges:</h3>
             <ul>
               <li>Power/Electricity.</li>
-              <li>Internet Access (Thanks to the Weekly Reflection Data Reward, It Has Really Cushioned This Effect).</li>
+              <li>Internet Access.</li>
             </ul>
 
-            <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better.</p>
-
-            <p><strong>I Husseini Hamidu Alkali the Chief Pilot, Together With GitCopilot We Are Able To Land Unto This Robust Project For My 3MTT Knowledge Showcase.</strong></p>
-            <p><strong>My Fellow ID: FE/23/1941341. Cohort 3.</strong></p>
+            <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better. 
+             This Robust Project For My 3MTT NextGen Knowledge Showcase.</p>
+            
+            <div style="height: 30px;"></div>
+            
+            <p style="margin-bottom: 15px;"><strong>ABOUT THE DEVELOPER:  Husseini Hamidu Alkali.</strong></p>
+            <p>
+              
+              Phone: +234 7012244240 / + 234 8032377428.  <br> 
+              Email: husseinihamidualkali@gmail.com
+            </p>
+            
           </div>
 
           <!-- Back Button -->

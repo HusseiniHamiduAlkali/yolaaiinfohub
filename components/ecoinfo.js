@@ -272,31 +272,33 @@ window.sendEcoMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const signal = window.ecoAbortController ? window.ecoAbortController.signal : null;
-    const response = await fetch('Data/EcoInfo/ecoinfo.txt', signal ? { signal } : {});
-    const localData = await response.text();
 
-    // Find local file links in the txt (format: details/Eco/filename.html)
-    const linkRegex = /details\/Eco\/[^\s]+\.html/gim;
-    const links = [];
-    let match;
-    while ((match = linkRegex.exec(localData)) !== null) {
-      links.push(match[0]);
-    }
+    // Fetch all .html files in details/Eco directory
+    const ecoFiles = await fetch('details/Eco/', signal ? { signal } : {}).then(r => r.text());
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(ecoFiles, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Eco/${link.getAttribute('href')}`);
 
-    // Fetch all linked file contents in parallel
-    let linkedContents = '';
-    if (links.length > 0) {
-      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
-      const results = await Promise.all(fetches);
-      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
-    }
+    const htmlContents = await Promise.all(
+      links.map(async (link) => {
+        try {
+          const res = await fetch(link, signal ? { signal } : {});
+          if (!res.ok) return '';
+          return `\n--- ${link} ---\n` + (await res.text());
+        } catch {
+          return '';
+        }
+      })
+    );
+
+    const allLocalData = htmlContents.join('\n');
 
     // Get chat history context from in-memory helper
     const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('eco', 5) : [];
     const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
     
     // Combine all local data
-    const allLocalData = localData + linkedContents + historyContext;
+    const allLocalDataWithHistory = allLocalData + historyContext;
     
     const contents = {
       parts: []
@@ -311,7 +313,7 @@ window.sendEcoMessage = async function(faqText = '') {
     }
     const promptGuide = localStorage.getItem('eco_ai_prompt') || ECO_AI_PROMPT;
     contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${allLocalData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${allLocalDataWithHistory}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
     });
     const modelVersion = 'gemini-2.5-flash';
     let body = JSON.stringify({ model: modelVersion, contents: [contents] });

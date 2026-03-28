@@ -314,7 +314,26 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
 
   try {
     const signal = window.homeAbortController ? window.homeAbortController.signal : null;
-    const localData = await fetch('Data/HomeInfo/homeinfo.txt', signal ? { signal } : {}).then(r => r.text()); // Assuming a local data file for HomeInfo
+
+    // Fetch all .html files in details/Home directory
+    const homeFiles = await fetch('details/Home/', signal ? { signal } : {}).then(r => r.text());
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(homeFiles, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Home/${link.getAttribute('href')}`);
+
+    const htmlContents = await Promise.all(
+      links.map(async (link) => {
+        try {
+          const res = await fetch(link, signal ? { signal } : {});
+          if (!res.ok) return '';
+          return `\n--- ${link} ---\n` + (await res.text());
+        } catch {
+          return '';
+        }
+      })
+    );
+
+    const localData = htmlContents.join('\n');
     finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, mediaData, signal);
   } catch (e) {
     if (e && e.name === 'AbortError') {

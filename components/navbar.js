@@ -13,14 +13,28 @@ function getSectionFromUrl() {
   return valid.includes(path) ? path : 'home';
 }
 
+async function fetchWithTimeout(resource, options = {}, timeout = 3000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  const response = await fetch(resource, { ...options, signal: controller.signal });
+  clearTimeout(id);
+  return response;
+}
+
 function renderNavbar() {
-  // Note: User state will be set by the server check in window.Navbar.render()
-  // Do not restore from localStorage - always check server
+  // Note: User state is already set by window.Navbar.render() before this is called
+  // No need to make another backend call - use the pre-fetched window.currentUser
+
+  console.log('%c🎨 renderNavbar() called, window.currentUser:', 'color: #9333ea; font-weight: bold;', window.currentUser);
+  
+  // Remove existing navbar to prevent duplicates
+  const existingNavbar = document.querySelector('nav.navbar');
+  if (existingNavbar) {
+    existingNavbar.remove();
+  }
 
   const nav = document.createElement('nav');
   nav.className = 'navbar';
-
-  console.log('%c🎨 renderNavbar() called, window.currentUser:', 'color: #9333ea; font-weight: bold;', window.currentUser);
 
   // Create the auth buttons container that will be reused
   let authButtonsHTML = `
@@ -35,6 +49,15 @@ function renderNavbar() {
     console.log('%c✅ renderNavbar: User IS logged in, rendering logged-in navbar', 'color: #10b981;', window.currentUser.username);
     authButtonsHTML = `
       <div class="navbar-auth" id="navbar-auth" style="display:flex;align-items:center;gap:0.7rem;">
+        <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link">
+          <span class="navbar-avatar">
+            ${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}
+          </span>
+          <span class="navbar-names">
+            <span class="navbar-fullname">${window.currentUser.name || window.currentUser.username}</span>
+            <span class="navbar-username-text">@${window.currentUser.username}</span>
+          </span>
+        </a>
       </div>
     `;
   } else {
@@ -69,19 +92,8 @@ function renderNavbar() {
       <div class="navbar-right">
         <div class="navbar-user-section">
           <div class="navbar-username-container" id="navbar-username-container">
-            ${isLoggedIn ? `
-              <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link" id="navbar-profile-link">
-                <span class="navbar-avatar" id="navbar-avatar">
-                  ${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}
-                </span>
-                <span class="navbar-names">
-                  <span class="navbar-fullname">${window.currentUser.name || window.currentUser.username}</span>
-                  <span class="navbar-username-text">@${window.currentUser.username}</span>
-                </span>
-              </a>
-            ` : ''}
+            ${authButtonsHTML}
           </div>
-          ${!isLoggedIn ? authButtonsHTML : ''}
         </div>
         <div class="navbar-links-container">
           <ul class="navbar-links">
@@ -102,7 +114,7 @@ function renderNavbar() {
 
   // Append the navbar to the DOM
   document.body.prepend(nav);
-  
+
   // Wire up auth button events after DOM is in place
   setTimeout(() => {
     const signinBtn = document.getElementById('signin-btn');
@@ -453,20 +465,33 @@ function renderNavbar() {
 
 // Export as Navbar global for compatibility
 window.Navbar = {
-  render: async () => {
+  render: async (force = false) => {
     console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;');
     
-    // IMPORTANT: On initial index.html load, only render navbar ONCE
-    // Subsequent calls from updateAuthUI/section loaders should be skipped unless explicitly forced
-    if (window.__initialNavbarRendered && !window.__forceNavbarRerender) {
-      console.log('%c⏭️ Navbar.render(): Already rendered on initial load and not forced - skipping', 'color: #94a3b8;');
+    // IMPORTANT: Prevent concurrent calls - if already rendering, skip
+    if (window.__navbarRenderInProgress) {
+      console.log('%c⏭️ Navbar.render(): Already rendering in progress - skipping', 'color: #94a3b8;');
       return;
     }
+    
+    // Check if navbar already exists in DOM and is complete (unless forced)
+    const existingNavbar = document.querySelector('nav.navbar');
+    if (existingNavbar && window.__navbarRenderComplete && !force) {
+      console.log('%c⏭️ Navbar.render(): Navbar already rendered and in DOM - skipping', 'color: #94a3b8;');
+      return;
+    }
+    
+    // Mark as rendering to prevent concurrent calls
+    window.__navbarRenderInProgress = true;
+    
+    // Clear the complete flag so we can render fresh
+    window.__navbarRenderComplete = false;
     
     // Clear the force rerender flag if it was set
     window.__forceNavbarRerender = false;
     
-    // Fetch current user state from server instead of localStorage
+    // Fetch current user state from server (SINGLE CALL)
+    console.log('%c⏳ Waiting for backend response to verify user...', 'color: #f59e0b; font-weight: bold;');
     try {
       // Use window.API_BASE if available, otherwise build from current hostname
       const apiBase = window.API_BASE || (function() {
@@ -478,6 +503,7 @@ window.Navbar = {
           return 'https://yolaaiinfohub-backend.onrender.com';
         } catch (e) { return 'http://localhost:4000'; }
       })();
+      
       const response = await fetch(apiBase + '/api/me', {
         method: 'GET',
         credentials: 'include',
@@ -501,12 +527,12 @@ window.Navbar = {
             avatar: data.avatar
           };
           window.__lastUser = window.currentUser;
-          console.log('%c✅ Navbar.render(): User logged in from server', 'color: #10b981;', data.username);
+          console.log('%c✅ User verified as logged in:', 'color: #10b981; font-weight: bold;', data.username);
         } else {
           // User not logged in according to server
           window.currentUser = null;
           window.__lastUser = null;
-          console.log('%c❌ Navbar.render(): User not logged in on server', 'color: #ef4444;');
+          console.log('%c❌ No logged-in user detected.', 'color: #ef4444; font-weight: bold;');
         }
       } else {
         // Error fetching user state from server
@@ -518,11 +544,22 @@ window.Navbar = {
       console.error('%c❌ Navbar.render(): Error checking server for user state:', 'color: #ef4444;', error);
       window.currentUser = null;
       window.__lastUser = null;
+      console.log('%c❌ No logged-in user detected (backend error).', 'color: #ef4444; font-weight: bold;');
     }
     
+    // Now render navbar with the fetched user state
     renderNavbar();
-    // Mark navbar as rendered AFTER it's actually rendered
-    window.__initialNavbarRendered = true;
+    
+    // Verify navbar was actually added to DOM before marking complete
+    if (document.querySelector('nav.navbar')) {
+      window.__navbarRenderComplete = true;
+      console.log('%c✨ Navbar render complete and in DOM', 'color: #06b6d4; font-weight: bold;');
+    } else {
+      console.warn('%c⚠️ Navbar not found in DOM after rendering!', 'color: #f59e0b;');
+    }
+    
+    window.__navbarRenderInProgress = false;
+    
     // If auth UI was updated before this script loaded, ensure navbar picks it up
     // Only reapply if currentUser is null but we have a remembered user, or they differ
     if (window.updateAuthUI && window.__lastUser) {
@@ -540,12 +577,25 @@ window.Navbar = {
   }
 };
 
-// Auto-render navbar on script load if not already rendered
-if (typeof window !== 'undefined' && !window.__initialNavbarRendered) {
-  // Use setTimeout to ensure DOM is ready
-  setTimeout(() => {
-    if (window.Navbar && typeof window.Navbar.render === 'function') {
-      window.Navbar.render();
+// Auto-render navbar on script load if not already rendering
+if (typeof window !== 'undefined') {
+  // Wait for DOM to be ready before rendering
+  const initNavbar = () => {
+    // Only render if not already done and not in progress
+    if (!window.__navbarRenderComplete && !window.__navbarRenderInProgress) {
+      console.log('%c📍 Auto-rendering navbar on script load', 'color: #8b5cf6; font-weight: bold;');
+      if (window.Navbar && typeof window.Navbar.render === 'function') {
+        window.Navbar.render();
+      }
+    } else {
+      console.log('%c⏭️ Auto-render skipped: render already in progress or complete', 'color: #94a3b8;');
     }
-  }, 0);
+  };
+  
+  // If DOM is already ready, render immediately
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavbar);
+  } else {
+    setTimeout(initNavbar, 0);
+  }
 }

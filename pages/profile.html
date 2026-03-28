@@ -270,7 +270,7 @@
           }
           fillProfile(data);
           if (btnEditProfile) btnEditProfile.style.display = isOwnProfile ? 'inline-flex' : 'none';
-          if (btnLogout) btnLogout.style.display = isOwnProfile ? 'inline-flex' : 'none';
+          if (btnLogout) btnLogout.style.display = 'inline-flex';
           if (btnDeleteAccount) btnDeleteAccount.style.display = isOwnProfile ? 'inline-flex' : 'none';
         } catch (err) {
           console.error('Profile load error:', err);
@@ -321,8 +321,8 @@
       
       element.className = hasValue ? 'profile-field' : 'profile-field empty';
       
-      // Show edit buttons only if viewing own profile
-      const showEditButton = isOwnProfile;
+      // Always show edit buttons
+      const showEditButton = true;
       
       console.log(`%c📝 fillField: ${elementId}, showEditButton=${showEditButton}, isOwnProfile=${isOwnProfile}`, 'color: #8b5cf6;');
       
@@ -510,37 +510,11 @@
           showInlineSavedIndicator(fieldElement);
           // nothing to clean up for inline editors (they are rendered on their own fields)
         } else if (res.status === 401) {
-          // Session expired
-          console.log('%c❌ 401 Unauthorized - Session expired!', 'color: #ef4444; font-weight: bold;');
-          console.log('%c📌 Debug info: isOwnProfile=' + isOwnProfile + ', currentUserData=', 'color: #f59e0b;', currentUserData);
-          
-          if (isOwnProfile) {
-            // Fallback to localStorage save if session expired but user is viewing own profile
-            console.log('%c⚠️ Backend session expired, saving to localStorage instead', 'color: #f59e0b; font-weight: bold;');
-            currentUserData = { ...(currentUserData || {}), ...payload };
-            // Save to localStorage
-            try {
-              localStorage.setItem('currentUser', JSON.stringify(currentUserData));
-              // update displayed value for the edited field
-              const valueDiv = fieldElement.querySelector('.profile-field-value');
-              valueDiv.textContent = payload[fieldKey] || '-';
-              restoreEditButton(fieldElement, fieldKey);
-              fieldElement.classList.remove('editing');
-              showInlineSavedIndicator(fieldElement);
-              alert('Profile saved locally. Please log in again to sync with server.');
-            } catch (err) {
-              console.error('localStorage save error:', err);
-              alert('Could not save profile.');
-              if (saveBtn) saveBtn.disabled = false;
-              if (cancelBtn) cancelBtn.disabled = false;
-            }
-          } else {
-            // 401 but not own profile - user is trying to edit someone else's profile
-            console.log('%c🔒 Unauthorized - Not own profile', 'color: #ef4444;');
-            alert((data && data.error) || 'You cannot edit this profile.');
-            if (saveBtn) saveBtn.disabled = false;
-            if (cancelBtn) cancelBtn.disabled = false;
-          }
+          // Not authenticated - show error and let user handle it
+          console.log('%c❌ 401 Unauthorized - Backend rejected update', 'color: #ef4444; font-weight: bold;');
+          alert((data && data.error) || 'Failed to save profile. Please log in first.');
+          if (saveBtn) saveBtn.disabled = false;
+          if (cancelBtn) cancelBtn.disabled = false;
         } else if (res.status === 404) {
           console.error('%c❌ 404 Not Found - Backend endpoint not accessible', 'color: #ef4444; font-weight: bold;');
           alert('Unable to reach the save endpoint. Please check your connection and try again. Error: ' + (data.error || 'Backend not responding'));
@@ -766,16 +740,44 @@
       }
     }
     
+    // Logout function
+    window.logoutUser = function() {
+      if (confirm('Are you sure you want to logout?')) {
+        try {
+          // Clear localStorage
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('authToken');
+          
+          // Update navbar UI to reflect logged-out state
+          if (window.updateAuthUI && typeof window.updateAuthUI === 'function') {
+            window.updateAuthUI(null);
+          }
+          
+          // Call backend logout if available
+          fetch(`${API_BASE}/api/logout`, {
+            method: 'POST',
+            credentials: 'include'
+          }).catch(err => console.log('Logout request completed'));
+          
+          // Redirect to home
+          window.location.href = '../index.html';
+        } catch (err) {
+          console.error('Logout error:', err);
+          alert('Error logging out. Please try again.');
+        }
+      }
+    };
+    
     // Make profile editable and savable when logged in
     document.addEventListener('DOMContentLoaded', function() {
       const userLoggedIn = true; // Replace with actual login check
       const profileForm = document.getElementById('profile-form');
-      if (userLoggedIn) {
+      if (userLoggedIn && profileForm) {
         profileForm.querySelectorAll('input, textarea').forEach(input => {
           input.removeAttribute('readonly');
         });
         const saveButton = document.getElementById('save-profile');
-        saveButton.style.display = 'block'; // Show save button
+        if (saveButton) saveButton.style.display = 'block'; // Show save button
       }
     });
     

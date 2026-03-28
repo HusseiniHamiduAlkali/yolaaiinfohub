@@ -17,7 +17,7 @@ window.YOLA_COORDS = window.YOLA_COORDS || {
     'garoua': { lat: 9.2195, lon: 12.4930, names: ['garoua', 'garoua ward'] },
     'jabbama': { lat: 9.1905, lon: 12.5060, names: ['jabbama', 'jabbama ward', 'jabbama area', 'jabbama plaza'] },
     'lamido': { lat: 9.2180, lon: 12.4820, names: ['lamido', 'lamido palace', 'lamido area', 'lamido ward'] },
-    'airport': { lat: 9.2350, lon: 12.4455, names: ['airport', 'yola airport', 'international airport'] },
+    'airport': { lat: 9.267620, lon: 12.425942, names: ['airport', 'yola airport', 'international airport'] },
     'market': { lat: 9.2155, lon: 12.4950, names: ['market', 'yola market', 'main market', 'central market'] },
     'zoo': { lat: 9.1855, lon: 12.4890, names: ['zoo', 'yola zoo', 'zoological park'] },
     'wetlands': { lat: 9.1755, lon: 12.4810, names: ['wetlands', 'yola wetlands', 'swamp'] },
@@ -68,6 +68,46 @@ function resolveYolaPlace(name) {
 
   return null;
 }
+
+// Helper: check if a place is in Yola (known locations)
+function isPlaceInYola(name) {
+  if (!name) return false;
+  const lower = name.toLowerCase().trim();
+  const places = window.YOLA_COORDS && window.YOLA_COORDS.places ? window.YOLA_COORDS.places : {};
+
+  // Check if in YOLA_COORDS
+  if (resolveYolaPlace(name)) return true;
+
+  // Check known Yola locations
+  const yolaLocations = [
+    'yola north', 'yola south', 'jimeta', 'girei', 'mubi', 'numan', 'garoua', 'lamido', 'jabbama',
+    'airport', 'market', 'zoo', 'wetlands', 'gorilla', 'palace', 'mosque',
+    'government house', 'motor park', 'bank', 'hospital', 'clinic', 'school',
+    'university', 'stadium', 'court', 'cinema', 'bridge', 'flyover', 'roundabout', 'junction'
+  ];
+
+  return yolaLocations.some(loc => lower.includes(loc) || loc.includes(lower));
+}
+
+// Helper: geocode a place using OpenStreetMap Nominatim
+async function geocodeWithOSM(place) {
+  try {
+    const query = encodeURIComponent(`${place}, Yola, Nigeria`);
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`;
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data && data.length > 0) {
+      const result = data[0];
+      return { lat: parseFloat(result.lat), lon: parseFloat(result.lon) };
+    }
+  } catch (err) {
+    console.error('OSM geocoding failed:', err);
+  }
+  return null;
+}
+
+// Make geocodeWithOSM globally available for tomtomMap.js
+window.geocodeWithOSM = geocodeWithOSM;
 
 // Load common AI utilities first
 if (!window.commonAILoaded) {
@@ -240,14 +280,11 @@ async function fetchTomTomKeyFromServer() {
 }
 
 // NEW: Detect places in user message (one or more)
-function extractPlaces(text) {
-  // Yola Wards with their approximate coordinates
+function detectPlaces(text) {
   const yolaWards = window.YOLA_COORDS && window.YOLA_COORDS.places ? window.YOLA_COORDS.places : {};
-
   const lowerText = text.toLowerCase();
   const foundPlaces = new Set();
 
-  // Match specific wards/locations in the Yola database
   for (const [wardName, wardData] of Object.entries(yolaWards)) {
     for (const name of wardData.names) {
       if (lowerText.includes(name)) {
@@ -257,7 +294,6 @@ function extractPlaces(text) {
     }
   }
 
-  // Comprehensive location database for fallback matching
   const allLocations = [
     'yola north', 'yola south', 'jimeta', 'girei', 'mubi', 'numan', 'garoua', 'lamido', 'jabbama',
     'airport', 'market', 'zoo', 'wetlands', 'gorilla', 'palace', 'mosque',
@@ -267,11 +303,13 @@ function extractPlaces(text) {
 
   for (const loc of allLocations) {
     if (lowerText.includes(loc)) {
-      foundPlaces.add(loc);
+      // Only add generic spot names if they exist in the YOLA_COORDS known list
+      if (resolveYolaPlace(loc)) {
+        foundPlaces.add(loc);
+      }
     }
   }
 
-  // Look for capitalized words that might be place names
   const capitalized = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*(?:\s+(?:Ward|LGA|Community))?/g) || [];
   for (const cap of capitalized) {
     const lowerCap = cap.toLowerCase();
@@ -280,8 +318,12 @@ function extractPlaces(text) {
     }
   }
 
-  const placesArray = Array.from(foundPlaces);
-  console.log('ℹ Detected places:', placesArray);
+  return Array.from(foundPlaces);
+}
+
+function extractPlaces(text) {
+  const placesArray = detectPlaces(text).filter(place => isPlaceInYola(place));
+  console.log('ℹ Detected Yola places:', placesArray);
   return placesArray;
 }
 // NEW: Calculate distance and metrics only (no visual route drawing)
@@ -986,23 +1028,26 @@ window.sendNaviMessage = async function(faqText = '') {
   let finalAnswer = "";
   try {
     const signal = controller ? controller.signal : (window.naviAbortController ? window.naviAbortController.signal : null);
-    const localData = await fetch('Data/NaviInfo/naviinfo.txt', signal ? { signal } : {}).then(r => r.text());
-    
-    // Find local file links in the txt (format: details/Navi/filename.html)
-    const linkRegex = /details\/Navi\/[^\s]+\.html/gim;
-    const links = [];
-    let match;
-    while ((match = linkRegex.exec(localData)) !== null) {
-      links.push(match[0]);
-    }
 
-    // Fetch all linked file contents in parallel
-    let linkedContents = '';
-    if (links.length > 0) {
-      const fetches = links.map(link => fetch(link, signal ? { signal } : {}).then(r => r.ok ? r.text() : '').catch(() => ''));
-      const results = await Promise.all(fetches);
-      linkedContents = results.map((content, i) => `\n---\n[${links[i]}]\n${content}\n`).join('');
-    }
+    // Fetch all .html files in details/Navi directory
+    const naviFiles = await fetch('details/Navi/', signal ? { signal } : {}).then(r => r.text());
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(naviFiles, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Navi/${link.getAttribute('href')}`);
+
+    const htmlContents = await Promise.all(
+      links.map(async (link) => {
+        try {
+          const res = await fetch(link, signal ? { signal } : {});
+          if (!res.ok) return '';
+          return `\n--- ${link} ---\n` + (await res.text());
+        } catch {
+          return '';
+        }
+      })
+    );
+
+    const allLocalData = htmlContents.join('\n');
     
     // Include chat history in the context
     const historyContext = chatHistory.length > 0 
@@ -1010,12 +1055,12 @@ window.sendNaviMessage = async function(faqText = '') {
         : "";
     
     // Combine all local data
-    const allLocalData = localData + linkedContents + historyContext;
+    const allLocalDataWithHistory = allLocalData + historyContext;
 
     // Try to get an AI response but do NOT bail out on failure — routing must continue.
     let aiText = '';
     try {
-      aiText = await window.callGeminiAI(NAVI_AI_PROMPT + "\n\n" + allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal, 'navi', attachments);
+      aiText = await window.callGeminiAI(NAVI_AI_PROMPT + "\n\n" + allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'navi', attachments);
     } catch (aiErr) {
       if (aiErr && (aiErr.name === 'AbortError' || aiErr.message === 'AbortError')) {
         aiText = "Request cancelled.";
@@ -1035,40 +1080,63 @@ window.sendNaviMessage = async function(faqText = '') {
     window.addToChatHistory && window.addToChatHistory('navi', 'user', msg);
 
     // NEW: Detect places in user message and switch maps accordingly
-    const places = extractPlaces(msg);
-    if (places && places.length >= 2) {
-      console.log('🎯 Two or more places detected:', places);
-      
-      // Switch to TomTom map for route display
+    const allPlaces = detectPlaces(msg);
+    const yolaPlaces = allPlaces.filter(place => isPlaceInYola(place));
+    const nonYolaPlaces = allPlaces.filter(place => !isPlaceInYola(place));
+    let routeDrawn = false;
+
+    if (nonYolaPlaces.length > 0) {
+      const nonYolaText = nonYolaPlaces.map(p => `"${p}"`).join(', ');
+      finalAnswer += `\n\n⚠️ The mentioned place(s) ${nonYolaText} are not recognized as Yola locations. The map display for these places is disabled.`;
+      console.log('⚠️ Non-Yola places detected:', nonYolaPlaces);
+    }
+
+    if (yolaPlaces.length >= 2) {
+      console.log('🎯 Two or more Yola places detected:', yolaPlaces);
       await switchToTomTomMap();
-      
-      // Try to draw route on TomTom map between first two places
-      const route = await window.drawRouteOnTomTomMap(places[0], places[1]);
-      
-      // If route was drawn successfully, use TomTom metrics only
+      const route = await window.drawTomTomRoute(yolaPlaces[0], yolaPlaces[1]);
       if (route && typeof route.distance !== 'undefined' && typeof route.time !== 'undefined') {
-        const mapInstruction = `\n\n📍 **Route Details (TomTom):**\n- **Distance:** ${route.distance.toFixed ? route.distance.toFixed(1) : route.distance} km\n- **Estimated Travel Time:** ${Math.round(route.time)} minutes\n\n👇 **Scroll down to see the map with the route drawn between ${places[0]} and ${places[1]}**`;
+        routeDrawn = true;
+        const mapInstruction = `\n\n📍 **Route Details (TomTom):**\n- **Distance:** ${route.distance.toFixed ? route.distance.toFixed(1) : route.distance} km\n- **Estimated Travel Time:** ${Math.round(route.time)} minutes\n\n👇 **Scroll down to see the map with the route drawn between ${yolaPlaces[0]} and ${yolaPlaces[1]}**`;
         finalAnswer += mapInstruction;
         console.log('✅ TomTom route metrics added to response');
       } else {
-        // TomTom route was unavailable
         console.log('⚠️ TomTom route unavailable; not adding distance/time details from Gemini.');
         finalAnswer += '\n\n⚠️ TomTom routing unavailable right now; no distance/time details can be shown.';
       }
-    } else if (places && places.length === 1) {
-      console.log('📍 Single place detected:', places[0]);
-      
-      // Switch to Google Maps and center on the location
+    } else if (yolaPlaces.length === 1 && nonYolaPlaces.length === 0) {
+      console.log('📍 Single Yola place detected:', yolaPlaces[0]);
       await switchToGoogleMaps();
-      await window.centerGoogleMapsOnLocation(places[0]);
-      
-      // Add instruction to scroll to map
-      const mapInstruction = `\n\n📍 **Location Details:**\nI've centered the map on **${places[0]}**. Scroll down to see the location and its details on the map.`;
+      await window.centerGoogleMapsOnLocation(yolaPlaces[0]);
+      const mapInstruction = `\n\n📍 **Location Details:**\nI've centered the map on **${yolaPlaces[0]}**. Scroll down to see the location and its details on the map.`;
       finalAnswer += mapInstruction;
       console.log('✅ Google Maps centered on location');
-    } else {
+    } else if (yolaPlaces.length === 0 && nonYolaPlaces.length === 0) {
       console.log('ℹ No specific places detected in message');
       // Keep current map (default to Google Maps)
+    } else {
+      console.log('ℹ Mixed Yola and non-Yola place input; map actions limited due to non-Yola constraints.');
+      if (yolaPlaces.length === 1) {
+        await switchToGoogleMaps();
+        await window.centerGoogleMapsOnLocation(yolaPlaces[0]);
+        const mapInstruction = `\n\n📍 **Location Details:**\nI've centered the map on **${yolaPlaces[0]}**. Scroll down to see the location and its details on the map.`;
+        finalAnswer += mapInstruction;
+      }
+    }
+
+    if (yolaPlaces.length > 0 && yolaPlaces.length < 2) {
+      finalAnswer += '\n\n⚠️ Route drawing requires at least two valid Yola places. Provide a second Yola place to view route guidance.';
+      console.log('⚠️ Not enough Yola places for route drawing');
+    }
+
+    if (yolaPlaces.length >= 2 && !routeDrawn) {
+      finalAnswer += '\n\n⚠️ No route could be drawn for the detected Yola places, either due to map service issue or mismatch in geocoding. Please rephrase or try again later.';
+      console.log('⚠️ Yola route not drawn despite two Yola places');
+    }
+
+    if (yolaPlaces.length === 0 && nonYolaPlaces.length > 0) {
+      finalAnswer += '\n\nℹ️ Since no valid Yola place was available, map routing is not shown.';
+      console.log('ℹ️ All detected places are non-Yola; map routing disabled');
     }
 
     window.addToChatHistory && window.addToChatHistory('navi', 'assistant', finalAnswer);

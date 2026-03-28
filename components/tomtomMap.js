@@ -252,7 +252,17 @@
                 destCoords = null;
             }
 
-            // If local resolution failed for either endpoint, fall back to TomTom search
+            // If local resolution failed for either endpoint, use OSM fallback for Yola places
+            if (!originCoords && typeof origin === 'string' && window.isPlaceInYola && window.isPlaceInYola(origin) && window.geocodeWithOSM) {
+                originCoords = await window.geocodeWithOSM(origin);
+                if (originCoords) console.log('✅ OSM fallback resolved origin:', origin, originCoords);
+            }
+            if (!destCoords && typeof destination === 'string' && window.isPlaceInYola && window.isPlaceInYola(destination) && window.geocodeWithOSM) {
+                destCoords = await window.geocodeWithOSM(destination);
+                if (destCoords) console.log('✅ OSM fallback resolved destination:', destination, destCoords);
+            }
+
+            // Final fallback: use TomTom search if still unresolved
             if (!originCoords) originCoords = await searchLocation(origin, apiKey);
             if (!destCoords) destCoords = await searchLocation(destination, apiKey);
 

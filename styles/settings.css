@@ -27,7 +27,11 @@
 
 .settings-header {
   margin-bottom: 3rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
 }
+
 
 .settings-header h1 {
   font-size: 2.5rem;
@@ -51,8 +55,9 @@ body.dark-mode .settings-header h1 {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 0;
   transition: all 0.3s ease;
+  padding: 1rem;
 }
 
 body.dark-mode .settings-section {
@@ -109,6 +114,7 @@ body.dark-mode .section-title-danger {
   align-items: center;
   padding: 1rem 0;
   border-bottom: 1px solid #e9ecef;
+  flex-direction: row;
 }
 
 body.dark-mode .settings-item {
@@ -138,6 +144,7 @@ body.dark-mode .settings-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin: 15px;
 }
 
 body.dark-mode .settings-label {
@@ -389,17 +396,15 @@ body.dark-mode .feedback-textarea:focus {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .settings-container {
-    padding: 1rem;
-  }
 
   .settings-header h1 {
     font-size: 1.8rem;
   }
 
   .settings-item {
-    flex-direction: column;
-    align-items: flex-start;
+    
+    /*flex-direction: column;
+    align-items: flex-start;*/
     gap: 0.8rem;
   }
 
@@ -413,34 +418,43 @@ body.dark-mode .feedback-textarea:focus {
     justify-content: center;
   }
 
-  .settings-footer {
-    flex-direction: column;
-  }
 
   .settings-footer .settings-button {
     width: 100%;
   }
 }
 
-@media (max-width: 480px) {
-  .settings-container {
-    padding: 0.5rem;
-  }
+
+
+@media (max-width: 700px) {
 
   .settings-section {
-    padding: 1rem;
+    padding: 0;
   }
 
+  .settings-header {
+    margin-top: 5rem;
+    margin-bottom: 2rem;
+  }
   .settings-header h1 {
     font-size: 1.5rem;
   }
 
   .section-title {
     font-size: 1.1rem;
+    padding : 15px;
+  }
+  .section-title p, h3 {
+    padding: 0 15px;
+  }
+  
+  .settings-container {
+    padding: 0.5rem;
   }
 
   .settings-item {
     gap: 0.5rem;
+    padding: 8px;
   }
 
   .settings-label {
@@ -456,6 +470,11 @@ body.dark-mode .feedback-textarea:focus {
     font-size: 0.9rem;
   }
 
+  
+  .settings-footer {
+    flex-direction: column;
+    margin-top: 0;
+  }
   .dark-mode-toggle-settings {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;

@@ -70,8 +70,6 @@
   <script>
     function showErrorModal(message) {
       // Create modal container
-  // Reuse API_BASE from auth.js where possible. If not available, use Render backend.
-  const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return 'https://yolaaiinfohub-backend.onrender.com'; }catch(e){return 'https://yolaaiinfohub-backend.onrender.com'} })();
       const modalContainer = document.createElement('div');
       modalContainer.className = 'error-modal';
       modalContainer.innerHTML = `
@@ -201,12 +199,6 @@
           body: JSON.stringify(loginBody)
         });
         
-        // Check if response is OK first
-        if (!response.ok) {
-          console.error('Server returned status:', response.status);
-          throw new Error(`Server error: ${response.status}`);
-        }
-        
         // Check if response has content and is JSON
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
@@ -248,20 +240,15 @@
           console.log('🔄 Login successful, redirecting to homepage...');
           window.location.href = '../index.html'; // Redirect to homepage on success
         } else {
-          let errorMessage = 'An error occurred while signing in.';
+          let errorMessage = data.error || 'An error occurred while signing in.';
+          // Map backend errors to user-friendly messages
           if (data.error) {
             switch (data.error.toLowerCase()) {
-              case 'user not found':
-                errorMessage = 'No account found with this username or email. Please check your credentials or sign up.';
-                break;
               case 'invalid credentials':
-                errorMessage = 'Incorrect username or password. Please try again.';
+                errorMessage = 'Incorrect username/email or password. Please try again.';
                 break;
-              case 'account locked':
-                errorMessage = 'Your account has been temporarily locked due to too many failed attempts. Please try again later.';
-                break;
-              case 'account not verified':
-                errorMessage = 'Please verify your email address before signing in.';
+              case 'user not found':
+                errorMessage = 'No account found. Please check your credentials or sign up.';
                 break;
               default:
                 errorMessage = data.error;
