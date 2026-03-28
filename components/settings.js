@@ -116,16 +116,21 @@ window.SettingsPage = {
             
             <h3>Contents of the Environment Variable (.env file):</h3>
             <ul style="list-style: none;">
-              <li>1. Google Gemini API key.</li>
-              <li>2. Google Maps API key.</li>
-              <li>3. Tomrom maps API key.</li>
-              <li>4. ExchangeRates API key.</li>
-              <li>5. Mongodb URI For User Authentication.</li>
-              <li>6. Dedicated e-mail address.</li>
-              <li>7. E-mail. Address 'App Password' For Password Reset Route.</li>
-              <li>8. Password reset URL base.</li>
-              <li>9. Front-end Netlify URL.</li>
+              <li> 1. Google Gemini API key.</li>
+              <li> 2. Google Maps API key.</li>
+              <li> 3. Tomrom maps API key.</li>
+              <li> 4. ExchangeRates API key.</li>
+              <li> 5. Mongodb URI For User Authentication.</li>
+              <li> 6. Dedicated e-mail address.</li>
+              <li> 7. E-mail. Address 'App Password' For Password Reset Route.</li>
+              <li> 8. Password reset URL base.</li>
+              <li> 9. Front-end Netlify URL.</li>
               <li>10. Back-end Render URL.</li>
+              <li>11. Email Host</li>
+              <li>12. Email Port</li>
+              <li>13. Email User</li>
+              <li>14. Email Password</li>
+
             </ul>
             
             <h3>Major Challenges:</h3>

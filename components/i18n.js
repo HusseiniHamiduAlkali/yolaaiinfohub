@@ -49,6 +49,12 @@
       igbo: 'Igbo',
       pidgin: 'Pidgin',
 
+      // Feedback
+      user_feedback: 'User Feedback',
+      feedback_name:'Your Name (Optional)',
+      feedback_email: 'Your Email (Optional)',
+      feedback_description:'We value your feedback! Please share your thoughts, suggestions, or report any issues with our application.',
+
       // Common UI
       loading: 'Loading...',
       send: 'Send',

@@ -1,4 +1,4 @@
-const axios = require('axios');
+const fetch = require('node-fetch');
 
 exports.handler = async function(event, context) {
   // Only allow POST requests
@@ -11,20 +11,21 @@ exports.handler = async function(event, context) {
 
   try {
     // Forward the request to your Render backend
-    const response = await axios({
+    const response = await fetch(`${process.env.API_URL}${event.path}`, {
       method: 'POST',
-      url: `${process.env.API_URL}${event.path}`,
-      data: JSON.parse(event.body),
+      body: event.body,
       headers: event.headers
     });
 
+    const data = await response.json();
+
     return {
       statusCode: response.status,
-      body: JSON.stringify(response.data)
+      body: JSON.stringify(data)
     };
   } catch (error) {
     return {
-      statusCode: error.response?.status || 500,
+      statusCode: 500,
       body: JSON.stringify({
         error: error.message
       })
