@@ -6,8 +6,10 @@ window.getAPIBase = function() {
     // Production: use Render backend
     return 'https://yolaaiinfohub-backend.onrender.com';
   }
-  // Development: use localhost
-  return 'http://localhost:4000';
+  // Development: use the current hostname so we don't mix 'localhost' and '127.0.0.1'
+  // which cause separate cookie domains and inconsistent session state.
+  const host = window.location.hostname || 'localhost';
+  return `http://${host}:4000`;
 };
 
 window.API_BASE = window.API_BASE || window.getAPIBase();

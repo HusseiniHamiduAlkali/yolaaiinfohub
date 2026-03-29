@@ -40,6 +40,7 @@
             <i class="fas fa-camera"></i>
           </div>
           <input type="file" id="profile-picture-input" accept="image/*">
+          <input type="file" id="edit-profile-picture-input" accept="image/*" style="display:none">
         </div>
         
         <div class="profile-meta">
@@ -671,10 +672,12 @@
         const reader = new FileReader();
         reader.onload = function(event) {
           document.getElementById('profile-avatar').innerHTML = `<img src="${event.target.result}" alt="avatar"/>`;
-          document.getElementById('edit-profile-picture-input').files = e.target.files;
+          try { const editInput = document.getElementById('edit-profile-picture-input'); if (editInput) { /* cannot reliably set FileList across browsers */ } } catch(e) {}
           enterEditMode();
         };
         reader.readAsDataURL(file);
+        // upload immediately
+        uploadProfilePicture(file);
       }
     }
     
@@ -686,6 +689,47 @@
           document.getElementById('profile-avatar').innerHTML = `<img src="${event.target.result}" alt="avatar"/>`;
         };
         reader.readAsDataURL(file);
+        // upload immediately when user selects via edit input
+        uploadProfilePicture(file);
+      }
+    }
+
+    async function uploadProfilePicture(file) {
+      if (!file) return;
+      try {
+        const fd = new FormData();
+        fd.append('profilePicture', file);
+        if (currentUserData && currentUserData.username) fd.append('username', currentUserData.username);
+        const res = await fetch(`${API_BASE}/api/update-profile`, {
+          method: 'POST',
+          credentials: 'include',
+          body: fd
+        });
+        let data = {};
+        try { const ct = res.headers.get('content-type'); if (ct && ct.includes('application/json')) data = await res.json(); } catch (err) { }
+        if (res.ok) {
+          currentUserData = { ...(currentUserData || {}), ...data };
+          if (window.updateAuthUI && typeof window.updateAuthUI === 'function') window.updateAuthUI(currentUserData);
+          // small saved indicator near avatar
+          try {
+            const wrap = document.querySelector('.profile-avatar-wrapper');
+            if (wrap) {
+              const ind = document.createElement('span');
+              ind.className = 'avatar-save-indicator';
+              ind.style.marginLeft = '8px';
+              ind.style.color = '#16a34a';
+              ind.style.fontSize = '0.9em';
+              ind.textContent = 'Saved';
+              wrap.appendChild(ind);
+              setTimeout(() => ind.remove(), 2000);
+            }
+          } catch (e) {}
+        } else {
+          alert((data && data.error) || 'Failed to upload profile picture.');
+        }
+      } catch (err) {
+        console.error('Profile picture upload error', err);
+        alert('Error uploading profile picture. Please try again.');
       }
     }
     

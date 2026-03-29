@@ -38,17 +38,36 @@ self.addEventListener('activate', event => {
 
 // Fetch event - network first, then cache
 self.addEventListener('fetch', event => {
-  // Development mode: bypass all caching, always fetch from network
-  event.respondWith(
-    fetch(event.request)
-      .catch(err => {
-        console.warn('Fetch failed:', err);
+  // Development mode: attempt network fetch, but never let respondWith reject.
+  // If network fails, return cached response (if any) or a 503 fallback.
+  event.respondWith((async () => {
+    try {
+      return await fetch(event.request);
+    } catch (err) {
+      console.warn('Fetch failed (service worker):', err, event.request.url);
+      // If navigation request (HTML), try cached index.html fallback first
+      try {
         if (event.request.headers.get('accept')?.includes('text/html')) {
-          return new Response('Offline', { status: 503 });
+          const cachedIndex = await caches.match('/index.html');
+          if (cachedIndex) return cachedIndex;
+          return new Response('Offline', { status: 503, statusText: 'Offline' });
         }
-        throw err;
-      })
-  );
+      } catch (e) {
+        console.warn('Error checking cache for HTML fallback:', e);
+      }
+
+      // Try to serve from cache for other requests (fonts, scripts, images)
+      try {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+      } catch (e) {
+        console.warn('Error checking cache for request fallback:', e);
+      }
+
+      // Final fallback: return a generic 503 response so respondWith never rejects
+      return new Response('', { status: 503, statusText: 'Service Unavailable' });
+    }
+  })());
 });
 
 // Handle push notifications

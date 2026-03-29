@@ -131,8 +131,6 @@ function renderNavbar() {
   // Store the original PC layout HTML (store on window to avoid redeclaration issues)
   window.__originalPCLayout = nav.innerHTML;
 
-  // Prepare a place to temporarily hold the profile link element when moving to mobile
-  window.__navbarProfileNode = window.__navbarProfileNode || null;
   // Call handleResponsiveLayout
   handleResponsiveLayout();
 
@@ -144,6 +142,9 @@ function renderNavbar() {
     }
     const windowWidth = window.innerWidth;
     const navbarContainer = document.querySelector('.navbar-container');
+    
+    // Check current login state dynamically (not just at render time)
+    const isCurrentlyLoggedIn = window.currentUser && window.currentUser.username;
     
     // Restore to original PC layout before making any changes
     // This is the layout at the time renderNavbar() was called (with current login state)
@@ -206,19 +207,6 @@ function renderNavbar() {
         navbarAuthEl.style.alignItems = 'center';
       }
 
-      // If we have a stored profile node (from mobile), ensure it's restored into the auth area
-      try {
-        if (window.__navbarProfileNode) {
-          const authArea = document.querySelector('.navbar-auth');
-          if (authArea && !authArea.querySelector('.navbar-profile-link')) {
-            const node = window.__navbarProfileNode.cloneNode(true);
-            authArea.insertAdjacentElement('afterbegin', node);
-            // Clear stored node after restoring
-            window.__navbarProfileNode = null;
-          }
-        }
-      } catch (e) { console.warn('Could not restore profile link to desktop navbar:', e); }
-
     } else if (windowWidth >= 701 && windowWidth <= 1024) {
       // Tablet View
       newNavbarContainer.style.flexDirection = 'column';
@@ -273,13 +261,19 @@ function renderNavbar() {
 
       newNavbarLinks.style.display = 'none'; // Hide navbar links
 
-      // Adjust auth buttons
-      newNavbarAuth.style.display = '';
+      // On mobile: 
+      // - If user IS logged in: hide auth from navbar, will show in hamburger
+      // - If user is NOT logged in: show auth buttons in navbar
+      if (isCurrentlyLoggedIn) {
+        newNavbarAuth.style.display = 'none'; // Hide in navbar, will be in hamburger
+      } else {
+        newNavbarAuth.style.display = 'flex'; // Show auth buttons in navbar when not logged in
+      }
       newNavbarAuth.style.flexDirection = '';
       newNavbarAuth.style.alignItems = '';
       newNavbarAuth.style.marginRight = '';
 
-      // Place hamburger spans below auth buttons
+      // Place hamburger spans for mobile menu
       newHamburger.style.display = '';
       newHamburger.style.flexDirection = ''; // Ensure spans are stacked vertically
       newHamburger.style.alignItems = '';
@@ -297,20 +291,6 @@ function renderNavbar() {
           line.style.margin = '0';
       });
 
-      // Move profile link into a temporary holder so we can reinsert into mobile menu
-      try {
-        const profileLink = document.querySelector('.navbar-profile-link');
-        if (profileLink && !window.__navbarProfileNode) {
-          // Detach and store the node for mobile menu use
-          window.__navbarProfileNode = profileLink.cloneNode(true);
-          profileLink.remove();
-        }
-        // Ensure no other profile links remain in the navbar (prevent duplicates)
-        document.querySelectorAll('.navbar-profile-link').forEach(n => n.remove());
-      } catch (e) {
-        console.warn('Could not move profile link for mobile:', e);
-      }
-
       // Clear and rebuild the navbar container
       newNavbarContainer.innerHTML = '';
       newNavbarContainer.appendChild(newNavbarLeft); // Add logo and app name
@@ -319,7 +299,10 @@ function renderNavbar() {
       rightContainer.style.flexDirection = 'column';
       rightContainer.style.alignItems = 'flex-end';
       rightContainer.style.marginRight = '10px';
-      rightContainer.appendChild(newNavbarAuth); // Add auth buttons
+      // Only add auth buttons if user is NOT logged in
+      if (!isCurrentlyLoggedIn) {
+        rightContainer.appendChild(newNavbarAuth); // Add auth buttons only when not logged in
+      }
       rightContainer.appendChild(newHamburger); // Add hamburger spans
       newNavbarContainer.appendChild(rightContainer);
     }
@@ -360,8 +343,6 @@ function renderNavbar() {
           const existingUsernameContainer = document.getElementById('navbar-username-container');
           if (existingUsernameContainer) {
             const userMenuSection = existingUsernameContainer.cloneNode(true);
-            // Remove any profile-link inside the cloned username container to avoid duplicates
-            userMenuSection.querySelectorAll('.navbar-profile-link').forEach(n => n.remove());
             userMenuSection.style.cssText = `
               display: flex;
               flex-direction: row;
@@ -415,14 +396,6 @@ function renderNavbar() {
           }
         }
         
-        // If we have a stored profile node (moved from desktop), append it to the mobile menu
-        if (window.__navbarProfileNode) {
-          const profileWrapper = document.createElement('div');
-          profileWrapper.style.padding = '0.6rem 1rem';
-          profileWrapper.style.borderBottom = '1px solid #444';
-          profileWrapper.appendChild(window.__navbarProfileNode.cloneNode(true));
-          mobileMenu.appendChild(profileWrapper);
-        }
         // Menu links
         const linksList = document.createElement('ul');
         linksList.className = 'mobile-links';
@@ -505,7 +478,13 @@ function renderNavbar() {
 // Export as Navbar global for compatibility
 window.Navbar = {
   render: async (force = false) => {
-    console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;', { force });
+    console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;');
+    
+    // IMPORTANT: Prevent concurrent calls - if already rendering, skip
+    if (window.__navbarRenderInProgress) {
+      console.log('%c⏭️ Navbar.render(): Already rendering in progress - skipping', 'color: #94a3b8;');
+      return;
+    }
     
     // Check if navbar already exists in DOM and is complete (unless forced)
     const existingNavbar = document.querySelector('nav.navbar');
@@ -514,94 +493,70 @@ window.Navbar = {
       return;
     }
     
-    // IMPORTANT: Prevent concurrent calls ONLY if not forced - if already rendering and not forced, skip
-    if (window.__navbarRenderInProgress && !force) {
-      console.log('%c⏭️ Navbar.render(): Already rendering in progress - skipping', 'color: #94a3b8;');
-      return;
-    }
-    
     // Mark as rendering to prevent concurrent calls
     window.__navbarRenderInProgress = true;
     
-    // Clear the complete flag so we can render fresh if needed
+    // Clear the complete flag so we can render fresh
     window.__navbarRenderComplete = false;
     
     // Clear the force rerender flag if it was set
     window.__forceNavbarRerender = false;
     
     // Fetch current user state from server (SINGLE CALL)
-    // BUT: Only fetch if we don't have a cached recent result, or if forced
-    let skipFetch = false;
-    if (force && window.__lastNavbarCheckTime && (Date.now() - window.__lastNavbarCheckTime) < 500) {
-      // If forced re-render within 500ms of last check, reuse cached result
-      console.log('%c♻️ Navbar.render(): Using cached user state from recent check', 'color: #8b5cf6;');
-      skipFetch = true;
-    }
-    
-    if (!skipFetch) {
-      console.log('%c⏳ Waiting for backend response to verify user...', 'color: #f59e0b; font-weight: bold;');
-      try {
-        // Use window.API_BASE if available, otherwise build from current hostname
-        const apiBase = window.API_BASE || (function() {
-          try {
-            const h = window.location.hostname;
-            if (!h || h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.startsWith('192.') || h.startsWith('10.')) {
-              const endpoint = `http://${h || 'localhost'}:4000`;
-              console.log('%c📍 API endpoint:', 'color: #8b5cf6;', endpoint);
-              return endpoint;
-            }
-            return 'https://yolaaiinfohub-backend.onrender.com';
-          } catch (e) { 
-            console.error('%c⚠️ Error determining API base:', 'color: #f59e0b;', e);
-            return 'http://localhost:4000'; 
+    console.log('%c⏳ Waiting for backend response to verify user...', 'color: #f59e0b; font-weight: bold;');
+    try {
+      // Use window.API_BASE if available, otherwise build from current hostname
+      const apiBase = window.API_BASE || (function() {
+        try {
+          const h = window.location.hostname;
+          if (!h || h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.startsWith('192.') || h.startsWith('10.')) {
+            return `http://${h || 'localhost'}:4000`;
           }
-        })();
-        
-        const response = await fetch(apiBase + '/api/me', {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.loggedIn) {
-            window.currentUser = {
-              username: data.username,
-              name: data.name,
-              email: data.email,
-              phone: data.phone,
-              state: data.state,
-              lga: data.lga,
-              address: data.address,
-              profilePicture: data.profilePicture,
-              avatar: data.avatar
-            };
-            window.__lastUser = window.currentUser;
-            console.log('%c✅ User verified as logged in:', 'color: #10b981; font-weight: bold;', data.username);
-          } else {
-            // User not logged in according to server
-            window.currentUser = null;
-            window.__lastUser = null;
-            console.log('%c❌ No logged-in user detected.', 'color: #ef4444; font-weight: bold;');
-          }
+          return 'https://yolaaiinfohub-backend.onrender.com';
+        } catch (e) { return 'http://localhost:4000'; }
+      })();
+      
+      const response = await fetch(apiBase + '/api/me', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.loggedIn) {
+          window.currentUser = {
+            username: data.username,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            state: data.state,
+            lga: data.lga,
+            address: data.address,
+            profilePicture: data.profilePicture,
+            avatar: data.avatar
+          };
+          window.__lastUser = window.currentUser;
+          console.log('%c✅ User verified as logged in:', 'color: #10b981; font-weight: bold;', data.username);
         } else {
-          // Error fetching user state from server
+          // User not logged in according to server
           window.currentUser = null;
           window.__lastUser = null;
-          console.log('%c⚠️ Navbar.render(): Failed to fetch user state from server', 'color: #f59e0b;');
+          console.log('%c❌ No logged-in user detected.', 'color: #ef4444; font-weight: bold;');
         }
-        
-        // Mark when we last checked the API
-        window.__lastNavbarCheckTime = Date.now();
-      } catch (error) {
-        console.error('%c❌ Navbar.render(): Error checking server for user state:', 'color: #ef4444;', error);
+      } else {
+        // Error fetching user state from server
         window.currentUser = null;
         window.__lastUser = null;
-        console.log('%c❌ No logged-in user detected (backend error).', 'color: #ef4444; font-weight: bold;');
+        console.log('%c⚠️ Navbar.render(): Failed to fetch user state from server', 'color: #f59e0b;');
       }
+    } catch (error) {
+      console.error('%c❌ Navbar.render(): Error checking server for user state:', 'color: #ef4444;', error);
+      window.currentUser = null;
+      window.__lastUser = null;
+      console.log('%c❌ No logged-in user detected (backend error).', 'color: #ef4444; font-weight: bold;');
     }
     
     // Now render navbar with the fetched user state
@@ -631,6 +586,12 @@ window.Navbar = {
         console.log('%c⏭️ window.Navbar.render(): currentUser already matches __lastUser, skipping reapply', 'color: #94a3b8;');
       }
     }
+  },
+  // Method to refresh navbar when login state changes
+  refresh: async function() {
+    console.log('%c🔄 window.Navbar.refresh() called - updating navbar with current login state', 'color: #8b5cf6; font-weight: bold;');
+    // Force re-render with fresh server state
+    await this.render(true);
   }
 };
 
