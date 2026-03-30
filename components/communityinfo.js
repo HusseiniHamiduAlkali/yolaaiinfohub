@@ -28,11 +28,42 @@ if (!window.commonAILoaded) {
 // definition conflicts.
 
 // Edit this prompt to instruct the AI on how to answer user messages for CommunityInfo
-window.COMMUNITY_AI_PROMPT = window.COMMUNITY_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Help the user with community information in Yola.
-Answer the user's question using the information provided below, and the internet. But only those regarding community events, organizations, and services.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local community authority for further help."
-And if a user clearly requests information on health, education, navigation, environment, jobs, or agriculture, refer them to either of MediInfo, EduInfo, NaviInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
+window.COMMUNITY_AI_PROMPT = window.COMMUNITY_AI_PROMPT || `You are an AI community coordinator for Yola, Adamawa State, Nigeria.
+Help users find community events, organizations, services, and social information.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze community-related images
+  - Identify locations and community facilities in photos
+  - Recognize community events and gatherings
+  - Analyze flyers and community announcements
+- **Audio Analysis**: Listen to community inquiries and concerns
+  - Transcribe community event information
+  - Help with community communication needs
+- **Document Analysis**: Review community documents and announcements
+  - Summarize community guidelines and events
+  - Extract event details and community information
+
+### Community Information Areas:
+- Community events and gatherings
+- Cultural and social organizations
+- Community development projects
+- Religious institutions and services
+- Sports and recreation facilities
+- Market information and trade associations
+- Community safety and emergency services
+- Social services and support organizations
+- Volunteer and community engagement opportunities
+
+### Response Guidelines:
+- Provide helpful information about community events and organizations
+- For images: Identify community locations and activities, provide context
+- For audio: Transcribe community concerns and provide relevant information
+- Include relevant Yola community organizations and contacts
+- Emphasize community participation and engagement
+- If info unavailable: "Sorry, I don't have that specific information. Please contact local community leaders for further help."
+
+### Section Referrals:
+- Health → MediInfo | Education → EduInfo | Navigation → NaviInfo | Agriculture → AgroInfo | Jobs → JobsConnect`;
 
 window.communityAbortController = window.communityAbortController || null;
 // Robust navbar loader
@@ -166,51 +197,86 @@ window.sendCommunityMessage = async function(faqText = '') {
   try {
     const signal = controller ? controller.signal : (window.communityAbortController ? window.communityAbortController.signal : null);
 
-    // Fetch all .html files in details/Community directory
-    const communityFiles = await fetch('details/Community/').then(r => r.text());
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(communityFiles, 'text/html');
-    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Community/${link.getAttribute('href')}`);
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
 
-    const htmlContents = await Promise.all(
-      links.map(async (link) => {
-        try {
-          const res = await fetch(link, signal ? { signal } : {});
-          if (!res.ok) return '';
-          return `\n--- ${link} ---\n` + (await res.text());
-        } catch {
-          return '';
-        }
-      })
-    );
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
 
-    const allLocalData = htmlContents.join('\n');
+    // Define all known HTML files in details/Community
+    const htmlFileNames = [
+      'abcyola.html', 'adamawa-united.html', 'admin-services.html', 'amc-hall.html', 'atv.html', 
+      'aun-community.html', 'aun-graduation-ceremony.html', 'aun-graduation.html', 'aun-hall.html', 
+      'aun-townhall.html', 'bako-youth.html', 'banquet-hall.html', 'blackout.html', 'breastfeeding-week.html', 
+      'childrens-day.html', 'cleaning-day.html', 'conference-center.html', 'crystal-palace.html', 
+      'digital-hall.html', 'digital-literacy.html', 'edu-volunteer.html', 'education-day.html', 
+      'elderly.html', 'env-volunteer.html', 'fastnet.html', 'fce-hall.html', 
+      'female-education.html', 'festival.html', 'fintiri-wallet.html', 'flood.html', 
+      'fombinafm.html', 'gotelfm.html', 'governors-cup.html', 'health-volunteer.html', 
+      'independence-day.html', 'lamido-cinema.html', 'law-students.html', 'lcng-station.html', 
+      'lgi-workshop.html', 'malaria-day.html', 'market-rebuild.html', 'market.html', 
+      'nasfm.html', 'ntayola.html', 'pulaakufm.html', 'redcross-society.html', 
+      'redcross.html', 'renewal-foundation.html', 'ribadu-square.html', 'tvgotel.html', 
+      'undp-training.html', 'universal-youth.html', 'usakufm.html', 'wards-proximity.html', 
+      'water-scheme.html', 'women.html', 'womens-day.html', 'workshop.html', 
+      'yawef.html', 'yawef2.html', 'yedc-meters.html', 'yola-renewal-foundation.html', 
+      'yolde-pate-youth.html', 'youth-skills.html', 'youth.html'
+    ];
 
-    const history = JSON.parse(localStorage.getItem('community_chat_history') || '[]');
-    let historyContext = '';
-    if (history.length > 0) {
-      historyContext = '\n\nRecent chat history:\n' + 
-        history.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n');
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Community/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
     }
 
-    finalAnswer = await window.callGeminiAI(COMMUNITY_AI_PROMPT + "\n\n" + allLocalData + historyContext, msg, window.GEMINI_API_KEY, mediaData, signal, 'community', attachments);
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
 
-    history.push({ user: msg, ai: finalAnswer });
-    while (history.length > 10) history.shift(); // Keep only last 10 messages
-    localStorage.setItem('community_chat_history', JSON.stringify(history));
+    // Ensure in-memory history exists for community
+    window.initChatHistory && window.initChatHistory('community', 10);
+    // Reserve slot for user message (AI will be added after response)
+    window.addToChatHistory && window.addToChatHistory('community', 'user', msg);
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('community', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+
+    // Combine all local data
+    const allLocalDataWithHistory = allLocalData + historyContext;
+    
+    try {
+      finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'community', attachments);
+      // Add AI response to in-memory history
+      window.addToChatHistory && window.addToChatHistory('community', 'assistant', finalAnswer);
+    } catch (e) {
+      if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+        finalAnswer = "Request cancelled.";
+      } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        finalAnswer = window.friendlyAIErrorMessage(e);
+      } else {
+        console.error("Error in Gemini API call:", e);
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
+      }
+    }
   } catch (e) {
-    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
-      finalAnswer = "Request cancelled.";
-    } else if (typeof window.friendlyAIErrorMessage === 'function') {
-      finalAnswer = window.friendlyAIErrorMessage(e);
-    } else {
-      console.error("Error fetching local data or Gemini API call:", e);
-      finalAnswer = "The AI is currently unavailable. Please try again later.";
-    }
-  }
-
-  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
-  if (typeof window.addActionsToMsgGroup === 'function') {
+    console.error("Error fetching local data or Gemini API call:", e);
+    finalAnswer = "Sorry, I could not access the local information or the AI at this time. Please check your connection!";
     window.addActionsToMsgGroup(msgGroup, 'community', 'chat-messages');
   }
   chat.scrollTop = chat.scrollHeight;

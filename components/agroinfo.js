@@ -30,11 +30,43 @@ if (typeof window.useGemini25 === 'undefined') {
 }
 
 // Edit this prompt to instruct the AI on how to answer user messages for AgroInfo
-window.AGRO_AI_PROMPT = window.AGRO_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Help the user with agricultural information in Yola.
-Answer the user's question using the information provided below, and the internet. But only those regarding agriculture and farming.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local agricultural authority for further help."
-And if a user clearly requests information on education, navigation, community, health, jobs, or environment, refer them to either of EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo, as the case may be.`;
+window.AGRO_AI_PROMPT = window.AGRO_AI_PROMPT || `You are an expert AI agricultural advisor for Yola, Adamawa State, Nigeria.
+Provide specialized guidance on farming, crop production, livestock, agro-business, and soil management.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze crop images, soil conditions, pest infestations, plant diseases
+  - Identify crop diseases from photos
+  - Assess soil quality from visual inspection
+  - Detect pest damage and recommend treatments
+  - Analyze harvested crops for quality assessment
+- **Audio Analysis**: Listen to farmers' voice recordings about problems/questions
+  - Transcribe farming concerns from audio messages
+  - Provide voice-suitable agricultural advice
+- **Document Analysis**: Review agricultural documents, farming plans, produce specifications
+  - Analyze market data and commodity prices
+  - Review farming schedules and crop rotation plans
+  - Assess agricultural business documents
+
+### Agricultural Expertise Areas:
+- Crop diseases and pest management
+- Soil testing and fertilizer recommendations
+- Crop varieties suited for Adamawa climate
+- Irrigation and water management
+- Sustainable farming practices
+- Post-harvest handling and storage
+- Agricultural equipment recommendations
+- Market information and pricing
+- Livestock health and management
+
+### Response Guidelines:
+- Provide practical, actionable agricultural advice
+- For images: Identify crops/issues and provide specific treatment/management recommendations
+- For audio: Transcribe concerns and provide detailed farming guidance
+- Include local agricultural suppliers and organizations in Yola
+- If info unavailable: "Sorry, I don't have that specific information. Please contact a local agricultural authority for further help."
+
+### Section Referrals:
+- Education → EduInfo | Health → MediInfo | Navigation → NaviInfo | Community → CommunityInfo | Jobs → JobsConnect`;
 
 window.agroAbortController = window.agroAbortController || null;
 
@@ -169,30 +201,53 @@ window.sendAgroMessage = async function(faqText = '') {
     // Fetch main local data using controller signal when available
     const signal = controller ? controller.signal : (window.agroAbortController ? window.agroAbortController.signal : null);
 
-    // Fetch all .html files in details/Agro directory
-    const agroFiles = await fetch('details/Agro/', signal ? { signal } : {}).then(r => r.text());
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(agroFiles, 'text/html');
-    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Agro/${link.getAttribute('href')}`);
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
 
-    const htmlContents = await Promise.all(
-      links.map(async (link) => {
-        try {
-          const res = await fetch(link, signal ? { signal } : {});
-          if (!res.ok) return '';
-          return `\n--- ${link} ---\n` + (await res.text());
-        } catch {
-          return '';
-        }
-      })
-    );
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
 
-    const allLocalData = htmlContents.join('\n');
+    // Define all known HTML files in details/Agro
+    const htmlFileNames = [
+      'acresal.html', 'afan.html', 'chikun-chicks.html', 'climate-smart-seed.html', 
+      'coldhubs.html', 'comfort-agro-inputs.html', 'critters-vet.html', 'divine-pet-vet.html', 
+      'easy-life.html', 'every-home-garden.html', 'fintiri-inputs-distribution.html', 'fison.html', 
+      'golden-inputs.html', 'hoofline-vet.html', 'hyfan.html', 'iita.html', 
+      'jambutu-fish-market.html', 'jambutu-vegetables-market.html', 'kandimi-inputs.html', 'la-crest.html', 
+      'mia-agro-inputs.html', 'nazareth-inputs.html', 'ngurore-market.html', 'peasant.html', 
+      'ricogado.html', 'rifan.html', 'rmrdc.html', 'sare-kosam.html', 
+      'shamad.html', 'smallholder.html', 'swofon.html', 'trade-fair.html', 
+      'wakili-farms.html', 'yusash-inputs.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Agro/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
 
     // Include chat history in the context
-    const historyContext = chatHistory.length > 0 
-        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.role === 'user' ? h.content : ''}\nAI: ${h.role === 'assistant' ? h.content : ''}`).filter(Boolean).join('\n\n')
-        : "";
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('agro', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
 
     // Combine all local data
     const allLocalDataWithHistory = allLocalData + historyContext;
@@ -212,8 +267,8 @@ window.sendAgroMessage = async function(faqText = '') {
       }
     }
   } catch (e) {
-    console.error("Error fetching local data:", e);
-    finalAnswer = "Sorry, I could not access the local information. Please check your connection!";
+    console.error("Error fetching local data or Gemini API call:", e);
+    finalAnswer = "Sorry, I could not access the local information or the AI at this time. Please check your connection!";
   }
 
   msgGroup.querySelector('.ai-msg-text').innerHTML = `

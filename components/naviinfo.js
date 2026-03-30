@@ -203,35 +203,47 @@ if (typeof window.registerSectionInit === 'function' && typeof window.initNaviIn
 
 // Edit this prompt to instruct the AI on how to answer user messages for NaviInfo
 
-window.NAVI_AI_PROMPT = window.NAVI_AI_PROMPT || `You are an AI navigation assistant for Yola, Adamawa State, Nigeria.
+window.NAVI_AI_PROMPT = window.NAVI_AI_PROMPT || `You are an AI navigation and directions assistant for Yola, Adamawa State, Nigeria.
+Help users find locations, plan routes, and get travel information using TomTom mapping APIs.
 
-You use TomTom APIs for routing, distance calculations, and travel time estimation.
+### Analysis Capabilities:
+- **Image Analysis**: Analyze maps, location photos, street view images
+  - Identify locations from photos
+  - Provide navigation context based on visual landmarks
+  - Suggest nearby facilities and attractions
+- **Audio Analysis**: Listen to location inquiries and navigation questions
+  - Transcribe destination requests from voice messages
+  - Provide turn-by-turn directions via audio format
+- **Document Analysis**: Review maps, itineraries, and travel documents
+  - Extract destination information from travel plans
+  - Provide navigation advice based on schedules
 
-IMPORTANT: When a user explicitly mentions TWO place names (e.g., "from Lamido Palace to Jimeta"), the system will automatically:
-1. Draw the route on the satellite map
-2. Calculate the exact distance in kilometers
-3. Calculate the estimated travel time in minutes
-4. Display these metrics in the chat after your response
+### Navigation Features:
+- Route planning and distance calculation
+- Travel time estimation and traffic information
+- Public and private transportation options
+- Landmark identification and location descriptions
+- Facility finder (hospitals, hotels, restaurants, etc.)
+- Emergency location services
 
-Do NOT calculate, estimate, or include distances, travel times, or route details in your response. The system handles all calculations automatically.
+### Automatic System Features:
+When user mentions TWO place names (e.g., "from Lamido Palace to Jimeta"):
+1. Route automatically drawn on satellite map
+2. Distance calculated in kilometers
+3. Estimated travel time computed
+4. Metrics displayed in chat
 
-Your role is to provide context and information about these locations and routes.
+DO NOT estimate distances/times yourself - let the system calculate them.
 
-Key Information You Provide:
-- Detailed descriptions of locations
-- Best routes and transportation options
-- Traffic and safety information
-- Local landmarks and directions
-- Contact information for transport services
+### Response Guidelines:
+- For images: Identify locations and provide travel context
+- For audio: Transcribe destinations and provide navigation guidance
+- Provide detailed descriptions of locations and routes
+- Include transportation options and recommendations
+- If info unavailable: "I don't have that specific information. Please contact local transport authorities."
 
-Sample Responses:
-- "Sure! I'm showing you the route from [origin] to [destination] on the map."
-- "Here's information about [location]: [details]. The map shows its exact position."
-- "I'll draw the fastest route for you. You can take [transportation option] or drive directly."
-
-When information is unavailable, say: "I don't have that specific information. Please contact local transport authorities."
-
-For queries outside navigation (health, education, community, environment, jobs, agriculture), refer users to appropriate sections.`;
+### Section Referrals:
+- Health → MediInfo | Education → EduInfo | Community → CommunityInfo | Agriculture → AgroInfo | Services → ServiInfo`;
 
 
 /*  Maps initializations  */
@@ -1029,25 +1041,56 @@ window.sendNaviMessage = async function(faqText = '') {
   try {
     const signal = controller ? controller.signal : (window.naviAbortController ? window.naviAbortController.signal : null);
 
-    // Fetch all .html files in details/Navi directory
-    const naviFiles = await fetch('details/Navi/', signal ? { signal } : {}).then(r => r.text());
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(naviFiles, 'text/html');
-    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Navi/${link.getAttribute('href')}`);
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
 
-    const htmlContents = await Promise.all(
-      links.map(async (link) => {
-        try {
-          const res = await fetch(link, signal ? { signal } : {});
-          if (!res.ok) return '';
-          return `\n--- ${link} ---\n` + (await res.text());
-        } catch {
-          return '';
-        }
-      })
-    );
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
 
-    const allLocalData = htmlContents.join('\n');
+    // Define all known HTML files in details/Navi
+    const htmlFileNames = [
+      'access-bank.html', 'adamawa-sunshine-motor.html', 'agga-islamic-center.html', 'alibaba-mosque.html', 
+      'aun-hotel.html', 'aun-jabbama-restaurant.html', 'beast-fitness.html', 'catholic-secreteriat.html', 
+      'chicken-cottage-yola.html', 'city-green-hotel.html', 'dantshoho-hotel.html', 'duragi-hotels.html', 
+      'eyn.html', 'f-fitness.html', 'fce-footbal-pitch.html', 'fidelity-bank.html', 
+      'fresh-air-transit.html', 'gauni-sports-arena.html', 'golden-alpihne-hotels.html', 'gorilla-park.html', 
+      'gt-bank.html', 'hajja-ammi-mosque.html', 'icecream-planet.html', 'items7-restaurant.html', 
+      'jabbama-plaza.html', 'jambutu-flyover.html', 'jamubutu-motor-park.html', 'jimeta-market.html', 
+      'jippujam.html', 'jumia-pickup-shop.html', 'keke-napep.html', 'lccn.html', 
+      'madugu-rockview-hotel.html', 'mamma-chare-hotel.html', 'marwa-shawarma-grills.html', 'mau-sports-center.html', 
+      'mauth-mosque.html', 'mevish-cafe.html', 'modibbo-adama-central-mosque.html', 'modibbo-zailani-mosque.html', 
+      'muna-hotel.html', 'oasis-bakery.html', 'peace-park.html', 'police-roundabout-flyover.html', 
+      'roundabout-maishanu.html', 'sanhusein-mall.html', 'sauki-motor-park.html', 'stanbic-ibtc-bank.html', 
+      'sterling-bank.html', 'top10-plaza.html', 'uptown-exclusive-spot.html', 'vortex-hotels.html', 
+      'welcome-to-yola.html', 'wetlands-park.html', 'yahuza.html', 'yakubu-plaza.html', 
+      'yola-airport.html', 'yola-market.html', 'yola-polo-ground.html', 'yola-underpass.html', 
+      'yola-zoo.html', 'zenith-bank.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Navi/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
     
     // Include chat history in the context
     const historyContext = chatHistory.length > 0 
@@ -1060,7 +1103,7 @@ window.sendNaviMessage = async function(faqText = '') {
     // Try to get an AI response but do NOT bail out on failure — routing must continue.
     let aiText = '';
     try {
-      aiText = await window.callGeminiAI(NAVI_AI_PROMPT + "\n\n" + allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'navi', attachments);
+      aiText = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'navi', attachments);
     } catch (aiErr) {
       if (aiErr && (aiErr.name === 'AbortError' || aiErr.message === 'AbortError')) {
         aiText = "Request cancelled.";

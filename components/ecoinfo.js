@@ -273,25 +273,62 @@ window.sendEcoMessage = async function(faqText = '') {
   try {
     const signal = window.ecoAbortController ? window.ecoAbortController.signal : null;
 
-    // Fetch all .html files in details/Eco directory
-    const ecoFiles = await fetch('details/Eco/', signal ? { signal } : {}).then(r => r.text());
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(ecoFiles, 'text/html');
-    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Eco/${link.getAttribute('href')}`);
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
 
-    const htmlContents = await Promise.all(
-      links.map(async (link) => {
-        try {
-          const res = await fetch(link, signal ? { signal } : {});
-          if (!res.ok) return '';
-          return `\n--- ${link} ---\n` + (await res.text());
-        } catch {
-          return '';
-        }
-      })
-    );
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
 
-    const allLocalData = htmlContents.join('\n');
+    // Define all known HTML files in details/Eco
+    const htmlFileNames = [
+      'adamawa-waste-to-wealth.html',
+      'association-of-plastic-recyclers.html',
+      'benue-valley-reserve.html',
+      'clean-yola-project.html',
+      'community-conservation.html',
+      'eco-warriors.html',
+      'ecowaste-management.html',
+      'green-cycle-solutions.html',
+      'green-transport-network.html',
+      'metal-waste-collectors.html',
+      'naswon-yola.html',
+      'plastic-waste-collectors.html',
+      'trash-to-treasure.html',
+      'undp.html',
+      'wapan-yola.html',
+      'waste-to-wealth.html',
+      'water-conservation-project.html',
+      'yola-community-garden.html',
+      'yola-domestic-waste-collectors.html',
+      'yola-eco-park.html',
+      'yola-solar-initiative.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Eco/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const htmlContents = await Promise.all(allHtmlPromises);
+    const allLocalData = htmlContents.filter(content => content.length > 0).join('\n');
 
     // Get chat history context from in-memory helper
     const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('eco', 5) : [];
@@ -303,6 +340,14 @@ window.sendEcoMessage = async function(faqText = '') {
     const contents = {
       parts: []
     };
+    // Extract image data if mediaData is an image
+    let imageData = null;
+    if (mediaData && typeof mediaData === 'string' && mediaData.startsWith('data:image/')) {
+      imageData = mediaData;
+    } else if (mediaData && typeof mediaData === 'object' && mediaData.dataUrl && mediaData.mimeType.startsWith('image/')) {
+      imageData = mediaData.dataUrl;
+    }
+    
     if (imageData) {
       contents.parts.push({
         inlineData: {
@@ -457,10 +502,43 @@ window.initEcoFeatures = function() {
     }
 
 // Edit this prompt to instruct the AI on how to answer user messages for EcoInfo
-window.ECO_AI_PROMPT = window.ECO_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Answer the user's question using the information provided below, and the internet. But only those regarding environment and eco-friendly practices.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local environmental authority for further help."
-And if a user clearly requests information on health, education, community, navigation, jobs, or agriculture, refer them to either of MediInfo, EduInfo, CommunityInfo, NaviInfo, JobsConnect, or AgroInfo, as the case may be.`;
+window.ECO_AI_PROMPT = window.ECO_AI_PROMPT || `You are an AI environmental and sustainability advisor for Yola, Adamawa State, Nigeria.
+Provide expert guidance on environmental conservation, waste management, renewable energy, and eco-friendly practices.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze environmental and ecological images
+  - Identify waste types and recycling opportunities
+  - Assess environmental conditions from photos
+  - Recognize flora/fauna and provide conservation info
+  - Evaluate product packaging for sustainability
+- **Audio Analysis**: Listen to environmental concerns and sustainability questions
+  - Transcribe environmental issues from voice messages
+  - Provide eco-friendly solutions and recommendations
+- **Document Analysis**: Review environmental reports, sustainability plans
+  - Analyze waste and carbon data
+  - Review environmental policies and compliance
+
+### Expertise Areas:
+- Waste management and recycling programs
+- Renewable energy and solar solutions
+- Water conservation and management
+- Carbon footprint calculation and reduction
+- Pollution control and air quality
+- Conservation and biodiversity protection
+- Sustainable agriculture and green practices
+- Environmental regulations and compliance
+- Climate change adaptation
+
+### Response Guidelines:
+- Provide practical environmental solutions
+- For images: Identify environmental items and provide sustainability guidance
+- For audio: Transcribe environmental concerns and suggest solutions
+- Include local environmental organizations and resources in Yola
+- Promote sustainable practices and conservation
+- If info unavailable: "Sorry, I don't have that specific information. Please contact a local environmental authority for further help."
+
+### Section Referrals:
+- Health → MediInfo | Education → EduInfo | Community → CommunityInfo | Navigation → NaviInfo | Agriculture → AgroInfo | Services → ServiInfo`;
 
 window.ecoAbortController = window.ecoAbortController || null;
 

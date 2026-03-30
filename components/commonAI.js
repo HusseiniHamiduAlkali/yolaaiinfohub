@@ -1246,6 +1246,12 @@ window.recordAudio = function(section) {
 };
 
 // --- FILE UPLOAD & PREVIEW ---
+/**
+ * Enhanced file upload handler supporting images, audio, video, PDF, and document files
+ * Properly converts files to base64 and extracts MIME types for API transmission
+ * @param {Event} e - File input change event
+ * @param {string} section - Section identifier (home, edu, agro, medi, community, eco, servi, navi)
+ */
 window.uploadFile = function(e, section) {
     const file = e.target.files[0];
     if (!file) return;
@@ -1253,37 +1259,75 @@ window.uploadFile = function(e, section) {
     const reader = new FileReader();
     reader.onload = function(ev) {
         const preview = document.getElementById(section + '-chat-preview');
+        if (!preview) return;
        
         // Create a container for the preview and the remove button
         const container = document.createElement('div');
         container.className = 'preview-container';
         
-        // Store the file data URL and MIME type as data attributes
-        container.setAttribute('data-file-data', ev.target.result);
+        // Extract base64 data from data URL (remove the "data:..." prefix)
+        const dataUrl = ev.target.result;
+        const base64Data = dataUrl.split(',')[1];
+        
+        // Store the file data URL, base64, MIME type as data attributes for API transmission
+        container.setAttribute('data-file-data', dataUrl);
+        container.setAttribute('data-file-base64', base64Data);
         container.setAttribute('data-file-mime', file.type);
         container.setAttribute('data-file-name', file.name);
+        container.setAttribute('data-file-size', file.size);
 
         let mediaHtml = '';
+        const fileIcon = window.getFileTypeIcon(file.type);
+        
         if (file.type.startsWith('image/')) {
-            mediaHtml = `<img src='${ev.target.result}' style='max-width:120px;max-height:80px;border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;' alt='Preview' />`;
+            mediaHtml = `<img src='${dataUrl}' style='max-width:120px;max-height:80px;border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;' alt='Preview' />`;
         } else if (file.type.startsWith('audio/')) {
-            mediaHtml = `<audio src='${ev.target.result}' controls style='max-width:160px; border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;'></audio>`;
+            mediaHtml = `<audio src='${dataUrl}' controls style='max-width:160px; border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;'></audio>`;
+        } else if (file.type.startsWith('video/')) {
+            mediaHtml = `<video src='${dataUrl}' controls style='max-width:160px; border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;'></video>`;
+        } else if (file.type === 'application/pdf') {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:12px;"><span>${fileIcon} PDF</span><div style="font-size:10px; color:#666;">${file.name}</div></div>`;
+        } else if (file.type.includes('word') || file.type.includes('document') || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:12px;"><span>${fileIcon} Document</span><div style="font-size:10px; color:#666;">${file.name}</div></div>`;
+        } else if (file.type.includes('spreadsheet') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:12px;"><span>${fileIcon} Spreadsheet</span><div style="font-size:10px; color:#666;">${file.name}</div></div>`;
+        } else if (file.type.includes('text') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:12px;"><span>${fileIcon} Text</span><div style="font-size:10px; color:#666;">${file.name}</div></div>`;
         } else {
-            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:11px;">📄 ${file.name}</div>`;
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:11px;">📎 ${file.name}</div>`;
         }
 
         // Add the media and the "X" button to the container
         container.innerHTML = `
           ${mediaHtml}
-          <button class="remove-btn" onclick="window.removePreview('${section}')" title="Remove">x</button>
+          <button class="remove-btn" onclick="window.removePreview('${section}')" title="Remove">✕</button>
         `;
 
         // Clear previous preview and add the new one
         preview.innerHTML = '';
         preview.appendChild(container);
+        
+        // Track attachment in global storage
+        window.addAttachment(section, file);
     };
    
     reader.readAsDataURL(file);
+};
+
+/**
+ * Get appropriate icon for file type
+ * @param {string} mimeType - The MIME type of the file
+ * @returns {string} - An emoji or icon string
+ */
+window.getFileTypeIcon = function(mimeType) {
+    if (mimeType.startsWith('image/')) return '🖼️';
+    if (mimeType.startsWith('audio/')) return '🎵';
+    if (mimeType.startsWith('video/')) return '🎥';
+    if (mimeType === 'application/pdf') return '📄';
+    if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
+    if (mimeType.includes('spreadsheet')) return '📊';
+    if (mimeType.includes('text') || mimeType.includes('plain')) return '📄';
+    return '📎';
 };
 
 // Show copy tooltip notification

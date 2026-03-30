@@ -7,11 +7,40 @@ if (!window.commonAILoaded) {
 }
 
 // Edit this prompt to instruct the AI on how to answer user messages for ServiInfo
-window.SERVI_AI_PROMPT = window.SERVI_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Help the user find professional services in Yola.
-Answer the user's question using the information provided below, and the internet. But only those regarding professional services and service providers.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local service directory for further help."
-And if a user clearly requests information on health, education, community, environment, navigation, or agriculture, refer them to either of MediInfo, EduInfo, CommunityInfo, EcoInfo, NaviInfo, or AgroInfo, as the case may be.`;
+window.SERVI_AI_PROMPT = window.SERVI_AI_PROMPT || `You are an AI service directory advisor for Yola, Adamawa State, Nigeria.
+Help users find professional services, service providers, and skilled workers.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze images of service work or service-related documents
+  - Identify types of services shown (plumbing, electrical, construction, etc.)
+  - Recommend appropriate service providers for similar work
+  - Assess quality of work from photos
+- **Audio Analysis**: Listen to service inquiries and requests
+  - Transcribe service requirements from voice messages
+  - Recommend appropriate service providers
+- **Document Analysis**: Review service quotes, proposals, invoices
+  - Compare service quotes and pricing
+  - Verify legitimacy of service providers
+
+### Service Categories:
+- Plumbing, electrical, and maintenance services
+- Construction and renovation services
+- Cleaning and sanitation services
+- Transportation and logistics services
+- IT and technical services
+- Beauty, hair, and personal care services
+- Automotive and mechanic services
+- Home and furniture services
+
+### Response Guidelines:
+- Provide comprehensive service provider information
+- For images: Identify service type and recommend qualified providers
+- For audio: Transcribe service needs and recommend providers
+- Include ratings, contact info, and pricing estimates
+- If info unavailable: "Sorry, I don't have that specific information. Please contact a local service directory for further help."
+
+### Section Referrals:
+- Health → MediInfo | Education → EduInfo | Community → CommunityInfo | Navigation → NaviInfo | Agriculture → AgroInfo`;
 
 window.serviAbortController = window.serviAbortController || null;
 
@@ -222,26 +251,62 @@ window.sendServiMessage = async function(faqText = '') {
   try {
     const signal = window.serviAbortController ? window.serviAbortController.signal : null;
 
-    // Fetch all .html files in details/Servi directory
-    const serviFiles = await fetch('details/Servi/', signal ? { signal } : {}).then(r => r.text());
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(serviFiles, 'text/html');
-    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Servi/${link.getAttribute('href')}`);
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
 
-    const htmlContents = await Promise.all(
-      links.map(async (link) => {
-        try {
-          const res = await fetch(link, signal ? { signal } : {});
-          if (!res.ok) return '';
-          return `\n--- ${link} ---\n` + (await res.text());
-        } catch {
-          return '';
-        }
-      })
-    );
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
 
-    const allLocalData = htmlContents.join('\n');
-    finalAnswer = await window.callGeminiAI(allLocalData, msg, window.GEMINI_API_KEY, mediaData, signal, 'servi', attachments);
+    // Define all known HTML files in details/Servi
+    const htmlFileNames = [
+      'alumintech-solutions.html', 'atm-aluminium.html', 'bitbyte-technologies.html', 'cac.html', 
+      'evans-carpentry.html', 'homeserve-plumbing.html', 'ict-republic.html', 'jabbama-electronics.html', 
+      'modern-electric.html', 'nde.html', 'nipost.html', 'novelty-glass-aluminium.html', 
+      'pc-klinic.html', 'pure-life.html', 'quality-plumbing.html', 'redcross.html', 
+      'rhs-woodworks.html', 'rm-photography.html', 'sj-graphics.html', 'virtual-assistance-freelancers.html', 
+      'worksmanship-furniture.html', 'ymca.html', 'yola-plumbers.html', 'yola-power-services.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Servi/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+
+    // Ensure in-memory history exists for servi
+    window.initChatHistory && window.initChatHistory('servi', 10);
+    // Reserve slot for user message (AI will be added after response)
+    window.addToChatHistory && window.addToChatHistory('servi', 'user', msg);
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('servi', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    
+    // Combine all local data
+    const allLocalDataWithHistory = allLocalData + historyContext;
+
+    finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'servi', attachments);
+    // Add AI response to in-memory history
+    window.addToChatHistory && window.addToChatHistory('servi', 'assistant', finalAnswer);
   } catch (e) {
     if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
       finalAnswer = 'Request cancelled.';

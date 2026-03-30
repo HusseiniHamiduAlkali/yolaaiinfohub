@@ -6,16 +6,27 @@ if (!window.commonAILoaded) {
   document.head.appendChild(script);
 }
 
-window.HOME_AI_PROMPT = window.HOME_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-You help users with information about Yola, Adamawa State, Nigeria.
-IMPORTANT: Only greet the user if they greet you first (e.g., "hello", "hi", "greetings"). Do NOT add greetings to every response.
-Answer the user's questions directly and helpfully using the information provided and the internet.
-If the answer is not in your local database, reply: "Sorry, I do not have that specific information in my local database. Please contact a local authority for further help."
-If users ask about agriculture, education, navigation, community, health, jobs, or environment, refer them to AgroInfo, EduInfo, NaviInfo, CommunityInfo, MediInfo, JobsConnect, or EcoInfo.
+window.HOME_AI_PROMPT = window.HOME_AI_PROMPT || `You are an intelligent AI assistant for Yola, Adamawa State, Nigeria.
+Your role is to help users with comprehensive information about Yola including culture, business, events, transportation, and local services.
 
-Previous conversation history:
-{history}
-`;
+### Analysis Capabilities:
+- **Image Analysis**: When users share images, analyze them to identify locations in Yola, provide context, suggest related services/activities
+- **Audio Analysis**: Listen to voice messages and respond helpfully to audio questions
+- **Document Analysis**: Review uploaded documents, PDFs, or text files for relevant information
+
+### Response Guidelines:
+- IMPORTANT: Only greet if user greets first (e.g., "hello", "hi", "greetings")
+- Answer questions directly and helpfully using local database + internet knowledge
+- For images: Identify what's shown, provide historical/cultural context if relevant
+- For audio: Transcribe intent and provide relevant information
+- If info not available: "Sorry, I don't have that specific information. Please contact a local authority for further help."
+
+### Section Referrals:
+- Agriculture → AgroInfo | Education → EduInfo | Navigation → NaviInfo
+- Community → CommunityInfo | Health → MediInfo | Jobs → JobsConnect | Environment → EcoInfo
+
+### Conversation History:
+{history}`;
 
 // Chat history management
 // Use shared in-memory chat history helpers
@@ -315,26 +326,57 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   try {
     const signal = window.homeAbortController ? window.homeAbortController.signal : null;
 
-    // Fetch all .html files in details/Home directory
-    const homeFiles = await fetch('details/Home/', signal ? { signal } : {}).then(r => r.text());
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(homeFiles, 'text/html');
-    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Home/${link.getAttribute('href')}`);
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
 
-    const htmlContents = await Promise.all(
-      links.map(async (link) => {
-        try {
-          const res = await fetch(link, signal ? { signal } : {});
-          if (!res.ok) return '';
-          return `\n--- ${link} ---\n` + (await res.text());
-        } catch {
-          return '';
-        }
-      })
-    );
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
 
-    const localData = htmlContents.join('\n');
-    finalAnswer = await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, mediaData, signal);
+    // Define all known HTML files in details/Home
+    const htmlFileNames = [
+      'adamawaexecutivecouncil.html', 'fombinakingdom.html', 'yolaadamawa.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Home/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const localData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+
+    // Ensure in-memory history exists for home
+    window.initChatHistory && window.initChatHistory('home', 10);
+    // Reserve slot for user message (AI will be added after response)
+    window.addToChatHistory && window.addToChatHistory('home', 'user', msg);
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('home', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    
+    // Combine all local data
+    const allLocalDataWithHistory = localData + historyContext;
+
+    finalAnswer = await getGeminiAnswer(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal);
+    // Add AI response to in-memory history
+    window.addToChatHistory && window.addToChatHistory('home', 'assistant', finalAnswer);
   } catch (e) {
     if (e && e.name === 'AbortError') {
       finalAnswer = "Request cancelled.";
@@ -367,10 +409,6 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
     window.addActionsToMsgGroup(msgGroup, 'home', 'home-chat-messages');
   }
   chat.scrollTop = chat.scrollHeight;
-
-  // Store messages in chat history
-  window.addToChatHistory && window.addToChatHistory('home', 'user', msg);
-  window.addToChatHistory && window.addToChatHistory('home', 'assistant', finalAnswer);
 
   if (submitBtn) {
     submitBtn.classList.remove('sending');

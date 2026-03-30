@@ -9,11 +9,36 @@ if (!window.commonAILoaded) {
 }
 
 // AI Prompt for EduInfo
-window.EDU_AI_PROMPT = `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Help the user with educational information in Yola.
-Answer questions using the available information and focus only on education-related topics.
-If specific information is not available, say: "Sorry, I do not have that specific information in my local database. Please contact a local education authority for further help."
-For non-education queries about health, navigation, community, environment, jobs, or agriculture, refer users to MediInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo respectively.`;
+window.EDU_AI_PROMPT = `You are an expert AI tutor and educational advisor for Yola, Adamawa State, Nigeria.
+Specialize in all levels of education from primary school through university.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze diagrams, equations, photos of textbooks, handwritten assignments, and educational materials
+  - Explain complex concepts shown in images
+  - Help solve math problems or physics diagrams
+  - Identify errors in student work
+- **Audio Analysis**: Listen to educational audio files and lectures
+  - Answer questions about audio content
+  - Transcribe key points from educational recordings
+- **Document Analysis**: Review PDFs, educational documents, course materials
+  - Summarize educational content
+  - Answer questions about document content
+  - Provide study guidance
+
+### Response Guidelines:
+- Focus ONLY on education-related topics for Yola
+- Provide clear, student-friendly explanations
+- For images: Identify subject matter and provide detailed educational guidance
+- For audio: Transcribe intent and provide educational support
+- Include relevant schools/institutions in Yola when helpful
+- If info unavailable: "Sorry, I don't have that specific information. Please contact a local education authority for further help."
+
+### Section Referrals:
+- Health matters → MediInfo | Navigation → NaviInfo | Community → CommunityInfo
+- Agriculture → AgroInfo | Jobs → JobsConnect | Environment → EcoInfo
+
+### Conversation History:
+{history}`;
 
 // Abort controller for fetch requests
 window.eduAbortController = null;
@@ -154,32 +179,51 @@ window.sendEduMessage = async function(faqText = '') {
     try {
         const signal = window.eduAbortController ? window.eduAbortController.signal : null;
 
-        // Fetch all .html files in details/Edu directory
-        const eduFiles = await fetch('details/Edu/', signal ? { signal } : {}).then(r => r.text());
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(eduFiles, 'text/html');
-        const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Edu/${link.getAttribute('href')}`);
+        // Get current language from i18n or localStorage
+        const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+        const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+        const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                            langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                            langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
 
-        const htmlContents = await Promise.all(
-          links.map(async (link) => {
-            try {
-              const res = await fetch(link, signal ? { signal } : {});
-              if (!res.ok) return '';
-              return `\n--- ${link} ---\n` + (await res.text());
-            } catch {
-              return '';
+        // List of all available language directories
+        const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+        
+        // Prioritize current language, then fall back to English if current not available
+        const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+        
+        // Remove duplicates
+        const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+        // Define all known HTML files in details/Edu
+        const htmlFileNames = [
+            'adroit-academy.html', 'adsu.html', 'albayaan-academy.html', 'alnaab-academy.html',
+            'amc-yola.html', 'aun.html', 'baitul-ateeq.html', 'binani-academy.html',
+            'bkc-yola.html', 'central-college.html', 'chiroma-ahmad-academy.html', 'cls-yola.html',
+            'cosmotech-yola.html', 'el-kenemy-college.html', 'eyn-secondary.html', 'fce-yola.html',
+            'fed-poly-yola.html', 'fggc-yola.html', 'gdss-yola.html', 'gmmc-yola.html',
+            'gtc-yola.html', 'library.html', 'mau.html', 'nursing-school-yola.html',
+            'spy-yola.html', 'sra-yola.html', 'ubec-smart-school.html'
+        ];
+
+        // Fetch HTML content from language directories
+        const allHtmlPromises = [];
+        for (const langDir of uniqueLangDirs) {
+            for (const fileName of htmlFileNames) {
+                const filePath = `details/Edu/${langDir}/${fileName}`;
+                allHtmlPromises.push(
+                    fetch(filePath, signal ? { signal } : {})
+                        .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+                        .catch(() => '')
+                );
             }
-          })
-        );
+        }
 
-        const allLocalData = htmlContents.join('\n');
+        const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
         
         // Get chat history for this section
-        const chatHistory = window.getChatHistory('edu') || [];
-        
-        // Include chat history in the context
-        const historyContext = chatHistory.length > 0 
-            ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `${h.role === 'user' ? 'User' : 'AI'}: ${h.content}`).join('\n\n')
+        const historyContext = historyPairs.length > 0 
+            ? "\n\nRecent chat history:\n" + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
             : "";
         
         // Combine all local data

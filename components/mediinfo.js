@@ -8,11 +8,41 @@ if (!window.commonAILoaded) {
 }
 
 // Edit this prompt to instruct the AI on how to answer user messages for MediInfo
-window.MEDI_AI_PROMPT = window.MEDI_AI_PROMPT || `You are an AI assistant for Yola, Adamawa State, Nigeria.
-Help the user with medical and health information in Yola.
-Answer the user's question using the information provided below, and the internet. But only those regarding medical and health matters.
-If the answer is not present, reply: "Sorry, I do not have that specific information in my local database. Please contact a local healthcare provider for further help."
-And if a user clearly requests information on education, navigation, community, environment, jobs, or agriculture, refer them to either of EduInfo, NaviInfo, CommunityInfo, EcoInfo, JobsConnect, or AgroInfo, as the case may be.`;
+window.MEDI_AI_PROMPT = window.MEDI_AI_PROMPT || `You are an AI health information advisor for Yola, Adamawa State, Nigeria.
+Provide health and medical information with appropriate disclaimers about professional medical advice.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze medical/health-related images with caution
+  - Identify common health conditions from symptoms shown
+  - Provide educational information about visible health issues
+  - Suggest when professional medical consultation is needed
+- **Audio Analysis**: Listen to health concerns expressed in voice recordings
+  - Transcribe symptoms and health questions
+  - Provide general health information and guidance
+- **Document Analysis**: Review health records, medical reports, wellness plans
+  - Explain medical terminology and test results
+  - Provide general health guidance based on documents
+
+### Health Information Areas:
+- Common diseases, symptoms, and general treatments
+- Preventive health practices and hygiene
+- Nutrition and wellness advice
+- First aid information
+- Mental health resources
+- Maternal and child health information
+- Common medication information
+- Local healthcare facilities in Yola
+
+### CRITICAL Response Guidelines:
+- ⚠️ DISCLAIMER: "This is general health information only and not a substitute for professional medical diagnosis or treatment."
+- For images: Provide general educational information and strongly recommend professional consultation
+- For audio: Identify concerns and recommend appropriate healthcare providers
+- Always recommend consulting qualified medical professionals for diagnosis
+- Include local hospitals and clinics in Yola
+- For emergencies, direct to nearest hospital
+
+### Section Referrals:
+- Education → EduInfo | Nutrition/Agriculture → AgroInfo | Navigation → NaviInfo | Community → CommunityInfo | Jobs → JobsConnect`;
 
 window.mediAbortController = window.mediAbortController || null;
 
@@ -149,36 +179,61 @@ window.sendMediMessage = async function(faqText = '') {
     // Fetch main local data
     const signal = window.mediAbortController ? window.mediAbortController.signal : null;
 
-    // Fetch all .html files in details/Medi directory
-    const mediFiles = await fetch('details/Medi/', signal ? { signal } : {}).then(r => r.text());
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(mediFiles, 'text/html');
-    const links = Array.from(doc.querySelectorAll('a[href$=".html"]')).map(link => `details/Medi/${link.getAttribute('href')}`);
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
 
-    const htmlContents = await Promise.all(
-      links.map(async (link) => {
-        try {
-          const res = await fetch(link, signal ? { signal } : {});
-          if (!res.ok) return '';
-          return `\n--- ${link} ---\n` + (await res.text());
-        } catch {
-          return '';
-        }
-      })
-    );
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
 
-    const allLocalData = htmlContents.join('\n');
+    // Define all known HTML files in details/Medi
+    const htmlFileNames = [
+      'alfijr-pharmacy.html', 'fortland-hospital.html', 'galbose-hospital.html', 'german-hospital.html', 
+      'jasar-pharmacy.html', 'jds-pharmacy.html', 'kerion-pharmacy.html', 'kingblaise-pharmacy.html', 
+      'lekki-pharmacy.html', 'malamre-clinic.html', 'mauth-yola.html', 'meddy-clinic.html', 
+      'meddy-pharmacy.html', 'mufami-pharmacy.html', 'nets-distribution.html', 'newboshang-hospital.html', 
+      'polio-immunization.html', 'redcross-awareness.html', 'shekinah-pharmacy.html', 'specialist-hospital.html', 
+      'valli-clinic.html', 'yola-dispensary.html'
+    ];
 
-    // Include chat history in the context
-    const historyContext = chatHistory.length > 0 
-        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.role === 'user' ? h.content : ''}\nAI: ${h.role === 'assistant' ? h.content : ''}`).filter(Boolean).join('\n\n')
-        : "";
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Medi/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
 
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+
+    // Ensure in-memory history exists for medi
+    window.initChatHistory && window.initChatHistory('medi', 10);
+    // Reserve slot for user message (AI will be added after response)
+    window.addToChatHistory && window.addToChatHistory('medi', 'user', msg);
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('medi', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    
     // Combine all local data
     const allLocalDataWithHistory = allLocalData + historyContext;
+
     finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, window.mediAbortController ? window.mediAbortController.signal : null, 'medi', attachments);
-    // Store in chat history (keep last 10 messages)
-    window.addToChatHistory && window.addToChatHistory('medi', 'user', msg);
+    // Add AI response to in-memory history
     window.addToChatHistory && window.addToChatHistory('medi', 'assistant', finalAnswer);
   } catch (e) {
     if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {

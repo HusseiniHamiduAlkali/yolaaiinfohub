@@ -83,7 +83,7 @@
     width: -moz-available;
   }
   .section-eco-div {
-    flex-direction: column;
+    flex-direction: column !important;
   }
   .eco-tile-h2 {
     padding-top: 10px !important;
