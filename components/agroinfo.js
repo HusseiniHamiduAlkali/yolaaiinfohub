@@ -21,12 +21,12 @@ if (!window.commonAILoaded) {
 // ✓ window.getGeminiAnswer() - Core API integration (can override)
 
 // Gemini model preference
-window.useGemini25 = window.useGemini25 || false;
+window.useGemini25 = window.useGemini25 || true;
 
 // Initialize model preference from storage
 if (typeof window.useGemini25 === 'undefined') {
     const storedPreference = localStorage.getItem('gemini_model_preference');
-    window.useGemini25 = storedPreference === '2.5';
+    window.useGemini25 = storedPreference === '1.5' ? false : true; // Default to 2.5
 }
 
 // Edit this prompt to instruct the AI on how to answer user messages for AgroInfo

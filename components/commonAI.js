@@ -206,7 +206,7 @@ window.friendlyAIErrorMessage = function(err) {
 // Shared utility functions for AI sections (Home, Edu, Agro, etc.)
 
 // Gemini model preference
-window.useGemini25 = window.useGemini25 || false;
+window.useGemini25 = window.useGemini25 || true;
 
 // Chat history management with localStorage persistence
 // In-memory storage for chat histories
@@ -1049,7 +1049,7 @@ window.toggleGeminiModel = function(section, useGemini25) {
 // Initialize model preference from storage
 if (typeof window.useGemini25 === 'undefined') {
     const storedPreference = localStorage.getItem('gemini_model_preference');
-    window.useGemini25 = storedPreference === '2.5';
+    window.useGemini25 = storedPreference === '1.5' ? false : true; // Default to 2.5
 }
 
 // Global text-to-speech variables and functions
