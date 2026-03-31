@@ -80,8 +80,14 @@
 
 @media screen and (max-width: 700px) {
   .section-eco {
-    width: -moz-available;
+   /* width: -moz-available;*/
+   
+    width: 85vw !important;
+    height: auto;
+    max-width: 600px !important;
   }
+
+  
   .section-eco-div {
     flex-direction: column !important;
   }
