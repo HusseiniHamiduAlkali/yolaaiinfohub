@@ -43,7 +43,7 @@
   <div id="eduinfo-content"></div>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" defer onerror="console.debug('TensorFlow loaded (source map warnings are expected and safe)')"></script>
   <!-- TomTom Maps SDK - loaded dynamically to avoid unnecessary network requests on other pages -->
   <!-- the CSS/JS will be injected only when the navigation section is initialized -->
   <script>

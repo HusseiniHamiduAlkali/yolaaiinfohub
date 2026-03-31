@@ -1538,6 +1538,41 @@ function ensureNavbarLoaded(cb) {
 // Common helper for Gemini API call
 async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal = null, section = 'home', attachments = []) {
   let modelVersion;
+  const MAX_RETRIES = 3;
+  const BASE_DELAY = 1000; // 1 second
+  
+  // Helper function to perform fetch with retry logic for rate limiting
+  async function fetchWithRetry(url, fetchOptions, retryCount = 0) {
+    try {
+      let res = await fetch(url, fetchOptions);
+      
+      // Handle rate limiting with exponential backoff
+      if (res.status === 429) {
+        if (retryCount < MAX_RETRIES) {
+          const delay = BASE_DELAY * Math.pow(2, retryCount); // Exponential backoff
+          console.warn(`Rate limited (429). Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return fetchWithRetry(url, fetchOptions, retryCount + 1);
+        } else {
+          throw new Error(`HTTP error! status: 429 (Rate limited - max retries exceeded)`);
+        }
+      }
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      return res;
+    } catch (error) {
+      // Don't retry on abort
+      if (error.name === 'AbortError' || error.message === 'AbortError') {
+        throw error;
+      }
+      // Rethrow other errors
+      throw error;
+    }
+  }
+  
   try {
     const contents = {
       parts: []
@@ -1601,9 +1636,9 @@ async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal 
       text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData || ''}\n--- LOCAL DATA END ---\n\nUser question: ${msg || ''}`
     });
 
-    // Determine model selection based on attachments
-    const hasNonText = (Array.isArray(attachments) && attachments.length > 0) || !!mediaData;
-    modelVersion = hasNonText ? 'gemini-2.5-pro' : (window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash');
+    // Always use gemini-2.5-flash as primary model
+    // It handles attachments and context effectively
+    modelVersion = 'gemini-2.5-flash';
 
     const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
@@ -1620,11 +1655,7 @@ async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal 
       fetchOptions.signal = signal;
     }
     
-    let res = await fetch(url, fetchOptions);
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
+    let res = await fetchWithRetry(url, fetchOptions);
 
     let data = await res.json();
     if (data.candidates?.[0]?.content?.parts?.[0]?.text) {

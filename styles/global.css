@@ -539,48 +539,12 @@ Wednesday, July 30, 2025
   display: none;
 }
 
-
-/*
-#video-modal {
-
-}
-#camera-feed {
-  width: 100;
-}
-.camera-modal {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  
-  align-items: center;
-}
-*/
 /* Ensure Leaflet map and controls stay below navbar */
 .leaflet-container,
 .leaflet-pane,
 .leaflet-control {
   z-index: 10 !important;
 }
-
-/* Stop button and loading spinner styles for all sections */
-/*
-.stop-button, #stop-btn {
-  margin-left: 0em;
-  background: #e53e3e;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1.2rem;
-  cursor: pointer;
-  font-size: 1rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  transition: background 0.2s;
-}
-.stop-button:hover {
-  background: #c53030;
-}*/
 .sending, .chat-input-area button:disabled {
   background: red !important;
   color: #fff !important;
@@ -588,21 +552,6 @@ Wednesday, July 30, 2025
   opacity: 0.7;
   position: relative;
 }
-/*
-.sending .spinner {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  border: 2px solid #fff;
-  border-top: 2px solid #3182ce;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  margin-left: 0.0em;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}*/
 
 body {
   margin: 0;
@@ -781,7 +730,7 @@ main {
     max-width: 650px;
     text-align: center;
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    height: inherit;
+    height: auto;
 }
 
 #camera-feed {
@@ -1006,7 +955,11 @@ main {
     margin-top: 0px
   }
   .section-extra {
-    width: -moz-available;
+    /*width: -moz-available;*/
+    
+    width: 85vw !important;
+    height: auto;
+    max-width: 600px !important;
   }
   .section2 {
     padding: 0.8rem;

@@ -38,6 +38,16 @@ self.addEventListener('activate', event => {
 
 // Fetch event - network first, then cache
 self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  
+  // Skip ServiceWorker interception for external vendor resources (TomTom, etc.)
+  if (url.hostname !== 'localhost' && url.hostname !== '127.0.0.1' && 
+      !url.hostname.endsWith(new URL(self.location).hostname.split('.').pop()) &&
+      (url.pathname.includes('/vendor/') || url.pathname.includes('/maps/'))) {
+    // Let external vendor resources bypass the service worker to avoid interception errors
+    return;
+  }
+  
   // Development mode: attempt network fetch, but never let respondWith reject.
   // If network fails, return cached response (if any) or a 503 fallback.
   event.respondWith((async () => {

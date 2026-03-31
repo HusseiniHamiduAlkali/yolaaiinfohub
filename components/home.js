@@ -380,26 +380,11 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   } catch (e) {
     if (e && e.name === 'AbortError') {
       finalAnswer = "Request cancelled.";
+    } else if (typeof window.friendlyAIErrorMessage === 'function') {
+      finalAnswer = window.friendlyAIErrorMessage(e);
     } else {
       console.error("Error fetching local data or Gemini API call:", e);
-      const errorMsg = (e && e.message) ? e.message : '';
-
-      // Map known error types to friendly, non-technical messages
-      if (errorMsg.includes('API_RATE_LIMIT')) {
-        finalAnswer = "The AI is receiving too many requests right now. Please try again a little later.";
-      } else if (errorMsg.includes('API_SERVER_ERROR')) {
-        finalAnswer = "The AI service is temporarily unavailable. Please try again later.";
-      } else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
-        finalAnswer = "Can't access the AI — please check your internet connection and try again.";
-      } else if (errorMsg.includes('API_BAD_REQUEST')) {
-        finalAnswer = "I couldn't understand that request. Please try rephrasing your question.";
-      } else if (errorMsg.includes('INVALID_JSON_RESPONSE') || errorMsg.includes('INVALID_RESPONSE_FORMAT') || errorMsg.includes('EMPTY_RESPONSE')) {
-        finalAnswer = "The AI returned an unexpected response. Please try again or ask something different.";
-      } else if (errorMsg.toLowerCase().includes('api key') || errorMsg.toLowerCase().includes('authentication')) {
-        finalAnswer = "The AI service is not configured. Please check the app settings.";
-      } else {
-        finalAnswer = "The AI is currently unavailable. Please try again later.";
-      }
+      finalAnswer = "The AI is currently unavailable. Please try again later.";
     }
   }
 

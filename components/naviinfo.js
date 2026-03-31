@@ -545,6 +545,8 @@ window.initGoogleMaps = function() {
     tomtomDiv.style.display = 'none';
   }
   
+  // Note: Browser may log "Partitioned cookie/storage access" for Google Maps - this is normal privacy protection
+  // The browser partitions storage for third-party contexts to prevent cross-site tracking
   console.log('✓ Google Maps initialized and displayed');
 };
 

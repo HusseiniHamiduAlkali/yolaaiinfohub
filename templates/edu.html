@@ -14,13 +14,14 @@
                     ${window.useGemini25 ? 'checked' : ''}>
             <span class="slider round"></span>
         </label>
-        <span class="model-label" data-i18n="model_label_flash">Using Gemini 1.5 Flash</span>
+        <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
         </div>
     </div>
     <div id="eduinfo-chat-messages" class="chat-messages"></div>
-    <div id="eduinfo-chat-preview" class="chat-preview"></div>
+    
     <form class="chat-input-area" style="flex-direction:column;"  onsubmit="event.preventDefault(); window.sendEduMessage();">
         <div class="chat-input-area">
+        <div id="edu-chat-preview" class="chat-preview"></div>
         <input type="text" id="edu-chat-input" title="Education Chat Input" data-i18n-placeholder="edu_chat_placeholder" placeholder="Ask about education..." required />
         <div class="send-button-group">
             <button type="submit" class="send-button" data-i18n="send">Send</button>

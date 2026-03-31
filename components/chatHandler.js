@@ -226,15 +226,9 @@ async function getGeminiAnswer(prompt, msg, section, apiKey, attachments = []) {
       text: `${prompt}\n\n--- LOCAL DATA ---\n${localData}\n\nUser question: ${msg}`
     });
 
-    // choose model
-    let model;
-    const hasImage = attachments.some(a => a.type && a.type.startsWith('image/'));
-    if (hasImage) {
-      // use a vision-capable model if there are images
-      model = window.useGemini25 ? 'gemini-2.5-pro' : 'gemini-pro-vision';
-    } else {
-      model = window.useGemini25 ? 'gemini-2.5-flash' : 'gemini-1.5-flash';
-    }
+    // Always use gemini-2.5-flash regardless of attachments
+    // It handles vision and context effectively
+    let model = 'gemini-2.5-flash';
 
     // Use backend proxy to call Gemini so the key remains on server-side
     const proxyPayload = { model, contents: [contents] };
@@ -440,16 +434,18 @@ window.sendMessage = async function(section, faqText = '') {
   const attachments = window.getAttachments(section) || [];
   // if a preview image exists keep backwards compatibility
   let imageData = null;
+  let aiInstructions = '';
   if (attachments.length) {
     attachments.forEach(att => {
       if (att.dataURL && att.type && att.type.startsWith('image/')) {
         imageData = att.dataURL; // pick first image for old API call
+        // Keep instruction separate for AI backend only (don't show to user)
+        aiInstructions = "\nPlease analyze this image and provide relevant information.";
       }
     });
   }
-  if (imageData) {
-    msg = (msg || '') + "\nPlease analyze this image and provide relevant information.";
-  }
+  // Store instructions for API call but don't add to displayed message
+  window[`${section}_AI_INSTRUCTIONS`] = aiInstructions;
 
   if (window[`${section}AbortController`]) {
     window[`${section}AbortController`].abort();
@@ -486,9 +482,11 @@ window.sendMessage = async function(section, faqText = '') {
   try {
     const systemPrompt = window[`${section.toUpperCase()}_AI_PROMPT`] || '';
     const localizedPrompt = (window.localizeAIRequest && typeof window.localizeAIRequest === 'function') ? window.localizeAIRequest(systemPrompt) : systemPrompt;
+    // Add AI instructions (invisible to user) to the message sent to backend
+    const msgWithAIInstructions = msg + (window[`${section}_AI_INSTRUCTIONS`] || '');
     const finalAnswer = await getGeminiAnswer(
       localizedPrompt,
-      msg,
+      msgWithAIInstructions,
       section,
       window.GEMINI_API_KEY,
       attachments

@@ -48,7 +48,9 @@ window.mediAbortController = window.mediAbortController || null;
 
 // Robust navbar loader
 window.renderSection = function() {
-  ensureNavbarLoaded();
+  if (typeof window.ensureNavbarLoaded === 'function') {
+    window.ensureNavbarLoaded();
+  }
   if (!document.getElementById('global-css')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -97,6 +99,12 @@ window.sendMediMessage = async function(faqText = '') {
   const preview = document.getElementById('medi-chat-preview');
   const sendBtn = document.querySelector('#medi-chat-input + .send-button-group .send-button');
   const stopBtn = document.querySelector('#medi-chat-input + .send-button-group .stop-button');
+
+  // Ensure input element exists
+  if (!input) {
+    console.warn('Medi input element not found; aborting sendMediMessage');
+    return;
+  }
 
   // Always extract attachment from preview before clearing
   let msg = faqText || input.value.trim();

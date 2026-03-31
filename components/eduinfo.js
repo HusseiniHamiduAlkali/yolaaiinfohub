@@ -88,7 +88,7 @@ ensureEduSectionInit();
 window.sendEduMessage = async function(faqText = '') {
     const input = document.getElementById('edu-chat-input');
     const chat = document.getElementById('eduinfo-chat-messages');
-    const preview = document.getElementById('eduinfo-chat-preview');
+    const preview = document.getElementById('edu-chat-preview');
     const sendBtn = document.querySelector('#edu-chat-input + .send-button-group .send-button');
     const stopBtn = document.querySelector('#edu-chat-input + .send-button-group .stop-button');
 

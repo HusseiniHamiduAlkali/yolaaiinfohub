@@ -71,7 +71,9 @@ window.communityAbortController = window.communityAbortController || null;
 
 window.renderSection = function() {
   console.log('communityinfo.renderSection running');
-  ensureNavbarLoaded();
+  if (typeof window.ensureNavbarLoaded === 'function') {
+    window.ensureNavbarLoaded();
+  }
   if (!document.getElementById('global-css')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -279,6 +281,18 @@ window.sendCommunityMessage = async function(faqText = '') {
     finalAnswer = "Sorry, I could not access the local information or the AI at this time. Please check your connection!";
     window.addActionsToMsgGroup(msgGroup, 'community', 'chat-messages');
   }
+
+  // Update the AI message display with the actual response
+  msgGroup.querySelector('.ai-msg-text').innerHTML = window.formatAIResponse(finalAnswer);
+
+  // Add speech button if available
+  if (typeof window.addSpeechButton === 'function') {
+    const speechBtn = window.addSpeechButton(finalAnswer, 'community');
+    if (speechBtn) {
+      msgGroup.querySelector('.ai-msg-text').appendChild(speechBtn);
+    }
+  }
+
   chat.scrollTop = chat.scrollHeight;
 
   const currentBtn = document.querySelector('#chat-input + .send-button-group .send-button') || document.querySelector('.send-button');

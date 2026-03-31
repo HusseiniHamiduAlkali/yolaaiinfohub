@@ -252,14 +252,14 @@
                 destCoords = null;
             }
 
-            // If local resolution failed for either endpoint, use OSM fallback for Yola places
-            if (!originCoords && typeof origin === 'string' && window.isPlaceInYola && window.isPlaceInYola(origin) && window.geocodeWithOSM) {
+            // If local resolution failed for either endpoint, use OSM to search for places within Yola
+            if (!originCoords && typeof origin === 'string' && window.geocodeWithOSM) {
                 originCoords = await window.geocodeWithOSM(origin);
-                if (originCoords) console.log('✅ OSM fallback resolved origin:', origin, originCoords);
+                if (originCoords) console.log('✅ OSM geocoding resolved origin:', origin, originCoords);
             }
-            if (!destCoords && typeof destination === 'string' && window.isPlaceInYola && window.isPlaceInYola(destination) && window.geocodeWithOSM) {
+            if (!destCoords && typeof destination === 'string' && window.geocodeWithOSM) {
                 destCoords = await window.geocodeWithOSM(destination);
-                if (destCoords) console.log('✅ OSM fallback resolved destination:', destination, destCoords);
+                if (destCoords) console.log('✅ OSM geocoding resolved destination:', destination, destCoords);
             }
 
             // Final fallback: use TomTom search if still unresolved
@@ -305,11 +305,6 @@
                 const time = route.summary.travelTimeInSeconds / 60; // minutes
 
                 console.log(`Route calculated: ${distance} km, ${time} minutes`);
-                // Also show all Yola place markers so map looks like an ordinary map
-                if (typeof global.showYolaPlacesMarkers === 'function') {
-                    try { global.showYolaPlacesMarkers(); } catch (e) { /* ignore */ }
-                }
-
                 return { distance, time };
             } else {
                 console.error('No route found.');
