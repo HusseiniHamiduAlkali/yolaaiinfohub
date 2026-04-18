@@ -68,7 +68,14 @@ window.updateAuthUI = function(user) {
   // Keep a short-lived copy so navbar scripts that load later can pick up
   // the most recent auth state even if they were not present when updateAuthUI ran.
   window.__lastUser = window.currentUser;
-  // do not cache user in localStorage; rely on backend for state
+  
+  // Cache user in localStorage for offline/mobile support
+  if (user) {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  } else {
+    localStorage.removeItem('currentUser');
+  }
+  
   const authButtons = document.getElementById('auth-buttons');
   const userInfo = document.getElementById('user-info');
 
@@ -431,10 +438,31 @@ function showAuthModal(type) {
   };
 }
 
+// Simple offline detection
+window.isOffline = function() {
+  return !navigator.onLine;
+};
+
 // Function to check login status (called on page load and after login)
 window.checkLoginStatus = async function() {
-  // Don't restore from localStorage; always fetch fresh state from backend
-  // (instant UI update handled by Navbar.render instead)
+  // First, try to restore user from localStorage for instant UI update and offline support
+  const storedUser = localStorage.getItem('currentUser');
+  if (storedUser) {
+    try {
+      const user = JSON.parse(storedUser);
+      console.log('%c📱 Restored user from localStorage: %c' + user.username, 'color: #9b59b6; font-weight: bold;', 'color: #8e44ad;');
+      window.updateAuthUI(user);
+    } catch (e) {
+      console.warn('Invalid localStorage user data:', e);
+      localStorage.removeItem('currentUser');
+    }
+  }
+
+  // If offline, skip server check
+  if (window.isOffline()) {
+    console.log('%c📴 Offline mode: Using cached login state', 'color: #f39c12; font-weight: bold;');
+    return;
+  }
 
   // Then, verify with server for security and up-to-date info
   // BUT: Don't downgrade from logged-in to logged-out if we just successfully logged in.
@@ -442,9 +470,20 @@ window.checkLoginStatus = async function() {
     const res = await fetch(`${API_BASE}/api/me?t=${Date.now()}`, { 
       credentials: 'include'
     });
+    
+    // Check if response is OK and contains JSON
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    
+    const contentType = res.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error('Server returned non-JSON response');
+    }
+    
     const data = await res.json();
     if (data.loggedIn) {
-      console.log('%c✅ User already logged in: %c' + data.username, 'color: #27ae60; font-weight: bold;', 'color: #2980b9;');
+      console.log('%c✅ User verified with server: %c' + data.username, 'color: #27ae60; font-weight: bold;', 'color: #2980b9;');
       window.updateAuthUI({
         username: data.username,
         name: data.name,
@@ -457,23 +496,19 @@ window.checkLoginStatus = async function() {
         avatar: data.avatar
       });
     } else {
-      console.log('%cℹ️ User not logged in', 'color: #95a5a6;');
-      // Avoid forcing a logout while the initial navbar/render pass is still
-      // running. If the client already has a local `window.currentUser`, keep
-      // that until the navbar/init logic completes. Only clear auth state if
-      // there is no local user AND the initial navbar render has finished.
-      if (!window.currentUser && window.__initialNavbarRendered) {
-        window.updateAuthUI(null);
-      } else {
-        console.log('%c⏳ Skipping logout because navbar init not completed or local user exists', 'color: #f39c12;');
-      }
+      console.log('%cℹ️ Server says user not logged in', 'color: #95a5a6;');
+      // Clear localStorage and UI since server says not logged in
+      localStorage.removeItem('currentUser');
+      window.updateAuthUI(null);
     }
   } catch (err) {
-    console.warn('%c⚠️ Could not verify login status (offline?): %c' + err.message, 'color: #e74c3c; font-weight: bold;', 'color: #c0392b;');
-    console.log('%c💡 If offline, use: window.triggerOfflineLogin()', 'color: #f39c12; font-size: 11px;');
-    // If offline and user not already logged in, logout — but only after
-    // the initial navbar render has completed to avoid UI flashing.
-    if (!window.currentUser && window.__initialNavbarRendered) window.updateAuthUI(null);
+    console.warn('%c⚠️ Could not verify login status with server (network issue?): %c' + err.message, 'color: #e74c3c; font-weight: bold;', 'color: #c0392b;');
+    console.log('%c💡 Keeping cached user for offline support. Login will sync when connection returns.', 'color: #f39c12; font-size: 11px;');
+    // If server check fails, keep localStorage user if present - don't logout
+    // Only logout if we have no local user AND the initial navbar render has finished
+    if (!window.currentUser && window.__initialNavbarRendered) {
+      window.updateAuthUI(null);
+    }
   }
 };
 

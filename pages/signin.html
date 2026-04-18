@@ -199,6 +199,11 @@
           body: JSON.stringify(loginBody)
         });
         
+        // Check if response is OK
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+        
         // Check if response has content and is JSON
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
@@ -260,7 +265,15 @@
         }
       } catch (error) {
         console.error('Sign in error:', error);
-        showErrorModal('Unable to connect to the server. Please check your internet connection and try again.');
+        let errorMessage = 'Unable to connect to the server. ';
+        if (error.message.includes('Server returned non-JSON response')) {
+          errorMessage += 'This may be due to network restrictions on mobile. Please try again or use a different network.';
+        } else if (error.message.includes('HTTP 0') || error.message.includes('Failed to fetch')) {
+          errorMessage += 'Please check your internet connection and try again.';
+        } else {
+          errorMessage += 'Please check your internet connection and try again.';
+        }
+        showErrorModal(errorMessage);
         // Re-enable button on error
         submitBtn.disabled = false;
       }

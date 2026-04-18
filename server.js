@@ -47,10 +47,12 @@ const corsOptions = {
       'https://yolaaiinfohub.netlify.app'
     ];
     
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.match(/^https?:\/\/localhost(:\d+)?$/)) {
+    // Allow all origins for mobile compatibility (temporary fix)
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.match(/^https?:\/\/localhost(:\d+)?$/) || origin.includes('netlify') || origin.includes('yolaaiinfohub')) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.log('CORS allowing origin:', origin);
+      callback(null, true); // Temporarily allow all for debugging
     }
   },
   credentials: true,
