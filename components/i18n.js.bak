@@ -1,39 +1,77 @@
-/*
-    ar: {
-      Edu_section4_p_24: 'Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.',
-      Edu_section4_h3_25: 'National Library Of Nigeria (NLN), Yola Branch.',
-      Edu_section4_p_25: 'Public library and educational resource center.',
-      Edu_section4_h3_26: 'Bindir Knowledge Center (BKC),Yola.',
-      Edu_section4_p_26: 'Modern knowledge hub providing access to educational resources, research materials, and digital learning facilities.',
-      Edu_section4_h3_27: 'Cosmotech Learning center, Yola.',
-      Edu_section4_p_27: 'Technology-focused learning center offering digital skills training, computer education, and modern learning resources.',
+⚙️ʔ read_more: 'Ñaamugol heɓɓe',
+
+
+      // NEW TO BE ADDED TO EACH LANG BLOCK
+
+      history_of_yola_government:'',
+      history_of_yola_palace:'',
+
+      edu_section2_h2:'',
+      edu_section3_h3_1:'',
+      edu_section3_h3_2:'',
+      edu_section3_h3_3:'',
+      edu_section3_h3_4:'',
+
+      section_eco_h2:'',
+      eco_tile_1:'',
+      eco_tile_2:'',
+      eco_tile_3:'',
+      eco_tile_4:'',
+      
+      eco_section2_h2:'',
+      eco_Section3_h3_1:'',
+      eco_Section3_h3_2:'',
+      eco_Section3_h3_3:'',
+      eco_Section3_h3_4:'',
+      
+      agro_section2__h2:'',
+      agro_section3_h3_1: '',
+      agro_section3_h3_2: '',
+      agro_section3_h3_3: '',
+      agro_section3_h3_4: '',
+      agro_section3_h3_5: '',
+      agro_section3_h3_6: '',
+      agro_section3_h3_7: '',
+      
+      medi_section2_h2:'',
+      medi_section3_h3_1:'',
+      medi_section3_h3_2:'',
+      medi_section3_h3_3:'',
+      medi_section3_h3_4:'',
+      medi_section3_h3_5:'',
+
+      section_extra_h2:'',
+      navi_section2_h2:'',
+      navi_section3_h3_1:'',
+      navi_section3_h3_2:'',
+      navi_section3_h3_3:'',
+      navi_section3_h3_4:'',
+      navi_section3_h3_5:'',
+      navi_section3_h3_6:'',
+      navi_section3_h3_7:'',
+      navi_section3_h3_8:'',
 
 
       
-    },
-*/
+      community_section3_h3_1:'',
+      community_section3_h3_2:'',
+      community_section3_h3_3:'',
+      community_section3_h3_4:'',
+      community_section3_h3_5:'',
+      community_section3_h3_6:'',
 
+      currency_converter_h3:'',
+      currency_selector_label:'',
+      select_currency:'',
+      concerned_authorities_h2:'',
+      servi_section2_h2: '',
+      servi_section3_h3_1:'',
+      servi_section3_h3_2:'',
+      servi_section3_h3_3:'',
+      servi_section3_h3_4:'',
+      servi_section3_h3_5:'',
+      servi_section3_h3_6:'',
+      servi_section3_h3_7:'',
+      servi_section3_h3_8:'',
 
-  /*    Edu_section4_h3_18: 'Government Day Secondary School, Yola.',
-      Edu_section4_p_18: 'Public secondary school providing affordable quality education with a focus on academic excellence and character development.',
-      Edu_section4_h3_19: 'UBEC Smart School, Yola',
-      Edu_section4_p_19: 'Modern educational facility incorporating technology and digital learning tools to provide innovative education in Yola.',
-      Edu_section4_h3_20: 'Sulaiman Ribadu Academy, Yola.',
-      Edu_section4_p_20: 'Historic institution providing quality education to students across the state.',
-      Edu_section4_h3_21: 'Federal Government Girls\' College, Yola.',
-      Edu_section4_p_21: 'Modern secondary school offering international curriculum and quality education.',
-      Edu_section4_h3_22: 'EYN Academy, Yola.',
-      Edu_section4_p_22: 'Faith-based educational institution providing quality secondary education with emphasis on academic excellence and moral values.',
-      Edu_section4_h3_23: 'BINANI Football Academy, Yola.',
-      Edu_section4_p_23: 'Specialized sports academy providing football training and education to develop young talented athletes in Yola.',
-      Edu_section4_h3_24: 'Al-Na\'ab Academy, Yola.',
-      Edu_section4_p_24: 'Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.',
-      Edu_section4_h3_25: 'National Library Of Nigeria (NLN), Yola Branch.',
-      Edu_section4_p_25: 'Public library and educational resource center.',
-      Edu_section4_h3_26: 'Bindir Knowledge Center (BKC),Yola.',
-      Edu_section4_p_26: 'Modern knowledge hub providing access to educational resources, research materials, and digital learning facilities.',
-      Edu_section4_h3_27: 'Cosmotech Learning center, Yola.',
-      Edu_section4_p_27: 'Technology-focused learning center offering digital skills training, computer education, and modern learning resources.',
-
-
-    ,*/
+      

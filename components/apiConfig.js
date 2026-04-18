@@ -12,6 +12,9 @@
   window.API_BASE = window.API_BASE || injected ||
                     (location.origin.includes('127.0.0.1') || location.origin.includes('localhost') ? DEFAULT_LOCAL : prodBase);
 
+  // Voice API Key placeholder - set via environment variable or backend proxy
+  // Supported services: Google Voice API, Gemini Live API, or similar voice service
+  window.VOICE_API_KEY = window.VOICE_API_KEY || null;
 
   // Helper to call backend proxy for Gemini
   window.callGemini = async function(payload) {
@@ -25,6 +28,22 @@
       return await resp.json();
     } catch (e) {
       console.error('callGemini error', e);
+      throw e;
+    }
+  };
+
+  // Helper to call backend proxy for Voice API
+  window.callVoiceAPI = async function(payload) {
+    try {
+      const resp = await fetch((window.API_BASE || '') + '/api/voice-call', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+      return await resp.json();
+    } catch (e) {
+      console.error('callVoiceAPI error', e);
       throw e;
     }
   };

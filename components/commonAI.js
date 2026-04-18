@@ -14,6 +14,129 @@ window.getAPIBase = function() {
 
 window.API_BASE = window.API_BASE || window.getAPIBase();
 
+// --- MULTILINGUAL LANGUAGE DETECTION & SUPPORT ---
+/**
+ * Supported languages and their codes
+ * These match the i18n module languages
+ */
+window.SUPPORTED_LANGUAGES = {
+  'en': 'English',
+  'ha': 'Hausa',
+  'ar': 'Arabic',
+  'fr': 'French',
+  'ff': 'Fulfulde',
+  'yo': 'Yoruba',
+  'ig': 'Igbo',
+  'pcm': 'Pidgin'
+};
+
+/**
+ * Detect the current app language setting from i18n
+ * @returns {string} - Language code (en, ha, ar, fr, ff, yo, ig, pcm)
+ */
+window.getCurrentAppLanguage = function() {
+  if (typeof window.i18n !== 'undefined' && window.i18n.getLanguage) {
+    return window.i18n.getLanguage();
+  }
+  // Fallback to localStorage
+  try {
+    const lang = localStorage.getItem('appLanguage');
+    return lang || 'en';
+  } catch (e) {
+    return 'en';
+  }
+};
+
+/**
+ * Simple language detection for user input text
+ * Uses character detection and common words to identify language
+ * @param {string} text - User message text
+ * @returns {string} - Detected language code or 'en' for unknown
+ */
+window.detectMessageLanguage = function(text) {
+  if (!text || text.length < 2) return window.getCurrentAppLanguage();
+  
+  const sampleText = text.substring(0, 500).toLowerCase();
+  
+  // Arabic characters (AR)
+  if (/[\u0600-\u06FF]/.test(sampleText)) return 'ar';
+  
+  // Hausa common words and patterns
+  if (/\b(na|ni|yi|shi|ba|uba|wani|tun|sai|ga)\b/i.test(sampleText)) return 'ha';
+  
+  // French common words (FR)
+  if (/\b(bonjour|merci|s'il vous|est|de|le|la|les|vous|nous|avec|pour|que|c'est|je|tu|il|qui)\b/i.test(sampleText)) return 'fr';
+  
+  // Fulfulde common words (FF)
+  if (/\b(ko|ɗo|ngaa|jom|nde|eɗen|laawol|pulaaku|firaande)\b/i.test(sampleText)) return 'ff';
+  
+  // Yoruba common words and tones (YO)
+  if (/[\u0300-\u0301]/.test(sampleText) || /\b(ẹ|ọ|ṣ|e|o|s|a|i|u|n|r)\b/i.test(sampleText) && 
+      /\b(o|e|a|wa|ti|fi|ri|ni|si|lo|wo|ye|bo|le|ke|lu|ju|sa|so|mi|ma|mu)\b/i.test(sampleText)) {
+    return 'yo';
+  }
+  
+  // Igbo common words (IG)
+  if (/\b(ọ|ụ|ị|ebe|mma|ike|chi|eze|okwa|ihe|mmad|nna|nne)\b/i.test(sampleText)) return 'ig';
+  
+  // Pidgin English patterns (PCM)
+  if (/\b(go|come|be|don|no|make|because|for|e|am|na|to|abi|sef|jare)\b/i.test(sampleText)) return 'pcm';
+  
+  // Default to current app language
+  return window.getCurrentAppLanguage();
+};
+
+/**
+ * Generate a multilingual prompt instruction for Gemini
+ * This tells Gemini to understand and respond in the detected language
+ * @param {string} userMessage - The user's message
+ * @param {string} section - The section/category (home, edu, agro, medi, eco, community, servi, navi)
+ * @returns {string} - Enhanced prompt with language instructions
+ */
+window.generateMultilingualPrompt = function(userMessage, section = 'home') {
+  const detectedLanguage = window.detectMessageLanguage(userMessage);
+  const appLanguage = window.getCurrentAppLanguage();
+  const languageName = window.SUPPORTED_LANGUAGES[detectedLanguage] || 'English';
+  
+  // Build language-aware prompt
+  let multilingualContext = `
+You are a helpful AI assistant for the Yola AI Info Hub application.
+
+LANGUAGE INFORMATION:
+- User's detected message language: ${languageName} (${detectedLanguage})
+- App interface language: ${window.SUPPORTED_LANGUAGES[appLanguage] || 'English'} (${appLanguage})
+
+IMPORTANT LANGUAGE REQUIREMENTS:
+1. The user's message is in ${languageName}. Please understand and respond appropriately to their request, EVEN IF IT'S NOT IN ENGLISH.
+2. You must be able to understand requests in ALL these languages: English, Hausa, Arabic, French, Fulfulde, Yoruba, Igbo, and Pidgin.
+3. Respond to the user in the same language they used in their message (${languageName}).
+4. If the user code-switches (mixes languages), respond primarily in the dominant language used.
+5. Maintain the context and meaning of Yola, Adamawa State, Nigeria throughout your responses.
+
+SECTION CONTEXT: ${section.toUpperCase()}
+Provide information relevant to the ${section} section of the Yola AI Info Hub.
+`;
+
+  return multilingualContext;
+};
+
+/**
+ * Translate a system prompt to match user's language preference
+ * @param {string} basePrompt - The base prompt in English
+ * @param {string} targetLanguage - Target language code (en, ha, ar, fr, ff, yo, ig, pcm)
+ * @returns {string} - Instruction to help Gemini understand language needs
+ */
+window.getLanguageAdjustedPrompt = function(basePrompt, targetLanguage = 'en') {
+  if (targetLanguage === 'en') return basePrompt;
+  
+  const languageName = window.SUPPORTED_LANGUAGES[targetLanguage] || 'English';
+  return `${basePrompt}
+
+IMPORTANT: Please understand that the user may respond in ${languageName}. 
+If they do, please comprehend their ${languageName} message and respond appropriately.
+You must be fluent in understanding requests in all major Nigerian and regional languages.`;
+};
+
 // --- SHARED STOP BUTTON ABORT LOGIC ---
 /**
  * Shared handler for Stop button abort logic in all AI chat sections.
@@ -1632,8 +1755,21 @@ async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal 
       ? savedPrompt.replace('{history}', historyText)
       : savedPrompt;
 
+    // Generate multilingual context that allows AI to understand user requests in all 8 languages
+    const multilingualPrompt = window.generateMultilingualPrompt(msg, section);
+    
+    // Build the complete prompt with multilingual support
+    const completePrompt = `${multilingualPrompt}
+${promptGuide}
+
+--- LOCAL DATA START ---
+${localData || ''}
+--- LOCAL DATA END ---
+
+User question: ${msg || ''}`;
+
     contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData || ''}\n--- LOCAL DATA END ---\n\nUser question: ${msg || ''}`
+      text: completePrompt
     });
 
     // Always use gemini-2.5-flash as primary model

@@ -34,6 +34,17 @@
             <span>📁</span>
             <input type="file" title="Upload Educational File" style="display:none" onchange="window.uploadFile(event, 'edu')" />
         </label>
+     
+        <button type="button" id="edu-voice-call-btn" onclick="window.startVoiceCall('edu')" title="Start Live Voice Call with AI">
+            ☎️ 
+          </button>
+          <button type="button" id="edu-mute-btn" onclick="window.toggleVoiceCallMute('edu')" title="Mute/Unmute Microphone" style="display: none;">
+            🔊 Mute
+          </button>
+          <div id="edu-voice-indicator" class="voice-indicator" style="display: none;">
+            Listening...
+          </div>
+          <div id="edu-call-duration" class="call-duration" style="display: none;">00:00</div>
         </div>
     </form>
     <div class="faq-list">
@@ -50,10 +61,10 @@
     </div>
 
     <div class="section2">
-    <h2>Educational Instituitions within Yola and environs.</h2>
+    <h2 data-i18n="edu_section2_h2">Educational Instituitions within Yola and environs.</h2>
     
     <div class="section3">
-        <h3 class="section3-title">Universities</h3>
+        <h3 class="section3-title" data-i18n="edu_section3_h3_1">Universities</h3>
         <div class="section4-container">
         <div class="section4">
             <div class="img-placeholder">
@@ -86,7 +97,7 @@
 
 
     <div class="section3">
-        <h3 class="section3-title">Colleges</h3>
+        <h3 class="section3-title" data-i18n="edu_section3_h3_2">Colleges</h3>
         <div class="section4-container">
 
         <div class="section4">
@@ -146,7 +157,7 @@
 
 
     <div class="section3">
-        <h3 class="section3-title">Elementary And Secondary Schools</h3>
+        <h3 class="section3-title" data-i18n="edu_section3_h3_3">Elementary And Secondary Schools</h3>
         <div class="section4-container">
         <div class="section4">
             <div class="img-placeholder">
@@ -276,7 +287,7 @@
 
     
     <div class="section3">
-        <h3 class="section3-title">Libraries And Knowledge Centers</h3>
+        <h3 class="section3-title" data-i18n="edu_section3_h3_4">Libraries And Knowledge Centers</h3>
         <div class="section4-container">
         
         <div class="section4">

@@ -25,7 +25,7 @@ window.SettingsPage = {
         
         <div class="settings-content">
           <!-- Display Settings Section -->
-          <div class="settings-section">
+          <div class="settings-section-box">
             <h2 class="section-title" data-i18n="display_settings">Display Settings</h2>
             <div class="settings-item">
               <div class="settings-item-header">
@@ -57,8 +57,8 @@ window.SettingsPage = {
             </div>
           </div>
 
-          <!-- Notification Settings Section -->
-          <div class="settings-section">
+          <!-- Notification Settings Section - Only visible for logged-in users -->
+          <div class="settings-section-box" id="notification-settings-section" style="display: none;">
             <h2 class="section-title" data-i18n="notification_settings">Notification Settings</h2>
             <div class="settings-item">
               <label class="settings-label"><input type="checkbox" id="notification-email" checked> <span data-i18n="email_notifications">Email Notifications</span></label>
@@ -69,7 +69,7 @@ window.SettingsPage = {
           </div>
 
           <!-- User Feedback Section -->
-          <div class="settings-section">
+          <div class="settings-section-box">
             <h2 class="section-title" data-i18n="user_feedback">User Feedback</h2>
             <p data-i18n="feedback_description">We value your feedback! Please share your thoughts, suggestions, or report any issues with our application.</p>
             <div class="settings-item">
@@ -91,7 +91,7 @@ window.SettingsPage = {
           </div>
 
           <!-- About Section -->
-          <div class="settings-section">
+          <div class="settings-section-box">
             <h2 class="section-title" data-i18n="about_header">About Yola AI Info Hub</h2>
             <p data-i18n="about_desc_1"><strong>Yola AI Info Hub</strong> is a modern, responsive web app that provides AI-powered information and assistance for education, agriculture, environment, health, community, and general inquiries in Yola, Adamawa State, Nigeria. Our goal is to make essential information accessible and easy to find for residents and visitors alike.</p>
             
@@ -182,6 +182,7 @@ window.SettingsPage = {
     // Load settings based on authentication status
     const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
 
+    let isUserLoggedIn = false;
     try {
       const response = await fetch(`${API_BASE}/api/me`, {
         credentials: 'include'
@@ -189,19 +190,30 @@ window.SettingsPage = {
       
       if (response.ok) {
         const data = await response.json();
-        if (data.loggedIn) {
+        if (data.loggedIn && data.verified) {
+          // User is logged in and verified, show notification settings
+          isUserLoggedIn = true;
+          const notifSection = document.getElementById('notification-settings-section');
+          if (notifSection) notifSection.style.display = 'block';
           // User is logged in, load settings from server
           await loadSettingsFromServer();
         } else {
-          // Not logged in, load from localStorage
+          // Not logged in or not verified, hide notification settings
+          const notifSection = document.getElementById('notification-settings-section');
+          if (notifSection) notifSection.style.display = 'none';
+          // Load from localStorage for unauthenticated users
           loadSettingsFromLocalStorage();
         }
       } else {
-        // Not authenticated, load from localStorage
+        // Not authenticated, hide notification settings
+        const notifSection = document.getElementById('notification-settings-section');
+        if (notifSection) notifSection.style.display = 'none';
         loadSettingsFromLocalStorage();
       }
     } catch (e) {
       console.warn('Auth check failed, loading from localStorage:', e);
+      const notifSection = document.getElementById('notification-settings-section');
+      if (notifSection) notifSection.style.display = 'none';
       loadSettingsFromLocalStorage();
     }
     
@@ -212,8 +224,13 @@ window.SettingsPage = {
       langSelect.addEventListener('change', function(e){
         const v = this.value;
         if (window.setAppLanguage) window.setAppLanguage(v);
-        // Save to server
-        saveSettingToServer('language', v);
+        // Save to server if user is logged in
+        if (isUserLoggedIn) {
+          saveSettingToServer('language', v);
+        } else {
+          // Save to localStorage for unauthenticated users
+          localStorage.setItem('language', v);
+        }
         // re-apply translations after change
         setTimeout(()=>{
           if (window.i18n && window.i18n.applyTranslations) window.i18n.applyTranslations(document.getElementById('main-content'));
@@ -240,9 +257,16 @@ async function loadSettingsFromServer() {
       // Store globally for other components
       window.userSettings = settings;
       
-      // Apply settings to UI
-      document.getElementById('notification-email').checked = settings.emailNotifications;
-      document.getElementById('notification-push').checked = settings.pushNotifications;
+      // Apply settings to UI (with null checks)
+      const emailNotif = document.getElementById('notification-email');
+      const pushNotif = document.getElementById('notification-push');
+      
+      if (emailNotif && settings.emailNotifications !== undefined) {
+        emailNotif.checked = settings.emailNotifications;
+      }
+      if (pushNotif && settings.pushNotifications !== undefined) {
+        pushNotif.checked = settings.pushNotifications;
+      }
       
       // Apply dark mode
       if (settings.darkMode) {
@@ -272,11 +296,14 @@ function loadSettingsFromLocalStorage() {
   const emailNotif = localStorage.getItem('notification-email');
   const pushNotif = localStorage.getItem('notification-push');
   
-  if (emailNotif !== null) {
-    document.getElementById('notification-email').checked = emailNotif === 'enabled';
+  const emailNotifEl = document.getElementById('notification-email');
+  const pushNotifEl = document.getElementById('notification-push');
+  
+  if (emailNotif !== null && emailNotifEl) {
+    emailNotifEl.checked = emailNotif === 'enabled';
   }
-  if (pushNotif !== null) {
-    document.getElementById('notification-push').checked = pushNotif === 'enabled';
+  if (pushNotif !== null && pushNotifEl) {
+    pushNotifEl.checked = pushNotif === 'enabled';
   }
   
   // Add event listeners for localStorage save
@@ -306,37 +333,49 @@ async function saveSettingToServer(settingKey, value) {
 
 function setupServerSettingsListeners() {
   // Email notifications
-  document.getElementById('notification-email').addEventListener('change', function() {
-    saveSettingToServer('emailNotifications', this.checked);
-  });
+  const emailNotif = document.getElementById('notification-email');
+  if (emailNotif) {
+    emailNotif.addEventListener('change', function() {
+      saveSettingToServer('emailNotifications', this.checked);
+    });
+  }
   
   // Push notifications
-  document.getElementById('notification-push').addEventListener('change', async function() {
-    saveSettingToServer('pushNotifications', this.checked);
-    if (this.checked) {
-      // Request permission when enabled
-      if (window.NotificationManager) {
-        await window.NotificationManager.requestPermission();
+  const pushNotif = document.getElementById('notification-push');
+  if (pushNotif) {
+    pushNotif.addEventListener('change', async function() {
+      saveSettingToServer('pushNotifications', this.checked);
+      if (this.checked) {
+        // Request permission when enabled
+        if (window.NotificationManager) {
+          await window.NotificationManager.requestPermission();
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function setupLocalSettingsListeners() {
   // Add event listeners for localStorage
-  document.getElementById('notification-email').addEventListener('change', function() {
-    localStorage.setItem('notification-email', this.checked ? 'enabled' : 'disabled');
-  });
+  const emailNotif = document.getElementById('notification-email');
+  if (emailNotif) {
+    emailNotif.addEventListener('change', function() {
+      localStorage.setItem('notification-email', this.checked ? 'enabled' : 'disabled');
+    });
+  }
   
-  document.getElementById('notification-push').addEventListener('change', async function() {
-    localStorage.setItem('notification-push', this.checked ? 'enabled' : 'disabled');
-    if (this.checked) {
-      // Request permission when enabled
-      if (window.NotificationManager) {
-        await window.NotificationManager.requestPermission();
+  const pushNotif = document.getElementById('notification-push');
+  if (pushNotif) {
+    pushNotif.addEventListener('change', async function() {
+      localStorage.setItem('notification-push', this.checked ? 'enabled' : 'disabled');
+      if (this.checked) {
+        // Request permission when enabled
+        if (window.NotificationManager) {
+          await window.NotificationManager.requestPermission();
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 // Override the toggleDarkMode function to also update settings button and save to server
@@ -346,9 +385,23 @@ if (!window.__toggleDarkModeOverridden) {
     originalToggleDarkMode();
     setTimeout(updateDarkModeToggleSettingsButton, 50);
     
-    // Save to server if logged in
-    const isDarkMode = !document.body.classList.contains('dark-mode'); // After toggle
-    saveSettingToServer('darkMode', isDarkMode);
+    // Check if user is logged in before saving to server
+    const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
+    
+    fetch(`${API_BASE}/api/me`, { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.loggedIn && data.verified) {
+          // Save to server for logged-in users
+          const isDarkMode = document.body.classList.contains('dark-mode');
+          saveSettingToServer('darkMode', isDarkMode);
+        } else {
+          // Save to localStorage for unauthenticated users
+          const isDarkMode = document.body.classList.contains('dark-mode');
+          localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+        }
+      })
+      .catch(e => console.error('Error checking auth status:', e));
   };
   window.__toggleDarkModeOverridden = true;
 }

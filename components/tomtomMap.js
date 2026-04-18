@@ -157,16 +157,37 @@
         }
         map = L.map(containerId, {preferCanvas: true}).setView(center, zoom);
 
-        // Prepare base layers and overlays (satellite + streets + labels overlay)
-        const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19, crossOrigin: 'anonymous' });
-        const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community', maxZoom: 19 });
+        // Tile layers with excellent street name visibility
+        // OpenStreetMap Standard - Clean style with all street names visible (default, CORS-friendly)
+        const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19,
+            crossOrigin: 'anonymous'
+        });
 
-        // Labels overlay (using OSM tiles as a lightweight label/streets overlay)
-        const labelsOverlay = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '', maxZoom: 19, opacity: 0.75 });
+        // Esri World Street Map - Professional appearance with street names
+        const esriStreets = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri',
+            maxZoom: 18
+        });
 
-        // Default to satellite mode as before, without layer controls
+        // Satellite view
+        const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics',
+            maxZoom: 19
+        });
+
+        // Default to Satellite view
         satellite.addTo(map);
-        // Do not add labels overlay to avoid obscuring the route
+        
+        // Create layer control for user to switch views
+        const baseLayers = {
+            "🛰️ Satellite (Default)": satellite,
+            "🗺️ Street Map with Names": streets,
+            "🛣️ Esri Streets": esriStreets
+        };
+        
+        L.control.layers(baseLayers).addTo(map);
 
         // Add zoom control
         L.control.zoom({ position: 'topright' }).addTo(map);
@@ -252,14 +273,14 @@
                 destCoords = null;
             }
 
-            // If local resolution failed for either endpoint, use OSM to search for places within Yola
-            if (!originCoords && typeof origin === 'string' && window.geocodeWithOSM) {
-                originCoords = await window.geocodeWithOSM(origin);
-                if (originCoords) console.log('✅ OSM geocoding resolved origin:', origin, originCoords);
+            // If local resolution failed for either endpoint, use multi-service geocoding
+            if (!originCoords && typeof origin === 'string' && window.geocodeWithMultipleServices) {
+                originCoords = await window.geocodeWithMultipleServices(origin);
+                if (originCoords) console.log('✅ Geocoding resolved origin:', origin, originCoords);
             }
-            if (!destCoords && typeof destination === 'string' && window.geocodeWithOSM) {
-                destCoords = await window.geocodeWithOSM(destination);
-                if (destCoords) console.log('✅ OSM geocoding resolved destination:', destination, destCoords);
+            if (!destCoords && typeof destination === 'string' && window.geocodeWithMultipleServices) {
+                destCoords = await window.geocodeWithMultipleServices(destination);
+                if (destCoords) console.log('✅ Geocoding resolved destination:', destination, destCoords);
             }
 
             // Final fallback: use TomTom search if still unresolved

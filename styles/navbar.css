@@ -71,11 +71,11 @@ nav.navbar {
   border-radius: 8px;
   transition: background 0.3s ease;
 }
-
+/*
 .navbar-username-container:hover {
   background: rgba(255, 255, 255, 0.1);
 }
-
+*/
 .navbar-username-text {
   font-weight: 700;
   color: #cbd5e1;

@@ -28,7 +28,18 @@
         <span>📁</span>
         <input type="file" style="display:none" onchange="window.uploadFile(event, 'medi')" />
         </label>
-    </div>
+
+          <button type="button" id="medi-voice-call-btn" onclick="window.startVoiceCall('medi')" title="Start Live Voice Call with AI">
+            ☎️ 
+          </button>
+          <button type="button" id="medi-mute-btn" onclick="window.toggleVoiceCallMute('medi')" title="Mute/Unmute Microphone" style="display: none;">
+            🔊 Mute
+          </button>
+          <div id="medi-voice-indicator" class="voice-indicator" style="display: none;">
+            Listening...
+          </div>
+          <div id="medi-call-duration" class="call-duration" style="display: none;">00:00</div>
+        </div>
     <div class="faq-list">
     <h3 data-i18n="mediinfo_faq_title">MediInfo FAQs</h3>
     <ul>
@@ -43,48 +54,48 @@
     </div>
 
     <div class="section2">
-    <h2>Medical Institutions in Yola</h2>
+    <h2 data-i18n="medi_section_2_h2" >Medical Institutions in Yola</h2>
     
     <div class="section3">
-        <h3 class="section3-title">Primary Healthcare Centers</h3>
+        <h3 class="section3-title" data-i18n="medi_section3_h3_1">Primary Healthcare Centers</h3>
         <div class="section4-container">
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/valli.jpg" alt="Jimeta PHC" loading="lazy" />
             </div>
-            <h3>Valli clinic jimeta, Yola.</h3>
-            <p>Community health center providing essential healthcare services and preventive care.</p>
+            <h3 data-i18n="Medi_section4_h3_1">Valli clinic jimeta, Yola.</h3>
+            <p data-i18n="Medi_section4_p_1">Community health center providing essential healthcare services and preventive care.</p>
             <a data-i18n="learn_more" href="details/Medi/valli-clinic.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/malamre.png" alt="Yola PHC" loading="lazy" />
             </div>
-            <h3>Malamre PHCC, Yola.</h3>
-            <p>Modern facility offering primary healthcare services and maternal care.</p>
+            <h3 data-i18n="Medi_section4_h3_2">Malamre PHCC, Yola.</h3>
+            <p data-i18n="Medi_section4_p_2">Modern facility offering primary healthcare services and maternal care.</p>
             <a data-i18n="learn_more" href="details/Medi/malamre-clinic.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/dispensary.jpg" alt="Modibbo Adama PHC" loading="lazy" />
             </div>
-            <h3>Yola Central Dispensary.</h3>
-            <p>Well-equipped center providing comprehensive primary healthcare services.</p>
+            <h3 data-i18n="Medi_section4_h3_3">Yola Central Dispensary.</h3>
+            <p data-i18n="Medi_section4_p_3">Well-equipped center providing comprehensive primary healthcare services.</p>
             <a data-i18n="learn_more" href="details/Medi/yola-dispensary.html">Learn more →</a>
         </div>
         </div>
     </div>
 
     <div class="section3">
-        <h3 class="section3-title">Secondary Hospitals</h3>
+        <h3 class="section3-title"  data-i18n="medi_section3_h3_2">Secondary Hospitals</h3>
         <div class="section4-container">
 
             <div class="section4">
             <div class="img-placeholder">
                 <img src="Data/Images/specialistgate.jpg" alt="Specialist Hospital" loading="lazy" />
             </div>
-            <h3>Specialist Hospital Yola</h3>
-            <p>Major secondary healthcare facility with specialized departments and services.</p>
+            <h3 data-i18n="Medi_section4_h3_4">Specialist Hospital Yola</h3>
+            <p data-i18n="Medi_section4_p_4">Major secondary healthcare facility with specialized departments and services.</p>
             <a data-i18n="learn_more" href="details/Medi/specialist-hospital.html">Learn more →</a>
             </div>
 
@@ -92,8 +103,8 @@
             <div class="img-placeholder">
                 <img src="Data/Images/germanlogo.png" alt="Adamawa-German Hospital" loading="lazy" />
             </div>
-            <h3>Adamawa-German Hospital, Yola</h3>
-            <p>Public hospital providing comprehensive medical care and emergency services.</p>
+            <h3 data-i18n="Medi_section4_h3_5">Adamawa-German Hospital, Yola</h3>
+            <p data-i18n="Medi_section4_p_5">Public hospital providing comprehensive medical care and emergency services.</p>
             <a data-i18n="learn_more" href="details/Medi/german-hospital.html">Learn more →</a>
             </div>
 
@@ -101,8 +112,8 @@
             <div class="img-placeholder">
                 <img src="Data/Images/meddylogo.jpg" alt="Meddy Specialists" loading="lazy" />
             </div>
-            <h3>Meddy Specialists' Clinic, Yola</h3>
-            <p>Private hospital offering quality healthcare services and specialized treatments.</p>
+            <h3 data-i18n="Medi_section4_h3_6">Meddy Specialists' Clinic, Yola</h3>
+            <p data-i18n="Medi_section4_p_6">Private hospital offering quality healthcare services and specialized treatments.</p>
             <a data-i18n="learn_more" href="details/Medi/meddy-clinic.html">Learn more →</a>
             </div>
 
@@ -110,8 +121,8 @@
             <div class="img-placeholder">
                 <img src="Data/Images/fortland.jpg" alt="Fortland Bone Hospital Yola" loading="lazy" />
             </div>
-            <h3>Fortland Orthopaedic Hospital, Yola.</h3>
-            <p>Specialized hospital focused on orthopedic care, bone treatments, and rehabilitation services in Yola.</p>
+            <h3 data-i18n="Medi_section4_h3_7">Fortland Orthopaedic Hospital, Yola.</h3>
+            <p data-i18n="Medi_section4_p_7">Specialized hospital focused on orthopedic care, bone treatments, and rehabilitation services in Yola.</p>
             <a data-i18n="learn_more" href="details/Medi/fortland-hospital.html">Learn more →</a>
             </div>
 
@@ -119,8 +130,8 @@
             <div class="img-placeholder">
                 <img src="Data/Images/boshang.png" alt="New Boshang Clinic, Yola" loading="lazy" />
             </div>
-            <h3>New Boshang Clinic, Yola</h3>
-            <p>Modern healthcare facility offering comprehensive medical services and specialized treatments in Yola.</p>
+            <h3 data-i18n="Medi_section4_h3_8">New Boshang Clinic, Yola</h3>
+            <p data-i18n="Medi_section4_p_8">Modern healthcare facility offering comprehensive medical services and specialized treatments in Yola.</p>
             <a data-i18n="learn_more" href="details/Medi/newboshang-hospital.html">Learn more →</a>
             </div>
 
@@ -128,8 +139,8 @@
             <div class="img-placeholder">
                 <img src="Data/Images/galbose.png" alt="Meddy Specialists" loading="lazy" />
             </div>
-            <h3>Galbose Specialists' Clinic, Yola</h3>
-            <p>Private hospital offering quality healthcare services and specialized treatments.</p>
+            <h3 data-i18n="Medi_section4_h3_9">Galbose Specialists' Clinic, Yola</h3>
+            <p data-i18n="Medi_section4_p_9">Private hospital offering quality healthcare services and specialized treatments.</p>
             <a data-i18n="learn_more" href="details/Medi/galbose-hospital.html">Learn more →</a>
             </div>
 
@@ -137,7 +148,7 @@
     </div>
 
     <div class="section3">
-        <h3 class="section3-title">The Tertiary Hospital in Yola.</h3>
+        <h3 class="section3-title" data-i18n="medi_section3_h3_3">The Tertiary Hospital in Yola.</h3>
         <div class="section4-container" style="display: flex;">
         <div class="section4-mau-container">
         <div class="section4" style="width: 1160px; height: 450px;">
@@ -146,8 +157,8 @@
             <img class="mauthgate" src="Data/Images/mauthgate.jpg" alt="Teaching Hospital"  loading="lazy" />
             </div>
         
-            <h3>Modibbo Adama Teaching Hospital (MAUTH), Yola.</h3>
-            <p>University teaching hospital providing advanced medical care and training.</p>
+            <h3 data-i18n="Medi_section4_h3_10">Modibbo Adama Teaching Hospital (MAUTH), Yola.</h3>
+            <p data-i18n="Medi_section4_p_10">University teaching hospital providing advanced medical care and training.</p>
             <a data-i18n="learn_more" href="details/Medi/mauth-yola.html">Learn more →</a>
         
         </div>
@@ -155,7 +166,7 @@
         </div>
 
     <div class="section3">
-        <h3 class="section3-title">Pharmacies</h3>
+        <h3 class="section3-title"  data-i18n="medi_section3_h3_4">Pharmacies</h3>
 
         <div class="section4-container">
         
@@ -163,8 +174,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/meddypharmacy.jpg" alt="Meddy Pharmacy" loading="lazy" />
             </div>
-            <h3>Meddy Pharmacy</h3>
-            <p>24/7 pharmacy with extensive stock of medicines and medical supplies.</p>
+            <h3 data-i18n="Medi_section4_h3_11">Meddy Pharmacy</h3>
+            <p data-i18n="Medi_section4_p_11">24/7 pharmacy with extensive stock of medicines and medical supplies.</p>
             <a data-i18n="learn_more" href="details/Medi/meddy-pharmacy.html">Learn more →</a>
         </div>
 
@@ -172,8 +183,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/shekinahpharmacy.jpg" alt="Shekinah Pharmacy" loading="lazy" />
             </div>
-            <h3>Shekinah Pharmacy</h3>
-            <p>Modern pharmacy chain offering quality medications and healthcare products.</p>
+            <h3 data-i18n="Medi_section4_h3_12">Shekinah Pharmacy</h3>
+            <p  data-i18n="Medi_section4_p_12">Modern pharmacy chain offering quality medications and healthcare products.</p>
             <a data-i18n="learn_more" href="details/Medi/shekinah-pharmacy.html">Learn more →</a>
         </div>
 
@@ -181,8 +192,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/kingblaise.png" alt="Community Pharmacy" loading="lazy" />
             </div>
-            <h3>Kingblaise Pharmacy, Yola.</h3>
-            <p>Local pharmacy providing affordable medications and healthcare advice.</p>
+            <h3 data-i18n="Medi_section4_h3_13">Kingblaise Pharmacy, Yola.</h3>
+            <p  data-i18n="Medi_section4_p_13">Local pharmacy providing affordable medications and healthcare advice.</p>
             <a data-i18n="learn_more" href="details/Medi/kingblaise-pharmacy.html">Learn more →</a>
         </div>
         
@@ -190,8 +201,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/alfijr.png" alt="Alfijr Pharmacy, Yola" loading="lazy" />
             </div>
-            <h3>Alfijr Pharmacy, Yola.</h3>
-            <p>Reliable pharmacy providing a wide range of medications, healthcare products, and pharmaceutical services to the Yola community.</p>
+            <h3 data-i18n="Medi_section4_h3_14">Alfijr Pharmacy, Yola.</h3>
+            <p  data-i18n="Medi_section4_p_14">Reliable pharmacy providing a wide range of medications, healthcare products, and pharmaceutical services to the Yola community.</p>
             <a data-i18n="learn_more" href="details/Medi/alfijr-pharmacy.html">Learn more →</a>
         </div>
 
@@ -199,8 +210,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/jds.png" alt="JDS Pharmacy, Yola" loading="lazy" />
             </div>
-            <h3>JDS Pharmacy, Yola.</h3>
-            <p>Community pharmacy offering quality medications, health supplies, and professional pharmaceutical care services in Yola.</p>
+            <h3 data-i18n="Medi_section4_h3_15">JDS Pharmacy, Yola.</h3>
+            <p data-i18n="Medi_section4_p_15">Community pharmacy offering quality medications, health supplies, and professional pharmaceutical care services in Yola.</p>
             <a data-i18n="learn_more" href="details/Medi/jds-pharmacy.html">Learn more →</a>
         </div>
         
@@ -208,8 +219,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/mufami.jpg" alt="Mufami Pharmacy Store" loading="lazy" />
             </div>
-            <h3>Mufami Pharmacy Store.</h3>
-            <p>Local pharmacy store providing essential medications, healthcare products, and personalized customer service to the Yola community.</p>
+            <h3 data-i18n="Medi_section4_h3_16">Mufami Pharmacy Store.</h3>
+            <p data-i18n="Medi_section4_p_16">Local pharmacy store providing essential medications, healthcare products, and personalized customer service to the Yola community.</p>
             <a data-i18n="learn_more" href="details/Medi/mufami-pharmacy.html">Learn more →</a>
         </div>
 
@@ -217,8 +228,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/jasar.png" alt="Jasar Pharmacy, Yola" loading="lazy" />
             </div>
-            <h3>Jasar Pharmacy, Yola.</h3>
-            <p>Full-service pharmacy offering prescription medications, healthcare products, and expert pharmaceutical advice in Yola.</p>
+            <h3 data-i18n="Medi_section4_h3_17">Jasar Pharmacy, Yola.</h3>
+            <p data-i18n="Medi_section4_p_17">Full-service pharmacy offering prescription medications, healthcare products, and expert pharmaceutical advice in Yola.</p>
             <a data-i18n="learn_more" href="details/Medi/jasar-pharmacy.html">Learn more →</a>
         </div>
 
@@ -226,8 +237,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/kerion.png" alt="Kerion Pharmacy, Yola" loading="lazy" />
             </div>
-            <h3>Kerion Pharmacy, Yola.</h3>
-            <p>Modern pharmacy facility providing comprehensive pharmaceutical services, health products, and professional healthcare advice in Yola.</p>
+            <h3 data-i18n="Medi_section4_h3_18">Kerion Pharmacy, Yola.</h3>
+            <p data-i18n="Medi_section4_p_18">Modern pharmacy facility providing comprehensive pharmaceutical services, health products, and professional healthcare advice in Yola.</p>
             <a data-i18n="learn_more" href="details/Medi/kerion-pharmacy.html">Learn more →</a>
         </div>
 
@@ -235,8 +246,8 @@
             <div class="img-placeholder">
             <img src="Data/Images/lekki.jpg" alt="Lekki Pharmacy and Pharmaceuticals, Yola" loading="lazy" />
             </div>
-            <h3>Lekki Pharmacy and Pharmaceuticals, Yola.</h3>
-            <p>Premium pharmacy and pharmaceutical service provider offering a wide range of medications, health products, and professional healthcare consultations in Yola.</p>
+            <h3 data-i18n="Medi_section4_h3_19">Lekki Pharmacy and Pharmaceuticals, Yola.</h3>
+            <p data-i18n="Medi_section4_p_19">Premium pharmacy and pharmaceutical service provider offering a wide range of medications, health products, and professional healthcare consultations in Yola.</p>
             <a data-i18n="learn_more" href="details/Medi/lekki-pharmacy.html">Learn more →</a>
         </div>
 
@@ -246,7 +257,7 @@
 
 
     <div class="section3">
-    <h3 class="section3-title">Community Health Services</h3>
+    <h3 class="section3-title"  data-i18n="medi_section3_h3_5">Community Health Services</h3>
     
     <div class="section4-container">
 
@@ -254,8 +265,8 @@
         <div class="img-placeholder">
             <img src="Data/Images/polio.jpg" alt="Polio Immunization at Community PHCCs" loading="lazy" />
         </div>
-        <h3>Polio Immunization at Community PHCCs.</h3>
-        <p>Regular polio immunization programs conducted at Primary Healthcare Centers to protect children and maintain Yola's polio-free status.</p>
+        <h3 data-i18n="Medi_section4_h3_20">Polio Immunization at Community PHCCs.</h3>
+        <p data-i18n="Medi_section4_p_20">Regular polio immunization programs conducted at Primary Healthcare Centers to protect children and maintain Yola's polio-free status.</p>
         <a data-i18n="learn_more" href="details/Medi/polio-immunization.html">Learn more →</a>
         </div>
 
@@ -263,8 +274,8 @@
         <div class="img-placeholder">
             <img src="Data/Images/mosquito.jpg" alt="Mosquito nets distribution to resident of Yola" loading="lazy" />
         </div>
-        <h3>Mosquito nets distribution to resident of Yola.</h3>
-        <p>Community health initiative providing free insecticide-treated mosquito nets to Yola residents to prevent malaria and other mosquito-borne diseases.</p>
+        <h3 data-i18n="Medi_section4_h3_21">Mosquito nets distribution to resident of Yola.</h3>
+        <p data-i18n="Medi_section4_p_21">Community health initiative providing free insecticide-treated mosquito nets to Yola residents to prevent malaria and other mosquito-borne diseases.</p>
         <a data-i18n="learn_more" href="details/Medi/nets-distribution.html">Learn more →</a>
         </div>
 
@@ -272,8 +283,8 @@
         <div class="img-placeholder">
             <img src="Data/Images/redcross.png" alt="Redcross society awareness campaign in Yola" loading="lazy" />
         </div>
-        <h3>Redcross society awareness campaign in Yola.</h3>
-        <p>Regular health awareness campaigns conducted by the Red Cross Society to educate Yola residents about emergency preparedness, first aid, and public health.</p>
+        <h3 data-i18n="Medi_section4_h3_22">Redcross society awareness campaign in Yola.</h3>
+        <p data-i18n="Medi_section4_p_22">Regular health awareness campaigns conducted by the Red Cross Society to educate Yola residents about emergency preparedness, first aid, and public health.</p>
         <a data-i18n="learn_more" href="details/Medi/redcross-awareness.html">Learn more →</a>
         </div>
 

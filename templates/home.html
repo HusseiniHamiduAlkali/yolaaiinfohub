@@ -26,6 +26,19 @@
             <span>📁</span>
             <input type="file" style="display:none" onchange="window.uploadFile(event, 'home')" />
           </label>
+        
+
+          <button type="button" id="home-voice-call-btn" onclick="window.startVoiceCall('home')" title="Start Live Voice Call with AI">
+            ☎️ 
+          </button>
+          <button type="button" id="home-mute-btn" onclick="window.toggleVoiceCallMute('home')" title="Mute/Unmute Microphone" style="display: none;">
+            🔊 Mute
+          </button>
+          <div id="home-voice-indicator" class="voice-indicator" style="display: none;">
+            Listening...
+          </div>
+          <div id="home-call-duration" class="call-duration" style="display: none;">00:00</div>
+
         </div>
         <div class="faq-list">
         <h3 data-i18n="general_faqs">General FAQs</h3>

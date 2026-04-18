@@ -21,6 +21,38 @@ async function fetchWithTimeout(resource, options = {}, timeout = 3000) {
   return response;
 }
 
+// Highlight active section helper (invoked after navigation)
+window.highlightActiveNav = function(section) {
+  // If no section provided, infer from URL
+  if (!section || section === '' || section === 'index.html') {
+    section = getSectionFromUrl();
+  }
+
+  // keep current section in memory only
+  window.currentSection = section;
+
+  // Helper to match and highlight buttons
+  const highlightButton = (btn) => {
+    btn.classList.remove('active');
+    const i18nKey = btn.getAttribute('data-i18n');
+    let btnSection = '';
+    if (i18nKey === 'home') btnSection = 'home';
+    else if (i18nKey === 'eduinfo') btnSection = 'eduinfo';
+    else if (i18nKey === 'ecoinfo') btnSection = 'ecoinfo';
+    else if (i18nKey === 'agroinfo') btnSection = 'agroinfo';
+    else if (i18nKey === 'mediinfo') btnSection = 'mediinfo';
+    else if (i18nKey === 'naviinfo') btnSection = 'naviinfo';
+    else if (i18nKey === 'communityinfo') btnSection = 'communityinfo';
+    else if (i18nKey === 'serviinfo') btnSection = 'serviinfo';
+    else if (i18nKey === 'settings') btnSection = 'settings';
+    if (btnSection === section) {
+      btn.classList.add('active');
+    }
+  };
+
+  document.querySelectorAll('.navbar-links button, .mobile-links button').forEach(highlightButton);
+};
+
 function renderNavbar() {
   // Note: User state is already set by window.Navbar.render() before this is called
   // No need to make another backend call - use the pre-fetched window.currentUser
@@ -105,7 +137,7 @@ function renderNavbar() {
             <li><button onclick="window.loadSection('naviinfo')" data-i18n="naviinfo">NaviInfo</button></li>
             <li><button onclick="window.loadSection('communityinfo')" data-i18n="communityinfo">CommunityInfo</button></li>
             <li><button onclick="window.loadSection('serviinfo')" data-i18n="serviinfo">ServiInfo</button></li>
-            <li><button onclick="window.loadSection('about')" data-i18n="settings">Settings</button></li>
+            <li><button onclick="window.loadSection('settings')" data-i18n="settings">Settings</button></li>
           </ul>
         </div>
       </div>
@@ -114,6 +146,9 @@ function renderNavbar() {
 
   // Append the navbar to the DOM
   document.body.prepend(nav);
+
+  // Highlight active nav after appending
+  window.highlightActiveNav();
 
   // Wire up auth button events after DOM is in place
   setTimeout(() => {
@@ -435,24 +470,14 @@ function renderNavbar() {
           { name: 'NaviInfo', section: 'naviinfo', i18n: 'naviinfo' },
           { name: 'CommunityInfo', section: 'communityinfo', i18n: 'communityinfo' },
           { name: 'ServiInfo', section: 'serviinfo', i18n: 'serviinfo' },
-          { name: 'About', section: 'settings', i18n: 'settings' }
+          { name: 'Settings', section: 'settings', i18n: 'settings' }
         ].forEach(link => {
           const li = document.createElement('li');
           const btn = document.createElement('button');
           btn.setAttribute('data-i18n', link.i18n);
           btn.textContent = link.name;
-          // Check if this is the current section (use in-memory or URL fallback)
-          const currentSection = window.currentSection || getSectionFromUrl();
-          if (
-            (currentSection === 'settings' && link.name === 'Settings') ||
-            (currentSection === link.section) ||
-            (currentSection === 'home' && link.name === 'Home')
-          ) {
-            btn.classList.add('active');
-          }
           btn.onclick = () => {
             window.loadSection(link.section);
-            window.highlightActiveNav(link.section);
             mobileMenu.classList.remove('show');
             setTimeout(() => mobileMenu.remove(), 300);
           };
@@ -464,8 +489,10 @@ function renderNavbar() {
         mobileMenu.appendChild(linksList);
         
         document.body.appendChild(mobileMenu);
+        window.highlightActiveNav();
         setTimeout(() => mobileMenu.classList.add('show'), 10);
       } else {
+        window.highlightActiveNav();
         mobileMenu.classList.add('show');
       }
     };
@@ -477,29 +504,6 @@ function renderNavbar() {
 
   // Listen for window resize events
   window.addEventListener('resize', handleResponsiveLayout);
-
-  // Highlight active section helper (invoked after navigation)
-  window.highlightActiveNav = function(section) {
-    // If no section provided, infer from URL
-    if (!section || section === '' || section === 'index.html') {
-      section = getSectionFromUrl();
-    }
-
-    // keep current section in memory only
-    window.currentSection = section;
-
-    // Helper to match and highlight buttons
-    const highlightButton = (btn) => {
-      btn.classList.remove('active');
-      const btnText = btn.textContent.trim();
-      const btnSection = btnText.toLowerCase() + (btnText.toLowerCase().endsWith('info') ? '' : (btnText.toLowerCase() === 'settings' ? '' : 'info'));
-      if ((section === 'settings' && btnText === 'Settings') || btnSection === section || (section === 'home' && btnText === 'Home')) {
-        btn.classList.add('active');
-      }
-    };
-
-    document.querySelectorAll('.navbar-links button, .mobile-links button').forEach(highlightButton);
-  };
 }
 
 // Export as Navbar global for compatibility
