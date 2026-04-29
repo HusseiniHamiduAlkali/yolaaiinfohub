@@ -312,7 +312,7 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
   msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
     <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
-    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Home AI typing...</span></div>
+    <div class='ai-msg' data-msg-id='${mid}'><div><span class='ai-msg-text'>Home AI typing...</span></div></div>
   `;
   chat.appendChild(msgGroup);
   // Replace direct clearing of preview with the shared function

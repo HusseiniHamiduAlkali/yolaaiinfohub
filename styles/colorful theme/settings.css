@@ -25,6 +25,10 @@
   min-height: calc(100vh - 200px);
 }
 
+.settings-section {
+  background: linear-gradient(to left, #0a0af991, #0207fd4f);
+}
+
 .settings-header {
   margin-bottom: 2rem;
   margin-top: 1rem;
@@ -35,7 +39,7 @@
 
 .settings-header h1 {
   font-size: 2.3rem;
-  color: #2d3748;
+  color: beige;
   margin: 0;
   font-weight: 700;
 }
@@ -48,12 +52,11 @@ body.dark-mode .settings-header h1 {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  width: 91%;
 }
 
 /* Settings Section */
 .settings-section-box {
-  background: #f8f9fa;
+  background: #15319e2b;
   border: 1px solid #e9ecef;
   border-radius: 8px;
   padding: 0;
@@ -88,7 +91,7 @@ body.dark-mode .settings-section-danger {
 .section-title {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #2d3748;
+  color: #fff;
   margin: 0 0 1.5rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #cbd5e1;
@@ -137,12 +140,11 @@ body.dark-mode .settings-item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  justify-content: flex-end;
 }
 
 .settings-label {
   font-weight: 500;
-  color: #2d3748;
+  color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -226,7 +228,7 @@ body.dark-mode .dark-mode-toggle-settings:hover {
   padding: 0.6rem 1rem;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  background: #fff;
+  background: #cfd0d6;
   color: #2d3748;
   font-size: 1rem;
   cursor: pointer;
@@ -360,7 +362,7 @@ body.dark-mode .settings-footer {
   font-family: inherit;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: #fff;
+  background-color: #e8e9e9;
   color: #2d3748;
   box-sizing: border-box;
 }
@@ -413,7 +415,7 @@ body.dark-mode .feedback-textarea:focus {
 
   .settings-item-control {
     width: 100%;
-    justify-content: flex-end !important;
+    justify-content: flex-start;
   }
 
   .settings-button {

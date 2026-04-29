@@ -104,7 +104,7 @@ body.dark-mode input[type="email"],
 body.dark-mode input[type="password"],
 body.dark-mode textarea,
 body.dark-mode select {
-    background: #2d2d2d;
+    background: #b1afaf;
     color: #e0e0e0;
     border: 1px solid #444;
 }
@@ -326,4 +326,35 @@ body.dark-mode .currency-selector-item {
 body.dark-mode .exchange-amount {
     background-color: #333;
     color: #fff;
+}
+
+.dark-mode .settings-section-box {
+    background: 0;
+}.dark-mode .navbar-auth {
+    background: #0f1419;
+}
+
+.dark-mode .minimal-nav {
+    background: #0f1419;
+}
+
+.dark-mode .weather-value {
+    color: #fff;
+}
+.dark-mode .weather-label {
+    color: beige;
+}
+
+.dark-mode .auth-container {
+    background: #484343 !important;
+}
+.dark-mode .auth-box {
+    background: #2d2d2d;
+}
+.dark-mode .form-group label {
+    color: beige;
+}
+
+.dark-mode #theme-select {
+    background: #2d2d2d !important;
 }

@@ -6,26 +6,6 @@ if (!window.commonAILoaded) {
   document.head.appendChild(script);
 }
 
-// IMPORTED FROM commonAI.js:
-
-// ✓ window.useGemini25 - Model preference (Gemini 2.5 vs 1.5)
-// ✓ window.toggleGeminiModel() - Switch between models
-// ✓ window.currentSpeech - Speech synthesis state
-// ✓ window.stopSpeaking() - Stop text-to-speech
-// ✓ window.speakText() - Convert text to speech
-// ✓ window.captureImage() - Camera capture functionality
-// ✓ window.recordAudio() - Microphone recording
-// ✓ window.uploadFile() - File upload handler
-// ✓ window.formatAIResponse() - Format responses with markdown
-// ✓ window.ensureNavbarLoaded() - Load navbar safely
-// ✓ window.getGeminiAnswer() - Core API integration (can override)
-
-
-// Global text-to-speech variables and functions
-// The actual `getGeminiAnswer` implementation with optional `signal` is defined
-// later in this file. The duplicate no-signal variant above has been removed
-// to ensure the AbortController signal is respected and to avoid function
-// definition conflicts.
 
 // Edit this prompt to instruct the AI on how to answer user messages for CommunityInfo
 window.COMMUNITY_AI_PROMPT = window.COMMUNITY_AI_PROMPT || `You are an AI community coordinator for Yola, Adamawa State, Nigeria.
@@ -184,7 +164,8 @@ window.sendCommunityMessage = async function(faqText = '') {
   const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
   msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
-    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
     <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Community AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);

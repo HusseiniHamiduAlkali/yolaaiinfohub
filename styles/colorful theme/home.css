@@ -4,7 +4,7 @@
   max-width: 1200px;
   margin:auto;
   padding: 0 ;
-  background: #fff;
+  background: #15319e2b;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
@@ -29,7 +29,7 @@
  
  
   display: inline-block;
-  background: #3182ce;
+  background: #569cdf;
   color: #fff;
   text-decoration: none;
   margin-top: 1rem;
@@ -61,6 +61,7 @@
    text-align: center;
    height: 100%;
    font-size: larger;
+   color:#fff;
 }
 .section4-home-img-placeholder img {
     width: 100%; 
@@ -73,7 +74,7 @@
  }
 
  .history-of-yola {
-    color: #222;
+    color: #fff;
  }
 
 @media screen and (max-width: 700px) {

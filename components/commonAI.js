@@ -736,14 +736,20 @@ window.createMessageElement = function(message, section, containerId) {
     } else {
       // Add action buttons for actual responses
       msgGroup.innerHTML = `
+      
+      
         <div class='ai-msg' data-msg-id='${mid}'>
           <span class='ai-msg-text msg-text'>${contentHtml}</span>
         </div>
+        
         <span class='msg-actions' data-msg-id='${mid}'>
           <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
           <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
           <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
         </span>
+        
+      
+      
       `;
 
       // Attach event listeners for AI message actions

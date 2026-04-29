@@ -113,8 +113,10 @@ main {
 .form-group label {
   color: #3e444d;
   font-size: 0.98rem;
-  margin-bottom: 0.3rem;
+  margin-bottom: 12px;
   font-weight: 500;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-group input,

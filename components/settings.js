@@ -44,6 +44,7 @@ window.SettingsPage = {
                 </select>
               </div>
             </div>
+            <!--
             <div class="settings-item">
               <div class="settings-item-header">
                 <label for="dark-mode-toggle-settings" class="settings-label" data-i18n="dark_mode">Dark Mode</label>
@@ -53,6 +54,19 @@ window.SettingsPage = {
                   <span class="toggle-icon">🌙</span>
                   <span class="toggle-text">Off</span>
                 </button>
+              </div>
+            </div>
+            -->
+            <div class="settings-item">
+              <div class="settings-item-header">
+                <label class="settings-label" data-i18n="theme">Theme</label>
+              </div>
+              <div class="settings-item-control">
+                <select id="theme-select">
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="colorful">Colorful</option>
+                </select>
               </div>
             </div>
           </div>
@@ -154,9 +168,12 @@ window.SettingsPage = {
           </div>
 
           <!-- Back Button -->
+          <!--
           <div class="settings-footer">
             <button class="settings-button settings-button-primary" onclick="window.loadSection('home')" data-i18n="back_to_home">Back to Home</button>
           </div>
+          -->
+
         </div>
       </div>
     `;
@@ -236,6 +253,18 @@ window.SettingsPage = {
           if (window.i18n && window.i18n.applyTranslations) window.i18n.applyTranslations(document.getElementById('main-content'));
           updateDarkModeToggleSettingsButton();
         }, 50);
+      });
+    }
+    // Theme selector wiring
+    const themeSelect = document.getElementById('theme-select');
+    if (themeSelect) {
+      try { themeSelect.value = window.getTheme ? window.getTheme() : (localStorage.getItem('theme') || 'light'); } catch(e) {}
+      themeSelect.addEventListener('change', function() {
+        const v = this.value;
+        if (window.setTheme) window.setTheme(v);
+        else localStorage.setItem('theme', v);
+        // update dark-mode toggle visuals
+        updateDarkModeToggleSettingsButton();
       });
     }
   }

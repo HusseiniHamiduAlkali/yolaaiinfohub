@@ -1,48 +1,41 @@
 // Dark mode functionality
 function setupDarkMode() {
-    const body = document.body;
-
-    // Check for saved preference in localStorage
-    if (localStorage.getItem('darkMode') === 'enabled') {
-        body.classList.add('dark-mode');
+    // Deprecated: use theme-switcher.js
+    const theme = (window.getTheme && window.getTheme()) || localStorage.getItem('theme');
+    if(theme === 'dark'){
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
     }
 }
 
 // Toggle dark mode function
 window.toggleDarkMode = function() {
-    const body = document.body;
-    body.classList.toggle('dark-mode');
-    
-    if (body.classList.contains('dark-mode')) {
-        localStorage.setItem('darkMode', 'enabled');
+    const isDark = document.body.classList.contains('dark-mode');
+    // switch to the opposite theme
+    if(window.setTheme){
+        window.setTheme(isDark ? 'light' : 'dark');
     } else {
-        localStorage.setItem('darkMode', 'disabled');
+        // fallback
+        document.body.classList.toggle('dark-mode');
     }
-    
-    // Update all dark mode toggle buttons
     updateDarkModeToggleButtons();
 };
 
 // Update the visual state of all toggle buttons
 function updateDarkModeToggleButtons() {
     const toggles = document.querySelectorAll('.dark-mode-toggle, .dark-mode-toggle-settings');
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    
+    const theme = (window.getTheme && window.getTheme()) || localStorage.getItem('theme') || 'light';
+    const isDarkMode = theme === 'dark';
     toggles.forEach(toggle => {
         if (isDarkMode) {
             toggle.classList.add('active');
-            // Update text if it's a settings button
             const textSpan = toggle.querySelector('.toggle-text');
-            if (textSpan) {
-                textSpan.textContent = 'On';
-            }
+            if (textSpan) textSpan.textContent = 'On';
         } else {
             toggle.classList.remove('active');
-            // Update text if it's a settings button
             const textSpan = toggle.querySelector('.toggle-text');
-            if (textSpan) {
-                textSpan.textContent = 'Off';
-            }
+            if (textSpan) textSpan.textContent = 'Off';
         }
     });
 }

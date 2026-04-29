@@ -14,7 +14,7 @@
   font-size: 24px;
   margin-bottom: 15px;
   margin-top: 10px;
-  color: #333;
+  color:aliceblue;
   align-self: center;
   text-align: center;
 }
@@ -35,6 +35,7 @@
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 7px;
+  background: #a8add6;
   margin: 10px 50px 0px 50px;
 }
 
@@ -71,7 +72,7 @@
   width: 230px;
   padding: 10px;
   border-radius: 15px;
-  background-color: #f2f2f2;
+  background-color: #5c5cc991;
   box-shadow: 0 0px 5px rgba(0,0,0,0.4);
 }
 
@@ -80,6 +81,7 @@
   border-radius: 10px;
   height: 18px;
   padding: 6px;
+  background: antiquewhite;
   margin: 9px 25px 0px 25px;
 }
 

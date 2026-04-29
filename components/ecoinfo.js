@@ -258,7 +258,8 @@ window.sendEcoMessage = async function(faqText = '') {
   const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
   msgGroup.setAttribute('data-msg-id', mid);
   msgGroup.innerHTML = `
-    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
     <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Eco AI typing...</span></div>
   `;
   chat.appendChild(msgGroup);
