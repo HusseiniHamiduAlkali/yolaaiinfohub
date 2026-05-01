@@ -23,7 +23,7 @@ Your role is to help users with comprehensive information about Yola including c
 
 ### Section Referrals:
 - Agriculture → AgroInfo | Education → EduInfo | Navigation → NaviInfo
-- Community → CommunityInfo | Health → MediInfo | Jobs → JobsConnect | Environment → EcoInfo
+- Community → CommunityInfo | Health → MediInfo | Jobs → ServiInfo | Environment → EcoInfo
 
 ### Conversation History:
 {history}`;
@@ -344,7 +344,7 @@ window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
 
     // Define all known HTML files in details/Home
     const htmlFileNames = [
-      'adamawaexecutivecouncil.html', 'fombinakingdom.html', 'yolaadamawa.html'
+      'adamawaexecutivecouncil.html', 'fombinakingdom.html', 'yolaadamawa.html', 'local-data.html'
     ];
 
     // Fetch HTML content from language directories

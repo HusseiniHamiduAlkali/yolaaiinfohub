@@ -1,6 +1,6 @@
 // Theme switcher: supports 'light', 'dark', 'colorful'
 (function(){
-    const COLORFUL_FOLDER = 'colorful theme';
+    const COLORFUL_FOLDER = 'colorful-theme';
 
     function setTheme(theme){
         if(!theme) theme = 'light';
@@ -38,7 +38,7 @@
             if(theme === 'colorful'){
                 // set to colorful folder path if a counterpart exists (assumes same filename)
                 const original = link.dataset.originalHref;
-                // replace 'styles/' with 'styles/colorful theme/' in a robust way
+                // replace 'styles/' with 'styles/colorful-theme/' in a robust way
                 if(original.match(/styles\//)){
                     const colourful = original.replace(/styles\//, `styles/${COLORFUL_FOLDER}/`);
                     link.setAttribute('href', colourful);

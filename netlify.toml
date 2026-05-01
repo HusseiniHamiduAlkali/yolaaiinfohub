@@ -19,6 +19,16 @@
     Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"
 
+[[headers]]
+  for = "/styles/*"
+  [headers.values]
+    Content-Type = "text/css; charset=utf-8"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Content-Type = "text/css; charset=utf-8"
+
 [[redirects]]
   from = "/api/gemini"
   to = "/.netlify/functions/gemini"
