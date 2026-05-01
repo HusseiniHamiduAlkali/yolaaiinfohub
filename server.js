@@ -387,6 +387,7 @@ chatHistorySchema.index({ userId: 1, section: 1 }, { unique: true });
 const ChatHistory = mongoose.model('ChatHistory', chatHistorySchema);
 
 // Signup
+app.options('/api/signup', cors(corsOptions)); // Handle preflight
 app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
   // Check for validation errors
   const errors = validationResult(req);
@@ -610,6 +611,7 @@ app.post('/api/verify-email', async (req, res) => {
 
 
 // Login (by username or email)
+app.options('/api/login', cors(corsOptions)); // Handle preflight
 app.post('/api/login', loginLimiter, async (req, res) => {
   try {
     const { username, email, password } = req.body;

@@ -6,7 +6,7 @@
   <title data-i18n="sign_up">Sign Up</title>
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/auth.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="pages.css">
   <link rel="stylesheet" href="../styles/dark-mode.css">
   <script src="../components/theme-switcher.js"></script>
@@ -20,8 +20,8 @@
       </div>
 
       <a href="../index.html" class="return-home">
-        <i class="fas fa-home"></i>
-        <span data-i18n="return_home">Return Home</span>
+        <i class="fas fa-home" style="font-size: x-large;"></i>
+        <!-- <span data-i18n="return_home">Return Home</span>  -->
       </a>
 
     </div>
@@ -231,6 +231,15 @@
 
         const data = await response.json();
         if (data.success) {
+          // Show loading message
+          const errorDiv = document.querySelector('.auth-error') || document.createElement('div');
+          errorDiv.className = 'auth-error';
+          errorDiv.style.color = '#10b981';
+          errorDiv.textContent = 'Account created successfully! Redirecting...';
+          if (!document.querySelector('.auth-error')) {
+            document.querySelector('.auth-form').parentElement.appendChild(errorDiv);
+          }
+          
           // Fetch complete user data from /api/me
           try {
             const meRes = await fetch(`${API_BASE}/api/me`, {
@@ -261,7 +270,10 @@
           } catch (err) {
             console.warn('Failed to fetch complete user data:', err);
           }
-          window.location.href = '/'; // Redirect to homepage on success
+          // Redirect with a small delay to ensure page can update
+          setTimeout(() => {
+            window.location.href = '/'; // Redirect to homepage on success
+          }, 500);
         } else {
           let errorMessage = data.error || 'Error signing up. Please try again.';
           // Map backend error messages to user-friendly ones
