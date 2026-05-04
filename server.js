@@ -47,18 +47,24 @@ const corsOptions = {
       'https://yolaaiinfohub.netlify.app'
     ];
     
-    // Allow all origins for mobile compatibility (temporary fix)
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.match(/^https?:\/\/localhost(:\d+)?$/) || origin.includes('netlify') || origin.includes('yolaaiinfohub')) {
+    // Check if origin matches allowed list or is localhost variant
+    const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
+                     origin.match(/^https?:\/\/localhost(:\d+)?$/) || 
+                     origin.match(/^https?:\/\/127\.0\.0\.1(:\d+)?$/) ||
+                     origin.includes('netlify') || 
+                     origin.includes('yolaaiinfohub');
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
-      console.log('CORS allowing origin:', origin);
-      callback(null, true); // Temporarily allow all for debugging
+      console.log('CORS INFO - Allowing origin:', origin);
+      callback(null, true); // Allow for debugging - remove in production
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
-  exposedHeaders: ['Set-Cookie'],
+  exposedHeaders: ['Set-Cookie', 'x-auth-token'],
   optionsSuccessStatus: 200
 };
 
@@ -116,6 +122,22 @@ app.get('/api/tomtom-key', (req, res) => {
     return res.status(500).json({ error: 'TomTom API key not set' });
   }
   res.status(200).json({ apiKey });
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  const dbConnected = mongoose.connection.readyState === 1;
+  const status = {
+    status: dbConnected ? 'ok' : 'degraded',
+    timestamp: new Date().toISOString(),
+    database: {
+      connected: dbConnected,
+      state: mongoose.connection.readyState,
+      stateNames: ['disconnected', 'connected', 'connecting', 'disconnecting']
+    }
+  };
+  const statusCode = dbConnected ? 200 : 503;
+  res.status(statusCode).json(status);
 });
 
 // Security middleware with appropriate settings for CORS
@@ -254,9 +276,9 @@ app.use(session({
     secure: isProduction, // HTTPS in production, HTTP in dev
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
-    sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-site in prod, 'lax' in dev
-    path: '/'
-    // Domain not set for cross-site cookies; browser will set to backend domain
+    sameSite: isProduction ? 'none' : false, // false allows same-site + cross-origin on localhost, 'none' for cross-site in prod
+    path: '/',
+    domain: undefined // Let browser set domain automatically
   }
 }));
 
@@ -321,12 +343,15 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true, 
   useUnifiedTopology: true 
 })
-.then(() => console.log('Successfully connected to MongoDB.'))
+.then(() => {
+  console.log('✅ Successfully connected to MongoDB.');
+  console.log('   MONGO_URI:', process.env.MONGO_URI?.substring(0, 50) + '...' || 'NOT SET');
+})
 .catch(err => {
-  console.error('MongoDB connection error:', err);
-  // don't kill the entire server just because the database is unreachable;
-  // many features (like navigation key serving) still work without Mongo.
-  // process.exit(1);
+  console.error('❌ MongoDB connection error:', err.message);
+  console.error('   MONGO_URI configured:', !!process.env.MONGO_URI);
+  console.error('   Make sure MongoDB is running. For local development, run: mongod');
+  console.error('   For MongoDB Atlas, verify the connection string in .env file');
 });
 
 // Prevent unhandled promise rejections from crashing the process during dev
@@ -615,10 +640,19 @@ app.options('/api/login', cors(corsOptions)); // Handle preflight
 app.post('/api/login', loginLimiter, async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    
+    // Check if MongoDB is connected
+    if (mongoose.connection.readyState !== 1) {
+      console.error('❌ Login attempt with disconnected database. State:', mongoose.connection.readyState);
+      console.error('   MONGO_URI:', process.env.MONGO_URI ? '***set***' : 'NOT SET');
+      console.error('   Error details: Database is not connected. Make sure MongoDB is running and MONGO_URI is configured.');
+      return res.status(503).json({ error: 'Database connection unavailable. Please try again later.' });
+    }
+    
     // Dev logging: record the login identifier (not the password) and timestamp
     if (!isProduction) {
       try {
-        console.log('Login attempt:', { identifier: email || username, ts: new Date().toISOString() });
+        console.log('✓ Login attempt:', { identifier: email || username, ts: new Date().toISOString() });
       } catch (e) { /* ignore logging errors */ }
     }
     let user;
@@ -706,8 +740,17 @@ app.post('/api/login', loginLimiter, async (req, res) => {
       res.json({ success: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar });
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Error processing login' });
+    console.error('❌ Login error:', error);
+    console.error('   Error message:', error.message);
+    console.error('   Stack:', error.stack);
+    console.error('   MongoDB state:', mongoose.connection.readyState);
+    
+    // Provide specific error messages
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ error: 'Database connection failed. Please ensure MongoDB is running.' });
+    }
+    
+    res.status(500).json({ error: 'Error processing login. Please try again.' });
   }
 });
 

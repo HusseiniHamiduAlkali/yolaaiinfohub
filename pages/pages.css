@@ -352,17 +352,97 @@ main {
 
 /* --- 7. RESPONSIVE DESIGN --- */
 @media (max-width: 700px) {
+  body {
+    font-size: 16px; /* Prevent zoom on input focus on iOS */
+  }
   .auth-container {
-    /* padding-top: 20px; */
+    padding-top: 80px;
+    padding-bottom: 20px;
+    min-height: auto;
   }
   .auth-box {
-    padding: 1.2rem 0.5rem;
-    max-width: 98vw;
-    margin-top: 50px;
+    padding: 1.5rem 1rem;
+    max-width: 95vw;
+    margin: 10px auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .auth-box h2 {
+    font-size: 22px;
+    margin-bottom: 1.2rem;
+  }
+  .auth-form, .auth-page-form {
+    gap: 1rem;
+  }
+  .form-group {
+    margin-bottom: 0.5rem;
+  }
+  .form-group label {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .auth-page-form input {
+    padding: 0.75rem 0.75rem;
+    font-size: 16px; /* Prevent zoom on input focus */
+    min-height: 44px; /* Touch-friendly height */
+  }
+  .password-field {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .password-toggle {
+    right: 8px;
+    font-size: 1rem;
+  }
+  .auth-submit, .auth-page-form button {
+    padding: 0.9rem 0;
+    font-size: 1rem;
+    min-height: 44px;
+    margin-top: 0.5rem;
+  }
+  .auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+  .auth-links a {
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    text-align: center;
+  }
+  .skip-auth {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+  .skip-auth-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem;
+    font-size: 0.9rem;
   }
   .minimal-nav-content {
     max-width: 99vw;
     padding: 0 0.5rem;
+  }
+  .nav-logo {
+    font-size: 20px;
+    flex: 1;
+  }
+  .nav-logo img {
+    height: 50px;
+    width: 45px;
+    margin-right: 0.7rem;
+  }
+  .return-home {
+    font-size: 0.85rem;
+    white-space: nowrap;
   }
   .profile-header {
     flex-direction: column;
@@ -371,6 +451,11 @@ main {
   .profile-details, .profile-form.active {
     grid-template-columns: 1fr;
   }
+  .error-modal-content {
+    width: 90vw;
+    max-width: 380px;
+    padding: 1.5rem;
+  }
 }
 
 @media (min-width: 700px) and (max-width: 900px) {
@@ -378,7 +463,6 @@ main {
     display: block;
     padding-top: 130px !important;
   }
-  
 }
 
 

@@ -23,13 +23,19 @@ const API_BASE = window.API_BASE || (function() {
 // Function to toggle password visibility
 window.togglePasswordVisibility = function(inputId) {
   const input = document.getElementById(inputId);
-  const icon = input.parentElement.querySelector('.password-toggle i');
+  const button = input.parentElement.querySelector('.password-toggle');
   if (input.type === 'password') {
     input.type = 'text';
-    icon.className = 'far fa-eye-slash';
+    // Update emoji icon
+    if (button && button.querySelector('.icon-eye')) {
+      button.querySelector('.icon-eye').textContent = '🙈';
+    }
   } else {
     input.type = 'password';
-    icon.className = 'far fa-eye';
+    // Update emoji icon
+    if (button && button.querySelector('.icon-eye')) {
+      button.querySelector('.icon-eye').textContent = '👁️';
+    }
   }
 };
 
