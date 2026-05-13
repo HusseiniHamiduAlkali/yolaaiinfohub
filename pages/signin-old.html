@@ -4,15 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="sign_in">Sign In</title>
-  <!-- <link rel="stylesheet" href="../styles/global.css"> -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/auth.css">
   <link rel="stylesheet" href="pages.css">
   <link rel="stylesheet" href="../styles/dark-mode.css">
   <script src="../components/theme-switcher.js"></script>
   <style>
     /* CSS-based icons to replace Font Awesome */
-    /*
     .icon-home::before {
       content: "🏠";
       margin-right: 0.5rem;
@@ -29,11 +27,9 @@
       content: "⚠️";
       margin-right: 0.5rem;
     }
-      */
   </style>
 </head>
 <body>
-   
   <nav class="minimal-nav">
     <div class="minimal-nav-content">
       <div href="../index.html" class="nav-logo">
@@ -42,119 +38,43 @@
       </div>
       <a href="../index.html" class="return-home">
         <span class="icon-home" style="font-size: x-large;"></span>
-        
+        <!-- <span data-i18n="return_home">Return Home</span> -->
       </a>
     </div>
   </nav>
-  
 
   <main class="auth-container">
-    <div class="main-container">
-
-        <aside class="hero-section">
-          
-          <nav class="aside-minimal-nav">
-            <div class="minimal-nav-content">
-              <div href="../index.html" class="nav-logo">
-                <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
-                <span data-i18n="app_title">Yola AI Info Hub</span>
-              </div>
-              <a href="../index.html" class="return-home">
-                <span class="icon-home" style="font-size: x-large;"></span>
-                
-              </a>
-            </div>
-          </nav>
-          <h2>Welcome back!</h2>
-          <p>Sign in for a seamless user experience</p>
-
-          <div class="hero-section-palace">
-            <img src="../Data/Images/gemini-jippujam.png" alt="Yola Palace">
+    <div class="auth-box">
+      <h2 data-i18n="sign_in">Sign In</h2>
+      <form id="signin-form" class="auth-form">
+        <div class="form-group">
+          <label for="username" data-i18n="username_or_email">Username or Email</label>
+          <input type="text" id="username" name="username" data-i18n-placeholder="username_email_placeholder" placeholder="input username or email" required>
+        </div>
+        <div class="form-group">
+          <label for="password" data-i18n="password_label">Password</label>
+          <div class="password-field">
+            <input type="password" id="password" name="password" data-i18n-placeholder="password_placeholder" placeholder="input password" required>
+            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password')">
+              <span class="icon-eye"></span>
+            </button>
           </div>
-        
-          <div class="integrity-card">
-              <div class="card-header">
-                  <div class="user-icon">
-                      <i class="fas fa-user"></i>
-                  </div>
-                  <div class="status-info">
-                      <h3>System Integrity</h3>
-                      <p>Verified Professional Node</p>
-                  </div>
-              </div>
-              <div class="progress-bar-container">
-                  <div class="progress-bar"></div>
-              </div>
-              <span class="protocol-text">Security Protocols Active</span>
-          </div>
-        </aside>
-
-        <main class="form-section">
-
-            <div>
-              <h2 class="welcome-back">Welcome back!</h2>
-            </div>
-
-            <div class="form-wrapper">
-                    
-                    <header>
-                        <h2 data-i18n="sign_in">Sign In</h2>
-                        <p>Fill in your details to continue to Yola AI Info Hub.</p>
-                    </header>
-
-                    <form id="signin-form" class="auth-form">
-                        
-                        <div class="section-header">
-                            <i class="fas fa-briefcase"></i>ENTER CREDENTIALS
-                        </div>
-
-                        <div class="form-group">
-                            <label for="username" data-i18n="username_or_email">Username or Email</label>
-                            <div class="with-icon">
-                                <i class="far fa-envelope"></i>
-                                <input type="text" id="username" name="username" data-i18n-placeholder="username_email_placeholder" placeholder="input username or email" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password" data-i18n="password_label">Password</label>
-                            <div class="password-field">
-                                <div class="with-icon">
-                                    <i class="fas fa-lock"></i>
-                                    <input type="password" id="password" name="password" data-i18n-placeholder="password_placeholder" placeholder="input password" required>
-                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password')">
-                                        <span class="icon-eye"></span>
-                                    </button>
-                                </div>    
-                            </div>
-                        </div>
-
-                        <button type="submit" class="auth-submit" data-i18n="sign_in">
-                            Sign In <i class="fas fa-arrow-right"></i>
-                        </button>
-
-                        <div class="auth-links">
-                            <span><p class="signin-text" data-i18n="forgot_password">Forgot Password ? </p><a href="/pages/forgot-password.html" data-i18n="reset_here">reset here</a></span>
-                            <span><p class="signin-text" data-i18n="dont_have_account" >Don't have an account ?</p><a href="/pages/signup.html" data-i18n="signup_here">sign up</a></span>
-                            <span><p class="" data-i18n="prefer_not_signin">Prefer not to sign in?</p> <a href="/" class="skip-auth-link" data-i18n="return_home">return to Homepage<span class="icon-arrow-left"><a></span>
-                        </div>
-                    </form>
-
-                    <footer class="form-footer">
-                        <span>© 2026 AlkaliCodes. All rights reserved.</span>
-                        <div class="footer-links">
-                            
-                            <a href="#">Documentation</a>
-                            <a href="#">Support</a>
-                            <a href="#">Legal</a>
-                            <i class="fas fa-globe"></i>
-                            <i class="fas fa-home"></i>
-                        </div>
-                    </footer>
-
-            </div>
-        </main>    
-</main>
+        </div>
+        <button type="submit" class="auth-submit" data-i18n="sign_in">Sign In</button>
+        <div class="auth-links">
+          <a href="/pages/forgot-password.html" data-i18n="forgot_password">Forgot Password?</a>
+          <a href="/pages/signup.html"><span data-i18n="dont_have_account">Don't have an account?</span> <span data-i18n="sign_up">Sign Up</span></a>
+        </div>
+      </form>
+      <div class="skip-auth">
+        <p data-i18n="prefer_not_signin">Prefer not to sign in?</p>
+        <a href="/" class="skip-auth-link">
+          <span class="icon-arrow-left"></span>
+          <span data-i18n="return_home">Return to Homepage</span>
+        </a>
+      </div>
+    </div>
+  </main>
 
   <script src="/components/i18n.js"></script>
   <script src="/components/auth.js"></script>
@@ -317,7 +237,7 @@
         
         // Check if response is OK
         if (!response.ok) {
-          throw new Error(`Check your internet and try again!`);
+          throw new Error(`Server error: ${response.status} ${response.statusText}`);
         }
         
         // Check if response has content and is JSON
@@ -403,7 +323,7 @@
         if (error.message.includes('Server returned non-JSON response')) {
           errorMessage += 'This may be due to network restrictions on mobile. Please try again or use a different network.';
         } else if (error.message.includes('HTTP 0') || error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-          errorMessage += 'Please check your internet connection and try again.';
+          errorMessage += 'Please check your internet connection and try again. If the problem persists, ensure the server is running at ' + window.API_BASE;
         } else if (error.message.includes('Server error:')) {
           errorMessage += error.message;
         } else {

@@ -13,6 +13,60 @@ function getSectionFromUrl() {
   return valid.includes(path) ? path : 'home';
 }
 
+// Update only the navbar-auth section after backend check completes
+function updateNavbarAuthSection() {
+  const navbarAuth = document.getElementById('navbar-auth');
+  if (!navbarAuth) return;
+
+  let authButtonsHTML;
+  if (window.currentUser && window.currentUser.username) {
+    console.log('%c✅ updateNavbarAuthSection: Updating for logged-in user', 'color: #10b981;', window.currentUser.username);
+    authButtonsHTML = `
+      <a href="/pages/profile.html?u=${encodeURIComponent(window.currentUser.username)}" class="navbar-profile-link">
+        <span class="navbar-avatar">
+          ${window.currentUser.avatar ? `<img src="${window.currentUser.avatar}" alt="avatar"/>` : ''}
+        </span>
+        <span class="navbar-names">
+          <span class="navbar-fullname">${window.currentUser.name || window.currentUser.username}</span>
+          <span class="navbar-username-text">@${window.currentUser.username}</span>
+        </span>
+      </a>
+    `;
+    navbarAuth.style.display = 'flex';
+    navbarAuth.style.alignItems = 'center';
+    navbarAuth.style.gap = '0.7rem';
+  } else {
+    console.log('%c❌ updateNavbarAuthSection: Updating for logged-out user', 'color: #ef4444;');
+    authButtonsHTML = `
+      <span data-i18n="login_suggestion" class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
+      <button id="signin-btn" class="auth-btn" type="button" data-i18n="sign_in">Sign in</button>
+      <button id="signup-btn" class="auth-btn" type="button" data-i18n="sign_up">Sign up</button>
+    `;
+    navbarAuth.style.display = '';
+    navbarAuth.style.alignItems = '';
+    navbarAuth.style.gap = '';
+  }
+
+  navbarAuth.innerHTML = authButtonsHTML;
+
+  // Wire up auth button events if they exist
+  const signinBtn = navbarAuth.querySelector('#signin-btn');
+  const signupBtn = navbarAuth.querySelector('#signup-btn');
+  if (signinBtn) signinBtn.onclick = () => window.location.href = '/pages/signin.html';
+  if (signupBtn) signupBtn.onclick = () => window.location.href = '/pages/signup.html';
+
+  // Apply translations
+  if (window.applyTranslations) {
+    window.applyTranslations(navbarAuth);
+  }
+
+  // Update navbar logged-in class
+  const navbarEl = document.querySelector('nav.navbar');
+  if (navbarEl) {
+    navbarEl.classList.toggle('logged-in', !!(window.currentUser && window.currentUser.username));
+  }
+}
+
 async function fetchWithTimeout(resource, options = {}, timeout = 3000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -53,11 +107,8 @@ window.highlightActiveNav = function(section) {
   document.querySelectorAll('.navbar-links button, .mobile-links button').forEach(highlightButton);
 };
 
-function renderNavbar() {
-  // Note: User state is already set by window.Navbar.render() before this is called
-  // No need to make another backend call - use the pre-fetched window.currentUser
-
-  console.log('%c🎨 renderNavbar() called, window.currentUser:', 'color: #9333ea; font-weight: bold;', window.currentUser);
+function renderNavbar(isLoading = false) {
+  console.log('%c🎨 renderNavbar() called, isLoading:', 'color: #9333ea; font-weight: bold;', isLoading, 'window.currentUser:', window.currentUser);
   
   // Remove existing navbar to prevent duplicates
   const existingNavbar = document.querySelector('nav.navbar');
@@ -68,16 +119,21 @@ function renderNavbar() {
   const nav = document.createElement('nav');
   nav.className = 'navbar';
 
-  // Create the auth buttons container that will be reused
-  let authButtonsHTML = `
-    <div class="navbar-auth" id="navbar-auth">
-      <span data-i18n="login_suggestion" class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
-      <button id="signin-btn" class="auth-btn" type="button" data-i18n="sign_in">Sign in</button>
-      <button id="signup-btn" class="auth-btn" type="button" data-i18n="sign_up">Sign up</button>
-    </div>
-  `;
-  // If user is signed in, show nothing in auth section (navbar-auth)
-  if (window.currentUser && window.currentUser.username) {
+  // Create the auth buttons container based on state
+  let authButtonsHTML;
+  
+  if (isLoading) {
+    // Show loading state in navbar-user-section
+    console.log('%c⏳ renderNavbar: Showing loading state', 'color: #f59e0b;');
+    authButtonsHTML = `
+      <div class="navbar-auth" id="navbar-auth">
+        <div class="navbar-loading-placeholder">
+          <span class="loading-spinner"></span>
+          <span data-i18n="loading">Loading...</span>
+        </div>
+      </div>
+    `;
+  } else if (window.currentUser && window.currentUser.username) {
     console.log('%c✅ renderNavbar: User IS logged in, rendering logged-in navbar', 'color: #10b981;', window.currentUser.username);
     authButtonsHTML = `
       <div class="navbar-auth" id="navbar-auth" style="display:flex;align-items:center;gap:0.7rem;">
@@ -94,6 +150,13 @@ function renderNavbar() {
     `;
   } else {
     console.log('%c❌ renderNavbar: User NOT logged in, rendering login buttons', 'color: #ef4444;');
+    authButtonsHTML = `
+      <div class="navbar-auth" id="navbar-auth">
+        <span data-i18n="login_suggestion" class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
+        <button id="signin-btn" class="auth-btn" type="button" data-i18n="sign_in">Sign in</button>
+        <button id="signup-btn" class="auth-btn" type="button" data-i18n="sign_up">Sign up</button>
+      </div>
+    `;
   }
 
   const logoHTML = `
@@ -511,130 +574,95 @@ window.Navbar = {
   render: async (force = false) => {
     console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;', { force });
     
-    // Check if navbar already exists in DOM and is complete (unless forced)
+    // Check if navbar already exists in DOM (unless forced)
     const existingNavbar = document.querySelector('nav.navbar');
-    if (existingNavbar && window.__navbarRenderComplete && !force) {
-      console.log('%c⏭️ Navbar.render(): Navbar already rendered and in DOM - skipping', 'color: #94a3b8;');
+    if (existingNavbar && !force) {
+      console.log('%c⏭️ Navbar.render(): Navbar already in DOM - updating auth section in background', 'color: #94a3b8;');
+      // Still fetch and update auth section in background
+      window.Navbar._fetchAndUpdateAuth();
       return;
     }
     
-    // IMPORTANT: Prevent concurrent calls ONLY if not forced - if already rendering and not forced, skip
-    if (window.__navbarRenderInProgress && !force) {
-      console.log('%c⏭️ Navbar.render(): Already rendering in progress - skipping', 'color: #94a3b8;');
-      return;
-    }
+    // Render navbar immediately with loading state (NO WAIT)
+    console.log('%c🚀 Navbar.render(): Rendering navbar immediately with loading state', 'color: #10b981; font-weight: bold;');
+    window.currentUser = null;
+    renderNavbar(true); // true = isLoading
     
-    // Mark as rendering to prevent concurrent calls
-    window.__navbarRenderInProgress = true;
-    
-    // Clear the complete flag so we can render fresh if needed
-    window.__navbarRenderComplete = false;
-    
-    // Clear the force rerender flag if it was set
-    window.__forceNavbarRerender = false;
-    
-    // Fetch current user state from server (SINGLE CALL)
-    // BUT: Only fetch if we don't have a cached recent result, or if forced
-    let skipFetch = false;
-    if (force && window.__lastNavbarCheckTime && (Date.now() - window.__lastNavbarCheckTime) < 500) {
-      // If forced re-render within 500ms of last check, reuse cached result
-      console.log('%c♻️ Navbar.render(): Using cached user state from recent check', 'color: #8b5cf6;');
-      skipFetch = true;
-    }
-    
-    if (!skipFetch) {
-      console.log('%c⏳ Waiting for backend response to verify user...', 'color: #f59e0b; font-weight: bold;');
-      try {
-        // Use window.API_BASE if available, otherwise build from current hostname
-        const apiBase = window.API_BASE || (function() {
-          try {
-            const h = window.location.hostname;
-            if (!h || h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.startsWith('192.') || h.startsWith('10.')) {
-              const endpoint = `http://${h || 'localhost'}:4000`;
-              console.log('%c📍 API endpoint:', 'color: #8b5cf6;', endpoint);
-              return endpoint;
-            }
-            return 'https://yolaaiinfohub-backend.onrender.com';
-          } catch (e) { 
-            console.error('%c⚠️ Error determining API base:', 'color: #f59e0b;', e);
-            return 'http://localhost:4000'; 
-          }
-        })();
-        
-        const response = await fetch(apiBase + '/api/me', {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.loggedIn) {
-            window.currentUser = {
-              username: data.username,
-              name: data.name,
-              email: data.email,
-              phone: data.phone,
-              state: data.state,
-              lga: data.lga,
-              address: data.address,
-              profilePicture: data.profilePicture,
-              avatar: data.avatar
-            };
-            window.__lastUser = window.currentUser;
-            console.log('%c✅ User verified as logged in:', 'color: #10b981; font-weight: bold;', data.username);
-          } else {
-            // User not logged in according to server
-            window.currentUser = null;
-            window.__lastUser = null;
-            console.log('%c❌ No logged-in user detected.', 'color: #ef4444; font-weight: bold;');
-          }
-        } else {
-          // Error fetching user state from server
-          window.currentUser = null;
-          window.__lastUser = null;
-          console.log('%c⚠️ Navbar.render(): Failed to fetch user state from server', 'color: #f59e0b;');
-        }
-        
-        // Mark when we last checked the API
-        window.__lastNavbarCheckTime = Date.now();
-      } catch (error) {
-        console.error('%c❌ Navbar.render(): Error checking server for user state:', 'color: #ef4444;', error);
-        window.currentUser = null;
-        window.__lastUser = null;
-        console.log('%c❌ No logged-in user detected (backend error).', 'color: #ef4444; font-weight: bold;');
-      }
-    }
-    
-    // Now render navbar with the fetched user state
-    renderNavbar();
-    
-    // Verify navbar was actually added to DOM before marking complete
+    // Verify navbar was actually added to DOM
     if (document.querySelector('nav.navbar')) {
-      window.__navbarRenderComplete = true;
-      console.log('%c✨ Navbar render complete and in DOM', 'color: #06b6d4; font-weight: bold;');
+      console.log('%c✨ Navbar rendered to DOM with loading state', 'color: #06b6d4; font-weight: bold;');
     } else {
       console.warn('%c⚠️ Navbar not found in DOM after rendering!', 'color: #f59e0b;');
     }
     
-    window.__navbarRenderInProgress = false;
+    // Fetch auth in background and update only the auth section
+    window.Navbar._fetchAndUpdateAuth();
+  },
+  
+  // Background auth fetch that only updates navbar-auth section
+  _fetchAndUpdateAuth: async () => {
+    console.log('%c🔄 Navbar._fetchAndUpdateAuth(): Starting background auth check', 'color: #8b5cf6;');
     
-    // If auth UI was updated before this script loaded, ensure navbar picks it up
-    // Only reapply if currentUser is null but we have a remembered user, or they differ
-    if (window.updateAuthUI && window.__lastUser) {
-      const current = window.currentUser || null;
-      if (!current || (current.username !== window.__lastUser.username)) {
-        console.log('%c♻️ window.Navbar.render(): Reapplying __lastUser to updateAuthUI', 'color: #8b5cf6;', window.__lastUser);
-        try { window.updateAuthUI(window.__lastUser); } catch (e) { console.error('Error reapplying lastUser:', e); }
-        // also ensure navbar login class is in sync
-        const navbarEl = document.querySelector('nav.navbar');
-        if (navbarEl) navbarEl.classList.add('logged-in');
+    try {
+      // Use window.API_BASE if available, otherwise build from current hostname
+      const apiBase = window.API_BASE || (function() {
+        try {
+          const h = window.location.hostname;
+          if (!h || h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.startsWith('192.') || h.startsWith('10.')) {
+            const endpoint = `http://${h || 'localhost'}:4000`;
+            console.log('%c📍 API endpoint:', 'color: #8b5cf6;', endpoint);
+            return endpoint;
+          }
+          return 'https://yolaaiinfohub-backend.onrender.com';
+        } catch (e) { 
+          console.error('%c⚠️ Error determining API base:', 'color: #f59e0b;', e);
+          return 'http://localhost:4000'; 
+        }
+      })();
+      
+      const response = await fetch(apiBase + '/api/me', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.loggedIn) {
+          window.currentUser = {
+            username: data.username,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            state: data.state,
+            lga: data.lga,
+            address: data.address,
+            profilePicture: data.profilePicture,
+            avatar: data.avatar
+          };
+          window.__lastUser = window.currentUser;
+          console.log('%c✅ Navbar._fetchAndUpdateAuth(): User logged in as', 'color: #10b981;', window.currentUser.username);
+        } else {
+          window.currentUser = null;
+          window.__lastUser = null;
+          console.log('%c❌ Navbar._fetchAndUpdateAuth(): User not logged in', 'color: #ef4444;');
+        }
       } else {
-        console.log('%c⏭️ window.Navbar.render(): currentUser already matches __lastUser, skipping reapply', 'color: #94a3b8;');
+        window.currentUser = null;
+        window.__lastUser = null;
+        console.log('%c⚠️ Navbar._fetchAndUpdateAuth(): Failed to fetch user state', 'color: #f59e0b;');
       }
+    } catch (error) {
+      console.error('%c❌ Navbar._fetchAndUpdateAuth(): Error checking server:', 'color: #ef4444;', error);
+      window.currentUser = null;
+      window.__lastUser = null;
     }
+    
+    // Update only the navbar-auth section with fetched data
+    updateNavbarAuthSection();
+    console.log('%c✨ Navbar._fetchAndUpdateAuth(): Auth section updated', 'color: #06b6d4;');
   }
 };
 
@@ -642,14 +670,9 @@ window.Navbar = {
 if (typeof window !== 'undefined') {
   // Wait for DOM to be ready before rendering
   const initNavbar = () => {
-    // Only render if not already done and not in progress
-    if (!window.__navbarRenderComplete && !window.__navbarRenderInProgress) {
-      console.log('%c📍 Auto-rendering navbar on script load', 'color: #8b5cf6; font-weight: bold;');
-      if (window.Navbar && typeof window.Navbar.render === 'function') {
-        window.Navbar.render();
-      }
-    } else {
-      console.log('%c⏭️ Auto-render skipped: render already in progress or complete', 'color: #94a3b8;');
+    console.log('%c📍 Auto-rendering navbar on script load', 'color: #8b5cf6; font-weight: bold;');
+    if (window.Navbar && typeof window.Navbar.render === 'function') {
+      window.Navbar.render();
     }
   };
   
@@ -657,6 +680,6 @@ if (typeof window !== 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initNavbar);
   } else {
-    setTimeout(initNavbar, 0);
+    initNavbar();
   }
 }

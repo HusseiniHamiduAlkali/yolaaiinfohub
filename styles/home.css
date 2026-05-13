@@ -33,7 +33,7 @@
   color: #fff;
   text-decoration: none;
   margin-top: 1rem;
-  padding: 0.8rem 1.5rem;
+  padding: 0.6rem 1.5rem;
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -41,8 +41,11 @@
   width: 100%;
   align-self: center;
   margin-bottom: 1rem;
-  margin-left: 6rem;
-  margin-right: 6rem;
+  margin-left: 3rem;
+  margin-right: 2rem;
+  margin-top: 3rem;
+  font-size: initial;
+
 }
 
 .section4-home-container {
@@ -60,7 +63,8 @@
 .section4-home-img-container h4 {
    text-align: center;
    height: 100%;
-   font-size: larger;
+   font-size: 22px;
+   margin-top: 3%;
 }
 .section4-home-img-placeholder img {
     width: 100%; 
@@ -75,7 +79,12 @@
  .history-of-yola {
     color: #222;
  }
-
+@media screen and (max-width: 1000px) {
+  .section4-home-img-container h4 {font-size: 1.9vw !important;}
+}
+@media screen and (min-width: 1000px) {
+  .section4-home-a {width: 78%;}
+}
 @media screen and (max-width: 700px) {
   .section2-home-image-placeholder {
     display: grid;
@@ -83,7 +92,7 @@
     
   }
   .section4-home-img-container h4 {
-    font-size: inherit;
+    font-size: inherit !important;
   }
   .section2-home-img1, .section2-home-img2 {
     height: 100% ; 
@@ -91,7 +100,7 @@
   }
   .section4-home-a {
     margin-bottom: 0;
-    margin-right: 0;
-    margin-left: 0;
+    margin-right: 10px;
+    margin-left: 10px;
   }
 }

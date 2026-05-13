@@ -1,16 +1,19 @@
 
 <section class="info-section">
-    <h2 data-i18n="mediinfo_header">MediInfo - Medical Help</h2>
-    <p data-i18n="mediinfo_desc">Ask about hospitals, clinics, health services, or medical advice in Yola.</p>
+    <!--<h2 data-i18n="mediinfo_header">MediInfo - Medical Help</h2>
+    <p data-i18n="mediinfo_desc">Ask about hospitals, clinics, health services, or medical advice in Yola.</p>-->
     <div class="chat-container">
     <div class="chat-header">
         <span data-i18n="mediinfo_chat_header">MediInfo AI Chat</span>
-        <div class="model-switch">
-        <label class="switch">
-            <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('medi', this.checked)">
-            <span class="slider round"></span>
-        </label>
-        <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="model-switch">
+            <label class="switch">
+                <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('medi', this.checked)">
+                <span class="slider round"></span>
+            </label>
+            <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+            </div>
+            <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem;">✕</button>
         </div>
     </div>
     <div class="chat-messages" id="medi-chat-messages"></div>
@@ -22,18 +25,18 @@
         </div>
     </form>
     <div class="input-options">
-        <button type="button" onclick="window.captureImage('medi')" title="Capture Image"><span>📷</span></button>
-        <button type="button" onclick="window.recordAudio('medi')" title="Record Audio"><span>🎤</span></button>
+        <button type="button" onclick="window.captureImage('medi')" title="Capture Image"><i class="fas fa-camera"></i></button>
+        <button type="button" onclick="window.recordAudio('medi')" title="Record Audio"><i class="fas fa-microphone"></i></button>
         <label class="file-upload-btn" title="Upload File">
-        <span>📁</span>
+        <i class="fas fa-upload"></i>
         <input type="file" style="display:none" onchange="window.uploadFile(event, 'medi')" />
         </label>
 
           <button type="button" id="medi-voice-call-btn" onclick="window.startVoiceCall('medi')" title="Start Live Voice Call with AI">
-            ☎️ 
+            <i class="fas fa-phone"></i> 
           </button>
           <button type="button" id="medi-mute-btn" onclick="window.toggleVoiceCallMute('medi')" title="Mute/Unmute Microphone" style="display: none;">
-            🔊 Mute
+            <i class="fas fa-microphone-slash"></i> Mute
           </button>
           <div id="medi-voice-indicator" class="voice-indicator" style="display: none;">
             Listening...
@@ -53,12 +56,42 @@
     </div>
     </div>
 
+        <!-- Title -->
+    <section class="mb-8">
+    <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 15px;">Healthcare Informations about Yola</h2>
+    <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Explore more about hospitals, clinics, health services, or medical advice in Yola.</p>
+    </section>
+
+    <!-- Search -->
+    <section class="search-bar">
+    <span class="fas fa-search material-symbols-outlined"></span>
+    <input placeholder="Search for institutions, courses, or events..." type="text"/>
+    </section>
+    <!-- Filters -->
+    <section class="filter-chips mb-8">
+    <div class="chip active edu" data-filter="All">All</div>
+    <div class="chip edu" data-filter="PHCCs">PHCCs</div>
+    <div class="chip edu" data-filter="Specialists">Specialists</div>
+    <div class="chip edu" data-filter="Teaching hospital">Teaching hospital</div>
+    <div class="chip edu" data-filter="Pharmacies">Pharmacies</div>
+    <div class="chip edu" data-filter="Other activities">Other activities</div>
+    </section>
+
     <div class="section2">
-    <h2 data-i18n="medi_section2_h2" >Medical Institutions in Yola</h2>
+    <!--<h2 data-i18n="medi_section2_h2" >Medical Institutions in Yola</h2>-->
     
-    <div class="section3">
+    <div class="section3" data-category="PHCCs">
         <h3 class="section3-title" data-i18n="medi_section3_h3_1">Primary Healthcare Centers</h3>
         <div class="section4-container">
+            
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/dispensary.jpg" alt="Modibbo Adama PHC" loading="lazy" />
+            </div>
+            <h3 data-i18n="Medi_section4_h3_3">Yola Central Dispensary.</h3>
+            <p data-i18n="Medi_section4_p_3">Well-equipped center providing comprehensive primary healthcare services.</p>
+            <a data-i18n="learn_more" href="details/Medi/yola-dispensary.html">Learn more →</a>
+        </div>
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/valli.jpg" alt="Jimeta PHC" loading="lazy" />
@@ -75,18 +108,11 @@
             <p data-i18n="Medi_section4_p_2">Modern facility offering primary healthcare services and maternal care.</p>
             <a data-i18n="learn_more" href="details/Medi/malamre-clinic.html">Learn more →</a>
         </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/dispensary.jpg" alt="Modibbo Adama PHC" loading="lazy" />
-            </div>
-            <h3 data-i18n="Medi_section4_h3_3">Yola Central Dispensary.</h3>
-            <p data-i18n="Medi_section4_p_3">Well-equipped center providing comprehensive primary healthcare services.</p>
-            <a data-i18n="learn_more" href="details/Medi/yola-dispensary.html">Learn more →</a>
-        </div>
+
         </div>
     </div>
 
-    <div class="section3">
+    <div class="section3" data-category="Specialists">
         <h3 class="section3-title"  data-i18n="medi_section3_h3_2">Secondary Hospitals</h3>
         <div class="section4-container">
 
@@ -147,38 +173,29 @@
         </div>
     </div>
 
-    <div class="section3">
+    <div class="section3" data-category="Teaching hospital">
         <h3 class="section3-title" data-i18n="medi_section3_h3_3">The Tertiary Hospital in Yola.</h3>
         <div class="section4-container" style="display: flex;">
-        <div class="section4-mau-container">
-        <div class="section4" style="width: 1160px; height: 450px;">
-            <div class="mauth-placeholder" style="display:flex; flex-direction: row; overflow:hidden; gap:1rem; width:100%;">
-            <img class="mauthlogo" src="Data/Images/mauthlogo.png" alt="Teaching Hospital"  loading="lazy" />
-            <img class="mauthgate" src="Data/Images/mauthgate.jpg" alt="Teaching Hospital"  loading="lazy" />
+            <div class="section4-mau-container">
+                <div class="section4" style="width: 100%; height: 450px;">
+                    <div class="mauth-placeholder" style="display:flex; flex-direction: row; overflow:hidden; gap:1rem; width:100%;">
+                        <img class="mauthlogo" src="Data/Images/mauthlogo.png" alt="Teaching Hospital"  loading="lazy" />
+                        <img class="mauthgate" src="Data/Images/mauthgate.jpg" alt="Teaching Hospital"  loading="lazy" />
+                    </div>
+                <h3 data-i18n="Medi_section4_h3_10">Modibbo Adama Teaching Hospital (MAUTH), Yola.</h3>
+                <p data-i18n="Medi_section4_p_10">University teaching hospital providing advanced medical care and training.</p>
+                <a data-i18n="learn_more" href="details/Medi/mauth-yola.html">Learn more →</a>
+                </div>
             </div>
-        
-            <h3 data-i18n="Medi_section4_h3_10">Modibbo Adama Teaching Hospital (MAUTH), Yola.</h3>
-            <p data-i18n="Medi_section4_p_10">University teaching hospital providing advanced medical care and training.</p>
-            <a data-i18n="learn_more" href="details/Medi/mauth-yola.html">Learn more →</a>
-        
         </div>
-        </div>
-        </div>
+    </div>    
 
-    <div class="section3">
+    <div class="section3" data-category="Pharmacies">
         <h3 class="section3-title"  data-i18n="medi_section3_h3_4">Pharmacies</h3>
 
         <div class="section4-container">
-        
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/meddypharmacy.jpg" alt="Meddy Pharmacy" loading="lazy" />
-            </div>
-            <h3 data-i18n="Medi_section4_h3_11">Meddy Pharmacy</h3>
-            <p data-i18n="Medi_section4_p_11">24/7 pharmacy with extensive stock of medicines and medical supplies.</p>
-            <a data-i18n="learn_more" href="details/Medi/meddy-pharmacy.html">Learn more →</a>
-        </div>
 
+        
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/shekinahpharmacy.jpg" alt="Shekinah Pharmacy" loading="lazy" />
@@ -186,6 +203,15 @@
             <h3 data-i18n="Medi_section4_h3_12">Shekinah Pharmacy</h3>
             <p  data-i18n="Medi_section4_p_12">Modern pharmacy chain offering quality medications and healthcare products.</p>
             <a data-i18n="learn_more" href="details/Medi/shekinah-pharmacy.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/meddypharmacy.jpg" alt="Meddy Pharmacy" loading="lazy" />
+            </div>
+            <h3 data-i18n="Medi_section4_h3_11">Meddy Pharmacy</h3>
+            <p data-i18n="Medi_section4_p_11">24/7 pharmacy with extensive stock of medicines and medical supplies.</p>
+            <a data-i18n="learn_more" href="details/Medi/meddy-pharmacy.html">Learn more →</a>
         </div>
 
         <div class="section4">
@@ -206,14 +232,6 @@
             <a data-i18n="learn_more" href="details/Medi/alfijr-pharmacy.html">Learn more →</a>
         </div>
 
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/jds.png" alt="JDS Pharmacy, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Medi_section4_h3_15">JDS Pharmacy, Yola.</h3>
-            <p data-i18n="Medi_section4_p_15">Community pharmacy offering quality medications, health supplies, and professional pharmaceutical care services in Yola.</p>
-            <a data-i18n="learn_more" href="details/Medi/jds-pharmacy.html">Learn more →</a>
-        </div>
         
         <div class="section4">
             <div class="img-placeholder">
@@ -223,6 +241,26 @@
             <p data-i18n="Medi_section4_p_16">Local pharmacy store providing essential medications, healthcare products, and personalized customer service to the Yola community.</p>
             <a data-i18n="learn_more" href="details/Medi/mufami-pharmacy.html">Learn more →</a>
         </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/jds.png" alt="JDS Pharmacy, Yola" loading="lazy" />
+            </div>
+            <h3 data-i18n="Medi_section4_h3_15">JDS Pharmacy, Yola.</h3>
+            <p data-i18n="Medi_section4_p_15">Community pharmacy offering quality medications, health supplies, and professional pharmaceutical care services in Yola.</p>
+            <a data-i18n="learn_more" href="details/Medi/jds-pharmacy.html">Learn more →</a>
+        </div>
+
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/lekki.jpg" alt="Lekki Pharmacy and Pharmaceuticals, Yola" loading="lazy" />
+            </div>
+            <h3 data-i18n="Medi_section4_h3_19">Lekki Pharmacy and Pharmaceuticals, Yola.</h3>
+            <p data-i18n="Medi_section4_p_19">Premium pharmacy and pharmaceutical service provider offering a wide range of medications, health products, and professional healthcare consultations in Yola.</p>
+            <a data-i18n="learn_more" href="details/Medi/lekki-pharmacy.html">Learn more →</a>
+        </div>
+
 
         <div class="section4">
             <div class="img-placeholder">
@@ -241,22 +279,12 @@
             <p data-i18n="Medi_section4_p_18">Modern pharmacy facility providing comprehensive pharmaceutical services, health products, and professional healthcare advice in Yola.</p>
             <a data-i18n="learn_more" href="details/Medi/kerion-pharmacy.html">Learn more →</a>
         </div>
-
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/lekki.jpg" alt="Lekki Pharmacy and Pharmaceuticals, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Medi_section4_h3_19">Lekki Pharmacy and Pharmaceuticals, Yola.</h3>
-            <p data-i18n="Medi_section4_p_19">Premium pharmacy and pharmaceutical service provider offering a wide range of medications, health products, and professional healthcare consultations in Yola.</p>
-            <a data-i18n="learn_more" href="details/Medi/lekki-pharmacy.html">Learn more →</a>
-        </div>
-
-        </div>
+        
     </div>
     </div>
 
 
-    <div class="section3">
+    <div class="section3" data-category="Other activities">
     <h3 class="section3-title"  data-i18n="medi_section3_h3_5">Community Health Services</h3>
     
     <div class="section4-container">
@@ -268,7 +296,7 @@
         <h3 data-i18n="Medi_section4_h3_20">Polio Immunization at Community PHCCs.</h3>
         <p data-i18n="Medi_section4_p_20">Regular polio immunization programs conducted at Primary Healthcare Centers to protect children and maintain Yola's polio-free status.</p>
         <a data-i18n="learn_more" href="details/Medi/polio-immunization.html">Learn more →</a>
-        </div>
+    </div>
 
     <div class="section4">
         <div class="img-placeholder">
@@ -277,7 +305,7 @@
         <h3 data-i18n="Medi_section4_h3_21">Mosquito nets distribution to resident of Yola.</h3>
         <p data-i18n="Medi_section4_p_21">Community health initiative providing free insecticide-treated mosquito nets to Yola residents to prevent malaria and other mosquito-borne diseases.</p>
         <a data-i18n="learn_more" href="details/Medi/nets-distribution.html">Learn more →</a>
-        </div>
+    </div>
 
     <div class="section4">
         <div class="img-placeholder">
@@ -286,7 +314,7 @@
         <h3 data-i18n="Medi_section4_h3_22">Redcross society awareness campaign in Yola.</h3>
         <p data-i18n="Medi_section4_p_22">Regular health awareness campaigns conducted by the Red Cross Society to educate Yola residents about emergency preparedness, first aid, and public health.</p>
         <a data-i18n="learn_more" href="details/Medi/redcross-awareness.html">Learn more →</a>
-        </div>
+    </div>
 
     </div>
     </div>
@@ -295,6 +323,32 @@
     
 </section>
 
+      <footer class="site-footer">
+        <!-- Bottom Row -->
+        <div class="footer-bottom-container">
+          <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
+          <span style="display: flex; justify-content: space-evenly;">
+            <a href="#"><i class="fab fa-whatsapp fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-instagram fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-facebook fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-linkedin fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-twitter fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-x-twitter fa-2x" href="#"></i></a>
+          </span>
+        </div>
+
+        <div>
+          <div class="legal-links">
+              <a class="footer-link" href="#">Privacy Policy</a>
+              <a class="footer-link" href="#">Terms of Service</a>
+              <a class="footer-link" href="#">Report an issue or comment</a>
+              <a class="footer-link" href="#">About</a>
+          </div>
+          <div class="copyright" style="margin-top: 15px;">
+             <p>© 2026 AlkaliCodes. All rights reserved.</p> 
+          </div>
+        </div>
+      </footer>
 <script>
 function getLangFolder() {
   const langMap = {

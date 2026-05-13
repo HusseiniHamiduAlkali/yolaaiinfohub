@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduInfo - section</title>
+</head>
+<body>
+    
+<section class="info-section">
+    <h2 data-i18n="eduinfo_title">EduInfo - Education Help</h2>
+    <p data-i18n="eduinfo_description">Ask about schools, universities, courses, or educational services in Yola.</p>
+    <div id="eduinfo-chat-container" class="chat-container">
+    <div class="chat-header">
+        <span data-i18n="eduinfo_chat_header">EduInfo AI Chat</span>
+        <div class="model-switch">
+        
+        <label class="switch">
+            <span class="sr-only" style="display:none" id="edu-model-toggle-label">Toggle AI Model</span>
+            <input type="checkbox" id="edu-model-toggle" aria-labelledby="edu-model-toggle-label" title="Toggle AI Model"
+                    onchange="window.toggleGeminiModel('edu', this.checked)" 
+                    ${window.useGemini25 ? 'checked' : ''}>
+            <span class="slider round"></span>
+        </label>
+        <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+        </div>
+    </div>
+    <div id="eduinfo-chat-messages" class="chat-messages"></div>
+    
+    <form class="chat-input-area" style="flex-direction:column;"  onsubmit="event.preventDefault(); window.sendEduMessage();">
+        <div class="chat-input-area">
+        <div id="edu-chat-preview" class="chat-preview"></div>
+        <input type="text" id="edu-chat-input" title="Education Chat Input" data-i18n-placeholder="edu_chat_placeholder" placeholder="Ask about education..." required />
+        <div class="send-button-group">
+            <button type="submit" class="send-button" data-i18n="send">Send</button>
+        </div>
+        </div>
+        <div class="input-options">
+        <button type="button" onclick="window.captureImage('edu')" title="Capture Image"><i class="fas fa-camera"></i></button>
+        <button type="button" onclick="window.recordAudio('edu')" title="Record Audio"><i class="fas fa-microphone"></i></button>
+        <label class="file-upload-btn" title="Upload File">
+            <i class="fas fa-upload"></i>
+            <input type="file" title="Upload Educational File" style="display:none" onchange="window.uploadFile(event, 'edu')" />
+        </label>
+     
+        <button type="button" id="edu-voice-call-btn" onclick="window.startVoiceCall('edu')" title="Start Live Voice Call with AI">
+            <i class="fas fa-phone"></i> 
+          </button>
+          <button type="button" id="edu-mute-btn" onclick="window.toggleVoiceCallMute('edu')" title="Mute/Unmute Microphone" style="display: none;">
+            <i class="fas fa-microphone-slash"></i> Mute
+          </button>
+          <div id="edu-voice-indicator" class="voice-indicator" style="display: none;">
+            Listening...
+          </div>
+          <div id="edu-call-duration" class="call-duration" style="display: none;">00:00</div>
+        </div>
+    </form>
+    <div class="faq-list">
+    <h3 data-i18n="edu_faqs">EduInfo FAQs</h3>
+    <ul>
+        <li><a class="faq-link" data-i18n="edu_faq_1" onclick="window.sendFAQInCurrentLang('edu_faq_1', 'Edu')">What are the top universities in Yola</a></li>
+        <li><a class="faq-link" data-i18n="edu_faq_2" onclick="window.sendFAQInCurrentLang('edu_faq_2', 'Edu')">Adamawa state scholarship program</a></li>
+        <li><a class="faq-link" data-i18n="edu_faq_3" onclick="window.sendFAQInCurrentLang('edu_faq_3', 'Edu')">Are there vocational training centers</a></li>
+        <li><a class="faq-link" data-i18n="edu_faq_4" onclick="window.sendFAQInCurrentLang('edu_faq_4', 'Edu')">Highly rated primary schools in Yola</a></li>
+        <li><a class="faq-link" data-i18n="edu_faq_5" onclick="window.sendFAQInCurrentLang('edu_faq_5', 'Edu')">JAMB accredited CBT centers in Yola</a></li>
+        <li><a class="faq-link" data-i18n="edu_faq_6" onclick="window.sendFAQInCurrentLang('edu_faq_6', 'Edu')">Adult education programs in Yola</a></li>
+    </ul>
+    </div>
+    </div>
+
+    <div class="section2">
+    <h2 data-i18n="edu_section2_h2">Educational Instituitions within Yola and environs.</h2>
+    
+    <div class="section3">
+        <h3 class="section3-title" data-i18n="edu_section3_h3_1">Universities</h3>
+        <div class="section4-container">
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/adsulogo.jpg" alt="Adamawa State University" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_1">Adamawa State University (ADSU), Mubi</h3>
+            <p data-i18n="Edu_section4_p_1">A state-owned university offering various undergraduate and postgraduate programs. Located in Mubi, with modern facilities and diverse academic departments.</p>
+            <a data-i18n="learn_more" href="details/Edu/adsu.html" data-i18n="learn_more">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/aunlogo.jpg" alt="American University of Nigeria" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_2">American University of Nigeria (AUN), Main campus Yola</h3>
+            <p data-i18n="Edu_section4_p_2">Premier private university providing American-style education. Known for its state-of-the-art facilities and international standards.</p>
+            <a data-i18n="learn_more" href="details/Edu/aun.html" data-i18n="learn_more">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/maulogo2.jpg" alt="Modibbo Adama University" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_3">Modibbo Adama University (MAU), Yola.</h3>
+            <p data-i18n="Edu_section4_p_3">Federal university offering comprehensive programs in science, technology, and humanities. Features modern research facilities.</p>
+            <a data-i18n="learn_more" href="details/Edu/mau.html" data-i18n="learn_more">Learn more →</a>
+        </div>
+        </div>
+    </div>
+
+
+
+    <div class="section3">
+        <h3 class="section3-title" data-i18n="edu_section3_h3_2">Colleges</h3>
+        <div class="section4-container">
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/fcelogo.png" alt="Federal College of Education" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_4">Federal College of Education</h3>
+            <p data-i18n="Edu_section4_p_4">Leading institution for teacher training and educational development.</p>
+            <a data-i18n="learn_more" href="details/Edu/fce-yola.html" data-i18n="learn_more">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/spylogo.jpg" alt="State Polytechnic" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_5">State Polytechnic</h3>
+            <p data-i18n="Edu_section4_p_5">Technical institution offering diploma and certificate programs.</p>
+            <a data-i18n="learn_more" href="details/Edu/spy-yola.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/polylogo.jpg" alt="Federal Polytechnic" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_6">Federal Polytechnic</h3>
+            <p data-i18n="Edu_section4_p_6">Technical institution offering diploma and certificate programs.</p>
+            <a data-i18n="learn_more" href="details/Edu/fed-poly-yola.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/conmylogo.jpg" alt="School of Nursing" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_7">School of Nursing</h3>
+            <p data-i18n="Edu_section4_p_7">Specialized institution for nursing education and healthcare training.</p>
+            <a data-i18n="learn_more" href="details/Edu/nursing-school-yola.html">Learn more →</a>
+        </div>
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/clslogo.jpg" alt="College For Legal Studies, Yola" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_8">College For Legal Studies, Yola.</h3>
+            <p data-i18n="Edu_section4_p_8">Professional institution dedicated to legal education and training for aspiring legal practitioners in Yola.</p>
+            <a data-i18n="learn_more" href="details/Edu/cls-yola.html">Learn more →</a>
+        </div>
+
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/centrallogo.jpeg" alt="Central College OF Health Sciences And Technology, Yola" loading="lazy" />
+            </div>
+            <h3 data-i18n="Edu_section4_h3_9">Central College OF Health Sciences And Technology, Yola.</h3>
+            <p data-i18n="Edu_section4_p_9">Leading institution providing comprehensive education in health sciences, medical technology, and allied health professions in Yola.</p>
+            <a data-i18n="learn_more" href="details/Edu/central-college.html">Learn more →</a>
+        </div>
+    </div>
+    </div>
+        
+
+
+
+</section>
+
+</body>
+</html>

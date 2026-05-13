@@ -1,17 +1,20 @@
 
 <section class="info-section">
-    <h2 data-i18n="ecoinfo_title">EcoInfo - Environmental Help</h2>
+<!--<h2 data-i18n="ecoinfo_title">EcoInfo - Environmental Help</h2>
     
-    <p data-i18n="ecoinfo_description">Ask about recycling, waste, or environmental services in Yola.</p>
+    <p data-i18n="ecoinfo_description">Ask about recycling, waste, or environmental services in Yola.</p>-->
     <div class="chat-container">
     <div class="chat-header">
         <span data-i18n="eco_chat_header">EcoInfo AI Chat</span>
-        <div class="model-switch">
-        <label class="switch">
-            <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('eco', this.checked)">
-            <span class="slider round"></span>
-        </label>
-        <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="model-switch">
+            <label class="switch">
+                <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('eco', this.checked)">
+                <span class="slider round"></span>
+            </label>
+            <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+            </div>
+            <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem;">✕</button>
         </div>
     </div>
     <div class="chat-messages" id="chat-messages"></div>
@@ -27,18 +30,18 @@
         </div>
     </form>
     <div class="input-options">
-        <button type="button" onclick="window.captureImage('eco')" title="Capture Image"><span>📷</span></button>
-        <button type="button" onclick="window.recordAudio('eco')" title="Record Audio"><span>🎤</span></button>
+        <button type="button" onclick="window.captureImage('eco')" title="Capture Image"><i class="fas fa-camera"></i></button>
+        <button type="button" onclick="window.recordAudio('eco')" title="Record Audio"><i class="fas fa-microphone"></i></button>
         <label class="file-upload-btn" title="Upload File">
-        <span>📁</span>
+        <i class="fas fa-upload"></i>
         <input type="file" style="display:none" onchange="window.uploadFile(event, 'eco')" />
         </label>
 
           <button type="button" id="eco-voice-call-btn" onclick="window.startVoiceCall('eco')" title="Start Live Voice Call with AI">
-            ☎️ 
+            <i class="fas fa-phone"></i> 
           </button>
           <button type="button" id="eco-mute-btn" onclick="window.toggleVoiceCallMute('eco')" title="Mute/Unmute Microphone" style="display: none;">
-            🔊 Mute
+            <i class="fas fa-microphone-slash"></i> Mute
           </button>
           <div id="eco-voice-indicator" class="voice-indicator" style="display: none;">
             Listening...
@@ -87,10 +90,30 @@
         </div>
     </div>
 
+        <!-- Title -->
+    <section class="mb-8">
+    <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 15px;">Environmental Services in Yola</h2>
+    <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Discover more about recycling, waste, or environmental services in Yola.</p>
+    </section>
+
+    <!-- Search -->
+    <section class="search-bar">
+    <span class="fas fa-search material-symbols-outlined"></span>
+    <input placeholder="Search for institutions, courses, or events..." type="text"/>
+    </section>
+    <!-- Filters -->
+    <section class="filter-chips mb-8">
+    <div class="chip active edu">All</div>
+    <div class="chip edu" data-filter="Recyclers">Recyclers</div>
+    <div class="chip edu" data-filter="Organisations">Organisations</div>
+    <div class="chip edu" data-filter="Initiatives">Initiatives</div>
+    <div class="chip edu" data-filter="Parks">Parks</div>
+    </section>
+
     <div class="section2">
-    <h2 data-i18n="eco_section2_h2">Environmental Services in Yola</h2>
+    <!--<h2 data-i18n="eco_section2_h2">Environmental Services in Yola</h2>-->
     
-    <div class="section3">
+    <div class="section3"  data-category="Recyclers">
         <h3 class="section3-title" data-i18n="eco_section3_h3_1">Waste collectors And Recycling Centers.</h3>
         <div class="section4-container">
 
@@ -153,7 +176,7 @@
     </div>
     </div>
 
-    <div class="section3">
+    <div class="section3" data-category="Organisations">
         <h3 class="section3-title"  data-i18n="eco_section3_h3_2">Environmental Organizations</h3>
         
         <div class="section4-container">
@@ -215,7 +238,7 @@
         </div>
     </div>
 
-    <div class="section3">
+    <div class="section3" data-category="Initiatives">
         <h3 class="section3-title"  data-i18n="eco_section3_h3_3">Sustainable Initiatives</h3>
         <div class="section4-container">
         <div class="section4">
@@ -268,11 +291,22 @@
             <a data-i18n="learn_more" href="details/Eco/trash-to-treasure.html">Learn more →</a>
         </div>
 
-        </div>
+    </div>
+    </div>
+
         
-    <div class="section3">
+    <div class="section3" data-category="Parks">
         <h3 class="section3-title"  data-i18n="eco_section3_h3_4">Green Spaces</h3>
         <div class="section4-container">
+        
+        <div class="section4">
+            <div class="img-placeholder">
+            <img src="Data/Images/riverbenuevalley.jpeg" alt="Benue Valley Reserve - Protected natural area and biodiversity conservation" loading="lazy" />
+            </div>
+            <h3 data-i18n="Eco_section4_h3_21">Benue Valley Reserve</h3>
+            <p data-i18n="Eco_section4_p_21">Protected natural area with rich biodiversity featuring conservation programs, wildlife habitat protection, and ecological research initiatives.</p></p>
+            <a data-i18n="learn_more" href="details/Eco/benue-valley-reserve.html">Learn more →</a>
+        </div>
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/wetlands2.jpeg" alt="Yola Community Garden - Public space for community farming and environmental education" loading="lazy" />
@@ -289,14 +323,6 @@
             <p data-i18n="Eco_section4_p_20">Sustainable park featuring native plants, ecological exhibits, and environmental education programs for community awareness and conservation in Yola.</p></p>
             <a data-i18n="learn_more" href="details/Eco/yola-eco-park.html">Learn more →</a>
         </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/riverbenuevalley.jpeg" alt="Benue Valley Reserve - Protected natural area and biodiversity conservation" loading="lazy" />
-            </div>
-            <h3 data-i18n="Eco_section4_h3_21">Benue Valley Reserve</h3>
-            <p data-i18n="Eco_section4_p_21">Protected natural area with rich biodiversity featuring conservation programs, wildlife habitat protection, and ecological research initiatives.</p></p>
-            <a data-i18n="learn_more" href="details/Eco/benue-valley-reserve.html">Learn more →</a>
-        </div>
         </div>
     </div>
 
@@ -304,6 +330,32 @@
     </div>
 </section>
 
+      <footer class="site-footer">
+        <!-- Bottom Row -->
+        <div class="footer-bottom-container">
+          <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
+          <span style="display: flex; justify-content: space-evenly;">
+            <a href="#"><i class="fab fa-whatsapp fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-instagram fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-facebook fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-linkedin fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-twitter fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-x-twitter fa-2x" href="#"></i></a>
+          </span>
+        </div>
+
+        <div>
+          <div class="legal-links">
+              <a class="footer-link" href="#">Privacy Policy</a>
+              <a class="footer-link" href="#">Terms of Service</a>
+              <a class="footer-link" href="#">Report an issue or comment</a>
+              <a class="footer-link" href="#">About</a>
+          </div>
+          <div class="copyright" style="margin-top: 15px;">
+             <p>© 2026 AlkaliCodes. All rights reserved.</p> 
+          </div>
+        </div>
+      </footer>
 <script>
 function getLangFolder() {
   const langMap = {

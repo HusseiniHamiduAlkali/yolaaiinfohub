@@ -1,16 +1,19 @@
 
 <section class="info-section">
-    <h2 data-i18n="agroinfo_header">AgroInfo - Agriculture Help</h2>
-    <p data-i18n="agroinfo_desc">Ask about farming, crops, livestock, or agricultural services in Yola.</p>
+<!--<h2 data-i18n="agroinfo_header">AgroInfo - Agriculture Help</h2>
+    <p data-i18n="agroinfo_desc">Ask about farming, crops, livestock, or agricultural services in Yola.</p>-->
     <div class="chat-container">
     <div class="chat-header">
         <span data-i18n="agroinfo_chat_header">AgroInfo AI Chat</span>
-        <div class="model-switch">
-        <label class="switch">
-            <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('agro', this.checked)">
-            <span class="slider round"></span>
-        </label>
-        <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="model-switch">
+            <label class="switch">
+                <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('agro', this.checked)">
+                <span class="slider round"></span>
+            </label>
+            <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+            </div>
+            <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem;">✕</button>
         </div>
     </div>
     <div class="chat-messages" id="agro-chat-messages"></div>
@@ -22,18 +25,18 @@
         </div>
     </form>
     <div class="input-options">
-        <button type="button" onclick="captureImage()" title="Capture Image"><span>📷</span></button>
-        <button type="button" onclick="recordAudio()" title="Record Audio"><span>🎤</span></button>
+        <button type="button" onclick="captureImage()" title="Capture Image"><i class="fas fa-camera"></i></button>
+        <button type="button" onclick="recordAudio()" title="Record Audio"><i class="fas fa-microphone"></i></button>
         <label class="file-upload-btn" title="Upload File">
-        <span>📁</span>
+        <i class="fas fa-upload"></i>
         <input type="file" style="display:none" onchange="uploadFile(event, 'agro')" />
         </label>
  
         <button type="button" id="agro-voice-call-btn" onclick="window.startVoiceCall('agro')" title="Start Live Voice Call with AI">
-        ☎️ 
+        <i class="fas fa-phone"></i> 
         </button>
         <button type="button" id="agro-mute-btn" onclick="window.toggleVoiceCallMute('agro')" title="Mute/Unmute Microphone" style="display: none;">
-        🔊 Mute
+        <i class="fas fa-microphone-slash"></i> Mute
         </button>
         <div id="agro-voice-indicator" class="voice-indicator" style="display: none;">
         Listening...
@@ -44,20 +47,44 @@
     <div class="faq-list">
     <h3 data-i18n="agroinfo_faq_title">AgroInfo FAQs</h3>
     <ul>
-        <li><a class="faq-link" data-i18n="agroinfo_faq_1" onclick="window.sendFAQInCurrentLang('agroinfo_faq_1', 'Agro')">Main crops grown in Yola</a></li>
-        <li><a class="faq-link" data-i18n="agroinfo_faq_2" onclick="window.sendFAQInCurrentLang('agroinfo_faq_2', 'Agro')">Where can I buy farm inputs in Yola</a></li>
-        <li><a class="faq-link" data-i18n="agroinfo_faq_3" onclick="window.sendFAQInCurrentLang('agroinfo_faq_3', 'Agro')">How do I access agricultural extension services</a></li>
-        <li><a class="faq-link" data-i18n="agroinfo_faq_4" onclick="window.sendFAQInCurrentLang('agroinfo_faq_4', 'Agro')">Common livestock diseases in Yola</a></li>
-        <li><a class="faq-link" data-i18n="agroinfo_faq_5" onclick="window.sendFAQInCurrentLang('agroinfo_faq_5', 'Agro')">Irrigation methods suitable for Yola</a></li>
-        <li><a class="faq-link" data-i18n="agroinfo_faq_6" onclick="window.sendFAQInCurrentLang('agroinfo_faq_6', 'Agro')">What government programs support farmers in Yola</a></li>
+        <li><a class="faq-link" data-i18n="agroinfo_faq_1" onclick="window.sendFAQInCurrentLang('agroinfo_faq_1', 'Agro')">Main crops grown in Yola ?</a></li>
+        <li><a class="faq-link" data-i18n="agroinfo_faq_2" onclick="window.sendFAQInCurrentLang('agroinfo_faq_2', 'Agro')">Where can I buy farm inputs in Yola ?</a></li>
+        <li><a class="faq-link" data-i18n="agroinfo_faq_3" onclick="window.sendFAQInCurrentLang('agroinfo_faq_3', 'Agro')">How do I access agricultural extension services ?</a></li>
+        <li><a class="faq-link" data-i18n="agroinfo_faq_4" onclick="window.sendFAQInCurrentLang('agroinfo_faq_4', 'Agro')">Common livestock diseases in Yola ?</a></li>
+        <li><a class="faq-link" data-i18n="agroinfo_faq_5" onclick="window.sendFAQInCurrentLang('agroinfo_faq_5', 'Agro')">Irrigation methods suitable for Yola ?</a></li>
+        <li><a class="faq-link" data-i18n="agroinfo_faq_6" onclick="window.sendFAQInCurrentLang('agroinfo_faq_6', 'Agro')">What government programs support farmers in Yola ?</a></li>
     </ul>
     </div>
     </div>
     
+
+        <!-- Title -->
+    <section class="mb-8">
+    <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 15px;">Community Agricultural Services</h2>
+    <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Discover more on farming, crops, livestock, or agricultural services in Yola.</p>
+    </section>
+
+    <!-- Search -->
+    <section class="search-bar">
+    <span class="fas fa-search material-symbols-outlined"></span>
+    <input placeholder="Search for institutions, courses, or events..." type="text"/>
+    </section>
+    <!-- Filters -->
+    <section class="filter-chips mb-8 agro">
+    <div class="chip active agro" data-filter="All">All</div>
+    <div class="chip agro" data-filter="Organisations">Organisations</div>
+    <div class="chip agro" data-filter="Services">Services</div>
+    <div class="chip agro" data-filter="Suppliers">Suppliers</div>
+    <div class="chip agro" data-filter="Facilities">Facilities</div>
+    <div class="chip agro" data-filter="Initiatives">Initiatives</div>
+    <div class="chip agro" data-filter="Commercial activities">Commercial activities</div>
+    </section>
+
+
     <div class="section2">
-    <h2 data-i18n="agro_section2_h2">Community Agricultural Services</h2>
+    <!--<h2 data-i18n="agro_section2_h2">Community Agricultural Services</h2>-->
     
-    <div class="section3">
+    <div class="section3" data-category="Organisations">
         <h3 class="section3-title" data-i18n="agro_section3_h3_1">Community Agricultural Organizations in Yola</h3>
         <div class="section4-container">
 
@@ -118,7 +145,7 @@
         </div>
     </div>
 
-    <div class="section3">
+    <div class="section3" data-category="Services">
         <h3 class="section3-title" data-i18n="agro_section3_h3_2">Extension Services</h3>
         <div class="section4-container">
         
@@ -152,7 +179,7 @@
         </div>
     </div>
 
-    <div class="section3">
+    <div class="section3" data-category="Suppliers">
         <h3 class="section3-title" data-i18n="agro_section3_h3_3">Agricultural Input Suppliers</h3>
         <div class="section4-container">
 
@@ -164,6 +191,7 @@
         <p  data-i18n="Agro_section4_p_10">Leading supplier of agricultural chemicals, fertilizers, and farming inputs with expert guidance for optimal usage.</p>
         <a data-i18n="learn_more" href="details/Agro/yusash-inputs.html">Learn more →</a>
         </div>
+
         <div class="section4">
         <div class="img-placeholder">
             <img src="Data/Images/miaagro.jpg" alt="Mia Agro Chemicals, Yola" loading="lazy" />
@@ -172,6 +200,7 @@
         <p data-i18n="Agro_section4_p_11">Comprehensive provider of agricultural chemicals, pesticides, and farming supplies serving the Yola farming community.</p>
         <a data-i18n="learn_more" href="details/Agro/mia-agro-inputs.html">Learn more →</a>
         </div>
+
         <div class="section4">
         <div class="img-placeholder">
             <img src="Data/Images/comfortagro.png" alt="Comfort Agro Chemicals, Yola" loading="lazy" />
@@ -207,9 +236,11 @@
         <p data-i18n="Agro_section4_p_15">Trusted agricultural input dealer offering quality seeds, fertilizers, and farming supplies with expert guidance.</p>
         <a data-i18n="learn_more" href="details/Agro/kandimi-inputs.html">Learn more →</a>
         </div>
+
+    </div>
     </div>
 
-        <div class="section3">
+        <div class="section3" data-category="Commercial activities">
         <h3 class="section3-title" data-i18n="agro_section3_h3_4">Agricultural Commercial Activities.</h3>
         <div class="section4-container">
     
@@ -240,6 +271,7 @@
             <p data-i18n="Agro_section4_p_18">Specialized market known for quality smoked fish products and fresh fish supplies from local fishermen.</p>
             <a data-i18n="learn_more" href="details/Agro/jambutu-fish-market.html">Learn more →</a>
             </div>
+
             <div class="section4">
             <div class="img-placeholder">
                 <img src="Data/Images/agricfair.jpg" alt="Agricultural Inputs Trade Fair, Yola" loading="lazy" />
@@ -257,6 +289,7 @@
             <p data-i18n="Agro_section4_p_20">Local dairy producer specializing in fresh, pure milk products sourced from local dairy farmers.</p>
             <a data-i18n="learn_more" href="details/Agro/sare-kosam.html">Learn more →</a>
             </div>
+
             <div class="section4">
             <div class="img-placeholder">
                 <img src="Data/Images/wakili.png" alt="Wakili (WK) Poultry Farms, Yola" loading="lazy" />
@@ -265,6 +298,7 @@
             <p data-i18n="Agro_section4_p_21">Modern poultry farm specializing in chicken breeding, egg production, and poultry products.</p>
             <a data-i18n="learn_more" href="details/Agro/wakili-farms.html">Learn more →</a>
             </div>
+
             <div class="section4">
             <div class="img-placeholder">
                 <img src="Data/Images/chikun.png" alt="Chikun Chicks - Chicken" loading="lazy" />
@@ -282,6 +316,7 @@
             <p data-i18n="Agro_section4_p_23">Premium frozen food distributor offering a wide range of quality frozen meat and poultry products.</p>
             <a data-i18n="learn_more" href="details/Agro/la-crest.html">Learn more →</a>
             </div>
+
             <div class="section4">
             <div class="img-placeholder">
                 <img src="Data/Images/easylife.png" alt="Chikun Chicks - Chicken" loading="lazy" />
@@ -294,7 +329,7 @@
         </div>
         </div>
 
-        <div class="section3">
+        <div class="section3" data-category="Facilities">
         <h3 class="section3-title" data-i18n="agro_section3_h3_5">Processing Centers and Storage Facilities</h3>
         <div class="section4-container">
 
@@ -326,8 +361,9 @@
             </div>
             
         </div>
+        </div>
 
-    <div class="section3">
+    <div class="section3" data-category="Initiatives">
         <h3 class="section3-title" data-i18n="agro_section3_h3_6">Agricultural Support Initiatives</h3>
         <div class="section4-container">
 
@@ -361,7 +397,7 @@
         </div>
     </div>
     
-    <div class="section3">
+    <div class="section3" data-category="Services">
         <h3 class="section3-title" data-i18n="agro_section3_h3_7">Medical And Clinical Veterinary Services</h3>
         <div class="section4-container">
 
@@ -397,6 +433,32 @@
     </div>
 </section>
 
+      <footer class="site-footer">
+        <!-- Bottom Row -->
+        <div class="footer-bottom-container">
+          <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
+          <span style="display: flex; justify-content: space-evenly;">
+            <a href="#"><i class="fab fa-whatsapp fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-instagram fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-facebook fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-linkedin fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-twitter fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-x-twitter fa-2x" href="#"></i></a>
+          </span>
+        </div>
+
+        <div>
+          <div class="legal-links">
+              <a class="footer-link" href="#">Privacy Policy</a>
+              <a class="footer-link" href="#">Terms of Service</a>
+              <a class="footer-link" href="#">Report an issue or comment</a>
+              <a class="footer-link" href="#">About</a>
+          </div>
+          <div class="copyright" style="margin-top: 15px;">
+             <p>© 2026 AlkaliCodes. All rights reserved.</p> 
+          </div>
+        </div>
+      </footer>
 <script>
 function getLangFolder() {
   const langMap = {

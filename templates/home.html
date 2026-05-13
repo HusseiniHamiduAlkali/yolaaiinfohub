@@ -1,16 +1,19 @@
 
     <section class="info-section">
-      <h2 data-i18n="home_title">Welcome to Yola AI Info Hub</h2>
-      <p data-i18n="home_description">Ask anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the About section.</p>
+      <!--<h2 data-i18n="home_title">Welcome to Yola AI Info Hub</h2>
+      <p data-i18n="home_description">Ask anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the About section.</p>-->
       <div class="chat-container">
         <div class="chat-header">
           <span data-i18n="home_chat_header">Home AI Chat</span>
-          <div class="model-switch">
-            <label class="switch">
-              <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('home', this.checked)">
-              <span class="slider round"></span>
-            </label>
-            <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="model-switch">
+              <label class="switch">
+                <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('home', this.checked)">
+                <span class="slider round"></span>
+              </label>
+              <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+            </div>
+            <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem;">✕</button>
           </div>
         </div>
         <div class="chat-messages" id="home-chat-messages"></div>
@@ -20,19 +23,19 @@
           <button type="submit" class="send-button" data-i18n="send">Send</button>
         </form>
         <div class="input-options">
-          <button type="button" onclick="window.captureImage('home')" title="Capture Image" ><span>📷</span></button>
-          <button type="button" onclick="window.recordAudio('home')" title="Record Audio"><span>🎤</span></button>
+          <button type="button" onclick="window.captureImage('home')" title="Capture Image" ><i class="fas fa-camera"></i></button>
+          <button type="button" onclick="window.recordAudio('home')" title="Record Audio"><i class="fas fa-microphone"></i></button>
           <label class="file-upload-btn" title="Upload File">
-            <span>📁</span>
+            <i class="fas fa-upload"></i>
             <input type="file" style="display:none" onchange="window.uploadFile(event, 'home')" />
           </label>
         
 
           <button type="button" id="home-voice-call-btn" onclick="window.startVoiceCall('home')" title="Start Live Voice Call with AI">
-            ☎️ 
+            <i class="fas fa-phone"></i> 
           </button>
           <button type="button" id="home-mute-btn" onclick="window.toggleVoiceCallMute('home')" title="Mute/Unmute Microphone" style="display: none;">
-            🔊 Mute
+            <i class="fas fa-microphone-slash"></i> Mute
           </button>
           <div id="home-voice-indicator" class="voice-indicator" style="display: none;">
             Listening...
@@ -52,12 +55,18 @@
         </ul>
       </div>
       </div>
-      
-      <div class="section2" >
+
+            <!-- Title -->
+      <section class="mb-8">
+        <h2 style="font-size: 32px; color: #2920a0; margin-bottom: 30px;">Welcome to Yola AI Info Hub</h2>
+        <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Ask and discover anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the settings and about page.</p>
+      </section>
+
+      <div class="section2" style="box-shadow: 0 2px 12px rgba(0,0,0,0.4);" >
         <h2 style="margin-bottom: 25px;" data-i18n="history_of_yola">History of Yola</h2>
         <div class="section2-home-image-placeholder" >
-          <img class="section2-home-img1" src="Data/Images/palace3.jpg" alt="Yola Palace"  loading="lazy" />
-          <img class="section2-home-img2" src="Data/Images/palace.jpg" alt="Yola Palace"  loading="lazy" />
+          <img class="section2-home-img1" src="Data/Images/gemini-palace3.png" alt="Yola Palace"  loading="lazy" />
+          <img class="section2-home-img2" src="Data/Images/palace-gemini.png" alt="Yola Palace"  loading="lazy" />
         </div>
         <p class="history-of-yola" data-i18n="history_of_yola_paragraph" style="margin-top: 1.5rem; line-height: 1.6;">
           Yola, the capital city of Adamawa State, has a rich history dating back to its establishment as the capital of the Fulani state of Adamawa in 1841. 
@@ -65,7 +74,7 @@
           made it a vital commercial hub. Today, Yola continues to be a significant cultural and administrative center, blending its historical heritage 
           with modern development.
         </p>
-          <div style="display:flex;">
+          <div style="display:flex; justify-content: center;">
             <a class="learn-more-link section4-home-a" data-section="Home" data-file="yolaadamawa.html" data-i18n="learn_more" data-i18n="explore_more">Explore more →</a>
           </div>
         </a>
@@ -115,7 +124,39 @@
         </div>
 
       </div>
-    </section>
+      </div>  
+    </section>    
+      
+      
+      <footer class="site-footer">
+        <!-- Bottom Row -->
+        <div class="footer-bottom-container">
+          <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
+          <span style="display: flex; justify-content: space-evenly;">
+            <a href="#"><i class="fab fa-whatsapp fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-instagram fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-facebook fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-linkedin fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-twitter fa-2x" href="#"></i></a>
+            <a href="#"><i class="fab fa-x-twitter fa-2x" href="#"></i></a>
+          </span>
+        </div>
+
+        <div>
+          <div class="legal-links">
+              <a class="footer-link" href="#">Privacy Policy</a>
+              <a class="footer-link" href="#">Terms of Service</a>
+              <a class="footer-link" href="#">Report an issue or comment</a>
+              <a class="footer-link" href="#">About</a>
+          </div>
+          <div class="copyright" style="margin-top: 15px;">
+             <p>© 2026 AlkaliCodes. All rights reserved.</p> 
+          </div>
+        </div>
+      </footer>
+  
+
+    
 
 <script>
 function getLangFolder() {
