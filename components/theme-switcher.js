@@ -1,6 +1,6 @@
 // Theme switcher: supports 'light', 'dark', 'colorful'
 (function(){
-    const COLORFUL_FOLDER = 'colorful-theme';
+/*    const COLORFUL_FOLDER = 'colorful-theme';
     // Files that exist in colorful theme folder (whitelist)
     const COLORFUL_FILES = {
         'global.css': true,
@@ -18,7 +18,7 @@
         'tomtom-controls-fallback.css': true,
         'voice-call.css': true
     };
-
+*/
     function setTheme(theme){
         if(!theme) theme = 'light';
         localStorage.setItem('theme', theme);
@@ -51,7 +51,7 @@
 
             // store original href
             if(!link.dataset.originalHref) link.dataset.originalHref = href;
-
+/*
             if(theme === 'colorful'){
                 const original = link.dataset.originalHref;
                 // only swap if the file exists in colorful theme folder
@@ -69,8 +69,8 @@
                 } else {
                     // for unexpected paths, leave as-is
                     link.setAttribute('href', original);
-                }
-            } else {
+                }  
+            } */else {
                 // restore original
                 link.setAttribute('href', link.dataset.originalHref);
             }

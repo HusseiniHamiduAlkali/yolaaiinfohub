@@ -435,9 +435,9 @@ Wednesday, July 30, 2025
 }
 .chat-message-group > .msg-actions button {
   background: transparent;
-  border: 1px solid #cbd5e0;
+  border:none;
   border-radius: 6px;
-  padding: 4px 8px;
+  padding: 0px 5px;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.95rem;
@@ -556,7 +556,7 @@ Wednesday, July 30, 2025
   margin-left: 10px;
 }
 
-.chat-input-area button {
+.chat-input-area  button {
   background: #3182ce;
   color: #fff;
   border: none;
@@ -593,6 +593,7 @@ Wednesday, July 30, 2025
   cursor: pointer;
   transition: background 0.2s;
   color: black;
+  padding: 0;
 }
 
 .input-options button:hover, .file-upload-btn:hover {

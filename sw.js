@@ -40,6 +40,19 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   
+  // Only handle navigation/HTML requests in the service worker during development.
+  // Let stylesheet, script, image, font and other asset requests go directly to network
+  // to avoid the service worker returning malformed fallbacks for binary/text assets.
+  try {
+    const accept = event.request.headers.get('accept') || '';
+    if (event.request.mode !== 'navigate' && !accept.includes('text/html')) {
+      return; // bypass SW for non-navigation requests
+    }
+  } catch (e) {
+    // If headers are inaccessible for some reason, fall back to not intercepting.
+    return;
+  }
+
   // Skip ServiceWorker interception for external vendor resources (TomTom, etc.)
   if (url.hostname !== 'localhost' && url.hostname !== '127.0.0.1' && 
       !url.hostname.endsWith(new URL(self.location).hostname.split('.').pop()) &&

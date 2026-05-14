@@ -75,3 +75,346 @@
       servi_section3_h3_8:'',
 
       
+
+
+
+
+
+
+
+
+
+
+GET
+http://localhost:5502/
+
+GET
+http://localhost:5502/styles/global.css
+
+GET
+http://localhost:5502/styles/home.css
+
+GET
+http://localhost:5502/styles/settings.css
+
+GET
+http://localhost:5502/styles/dark-mode.css
+
+GET
+http://localhost:5502/styles/eduinfo.css
+
+GET
+http://localhost:5502/styles/navbar.css
+
+GET
+http://localhost:5502/styles/agroinfo.css
+
+GET
+http://localhost:5502/styles/mediinfo.css
+
+GET
+http://localhost:5502/styles/naviinfo.css
+
+GET
+http://localhost:5502/styles/ecoinfo.css
+
+GET
+http://localhost:5502/styles/communityinfo.css
+
+GET
+http://localhost:5502/styles/serviinfo.css
+
+GET
+https://unpkg.com/leaflet@1.9.4/dist/leaflet.css
+NS_ERROR_NET_TIMEOUT
+
+GET
+http://localhost:5502/styles/aboutinfo.css
+
+GET
+http://localhost:5502/styles/tomtom-controls-fallback.css
+
+GET
+http://localhost:5502/components/theme-switcher.js
+
+GET
+http://localhost:5502/components/tomtomMap.js?t=20260308
+
+GET
+http://localhost:5502/styles/auth.css
+
+GET
+http://localhost:5502/styles/voice-call.css
+
+GET
+http://localhost:5502/styles/ecoAI.css
+
+GET
+http://localhost:5502/components/learnmore-links.js?t=20260308
+
+GET
+http://localhost:5502/components/dark-mode.js?t=20260308
+
+GET
+http://localhost:5502/components/navbar.js?t=20260308
+
+GET
+http://localhost:5502/components/auth.js?t=20260308
+
+GET
+http://localhost:5502/components/chatHandler.js?t=20260308
+
+GET
+http://localhost:5502/components/voiceCallHandler.js?t=20260308
+
+GET
+http://localhost:5502/components/settings.js?t=20260308
+
+GET
+http://localhost:5502/components/i18n.js?t=20260308
+
+GET
+http://localhost:5502/components/home.js?t=20260308
+
+GET
+http://localhost:5502/components/eduinfo.js?t=20260308
+
+GET
+http://localhost:5502/components/chatAndSearchHandler.js?t=20260308
+
+GET
+http://localhost:5502/components/mediinfo.js?t=20260308
+
+GET
+http://localhost:5502/components/ecoinfo.js?t=20260308
+
+GET
+http://localhost:5502/components/serviinfo.js?t=20260308
+
+GET
+http://localhost:5502/components/agroinfo.js?t=20260308
+
+GET
+http://localhost:5502/components/communityinfo.js?t=20260308
+
+GET
+http://localhost:5502/components/ecoClassifier.js?t=20260308
+
+GET
+http://localhost:5502/components/ecoAI.js?t=20260308
+
+GET
+http://localhost:5502/components/details-navigation.js?t=20260308
+
+GET
+http://localhost:5502/app.js?t=20260308
+
+GET
+http://localhost:5502/components/notifications.js?t=20260308
+
+GET
+http://localhost:5502/components/naviinfo.js?t=20260308
+
+Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content. node.js:416:1
+GET
+http://localhost:5502/components/pwa-installer.js?t=20260308
+
+GET
+http://localhost:5502/Data/Images/jippujam.jpg
+
+GET
+http://localhost:5502/Data/Images/jippujam.jpg
+
+GET
+https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css
+NS_ERROR_FAILURE
+
+GET
+https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css
+NS_ERROR_FAILURE
+
+GET
+https://unpkg.com/leaflet@1.9.4/dist/leaflet.js
+NS_ERROR_FAILURE
+
+GET
+https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js
+NS_ERROR_FAILURE
+
+Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css. (Reason: CORS request did not succeed). Status code: (null).
+Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css. (Reason: CORS request did not succeed). Status code: (null).
+index.html restore check: 
+Object { pendingSection: "home", pendingScrollMain: 0, pendingScrollWindow: 20047, pendingScrollLegacy: 20047, pendingScroll: 20047 }
+localhost:5502:324:15
+Restoring section: home localhost:5502:328:17
+Navbar not yet loaded, will retry on next navigation localhost:5502:153:19
+performLoadSection: requested home components/home.js localhost:5502:175:11
+GET
+ws://localhost:5502//ws
+[HTTP/1.1 101 Switching Protocols 2ms]
+
+GET
+http://localhost:5502/components/home.js?_r=1778773769512
+
+performLoadSection: script loaded for home window.renderSection exists? true localhost:5502:200:19
+GET
+http://localhost:5502/components/commonAI.js
+
+XHRGET
+http://localhost:5502/templates/home.html
+
+📝 Chat history loaded for home (home) - 2 messages commonAI.js:542:13
+Section loaded, scrolling to: 20047 localhost:5502:333:19
+drain complete: clearing __restoringSection flag localhost:5502:426:23
+🔄 Restored home chat history to DOM commonAI.js:554:11
+GET
+http://localhost:5502/Data/Images/gemini-palace3.png
+
+GET
+http://localhost:5502/Data/Images/palace-gemini.png
+
+restore: attempt 1 measured 513 target 20047 useMain false localhost:5502:395:23
+restore: attempt 2 measured 513 target 20047 useMain false localhost:5502:395:23
+restore: attempt 3 measured 513 target 20047 useMain false localhost:5502:395:23
+restore: attempt 4 measured 513 target 20047 useMain false localhost:5502:395:23
+restore: attempt 5 measured 513 target 20047 useMain false localhost:5502:395:23
+restore: attempt 6 measured 513 target 20047 useMain false localhost:5502:395:23
+restore: attempt 7 measured 513 target 20047 useMain false localhost:5502:395:23
+restore: attempt 8 measured 513 target 20047 useMain false localhost:5502:395:23
+XHRGET
+http://localhost:4000/api/me
+
+GET
+https://unpkg.com/leaflet@1.9.4/dist/leaflet.js
+NS_ERROR_FAILURE
+
+Failed to load ‘https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js
+NS_BINDING_ABORTED
+
+Loading failed for the <script> with source “https://unpkg.com/leaflet@1.9.4/dist/leaflet.js”. localhost:5502:54:71
+Loading failed for the <script> with source “https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js”. localhost:5502:55:180
+TensorFlow loaded (source map warnings are expected and safe) localhost:5502:1:9
+📍 Auto-rendering navbar on script load navbar.js:673:13
+🎬 window.Navbar.render() called 
+Object { force: false }
+navbar.js:575:13
+🚀 Navbar.render(): Rendering navbar immediately with loading state navbar.js:587:13
+🎨 renderNavbar() called, isLoading: true window.currentUser: null navbar.js:111:11
+⏳ renderNavbar: Showing loading state navbar.js:127:13
+✨ Navbar rendered to DOM with loading state navbar.js:593:15
+🔄 Navbar._fetchAndUpdateAuth(): Starting background auth check navbar.js:604:13
+📂 Loaded from localStorage: 8 sections, 2 total messages commonAI.js:352:15
+GET
+http://localhost:5502/styles/colorful-theme/settings.css
+NS_ERROR_CORRUPTED_CONTENT
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/settings.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+http://localhost:5502/styles/colorful-theme/home.css
+NS_ERROR_CORRUPTED_CONTENT
+
+GET
+http://localhost:5502/styles/colorful-theme/navbar.css
+NS_ERROR_CORRUPTED_CONTENT
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/home.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+Failed to load ‘http://localhost:5502/styles/colorful-theme/navbar.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+http://localhost:5502/styles/colorful-theme/global.css
+NS_ERROR_CORRUPTED_CONTENT
+
+GET
+http://localhost:5502/Data/Images/jippujam.jpg
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/global.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+Failed to load ‘http://localhost:5502/styles/colorful-theme/eduinfo.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+http://localhost:5502/styles/colorful-theme/eduinfo.css
+NS_ERROR_CORRUPTED_CONTENT
+
+GET
+http://localhost:5502/styles/colorful-theme/agroinfo.css
+NS_ERROR_CORRUPTED_CONTENT
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/agroinfo.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+Failed to load ‘http://localhost:5502/styles/colorful-theme/mediinfo.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+http://localhost:5502/styles/colorful-theme/mediinfo.css
+NS_ERROR_CORRUPTED_CONTENT
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/naviinfo.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+http://localhost:5502/styles/colorful-theme/naviinfo.css
+NS_ERROR_CORRUPTED_CONTENT
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/ecoinfo.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+http://localhost:5502/styles/colorful-theme/ecoinfo.css
+NS_ERROR_CORRUPTED_CONTENT
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/serviinfo.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+http://localhost:5502/styles/colorful-theme/serviinfo.css
+NS_ERROR_CORRUPTED_CONTENT
+
+GET
+http://localhost:5502/styles/colorful-theme/communityinfo.css
+NS_ERROR_CORRUPTED_CONTENT
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/communityinfo.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+GET
+http://localhost:5502/styles/colorful-theme/aboutinfo.css
+NS_ERROR_CORRUPTED_CONTENT
+
+GET
+http://localhost:5502/styles/colorful-theme/voice-call.css
+NS_ERROR_CORRUPTED_CONTENT
+
+GET
+http://localhost:5502/styles/colorful-theme/tomtom-controls-fallback.css
+NS_ERROR_CORRUPTED_CONTENT
+
+Failed to load ‘http://localhost:5502/styles/colorful-theme/aboutinfo.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+Failed to load ‘http://localhost:5502/styles/colorful-theme/voice-call.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+Failed to load ‘http://localhost:5502/styles/colorful-theme/tomtom-controls-fallback.css’. A ServiceWorker intercepted the request and encountered an unexpected error. sw.js:53:9
+Registered initializer for section: naviinfo app.js:41:17
+app.js: SPA loader detected - deferring section load to index.html app.js:182:13
+Service Worker registered successfully: 
+ServiceWorkerRegistration { installing: null, waiting: null, active: ServiceWorker, navigationPreload: NavigationPreloadManager, scope: "http://localhost:5502/", updateViaCache: "imports", onupdatefound: null, pushManager: PushManager, cookies: CookieStoreManager }
+localhost:5502:456:21
+XHRGET
+http://localhost:4000/api/me
+
+app.js initializeApp: skipping default load because restore is pending, in-progress, or just completed app.js:168:15
+XHRGET
+http://localhost:4000/api/me
+
+⚠️ Navbar._fetchAndUpdateAuth(): Failed to fetch user state navbar.js:655:17
+❌ updateNavbarAuthSection: Updating for logged-out user navbar.js:39:13
+✨ Navbar._fetchAndUpdateAuth(): Auth section updated navbar.js:665:13
+XHRGET
+http://localhost:4000/api/me?t=1778773832078
+
+⚠️ Could not verify login status with server (network issue?): HTTP 503: Service Unavailable auth.js:511:13
+💡 Keeping cached user for offline support. Login will sync when connection returns. auth.js:512:13
+🔄 updateAuthUI: Calling Navbar.render() for logged-out user auth.js:159:15
+🎬 window.Navbar.render() called 
+Object { force: true }
+navbar.js:575:13
+🚀 Navbar.render(): Rendering navbar immediately with loading state navbar.js:587:13
+🎨 renderNavbar() called, isLoading: true window.currentUser: null navbar.js:111:11
+⏳ renderNavbar: Showing loading state navbar.js:127:13
+✨ Navbar rendered to DOM with loading state navbar.js:593:15
+🔄 Navbar._fetchAndUpdateAuth(): Starting background auth check navbar.js:604:13
+GET
+http://localhost:5502/Data/Images/jippujam.jpg
+[HTTP/1.1 200 OK 0ms]
+
+XHRGET
+http://localhost:4000/api/me
+
+⚠️ Navbar._fetchAndUpdateAuth(): Failed to fetch user state navbar.js:655:17
+❌ updateNavbarAuthSection: Updating for logged-out user navbar.js:39:13
+✨ Navbar._fetchAndUpdateAuth(): Auth section updated navbar.js:665:13

@@ -743,9 +743,55 @@ window.createMessageElement = function(message, section, containerId) {
         </div>
         
         <span class='msg-actions' data-msg-id='${mid}'>
-          <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
-          <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
-          <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+          <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+              d="M19.114 5.636a9 9 0 010 12.728M16.463
+              8.293a5.25 5.25 0 010 7.424M6.75
+              8.25l4.72-3.78A.75.75 0 0112.75
+              5.06v13.88a.75.75 0 01-1.28.53L6.75
+              15.75H3a.75.75 0 01-.75-.75v-6A.75.75
+              0 013 8.25h3.75z"/>
+            </svg>
+
+          </button>
+          <button class='copy-btn' data-msg-id='${mid}' title='Copy'>
+            <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            >
+            <rect width="14" height="14" x="8" y="8" rx="2"/>
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+          </button>
+          <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>
+            <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            >
+            <path d="M3 6h18"/>
+            <path d="M8 6V4h8v2"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6"/>
+            <path d="M14 11v6"/>
+            </svg>
+          </button>
         </span>
         
       
@@ -1508,9 +1554,60 @@ window.addActionsToMsgGroup = function(msgGroup, section, containerId) {
   actions.className = 'msg-actions';
   if (mid) actions.setAttribute('data-msg-id', mid);
   actions.innerHTML = `
+
+    <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 24 24" stroke-width="1.5"
+      stroke="currentColor" width="24" height="24">
+      <path stroke-linecap="round" stroke-linejoin="round"
+      d="M19.114 5.636a9 9 0 010 12.728M16.463
+      8.293a5.25 5.25 0 010 7.424M6.75
+      8.25l4.72-3.78A.75.75 0 0112.75
+      5.06v13.88a.75.75 0 01-1.28.53L6.75
+      15.75H3a.75.75 0 01-.75-.75v-6A.75.75
+      0 013 8.25h3.75z"/>
+      </svg>
+    </button>
+    <button class='copy-btn' data-msg-id='${mid}' title='Copy'>
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      >
+      <rect width="14" height="14" x="8" y="8" rx="2"/>
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+      </svg>
+    </button>
+    <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      >
+      <path d="M3 6h18"/>
+      <path d="M8 6V4h8v2"/>
+      <path d="M19 6l-1 14H6L5 6"/>
+      <path d="M10 11v6"/>
+      <path d="M14 11v6"/>
+      </svg>
+    </button>
+<!--
     <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
     <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
     <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    -->
   `;
   msgGroup.appendChild(actions);
 

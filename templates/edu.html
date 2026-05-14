@@ -33,15 +33,57 @@
         </div>
         </div>
         <div class="input-options">
-        <button type="button" onclick="window.captureImage('edu')" title="Capture Image"><i class="fas fa-camera"></i></button>
-        <button type="button" onclick="window.recordAudio('edu')" title="Record Audio"><i class="fas fa-microphone"></i></button>
-        <label class="file-upload-btn" title="Upload File">
-            <i class="fas fa-upload"></i>
-            <input type="file" title="Upload Educational File" style="display:none" onchange="window.uploadFile(event, 'edu')" />
-        </label>
-     
-        <button type="button" id="edu-voice-call-btn" onclick="window.startVoiceCall('edu')" title="Start Live Voice Call with AI">
-            <i class="fas fa-phone"></i> 
+          
+          <button type="button" onclick="window.captureImage('edu')" title="Capture Image" >
+            <!-- Camera -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7
+              a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+            </svg>
+          </button>
+
+          <button type="button" onclick="window.recordAudio('edu')" title="Record Audio">      
+            <!-- Microphone -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+              <rect x="9" y="2" width="6" height="12" rx="3"/>
+              <path d="M5 10a7 7 0 0 0 14 0"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+          </button>
+
+          <label class="file-upload-btn" title="Upload File">            
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5
+              a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>  
+            <input type="file" style="display:none" onchange="window.uploadFile(event, 'edu')" />
+          </label>
+        
+          <button type="button" id="home-voice-call-btn" onclick="window.startVoiceCall('edu')" title="Start Live Voice Call with AI">            
+            <!-- Phone -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18
+              2 19.79 19.79 0 0 1-8.63-3.07
+              19.5 19.5 0 0 1-6-6A19.79
+              19.79 0 0 1 2.11 4.18 2
+              2 0 0 1 4.11 2h3a2 2 0 0
+              1 2 1.72c.12.89.32 1.76.59
+              2.59a2 2 0 0 1-.45 2.11L8.09
+              9.91a16 16 0 0 0 6 6l1.49-1.49
+              a2 2 0 0 1 2.11-.45c.83.27
+              1.7.47 2.59.59A2 2 0 0 1 22 16.92z"/>
+            </svg>
           </button>
           <button type="button" id="edu-mute-btn" onclick="window.toggleVoiceCallMute('edu')" title="Mute/Unmute Microphone" style="display: none;">
             <i class="fas fa-microphone-slash"></i> Mute
@@ -89,7 +131,8 @@
     <!--<h2 data-i18n="edu_section2_h2">Educational Instituitions within Yola and environs.</h2> -->
     
     <div class="section3" data-category="Universities">
-        <h3 class="section3-title" data-i18n="edu_section3_h3_1">Universities</h3>
+        <!--<h3 class="section3-title" data-i18n="edu_section3_h3_">Universities</h3>-->
+        <h3 class="section3-title" >Universities</h3>
         <div class="section4-container">
 
             
@@ -125,7 +168,8 @@
 
 
     <div class="section3" data-category="Colleges">
-        <h3 class="section3-title" data-i18n="edu_section3_h3_2">Colleges</h3>
+        <!--<h3 class="section3-title" data-i18n="edu_section3_h3_2">Colleges</h3>-->
+        <h3 class="section3-title" >Colleges</h3>
         <div class="section4-container">
 
         <div class="section4">
@@ -189,8 +233,8 @@
 
 
     <div class="section3" data-category="Schools">
-        <h3 class="section3-title" data-i18n="edu_section3_h3_3">Elementary And Secondary Schools</h3>
-
+        <!--<h3 class="section3-title" data-i18n="edu_section3_h3_3">Elementary And Secondary Schools</h3>-->
+        <h3 class="section3-title" >Elementary And Secondary Schools</h3>
     <div class="section4-container">
         <div class="section4">
             <div class="img-placeholder">
@@ -312,25 +356,30 @@
             <div class="img-placeholder">
             <img src="Data/Images/binaniacademy.jpg" alt="BINANI Football Academy, Yola" loading="lazy" />
             </div>
-            <h3 data-i18n="Edu_section4_h3_23">BINANI Football Academy, Yola.</h3>
-            <p data-i18n="Edu_section4_p_23">Specialized sports academy providing football training and education to develop young talented athletes in Yola.</p>
+            <!--<h3 data-i18n="Edu_section4_h3_">BINANI Football Academy, Yola.</h3>
+            <p data-i18n="Edu_section4_p_">Specialized sports academy providing football training and education to develop young talented athletes in Yola.</p>-->
+            <h3 >BINANI Football Academy, Yola.</h3>
+            <p >Specialized sports academy providing football training and education to develop young talented athletes in Yola.</p>
             <a data-i18n="learn_more" href="details/Edu/binani-academy.html">Learn more →</a>
         </div>
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/alnaab.png" alt="Al-Na'ab Academy, Yola" loading="lazy" />
             </div>
-            <h3 data-i18n="Edu_section4_h3_24">Al-Na'ab Academy, Yola.</h3>
-            <p data-i18n="Edu_section4_p_24">Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.</p>
+            <!--<h3 data-i18n="Edu_section4_h3_24">Al-Na'ab Academy, Yola.</h3>
+            <p data-i18n="Edu_section4_p_24">Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.</p>-->
+            <h3 >Al-Na'ab Academy, Yola.</h3>
+            <p >Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.</p>
             <a data-i18n="learn_more" href="details/Edu/alnaab-academy.html">Learn more →</a>
         </div>
         </div>
     </div>
 
-    </div>
+    
     
     <div class="section3" data-category="Libraries">
-        <h3 class="section3-title" data-i18n="edu_section3_h3_4">Libraries And Knowledge Centers</h3>
+        <h3 class="section3-title" >Libraries And Knowledge Centers</h3>
+        <!--<h3 class="section3-title" data-i18n="edu_section3_h3_">Libraries And Knowledge Centers</h3>-->
         <div class="section4-container">
         
         <div class="section4">
@@ -361,10 +410,12 @@
         </div>
         </div>
     </div>
-    </div>
-</section>
 
-      <footer class="site-footer">
+
+
+
+
+    <footer class="site-footer">
         <!-- Bottom Row -->
         <div class="footer-bottom-container">
           <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
@@ -389,7 +440,9 @@
              <p>© 2026 AlkaliCodes. All rights reserved.</p> 
           </div>
         </div>
-      </footer>
+    </footer>
+
+</section>
 <script>
 function getLangFolder() {
   const langMap = {
