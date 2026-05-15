@@ -104,7 +104,7 @@ body.dark-mode input[type="email"],
 body.dark-mode input[type="password"],
 body.dark-mode textarea,
 body.dark-mode select {
-    background: #b1afaf;
+    background: #8d8989;
     color: #e0e0e0;
     border: 1px solid #444;
 }
@@ -120,7 +120,7 @@ body.dark-mode select:focus {
 }
 
 body.dark-mode input::placeholder {
-    color: #888;
+    color: #413232;
 }
 
 /* Buttons */
@@ -358,3 +358,6 @@ body.dark-mode .exchange-amount {
 .dark-mode #theme-select {
     background: #2d2d2d !important;
 }
+.dark-mode .hero-section {background: #101216;}
+.dark-mode .form-section {background: #2d2d2d;}
+.dark-mode svg {color: #fff;}

@@ -4,12 +4,13 @@
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.4);
   padding: 1.5rem;
-  width: 1000px;
+  width: 830px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  margin-bottom: 30px;
 }
 
 .section-eco h2 {
@@ -27,9 +28,9 @@
 }
 
 .eco-tile {
-  padding: 35px; 
-  padding-top: 15px; 
-  box-shadow: 0 0px 5px rgba(0,0,0,0.4); 
+  padding: 5px; 
+  padding-top: 4px; 
+  /*box-shadow: 0 0px 5px rgba(0,0,0,0.4); */
   border-radius: 16px; 
   margin-right: 25px;
   width: 150px;
@@ -37,6 +38,8 @@
   text-align: center;
   align-items: center;
   margin: 10px;
+  border: solid 2px #cdcfd4;
+  background:#f6f5f3;
 }
 
 .eco-tile h2 {
@@ -44,6 +47,7 @@
   font-weight: normal; 
   font-family:initial; 
   text-align: center;
+  font-size: 16px;
 }
 
 /* Weather display styling */
@@ -51,7 +55,7 @@
   font-size: 1.8rem;
   font-weight: bold;
   color: #2c3e50;
-  margin: 8px 0 4px 0;
+  margin: 0px 0 0px 0;
   padding: 0;
 }
 
@@ -63,9 +67,10 @@
   font-weight: normal;
 }
 
+
 @media screen and (min-width: 700px) and (max-width: 1150px) {
   .section-eco {
-    width: 690px;
+    width: 520px;
     
   }
   .section-eco-div {
@@ -76,6 +81,7 @@
   .eco-tile {
     margin: 0 0 25px;
   }
+  .section-eco > h2 {margin-top: 0px !important}
 }
 
 @media screen and (max-width: 700px) {
@@ -90,9 +96,14 @@
   
   .section-eco-div {
     flex-direction: column !important;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 0 !important;
   }
+  .eco-tile { width: 115px;}
   .eco-tile-h2 {
-    padding-top: 10px !important;
+    padding-top: 0px !important;
     margin: 0 !important;
   }
+  .section-eco > h2 {margin-top: 0 !important;}
 }

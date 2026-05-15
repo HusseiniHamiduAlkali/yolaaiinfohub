@@ -21,6 +21,7 @@
   flex-wrap: wrap;
   align-items: flex-start;
 }
+.section-extra-map { width: 1000px !important;}
 
 /* Leaflet map controls styling */
 .tt-control {

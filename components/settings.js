@@ -65,7 +65,7 @@ window.SettingsPage = {
                 <select id="theme-select">
                   <option value="light">Light</option>
                   <option value="dark">Dark</option>
-                  <option value="colorful">Colorful</option>
+              <!--<option value="colorful">Colorful</option>-->
                 </select>
               </div>
             </div>
@@ -82,90 +82,6 @@ window.SettingsPage = {
             </div>
           </div>
 
-          <!-- User Feedback Section -->
-          <div class="settings-section-box">
-            <h2 class="section-title" data-i18n="user_feedback">User Feedback</h2>
-            <p data-i18n="feedback_description">We value your feedback! Please share your thoughts, suggestions, or report any issues with our application.</p>
-            <div class="settings-item">
-              <label class="settings-label" data-i18n="feedback_name">Your Name (Optional)</label>
-              <input type="text" id="feedback-name" class="feedback-input" placeholder="Enter your name">
-            </div>
-            <div class="settings-item">
-              <label class="settings-label" data-i18n="feedback_email">Your Email (Optional)</label>
-              <input type="email" id="feedback-email" class="feedback-input" placeholder="Enter your email">
-            </div>
-            <div class="settings-item">
-              <!-- <label class="settings-label" data-i18n="feedback_message">Your Feedback</label> -->
-              <textarea id="feedback-message" class="feedback-textarea" placeholder="Please share your feedback..." rows="6"></textarea>
-            </div>
-            <div class="settings-item">
-              <button class="settings-button settings-button-primary" onclick="window.submitUserFeedback()" data-i18n="submit_feedback">Submit Feedback</button>
-              <span id="feedback-status" class="feedback-status"></span>
-            </div>
-          </div>
-
-          <!-- About Section -->
-          <div class="settings-section-box">
-            <h2 class="section-title" data-i18n="about_header">About Yola AI Info Hub</h2>
-            <p data-i18n="about_desc_1"><strong>Yola AI Info Hub</strong> is a modern, responsive web app that provides AI-powered information and assistance for education, agriculture, environment, health, community, and general inquiries in Yola, Adamawa State, Nigeria. Our goal is to make essential information accessible and easy to find for residents and visitors alike.</p>
-            
-            <h3 data-i18n="about_key_features">Key Features:</h3>
-            <ul>
-              <li><strong>AI-Powered Chat:</strong> Get instant answers to your questions across various categories.</li>
-              <li><strong>Section-Specific Information:</strong> Dedicated sections for EduInfo, AgroInfo, EcoInfo, MediInfo, NaviInfo, and ServiInfo.</li>
-              <li><strong>User-Friendly Interface and Responsiveness:</strong> A clean, intuitive design for seamless navigation on different devices <br> PC above 1150px, Tab from 900px to 1150px , Mobile below 900px,<br>with Hamburger Menu on Mobile Screen.</li>
-              <li><strong>Image, Audio and Files Input:</strong> Interact with the AI using images, voice messages and other files for a richer experience.</li>
-              <li><strong>Text-To-Speech:</strong> A text-to-speech option to listen to the AI's response in any section.</li>
-              <li><strong>Local Focus:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
-              <li><strong>Multi Modality:</strong> A special functionality, enabling user to switch between two different Gemini models for their response.</li>
-              <li><strong>Chat History:</strong>Ability to remember recent chats history by the AI, for about 10 chats. For a continuous chat flow.</li>
-              <li><strong>Frequently Asked Questions FAQs:</strong> FAQs available as clickable links directly below the chat areas of every section.</li>
-            </ul>
-            
-            <h3>Section-specific Features:</h3>
-            <ul>
-              <li><strong>NaviInfo:</strong> Maps For Directions and Navigation.</li>
-              <li><strong>EcoInfo:</strong> Carbon Calculator and an Eco Classifier, which is able to classify objects (images) as recyclable or not.</li>
-            </ul>
-            
-            <h3>Contents of the Environment Variable (.env file):</h3>
-            <ul style="list-style: none;">
-              <li> 1. Google Gemini API key.</li>
-              <li> 2. Google Maps API key.</li>
-              <li> 3. Tomrom maps API key.</li>
-              <li> 4. ExchangeRates API key.</li>
-              <li> 5. Mongodb URI For User Authentication.</li>
-              <li> 6. Dedicated e-mail address.</li>
-              <li> 7. E-mail. Address 'App Password' For Password Reset Route.</li>
-              <li> 8. Password reset URL base.</li>
-              <li> 9. Front-end Netlify URL.</li>
-              <li>10. Back-end Render URL.</li>
-              <li>11. Email Host</li>
-              <li>12. Email Port</li>
-              <li>13. Email User</li>
-              <li>14. Email Password</li>
-
-            </ul>
-            
-            <h3>Major Challenges:</h3>
-            <ul>
-              <li>Power/Electricity.</li>
-              <li>Internet Access.</li>
-            </ul>
-
-            <p>This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better. 
-             This Robust Project For My 3MTT NextGen Knowledge Showcase.</p>
-            
-            <div style="height: 30px;"></div>
-            
-            <p style="margin-bottom: 15px;"><strong>ABOUT THE DEVELOPER:  Husseini Hamidu Alkali.</strong></p>
-            <p>
-              
-              Phone: +234 7012244240 / + 234 8032377428.  <br> 
-              Email: husseinihamidualkali@gmail.com
-            </p>
-            
-          </div>
 
           <!-- Back Button -->
           <!--
