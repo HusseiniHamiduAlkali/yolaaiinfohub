@@ -180,25 +180,129 @@ app.post('/api/gemini', async (req, res) => {
       console.log(`Mapped ${model} to ${normalizedModel}`);
     }
     
-    // Try v1 endpoint first (more stable), fall back to v1beta
-    let geminiUrl = `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${API_KEY}`;
-    
-    console.log(`Calling Gemini API with model: ${normalizedModel} (requested: ${model})`);
-    let response = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ contents })
-    });
+    // Use v1beta endpoint which accepts `contents: [{ text: '...' }]` payloads
+    let geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${API_KEY}`;
 
-    let data = await response.json();
+    console.log(`Calling Gemini API with model: ${normalizedModel} (requested: ${model})`);
+
+    // Normalize incoming `contents` into v1beta-friendly shape: [{ text: '...' }]
+    const normalizedContents = Array.isArray(contents)
+      ? contents.map(item => (typeof item === 'string' ? { text: item } : (item && item.text ? { text: item.text } : item)))
+      : [{ text: String(contents) }];
+
+    // First, try to use an installed official SDK (if available). This makes requests
+    // using the provider's client library which constructs the correct request schema.
+    let sdkTried = false;
+    try {
+      let sdk = null;
+      try { sdk = require('@google-cloud/generative-ai'); } catch (e) { /* try other names */ }
+      if (!sdk) {
+        try { sdk = require('@google-ai/generative-ai'); } catch (e) { /* no sdk installed */ }
+      }
+
+      if (sdk) {
+        sdkTried = true;
+        console.log('Generative AI SDK detected - attempting SDK-based call');
+
+        // Try a couple of common client class names/entry points used by community SDKs.
+        let sdkClient = null;
+        try {
+          // Newer Google SDKs expose a client we can instantiate without extra auth when using API key
+          if (sdk.GenerativeServiceClient) sdkClient = new sdk.GenerativeServiceClient({ apiKey: API_KEY });
+          else if (sdk.TextServiceClient) sdkClient = new sdk.TextServiceClient({ apiKey: API_KEY });
+          else if (sdk.GenerativeLanguageServiceClient) sdkClient = new sdk.GenerativeLanguageServiceClient({ apiKey: API_KEY });
+          else if (typeof sdk === 'function') sdkClient = new sdk({ apiKey: API_KEY });
+        } catch (err) {
+          console.warn('Could not instantiate SDK client:', err && err.message ? err.message : err);
+          sdkClient = null;
+        }
+
+        if (sdkClient) {
+          try {
+            // Try common method names. If one fails we'll fall back to HTTP attempts below.
+            const promptText = normalizedContents.map(c => (c && c.text) ? c.text : String(c)).join('\n\n');
+
+            if (typeof sdkClient.generateText === 'function') {
+              const sdkResp = await sdkClient.generateText({ model: normalizedModel, input: promptText });
+              console.log('SDK response received via generateText');
+              return res.json(sdkResp);
+            } else if (typeof sdkClient.generate === 'function') {
+              const sdkResp = await sdkClient.generate({ model: normalizedModel, prompt: promptText });
+              console.log('SDK response received via generate');
+              return res.json(sdkResp);
+            } else if (typeof sdkClient.predict === 'function') {
+              const sdkResp = await sdkClient.predict({ model: normalizedModel, input: promptText });
+              console.log('SDK response received via predict');
+              return res.json(sdkResp);
+            } else {
+              console.log('SDK client found but no known method names - skipping SDK attempt');
+            }
+          } catch (sdkErr) {
+            console.warn('SDK call failed, falling back to HTTP requests:', sdkErr && sdkErr.message ? sdkErr.message : sdkErr);
+          }
+        }
+      }
+    } catch (sdkDetectErr) {
+      console.warn('Error while attempting to load Generative AI SDK:', sdkDetectErr && sdkDetectErr.message ? sdkDetectErr.message : sdkDetectErr);
+    }
+
+    // If SDK not installed or SDK call failed, continue with HTTP attempts below.
+    if (!sdkTried) console.log('No Generative AI SDK detected locally; using HTTP fallback attempts');
+
+    // Try a sequence of candidate request shapes/endpoints until one succeeds.
+    const candidateAttempts = [];
+
+    // Primary: v1beta generateContent with contents array (common modern shape)
+    candidateAttempts.push({ url: `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${API_KEY}`, body: { contents: normalizedContents } });
+
+    // Try v1 generateContent as some deployments accept slightly different schemas
+    candidateAttempts.push({ url: `https://generativelanguage.googleapis.com/v1/models/${normalizedModel}:generateContent?key=${API_KEY}`, body: { contents: normalizedContents } });
+
+    // Try wrapping contents into an `input` field
+    candidateAttempts.push({ url: `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${API_KEY}`, body: { input: normalizedContents.map(c => (c && c.text) ? c.text : String(c)) } });
+
+    // Try a single concatenated prompt under `prompt` (some endpoints expect a prompt object)
+    candidateAttempts.push({ url: `https://generativelanguage.googleapis.com/v1beta/models/${normalizedModel}:generateContent?key=${API_KEY}`, body: { prompt: { text: normalizedContents.map(c => (c && c.text) ? c.text : String(c)).join('\n\n') } } });
+
+    let response = null;
+    let data = null;
+    let lastError = null;
+
+    for (let i = 0; i < candidateAttempts.length; i++) {
+      const attempt = candidateAttempts[i];
+      try {
+        console.log(`Gemini attempt ${i+1}/${candidateAttempts.length} -> URL:`, attempt.url);
+        try { console.log('Outgoing body (truncated):', JSON.stringify(attempt.body).slice(0, 2000)); } catch (e) { console.log('Could not stringify attempt body', e); }
+
+        response = await fetch(attempt.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(attempt.body)
+        });
+
+        const rawText = await response.text();
+        try { data = rawText ? JSON.parse(rawText) : null; } catch (parseErr) { data = { raw: rawText }; }
+
+        console.log('Attempt response status:', response.status);
+        if (rawText && rawText.length < 2000) console.log('Attempt raw response (truncated):', rawText);
+
+        if (response.ok) {
+          break; // success
+        } else {
+          lastError = data || rawText;
+          console.warn('Attempt failed, status:', response.status, 'body:', lastError);
+        }
+      } catch (err) {
+        lastError = err;
+        console.error('Attempt fetch error:', err && err.message ? err.message : err);
+      }
+    }
     
     // If primary model fails with 404 (model not found), fall back to gemini-1.5-flash
     if (!response.ok && data.error?.code === 404 && normalizedModel === 'gemini-2.5-flash') {
       console.log('Model gemini-2.5-flash not available, falling back to gemini-1.5-flash');
       const fallbackModel = 'gemini-1.5-flash';
-      geminiUrl = `https://generativelanguage.googleapis.com/v1/models/${fallbackModel}:generateContent?key=${API_KEY}`;
+      geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${fallbackModel}:generateContent?key=${API_KEY}`;
       
       console.log(`Retrying with fallback model: ${fallbackModel}`);
       response = await fetch(geminiUrl, {
@@ -206,7 +310,7 @@ app.post('/api/gemini', async (req, res) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ contents })
+        body: JSON.stringify({ contents: normalizedContents })
       });
       
       data = await response.json();

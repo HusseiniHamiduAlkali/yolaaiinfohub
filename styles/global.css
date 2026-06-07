@@ -6,6 +6,9 @@ Wednesday, July 30, 2025
 
 /* Model Switch Styles */
 .chat-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -15,6 +18,7 @@ Wednesday, July 30, 2025
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
     background: #173880;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Optional: add a shadow for better visual separation */
 }
 .chat-header span { color: #fff;}
 .chat-close-btn {color: #fff;}
@@ -383,6 +387,7 @@ Wednesday, July 30, 2025
   background: #f1f3f6;
   border-radius: 0;
   padding: 0.7rem;
+  padding-top: 60px; /* Added padding to prevent content from being hidden by sticky header */
   margin-bottom: 0.5rem;
 }
 
@@ -1633,7 +1638,7 @@ body {
   opacity: 0.5;
 }
 .mb-8 {
-  /*margin-bottom: 2rem;*/
+  margin-bottom: 2rem;
 }
 .filter-chips {
   display: flex;

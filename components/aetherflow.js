@@ -330,10 +330,40 @@ function setDefaultWeatherValues() {
 // Initialize robustly depending on load timing
 function _initAetherflowOnce() {
   if (!document.querySelector('.aetherflow-container')) return false;
+  if (window._aetherflowInitialized) {
+    try { window.initAetherflowDashboard(); } catch (e) { console.error(e); }
+    return true;
+  }
   try { window.initAetherflowDashboard(); } catch (e) { console.error(e); }
+  window._aetherflowInitialized = true;
   // Refresh every 30 minutes
   setInterval(window.initAetherflowDashboard, 30 * 60 * 1000);
   return true;
+}
+
+function _observeAetherflowContainer() {
+  if (document.querySelector('.aetherflow-container')) {
+    _initAetherflowOnce();
+    return;
+  }
+
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType !== 1) continue;
+        if (node.matches('.aetherflow-container') || node.querySelector('.aetherflow-container')) {
+          _initAetherflowOnce();
+          observer.disconnect();
+          return;
+        }
+      }
+    }
+  });
+
+  observer.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true
+  });
 }
 
 if (document.readyState === 'loading') {
@@ -342,3 +372,4 @@ if (document.readyState === 'loading') {
   // DOM already ready
   _initAetherflowOnce();
 }
+_observeAetherflowContainer();

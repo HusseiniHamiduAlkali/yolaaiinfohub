@@ -246,8 +246,8 @@ window.addEventListener('load', () => {
       const section = parts[1] || '';
       const file = parts[parts.length - 1];
 
-      // Determine target language from app settings
-      const appLang = (window.getCurrentAppLanguage && window.getCurrentAppLanguage()) || localStorage.getItem('appLanguage') || 'en';
+      // Determine target language from app settings (prefer i18n API)
+      const appLang = (window.getAppLanguage && window.getAppLanguage()) || (window.getCurrentAppLanguage && window.getCurrentAppLanguage && window.getCurrentAppLanguage()) || localStorage.getItem('appLanguage') || 'en';
       const code = (appLang || 'en').toString().substring(0,2).toLowerCase();
       const langMap = { en: 'En', ar: 'Ar', fr: 'Fr', ha: 'Ha', ff: 'Fu', fu: 'Fu', yo: 'Yo', ig: 'Ig', pcm: 'Pi', pi: 'Pi' };
       const targetFolder = langMap[code] || 'En';
@@ -291,6 +291,9 @@ window.addEventListener('load', () => {
       loader.textContent = 'Translating page—please wait…';
       document.documentElement.appendChild(loader);
 
+      // helper to safely remove the loader later
+      const removeLoaderLater = (delay = 6000) => setTimeout(() => { try { loader.remove(); } catch (e) {} }, delay);
+
       const languageName = (window.SUPPORTED_LANGUAGES && window.SUPPORTED_LANGUAGES[code]) || (code === 'en' ? 'English' : code);
       const instruction = `Translate the following HTML page into ${languageName}. Preserve all HTML tags, attributes, scripts and inline styles. ONLY translate visible user-facing text (headings, paragraphs, link text, button labels, alt text). Do NOT change URLs, data- attributes, or structural markup. Return only the translated full HTML.`;
 
@@ -311,20 +314,29 @@ window.addEventListener('load', () => {
         if (!r.ok) {
           console.error('Gemini proxy returned error status', r.status, data || dataText);
           if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation failed (server error ${r.status}). Check console for details.</div>`;
+          removeLoaderLater();
           return;
         }
 
-        const translated = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        let translated = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
         if (!translated) {
           console.error('No translated text returned; proxy body:', data || dataText);
           if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation failed — no translated content returned. See console for proxy response.</div>`;
+          removeLoaderLater();
           return;
         }
+
+        // Normalize common CSS paths in translated HTML to avoid 404s
+        try {
+          // Replace patterns like /details/Servi/details.css or details/Servi/details.css -> /details/details.css
+          translated = translated.replace(/\/?details\/[A-Za-z0-9_-]+\/details\.css/g, '/details/details.css');
+        } catch (e) { /* ignore */ }
 
         // Cache translated HTML for session
         try { sessionStorage.setItem(cacheKey, translated); } catch (e) { /* ignore storage errors */ }
 
         // Update history and replace entire document with translated HTML
+        try { loader.remove(); } catch (e) { /* ignore */ }
         history.pushState({}, '', href);
         document.open();
         document.write(translated);
@@ -332,6 +344,7 @@ window.addEventListener('load', () => {
       } catch (err) {
         console.error('Translation error', err);
         if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation error. Check console for details.</div>`;
+        removeLoaderLater();
         return;
       }
     } catch (outerErr) {

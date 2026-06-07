@@ -337,6 +337,8 @@ if (typeof window.createCustomSelect === 'undefined') {
       const code = opt.value;
       const text = opt.textContent || code;
       const flag = opt.dataset.flag || '';
+      // name-only (from dataset if available, otherwise try to parse after the hyphen)
+      const nameOnly = opt.dataset.name || (text.includes('—') ? text.split('—').slice(1).join('—').trim() : text);
       const li = document.createElement('li');
       li.className = 'custom-select-item';
       li.setAttribute('role', 'option');
@@ -361,9 +363,9 @@ if (typeof window.createCustomSelect === 'undefined') {
       li.addEventListener('click', () => {
         native.value = code;
         img.src = flag || '';
-        // update both spans
+        // update title to the short code, and name to the full name only (no code prefix)
         titleSpan.textContent = code;
-        nameSpan.textContent = text;
+        nameSpan.textContent = nameOnly || '';
         list.style.display = 'none';
         button.setAttribute('aria-expanded', 'false');
         const ev = new Event('change', { bubbles: true });
@@ -374,12 +376,13 @@ if (typeof window.createCustomSelect === 'undefined') {
     // initialize button with native's current value
     const initOpt = native.querySelector(`option[value="${native.value}"]`) || native.options[0];
     const initCode = initOpt ? (initOpt.value || '') : (native.value || '');
-    const initName = initOpt ? (initOpt.textContent || initCode) : initCode;
+    const initText = initOpt ? (initOpt.textContent || initCode) : initCode;
     const initFlag = initOpt ? (initOpt.dataset.flag || '') : '';
+    const initNameOnly = initOpt ? (initOpt.dataset.name || (initText.includes('—') ? initText.split('—').slice(1).join('—').trim() : initText)) : '';
     img.src = initFlag || '';
-    // populate both spans
+    // populate both spans: title shows code, name shows full name only
     titleSpan.textContent = initCode || '';
-    nameSpan.textContent = initName || '';
+    nameSpan.textContent = initNameOnly || '';
 
     button.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -466,13 +469,11 @@ window.initCurrencyConverter = async function() {
     amountInput: card.querySelector('.currency-card-amount'),
     flagImg: card.querySelector('img.flag-img-sm'),
     titleEl: card.querySelector('.currency-card-title'),
-    nameEl: card.querySelector('.currency-card-name'),
-    valueDisplay: card.querySelector('.currency-card-value'),
-    rateDisplay: card.querySelector('.currency-rate')
+    nameEl: card.querySelector('.currency-card-name')
   }));
 
-  if (cardStates.some(state => !state.select || !state.amountInput || !state.valueDisplay || !state.rateDisplay)) {
-    console.warn('Currency card markup is missing required elements');
+  if (cardStates.some(state => !state.select || !state.amountInput)) {
+    console.warn('Currency card markup is missing required elements (select or input)');
     return;
   }
 
@@ -510,6 +511,7 @@ window.initCurrencyConverter = async function() {
       option.value = code;
       const info = window.currencyData[code] || { name: code, flag: '' };
       option.textContent = `${code} — ${info.name || code}`;
+      option.dataset.name = info.name || code;
       if (info.flag) option.dataset.flag = info.flag;
       state.select.appendChild(option);
     });
@@ -545,7 +547,6 @@ window.initCurrencyConverter = async function() {
     if (isNaN(activeAmount) || activeState.amountInput.value === '') {
       cardStates.forEach(state => {
         state.amountInput.value = '';
-        state.valueDisplay.textContent = '0.00';
       });
       return;
     }
@@ -562,8 +563,6 @@ window.initCurrencyConverter = async function() {
       const currency = state.select.value;
       const rate = rates[currency];
       const converted = Number.isFinite(rate) ? usdAmount * rate : 0;
-      state.valueDisplay.textContent = formatDisplayValue(converted);
-      state.rateDisplay.textContent = `1 USD = ${Number.isFinite(rate) ? rate.toFixed(4) : '0.0000'} ${currency}`;
       if (index !== activeIndex) {
         state.amountInput.value = formatInputValue(converted);
       }
@@ -571,28 +570,32 @@ window.initCurrencyConverter = async function() {
   };
 
   function updateCurrencyCardLabels(state) {
-    const code = state.select.value;
-    const info = window.currencyData[code] || { name: code, symbol: code };
-    // Keep the visible card title as the currency code
-    state.titleEl.textContent = code;
-    state.nameEl.textContent = info.name || code;
-    state.flagImg.alt = `${code} flag`;
-    if (info.flag) {
-      // update the small flag img inside the card (kept for fallback/visual)
-      try { state.flagImg.src = info.flag; } catch (e) {}
-    }
-    // If a custom select button exists, update its image and label too
+    const code = state.select && state.select.value ? state.select.value : '';
+    const info = window.currencyData && window.currencyData[code] ? window.currencyData[code] : { name: code, symbol: code };
+
+    // Prefer the custom select button for displaying label and flag
     if (state._customButton) {
       const btnImg = state._customButton.querySelector('img.custom-select-flag');
       const btnTitle = state._customButton.querySelector('.custom-select-title');
       const btnName = state._customButton.querySelector('.custom-select-name');
       if (btnImg) btnImg.src = info.flag || '';
-      if (btnTitle) btnTitle.textContent = code;
-      if (btnName) btnName.textContent = info.name || code;
+      if (btnTitle) btnTitle.textContent = code || '';
+      if (btnName) btnName.textContent = info.name || '';
+    } else {
+      // Fallback to legacy elements if present
+      if (state.titleEl) state.titleEl.textContent = code || '';
+      if (state.nameEl) state.nameEl.textContent = info.name || code || '';
+      if (state.flagImg) {
+        state.flagImg.alt = `${code} flag`;
+        if (info.flag) {
+          try { state.flagImg.src = info.flag; } catch (e) {}
+        }
+      }
     }
+
     // Update the prefix (currency symbol) if present
     if (state._prefix) {
-      try { state._prefix.textContent = info.symbol || code; } catch (e) {}
+      try { state._prefix.textContent = info.symbol || code || ''; } catch (e) {}
     }
   }
 

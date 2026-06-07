@@ -161,8 +161,8 @@ window.SettingsPage = {
         if (isUserLoggedIn) {
           saveSettingToServer('language', v);
         } else {
-          // Save to localStorage for unauthenticated users
-          localStorage.setItem('language', v);
+          // Save to localStorage for unauthenticated users (use same key as i18n)
+          localStorage.setItem('appLanguage', v);
         }
         // re-apply translations after change
         setTimeout(()=>{

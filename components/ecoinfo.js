@@ -563,12 +563,32 @@ window.renderSection = function() {
   return fetch('templates/eco.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
     
-    // Load chat history AFTER template is inserted
-    setTimeout(() => { 
+    // Initialize Eco section features and weather dashboard after template injection
+    setTimeout(() => {
+      if (typeof window.initEcoFeatures === 'function') {
+        window.initEcoFeatures();
+      }
+
+      const initializeAetherflow = () => {
+        if (typeof window.initAetherflowDashboard === 'function') {
+          window.initAetherflowDashboard();
+        } else if (!window.aetherflowLoaded) {
+          const script = document.createElement('script');
+          script.src = 'components/aetherflow.js';
+          script.onload = () => {
+            window.aetherflowLoaded = true;
+            if (typeof window.initAetherflowDashboard === 'function') {
+              window.initAetherflowDashboard();
+            }
+          };
+          document.head.appendChild(script);
+        }
+      };
+
+      initializeAetherflow();
       window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('eco', 'chat-messages');
-      // Ensure auto-scroll observer is attached for this section
       window.observeChatContainers && window.observeChatContainers();
-    }, 50);
+    }, 100);
     
     // Wire model toggle after template is inserted
     const mt = document.getElementById('model-toggle');
