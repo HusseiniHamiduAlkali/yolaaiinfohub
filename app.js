@@ -78,6 +78,10 @@ if (!window.loadSection || typeof window.__performLoadSection !== 'function') {
 
             // Update URL without reload
             history.pushState({section}, '', '/' + (section === 'home' ? '' : section));
+            // Highlight the active navigation link after loading the section
+            if (window.highlightActiveNav) {
+                window.highlightActiveNav(section);
+            }
         }
 
         // Update navbar active state
@@ -295,54 +299,132 @@ window.addEventListener('load', () => {
       const removeLoaderLater = (delay = 6000) => setTimeout(() => { try { loader.remove(); } catch (e) {} }, delay);
 
       const languageName = (window.SUPPORTED_LANGUAGES && window.SUPPORTED_LANGUAGES[code]) || (code === 'en' ? 'English' : code);
-      const instruction = `Translate the following HTML page into ${languageName}. Preserve all HTML tags, attributes, scripts and inline styles. ONLY translate visible user-facing text (headings, paragraphs, link text, button labels, alt text). Do NOT change URLs, data- attributes, or structural markup. Return only the translated full HTML.`;
 
-      const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
-        : '/api/gemini';
-
+      // Client-side translation: parse the fetched HTML, find visible text nodes,
+      // translate them in batches using public translate endpoints (LibreTranslate -> Google fallback),
+      // replace only text nodes (do not touch attributes or links), then serialize and write.
       try {
-        const payload = { model: 'gemini-2.5-pro', contents: [{ text: instruction + '\n\n' + htmlText }] };
-        console.log('Translating via API URL:', apiUrl, 'payload size:', (payload.contents[0].text || '').length);
-        const r = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), credentials: 'include' });
-        let dataText = '';
-        try { dataText = await r.text(); } catch (e) { dataText = ''; }
-        let data = null;
-        try { data = dataText ? JSON.parse(dataText) : null; } catch (e) { data = null; }
-        console.log('Gemini proxy response status:', r.status, 'body parsed:', !!data, 'raw length:', dataText.length);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
 
-        if (!r.ok) {
-          console.error('Gemini proxy returned error status', r.status, data || dataText);
-          if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation failed (server error ${r.status}). Check console for details.</div>`;
-          removeLoaderLater();
+        // Collect visible text nodes
+        function isVisibleNode(node) {
+          if (!node || node.nodeType !== Node.TEXT_NODE) return false;
+          const text = node.textContent.trim();
+          if (!text) return false;
+          const parent = node.parentElement;
+          if (!parent) return false;
+          const tag = parent.tagName.toLowerCase();
+          if (['script', 'style', 'noscript', 'code', 'pre'].includes(tag)) return false;
+          // ignore ARIA-hidden or hidden elements
+          try { if (parent.closest && parent.closest('[aria-hidden="true"]')) return false; } catch (e) {}
+          try { if (parent.hasAttribute && parent.hasAttribute('hidden')) return false; } catch (e) {}
+          return true;
+        }
+
+        const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        let node;
+        while (node = walker.nextNode()) {
+          try { if (isVisibleNode(node)) textNodes.push(node); } catch (e) { /* ignore */ }
+        }
+
+        // If nothing to translate, write original HTML
+        if (!textNodes.length) {
+          try { loader.remove(); } catch (e) {}
+          history.pushState({}, '', href);
+          document.open(); document.write(htmlText); document.close();
           return;
         }
 
-        let translated = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        if (!translated) {
-          console.error('No translated text returned; proxy body:', data || dataText);
-          if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation failed — no translated content returned. See console for proxy response.</div>`;
-          removeLoaderLater();
-          return;
+        const texts = textNodes.map(n => n.textContent.trim());
+
+        function chunkBySize(items, maxChars = 2500) {
+          const chunks = [];
+          let cur = [];
+          let curLen = 0;
+          for (const it of items) {
+            const len = (it || '').length + 1;
+            if (curLen + len > maxChars && cur.length) {
+              chunks.push(cur);
+              cur = [it];
+              curLen = len;
+            } else {
+              cur.push(it);
+              curLen += len;
+            }
+          }
+          if (cur.length) chunks.push(cur);
+          return chunks;
         }
 
-        // Normalize common CSS paths in translated HTML to avoid 404s
-        try {
-          // Replace patterns like /details/Servi/details.css or details/Servi/details.css -> /details/details.css
-          translated = translated.replace(/\/?details\/[A-Za-z0-9_-]+\/details\.css/g, '/details/details.css');
-        } catch (e) { /* ignore */ }
+        const chunks = chunkBySize(texts, 2500);
 
-        // Cache translated HTML for session
-        try { sessionStorage.setItem(cacheKey, translated); } catch (e) { /* ignore storage errors */ }
+        async function translateChunk(chunkArray, source = 'en', target = code) {
+          const DELIM = '\n---yola-delim---\n';
+          const joined = chunkArray.join(DELIM);
 
-        // Update history and replace entire document with translated HTML
-        try { loader.remove(); } catch (e) { /* ignore */ }
+          // Try LibreTranslate
+          try {
+            const resp = await fetch('https://libretranslate.de/translate', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ q: joined, source, target, format: 'text' })
+            });
+            if (resp.ok) {
+              const body = await resp.json();
+              if (body && body.translatedText) {
+                return body.translatedText.split(DELIM);
+              }
+            }
+          } catch (e) { console.warn('LibreTranslate attempt failed', e && e.message); }
+
+          // Fallback: Google Translate undocumented endpoint
+          try {
+            const url = new URL('https://translate.googleapis.com/translate_a/single');
+            url.searchParams.set('client', 'gtx');
+            url.searchParams.set('sl', 'en');
+            url.searchParams.set('tl', code);
+            url.searchParams.set('dt', 't');
+            for (const part of chunkArray) url.searchParams.append('q', part);
+            const resp = await fetch(url.toString());
+            if (resp.ok) {
+              const body = await resp.json();
+              const results = [];
+              if (Array.isArray(body) && Array.isArray(body[0])) {
+                for (let i = 0; i < body[0].length; i++) {
+                  const seg = body[0][i];
+                  results.push((seg && seg[0]) ? seg[0] : '');
+                }
+                return results;
+              }
+            }
+          } catch (e) { console.warn('Google translate fallback failed', e && e.message); }
+
+          return chunkArray.map(x => x);
+        }
+
+        const translatedSegments = [];
+        for (const c of chunks) {
+          const t = await translateChunk(c);
+          translatedSegments.push(...t);
+        }
+
+        for (let i = 0; i < textNodes.length; i++) {
+          const newText = translatedSegments[i] || textNodes[i].textContent;
+          const original = textNodes[i].textContent;
+          const leading = (original.match(/^\s*/ ) || [''])[0];
+          const trailing = (original.match(/\s*$/ ) || [''])[0];
+          textNodes[i].textContent = leading + newText + trailing;
+        }
+
+        const serialized = '<!doctype html>\n' + doc.documentElement.outerHTML;
+        try { sessionStorage.setItem(cacheKey, serialized); } catch (e) { /* ignore */ }
+        try { loader.remove(); } catch (e) {}
         history.pushState({}, '', href);
-        document.open();
-        document.write(translated);
-        document.close();
+        document.open(); document.write(serialized); document.close();
+        return;
       } catch (err) {
-        console.error('Translation error', err);
+        console.error('Client-side translation error', err);
         if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation error. Check console for details.</div>`;
         removeLoaderLater();
         return;

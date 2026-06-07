@@ -450,13 +450,14 @@
         .currency-input-wrapper { position: relative; }
         .currency-prefix {
           position: absolute;
-          left: 12px;
-          top: 50%;
+          left: 30px;
+          top: 36%;
           transform: translateY(-50%);
-          font-weight: 700;
+          font-weight: normal;
           pointer-events: none;
           color: var(--on-surface-variant);
           font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+          font-size: 24px;
         }
         .currency-input-wrapper .currency-card-amount {
           padding-left: 48px !important;

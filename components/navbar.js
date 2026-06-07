@@ -6,6 +6,10 @@ window.__originalPCLayout = window.__originalPCLayout || null;
 // This avoids any reliance on persistent storage so the navbar always
 // reflects the live address bar.
 function getSectionFromUrl() {
+  // First use history state if available, then fall back to the URL path.
+  if (window.history && window.history.state && typeof window.history.state.section === 'string') {
+    return window.history.state.section.toLowerCase();
+  }
   let path = window.location.pathname.replace(/^\/+/, '').toLowerCase();
   if (!path || path === '' || path === 'index.html') return 'home';
   path = path.split('/').pop().split('?')[0].split('#')[0];
@@ -77,9 +81,12 @@ async function fetchWithTimeout(resource, options = {}, timeout = 3000) {
 
 // Highlight active section helper (invoked after navigation)
 window.highlightActiveNav = function(section) {
-  // If no section provided, infer from URL
+  // If no section provided, infer from a saved state, history state, or URL.
   if (!section || section === '' || section === 'index.html') {
-    section = getSectionFromUrl();
+    section = window.currentSection || window.history.state?.section || getSectionFromUrl();
+  }
+  if (typeof section === 'string') {
+    section = section.toLowerCase();
   }
 
   // keep current section in memory only
@@ -211,7 +218,7 @@ function renderNavbar(isLoading = false) {
   document.body.prepend(nav);
 
   // Highlight active nav after appending
-  window.highlightActiveNav();
+  window.highlightActiveNav(window.currentSection || window.history.state?.section || getSectionFromUrl());
 
   // Wire up auth button events after DOM is in place
   setTimeout(() => {
@@ -540,6 +547,7 @@ function renderNavbar(isLoading = false) {
           btn.setAttribute('data-i18n', link.i18n);
           btn.textContent = link.name;
           btn.onclick = () => {
+            window.highlightActiveNav(link.section);
             window.loadSection(link.section);
             mobileMenu.classList.remove('show');
             setTimeout(() => mobileMenu.remove(), 300);
@@ -552,10 +560,10 @@ function renderNavbar(isLoading = false) {
         mobileMenu.appendChild(linksList);
         
         document.body.appendChild(mobileMenu);
-        window.highlightActiveNav();
+        window.highlightActiveNav(window.currentSection || window.history.state?.section || getSectionFromUrl());
         setTimeout(() => mobileMenu.classList.add('show'), 10);
       } else {
-        window.highlightActiveNav();
+        window.highlightActiveNav(window.currentSection || window.history.state?.section || getSectionFromUrl());
         mobileMenu.classList.add('show');
       }
     };

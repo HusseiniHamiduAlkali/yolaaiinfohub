@@ -127,6 +127,9 @@
     // Section loader for auth and main pages
     // Internal loader that actually performs the section load. Returns a Promise.
     window.__performLoadSection = function(section) {
+      if (typeof section === 'string') {
+        window.currentSection = section.toLowerCase();
+      }
       // shared UI handles used by both the loader and the TomTom preloader
       const navbarDiv = document.getElementById('navbar');
       const minimalAppbar = `<div class="minimal-appbar"><span class="appname">Yola AI Info Hub</span></div>`;

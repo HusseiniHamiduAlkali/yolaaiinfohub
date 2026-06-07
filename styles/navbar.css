@@ -404,11 +404,11 @@ nav.navbar {
 
 /* Highlight for active nav button */
 .navbar-links button.active,
-.mobile-menu button.active {
-  background: #e4e4e4 !important;
-  color: black !important;
-  box-shadow: 0 2px 8px 0 rgba(43, 108, 176, 0.1);
-  font-weight: 500;
+.mobile-menu li button.active {
+  background: #bcbfc1 !important; /* A distinct blue */
+  color: #222 !important;
+  box-shadow: 0 2px 8px 0 rgba(43, 108, 176, 0.3);
+  font-weight: 600;
   border-radius: 8px;
   z-index: 2;
   position: relative;
