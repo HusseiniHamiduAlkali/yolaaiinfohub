@@ -1,3 +1,2 @@
-[submodule "frontend"]
+# .gitmodules cleaned: frontend submodule removed
 	path = frontend
-	url = https://github.com/HusseiniHamiduAlkali/yolaaiinfohub.git
