@@ -7,6 +7,14 @@ if (!window.commonAILoaded) {
   document.head.appendChild(script);
 }
 
+// Load AetherFlow dashboard
+if (!window.aetherflowLoaded) {
+  const script = document.createElement('script');
+  script.src = 'components/aetherflow.js';
+  script.onload = () => { window.aetherflowLoaded = true; };
+  document.head.appendChild(script);
+}
+
 // --- Estimate Air Quality based on weather conditions ---
 window.estimateAirQuality = function(weatherData) {
   const airQualityElement = document.querySelector('.air-quality');

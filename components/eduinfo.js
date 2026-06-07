@@ -260,48 +260,7 @@ window.sendEduMessage = async function(faqText = '') {
     window.eduAbortController = null;
 };
 
-// Common helper for Gemini API call
+// Common helper for Gemini API call - delegated to central commonAI
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
-  const contents = {
-    parts: []
-  };
-  if (imageData) {
-    contents.parts.push({
-      inlineData: {
-        mimeType: "image/jpeg",
-        data: imageData.split(',')[1]
-      }
-    });
-  }
-  const promptGuide = localStorage.getItem('edu_ai_prompt') || EDU_AI_PROMPT;
-  contents.parts.push({
-    text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
-  });
-  const modelVersion = 'gemini-2.5-flash';
-  let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-  const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
-    : '/api/gemini';
-  
-  let response;
-  try {
-    const fetchOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body
-    };
-    if (signal) {
-      fetchOptions.signal = signal;
-    }
-
-    response = await fetch(url, fetchOptions);
-    
-    let data = await response.json();
-    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      throw err; // Re-throw abort errors to be handled by caller
-    }
-    throw new Error("Failed to get response from AI service");
-  }
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'edu');
 }

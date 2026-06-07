@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NexRate - Premium Currency Dashboard</title>
+<style>
+        /* Base Reset & Variables */
+        :root {
+            --primary: #000000;
+            --on-primary: #ffffff;
+            --primary-container: #131b2e;
+            --on-primary-container: #7c839b;
+            --secondary: #006c49;
+            --on-secondary: #ffffff;
+            --secondary-container: #6cf8bb;
+            --on-secondary-container: #00714d;
+            --tertiary-container: #001a42;
+            --on-tertiary-container: #3980f4;
+            --tertiary-fixed: #d8e2ff;
+            --background: #f7f9fb;
+            --surface: #f7f9fb;
+            --on-surface: #191c1e;
+            --on-surface-variant: #45464d;
+            --surface-container: #eceef0;
+            --surface-container-low: #f2f4f6;
+            --surface-container-lowest: #ffffff;
+            --surface-container-high: #e6e8ea;
+            --surface-container-highest: #e0e3e5;
+            --outline: #76777d;
+            --outline-variant: #c6c6cd;
+            --error: #ba1a1a;
+            --error-container: #ffdad6;
+            
+            --font-body: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --font-display: 'Segoe UI Semibold', 'Segoe UI Bold', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            
+            --radius-default: 0.125rem;
+            --radius-lg: 0.25rem;
+            --radius-xl: 0.5rem;
+            --radius-full: 0.75rem;
+            
+            --spacing-xs: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 24px;
+            --spacing-lg: 40px;
+            --spacing-xl: 64px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--background);
+            color: var(--on-surface);
+            line-height: 1.5;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Layout Structure */
+        aside {
+            width: 256px;
+            height: 100vh;
+            background-color: var(--surface-container-low);
+            border-right: 1px solid var(--outline-variant);
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-sm);
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 40;
+        }
+
+        main {
+            margin-left: 256px;
+            width: calc(100% - 256px);
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            height: 64px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--outline-variant);
+            padding: 0 var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+
+        /* Common Elements */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-md);
+            transition: transform 0.2s ease;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md) var(--spacing-lg);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        /* Typography */
+        h1 { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--primary); }
+        h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+        h3 { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+        .label-md { font-family: var(--font-mono); font-size: 14px; font-weight: 500; }
+        .label-sm { font-family: var(--font-mono); font-size: 12px; font-weight: 500; }
+        .text-variant { color: var(--on-surface-variant); }
+        .text-secondary { color: var(--secondary); }
+        .text-error { color: var(--error); }
+
+        /* Sidebar Nav */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-sm);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: var(--on-surface-variant);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .nav-item.active {
+            background-color: var(--secondary-container);
+            color: var(--on-secondary-container);
+            font-weight: bold;
+        }
+
+        .nav-item:not(.active):hover {
+            background-color: var(--surface-container-highest);
+        }
+
+        .nav-item svg { margin-right: var(--spacing-sm); width: 24px; height: 24px; }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: var(--spacing-sm);
+            background: var(--surface-container-lowest);
+            border-radius: var(--radius-full);
+            border: 1px solid var(--outline-variant);
+        }
+
+        /* Dashboard Components */
+        .banner {
+            background-color: var(--primary-container);
+            color: white;
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-input-group {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 4px;
+            max-width: 384px;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .banner-input-group input {
+            background: transparent;
+            border: none;
+            color: white;
+            flex-grow: 1;
+            padding: 0 var(--spacing-sm);
+            outline: none;
+        }
+
+        .btn-update {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        /* Grid Layouts */
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: var(--spacing-md);
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .grid-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface-container-lowest);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--outline-variant);
+            padding: var(--spacing-md);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        /* Chart Area */
+        .chart-container {
+            height: 256px;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(0, 108, 73, 0.05) 0%, rgba(0, 108, 73, 0) 100%);
+            border-radius: var(--radius-xl);
+            border-left: 1px solid rgba(118, 119, 125, 0.1);
+            border-bottom: 1px solid rgba(118, 119, 125, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-path {
+            fill: none;
+            stroke: var(--secondary);
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+
+        .chart-fill {
+            fill: rgba(0, 108, 73, 0.05);
+        }
+
+        /* Activity Items */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .activity-item:hover {
+            background: var(--surface-container-low);
+        }
+
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+
+        /* Utility Classes */
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .space-x-sm > * + * { margin-left: var(--spacing-sm); }
+        .space-x-xs > * + * { margin-left: var(--spacing-xs); }
+        .mt-md { margin-top: var(--spacing-md); }
+        .mb-sm { margin-bottom: var(--spacing-sm); }
+        .p-sm { padding: var(--spacing-sm); }
+        .rounded-full { border-radius: 50%; }
+        .w-full { width: 100%; }
+
+        @media (max-width: 1024px) {
+            aside { display: none; }
+            main { margin-left: 0; width: 100%; }
+            .grid-main, .grid-cards, .grid-content { grid-template-columns: 1fr; }
+            .mobile-nav { display: flex; }
+        }
+
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--surface-container);
+            border-top: 1px solid var(--outline-variant);
+            padding: 8px;
+            justify-content: space-around;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<aside>
+<div style="margin-bottom: var(--spacing-xl); padding: 0 var(--spacing-sm);">
+<h1>NexRate Pro</h1>
+<p class="label-md text-variant" style="opacity: 0.7;">Premium Plan</p>
+</div>
+<nav>
+<div class="nav-item active">
+<svg fill="currentColor" viewbox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path></svg>
+            Dashboard
+        </div>
+<div class="nav-item">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M16 3L21 8L16 13"></path><path d="M21 8H9C6.23858 8 4 10.2386 4 13V21"></path><path d="M8 21L3 16L8 11"></path></svg>
+            Converter
+        </div>
+<div class="nav-item">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M3 3V21H21"></path><path d="M19 9L14 14L10 10L3 17"></path></svg>
+            Charts
+        </div>
+<div class="nav-item">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"></path><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Settings
+        </div>
+</nav>
+<div class="sidebar-footer">
+<div class="flex items-center space-x-sm mb-sm">
+<div style="width: 40px; height: 40px; background: var(--tertiary-fixed); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+<svg fill="currentColor" height="24" viewbox="0 0 24 24" width="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>
+</div>
+<div style="overflow: hidden;">
+<p style="font-weight: bold; font-size: 14px;">Alex Sterling</p>
+<p style="font-size: 11px; color: var(--on-surface-variant);">Admin Access</p>
+</div>
+</div>
+<button style="width: 100%; background: var(--primary); color: white; border: none; padding: 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 12px; cursor: pointer;">Upgrade Now</button>
+</div>
+</aside>
+<!-- Main Content -->
+<main>
+<header>
+<div class="flex items-center space-x-sm">
+<h2>Dashboard</h2>
+<div style="display: flex; align-items: center; background: var(--surface-container-low); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--outline-variant); margin-left: 24px;">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20"><circle cx="11" cy="11" r="8"></circle><path d="M21 21L16.65 16.65"></path></svg>
+<input placeholder="Search markets..." style="background: transparent; border: none; outline: none; padding: 4px 8px; width: 256px;" type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-sm">
+<div class="flex items-center space-x-xs" style="background: rgba(0, 108, 73, 0.05); padding: 4px 12px; border-radius: 20px;">
+<div style="width: 8px; height: 8px; background: var(--secondary); border-radius: 50%;"></div>
+<span style="color: var(--secondary); font-family: var(--font-mono); font-size: 12px;">Market Open</span>
+</div>
+<svg fill="none" height="24" stroke="currentColor" stroke-width="2" style="cursor: pointer; color: var(--on-surface-variant);" viewbox="0 0 24 24" width="24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+<svg fill="none" height="24" stroke="currentColor" stroke-width="2" style="cursor: pointer; color: var(--on-surface-variant);" viewbox="0 0 24 24" width="24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+</div>
+</header>
+<div class="container">
+<!-- API Banner -->
+<section class="banner">
+<div class="flex items-center">
+<div style="background: rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 8px; margin-right: 16px;">
+<svg fill="currentColor" height="24" style="color: var(--tertiary-fixed);" viewbox="0 0 24 24" width="24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"></path></svg>
+</div>
+<div>
+<h3 style="color: white;">Connect Your Exchange API</h3>
+<p style="color: var(--on-primary-container); font-size: 14px;">Enter your NexRate Pro Key to enable real-time liquidity analysis.</p>
+</div>
+</div>
+<div class="banner-input-group">
+<input readonly="" type="password" value="••••••••••••••••"/>
+<button class="btn-update">Update</button>
+</div>
+<!-- Decorative SVG Blob -->
+<svg style="position: absolute; right: -50px; top: -50px; opacity: 0.1; width: 300px;" viewbox="0 0 200 200">
+<path d="M44.7,-76.4C58.1,-69.2,69.2,-58.1,77.3,-44.7C85.4,-31.3,90.5,-15.7,89.2,-0.7C88,14.2,80.4,28.4,71.2,40.7C62,53.1,51.2,63.6,38.3,71.1C25.4,78.6,10.4,83.1,-4.2,86.1C-18.7,89,-32.8,90.4,-45.8,84.7C-58.8,79.1,-70.7,66.4,-78.3,52.2C-85.9,37.9,-89.2,22.1,-89,6.5C-88.8,-9.1,-85.1,-24.5,-77.3,-38.3C-69.5,-52.1,-57.6,-64.3,-43.8,-71.2C-30,-78.1,-15,-79.7,0.3,-80.3C15.6,-80.9,31.3,-83.6,44.7,-76.4Z" fill="#FFFFFF" transform="translate(100 100)"></path>
+</svg>
+</section>
+<!-- Main Dashboard Section -->
+<section class="grid-main">
+<!-- Base Currency -->
+<div class="card flex flex-col justify-between">
+<div>
+<label class="label-md text-variant flex items-center mb-sm">
+<svg fill="currentColor" height="18" style="color: var(--secondary); margin-right: 8px;" viewbox="0 0 24 24" width="18"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"></path></svg>
+                        BASE CURRENCY
+                    </label>
+<div class="flex items-center" style="border-bottom: 1px solid var(--outline-variant); padding-bottom: 16px;">
+<div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; margin-right: 12px; font-weight: bold;">US</div>
+<div>
+<h4 style="font-size: 18px;">USD</h4>
+<p class="text-variant" style="font-size: 12px;">US Dollar</p>
+</div>
+<svg height="20" style="margin-left: auto; color: var(--outline);" viewbox="0 0 24 24" width="20"><path d="M7 10l5 5 5-5H7z"></path></svg>
+</div>
+</div>
+<div class="mt-md">
+<input style="width: 100%; border: none; font-size: 32px; font-weight: 700; color: var(--primary); background: transparent; outline: none; font-family: var(--font-mono);" type="text" value="1,250.00"/>
+<p class="text-variant" style="font-size: 12px;">Balance: $24,500.82</p>
+</div>
+</div>
+<!-- Targets -->
+<div class="grid-cards">
+<!-- EUR -->
+<div class="glass-panel" style="position: relative; overflow: hidden;">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center">
+<div style="width: 24px; height: 24px; background: #eee; border-radius: 50%; font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 8px;">EU</div>
+<span class="label-md" style="font-weight: 700;">EUR</span>
+</div>
+<span class="text-secondary label-sm" style="font-weight: 700; display: flex; align-items: center;">
+<svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M7 14l5-5 5 5H7z"></path></svg> +0.42%
+                        </span>
+</div>
+<p style="font-size: 20px; font-weight: 700; color: var(--primary);">€1,162.50</p>
+<p class="text-variant" style="font-size: 12px;">1 USD = 0.93 EUR</p>
+<div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--secondary-container);"></div>
+</div>
+<!-- GBP -->
+<div class="glass-panel" style="position: relative; overflow: hidden;">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center">
+<div style="width: 24px; height: 24px; background: #eee; border-radius: 50%; font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 8px;">UK</div>
+<span class="label-md" style="font-weight: 700;">GBP</span>
+</div>
+<span class="text-error label-sm" style="font-weight: 700; display: flex; align-items: center;">
+<svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M7 10l5 5 5-5H7z"></path></svg> -0.15%
+                        </span>
+</div>
+<p style="font-size: 20px; font-weight: 700; color: var(--primary);">£987.40</p>
+<p class="text-variant" style="font-size: 12px;">1 USD = 0.79 GBP</p>
+<div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--error-container);"></div>
+</div>
+<!-- JPY -->
+<div class="glass-panel" style="position: relative; overflow: hidden;">
+<div class="flex justify-between items-start mb-sm">
+<div class="flex items-center">
+<div style="width: 24px; height: 24px; background: #eee; border-radius: 50%; font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 8px;">JP</div>
+<span class="label-md" style="font-weight: 700;">JPY</span>
+</div>
+<span class="text-secondary label-sm" style="font-weight: 700; display: flex; align-items: center;">
+<svg fill="currentColor" height="14" viewbox="0 0 24 24" width="14"><path d="M7 14l5-5 5 5H7z"></path></svg> +1.12%
+                        </span>
+</div>
+<p style="font-size: 20px; font-weight: 700; color: var(--primary);">¥188,750</p>
+<p class="text-variant" style="font-size: 12px;">1 USD = 151.00 JPY</p>
+<div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--secondary-container);"></div>
+</div>
+</div>
+</section>
+<!-- Charts & Activity -->
+<section class="grid-content">
+<!-- Historical Chart -->
+<div class="card">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h3>USD / EUR Performance</h3>
+<p class="text-variant" style="font-size: 14px;">Market trend over the last 30 days</p>
+</div>
+<div class="flex" style="background: var(--surface-container-low); padding: 4px; border-radius: 8px;">
+<button style="padding: 4px 12px; border-radius: 4px; border: none; font-size: 12px; background: transparent; cursor: pointer;">7D</button>
+<button style="padding: 4px 12px; border-radius: 4px; border: none; font-size: 12px; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.1); cursor: pointer;">1M</button>
+<button style="padding: 4px 12px; border-radius: 4px; border: none; font-size: 12px; background: transparent; cursor: pointer;">3M</button>
+<button style="padding: 4px 12px; border-radius: 4px; border: none; font-size: 12px; background: transparent; cursor: pointer;">1Y</button>
+</div>
+</div>
+<div class="chart-container">
+<svg preserveaspectratio="none" style="width: 100%; height: 100%;" viewbox="0 0 1200 256">
+<path class="chart-fill" d="M0,200 Q150,150 300,180 T600,100 T900,120 T1200,50 L1200,256 L0,256 Z"></path>
+<path class="chart-path" d="M0,200 Q150,150 300,180 T600,100 T900,120 T1200,50"></path>
+<circle cx="900" cy="120" fill="#006c49" r="6" stroke="white" stroke-width="2"></circle>
+</svg>
+<!-- Tooltip -->
+<div class="glass-panel" style="position: absolute; top: 60px; left: 72%; padding: 4px 12px; border-radius: 8px; pointer-events: none;">
+<p style="font-weight: 700; font-size: 12px; color: var(--primary);">0.9342 EUR</p>
+<p style="font-size: 10px; color: var(--on-surface-variant);">May 14, 2024</p>
+</div>
+</div>
+<div class="flex justify-between mt-md" style="padding-top: 16px; border-top: 1px solid var(--outline-variant);">
+<div class="flex space-x-sm">
+<div style="margin-right: 24px;">
+<p style="font-size: 10px; text-transform: uppercase; color: var(--on-surface-variant);">High</p>
+<p style="font-weight: 700; font-family: var(--font-mono);">0.9542</p>
+</div>
+<div style="margin-right: 24px;">
+<p style="font-size: 10px; text-transform: uppercase; color: var(--on-surface-variant);">Low</p>
+<p style="font-weight: 700; font-family: var(--font-mono);">0.9102</p>
+</div>
+<div>
+<p style="font-size: 10px; text-transform: uppercase; color: var(--on-surface-variant);">Volatility</p>
+<p style="font-weight: 700; font-family: var(--font-mono); color: var(--secondary);">Low (0.12%)</p>
+</div>
+</div>
+<button style="background: none; border: none; color: var(--secondary); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center;">
+                        Detailed Report <svg fill="none" height="16" stroke="currentColor" stroke-width="2" style="margin-left: 4px;" viewbox="0 0 24 24" width="16"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" x2="21" y1="14" y2="3"></line></svg>
+</button>
+</div>
+</div>
+<!-- Activity -->
+<div class="card flex flex-col">
+<div class="flex justify-between items-center mb-sm">
+<h3>Recent Activity</h3>
+<svg fill="currentColor" height="20" style="color: var(--outline); cursor: pointer;" viewbox="0 0 24 24" width="20"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path></svg>
+</div>
+<div style="flex-grow: 1;">
+<div class="activity-item">
+<div class="icon-circle" style="background: rgba(108, 248, 187, 0.2);">
+<svg fill="currentColor" height="20" style="color: var(--secondary);" viewbox="0 0 24 24" width="20"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"></path></svg>
+</div>
+<div style="flex-grow: 1;">
+<p style="font-size: 14px; font-weight: 600;">Converted USD to EUR</p>
+<p style="font-size: 11px; color: var(--on-surface-variant);">2 mins ago • Completed</p>
+</div>
+<div style="text-align: right;">
+<p style="font-weight: 700; font-size: 14px;">-$450.00</p>
+<p style="font-size: 11px; color: var(--secondary);">+€418.50</p>
+</div>
+</div>
+<div class="activity-item">
+<div class="icon-circle" style="background: rgba(216, 226, 255, 0.4);">
+<svg fill="currentColor" height="20" style="color: var(--on-tertiary-container);" viewbox="0 0 24 24" width="20"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"></path></svg>
+</div>
+<div style="flex-grow: 1;">
+<p style="font-size: 14px; font-weight: 600;">Deposit Received</p>
+<p style="font-size: 11px; color: var(--on-surface-variant);">1 hour ago • Stripe</p>
+</div>
+<div style="text-align: right;">
+<p style="font-weight: 700; font-size: 14px; color: var(--secondary);">+$1,500.00</p>
+</div>
+</div>
+</div>
+<button style="width: 100%; padding: 12px; border: 1px solid var(--outline-variant); border-radius: 8px; background: transparent; font-family: var(--font-mono); font-size: 12px; margin-top: 16px; cursor: pointer;">View Transaction History</button>
+</div>
+</section>
+</div>
+<!-- Sticky Footer -->
+<footer style="margin-top: auto; background: var(--surface-container-low); border-top: 1px solid var(--outline-variant); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--on-surface-variant);">
+<div class="flex space-x-md">
+<span class="flex items-center"><svg height="14" style="margin-right: 4px;" viewbox="0 0 24 24" width="14"><circle cx="12" cy="12" fill="none" r="10" stroke="currentColor" stroke-width="2"></circle><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-width="2"></path></svg> Last updated: 14:02:45 UTC</span>
+<span class="flex items-center"><svg fill="none" height="14" stroke="currentColor" stroke-width="2" style="margin-right: 4px;" viewbox="0 0 24 24" width="14"><rect height="8" rx="2" width="20" x="2" y="2"></rect><rect height="8" rx="2" width="20" x="2" y="14"></rect><line x1="6" x2="6" y1="6" y2="6"></line><line x1="6" x2="6" y1="18" y2="18"></line></svg> API Status: Optimal</span>
+</div>
+<div class="flex items-center">
+<span style="margin-right: 8px;">Active Traders: 1,402</span>
+<div style="display: flex; margin-right: 12px;">
+<div style="width: 24px; height: 24px; border-radius: 50%; background: #ccc; border: 2px solid white; margin-left: -8px;"></div>
+<div style="width: 24px; height: 24px; border-radius: 50%; background: #ddd; border: 2px solid white; margin-left: -8px;"></div>
+<div style="width: 24px; height: 24px; border-radius: 50%; background: #eee; border: 2px solid white; margin-left: -8px;"></div>
+</div>
+</div>
+</footer>
+</main>
+<!-- Mobile Navigation -->
+<nav class="mobile-nav">
+<div style="text-align: center; color: var(--on-secondary-container); background: var(--secondary-container); padding: 4px 16px; border-radius: 20px;">
+<svg fill="currentColor" height="24" viewbox="0 0 24 24" width="24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"></path></svg>
+<p style="font-size: 10px; font-weight: bold;">Convert</p>
+</div>
+<div style="text-align: center; color: var(--on-surface-variant);">
+<svg fill="none" height="24" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="24"><rect height="7" width="7" x="3" y="3"></rect><rect height="7" width="7" x="14" y="3"></rect><rect height="7" width="7" x="14" y="14"></rect><rect height="7" width="7" x="3" y="14"></rect></svg>
+<p style="font-size: 10px;">Markets</p>
+</div>
+<div style="text-align: center; color: var(--on-surface-variant);">
+<svg fill="none" height="24" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+<p style="font-size: 10px;">Trends</p>
+</div>
+<div style="text-align: center; color: var(--on-surface-variant);">
+<svg fill="none" height="24" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+<p style="font-size: 10px;">Setup</p>
+</div>
+</nav>
+</body></html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AetherFlow | Precision Weather Dashboard</title>
+<style>
+        /* CSS Variables based on Lumina Weather Theme */
+        :root {
+            --primary: #0058bc;
+            --on-primary: #ffffff;
+            --primary-container: #0070eb;
+            --on-primary-container: #fefcff;
+            --secondary: #006c49;
+            --secondary-container: #6cf8bb;
+            --on-secondary-container: #00714d;
+            --tertiary-fixed: #ffdbcc;
+            --primary-fixed: #d8e2ff;
+            --background: #f7f9fb;
+            --surface: #f7f9fb;
+            --surface-container-low: #f2f4f6;
+            --surface-container: #eceef0;
+            --surface-container-highest: #e0e3e5;
+            --on-surface: #191c1e;
+            --on-surface-variant: #414755;
+            --outline-variant: #c1c6d7;
+            --error: #ba1a1a;
+            
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+            --radius-full: 9999px;
+            
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-display: 'Hanken Grotesk', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--background);
+            color: var(--on-surface);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* Layout Structure */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: var(--surface-container-low);
+            border-right: 1px solid var(--outline-variant);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            z-index: 40;
+        }
+
+        .sidebar-brand {
+            padding: 0 16px;
+            margin-bottom: 32px;
+        }
+
+        .sidebar-brand h1 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .sidebar-brand p {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--on-surface-variant);
+            opacity: 0.7;
+        }
+
+        .nav-list {
+            flex: 1;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            text-decoration: none;
+            border-radius: var(--radius-xl);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--on-surface-variant);
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--surface-container-highest);
+        }
+
+        .nav-item.active {
+            background-color: var(--secondary-container);
+            color: var(--on-secondary-container);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            border-top: 1px solid var(--outline-variant);
+            padding-top: 16px;
+        }
+
+        .btn-upgrade {
+            width: 100%;
+            background-color: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            padding: 12px;
+            border-radius: var(--radius-xl);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 8px;
+        }
+
+        .footer-links a {
+            font-size: 10px;
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            font-family: var(--font-mono);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 256px;
+            padding: 0;
+        }
+
+        /* Header */
+        .app-header {
+            height: 64px;
+            background-color: #f7f9fb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+
+        .header-left {
+            display: flex;
+            gap: 24px;
+        }
+
+        .header-link {
+            text-decoration: none;
+            color: var(--on-surface-variant);
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .header-link.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 4px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 448px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background-color: var(--surface-container-low);
+            border: 1px solid var(--outline-variant);
+            padding: 8px 16px 8px 40px;
+            border-radius: var(--radius-full);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--on-surface-variant);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--outline-variant);
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            padding: 40px;
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .bento-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-xl);
+            padding: 16px;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .bento-card:hover {
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .card-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--on-surface-variant);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* Hero Card */
+        .hero-card {
+            grid-column: span 9;
+            min-height: 340px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            padding: 32px;
+        }
+
+        .hero-bg-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            opacity: 0.05;
+            transform: translate(20%, -20%);
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .location-info h2 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .current-date {
+            color: var(--on-surface-variant);
+            font-size: 16px;
+        }
+
+        .weather-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .temp-display {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .temp-val {
+            font-family: var(--font-display);
+            font-size: 84px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .temp-details {
+            margin-left: 8px;
+            padding-top: 12px;
+        }
+
+        .weather-desc {
+            display: block;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .feels-like {
+            font-size: 14px;
+            color: var(--on-surface-variant);
+        }
+
+        .quick-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-item {
+            background-color: var(--surface-container-low);
+            border: 1px solid var(--outline-variant);
+            padding: 16px;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .stat-val {
+            display: block;
+            font-family: var(--font-mono);
+            font-weight: 500;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            opacity: 0.6;
+            font-family: var(--font-mono);
+        }
+
+        /* 5-Day Forecast */
+        .forecast-card {
+            grid-column: span 3;
+        }
+
+        .forecast-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .forecast-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .day-name {
+            width: 48px;
+            font-size: 14px;
+        }
+
+        .temp-bar {
+            flex: 1;
+            height: 6px;
+            background-color: var(--surface-container);
+            margin: 0 16px;
+            border-radius: 99px;
+            position: relative;
+        }
+
+        .temp-range {
+            position: absolute;
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 99px;
+        }
+
+        .day-temp {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            width: 40px;
+            text-align: right;
+        }
+
+        .view-report {
+            margin-top: 16px;
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        /* Hourly Forecast */
+        .hourly-card {
+            grid-column: span 12;
+        }
+
+        .hourly-scroll {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .hourly-scroll::-webkit-scrollbar { display: none; }
+
+        .hour-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-xl);
+            cursor: pointer;
+        }
+
+        .hour-item:hover {
+            background-color: var(--surface-container);
+        }
+
+        .hour-item.active {
+            border: 1px solid rgba(0, 88, 188, 0.2);
+            background-color: rgba(0, 88, 188, 0.05);
+        }
+
+        .hour-time {
+            font-size: 10px;
+            font-family: var(--font-mono);
+            color: var(--on-surface-variant);
+        }
+
+        .hour-temp {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Metrics Grid */
+        .metric-card {
+            grid-column: span 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .metric-val {
+            font-size: 32px;
+            font-weight: 600;
+            font-family: var(--font-display);
+            display: block;
+        }
+
+        .metric-desc {
+            font-size: 14px;
+            color: var(--on-surface-variant);
+        }
+
+        .progress-bar {
+            height: 4px;
+            width: 100%;
+            background-color: var(--surface-container);
+            border-radius: 99px;
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 99px;
+        }
+
+        .metric-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 16px;
+            font-size: 10px;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        /* Gauge & Sun */
+        .pressure-card {
+            grid-column: span 6;
+        }
+
+        .pressure-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .gauge-container {
+            width: 128px;
+            height: 128px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gauge-text {
+            text-align: center;
+        }
+
+        .gauge-val {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .gauge-unit {
+            display: block;
+            font-size: 10px;
+            opacity: 0.5;
+            text-transform: uppercase;
+        }
+
+        .pressure-text {
+            flex: 1;
+            padding-left: 24px;
+            font-size: 14px;
+            color: var(--on-surface-variant);
+        }
+
+        .sun-card {
+            grid-column: span 6;
+        }
+
+        .sun-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: auto;
+        }
+
+        .sun-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sun-icon {
+            padding: 12px;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sunrise-icon { background-color: var(--tertiary-fixed); }
+        .sunset-icon { background-color: var(--primary-fixed); }
+
+        .sun-info span {
+            display: block;
+            font-size: 10px;
+            opacity: 0.6;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        .sun-time {
+            font-size: 20px;
+            font-weight: 600;
+            font-family: var(--font-display);
+        }
+
+        /* SVG Icons Styling */
+        svg.icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        svg.icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .hero-card { grid-column: span 12; }
+            .forecast-card { grid-column: span 12; }
+            .metric-card { grid-column: span 6; }
+        }
+
+        @media (max-width: 640px) {
+            .metric-card { grid-column: span 12; }
+            .pressure-card, .sun-card { grid-column: span 12; }
+            .app-header { padding: 0 16px; }
+            .dashboard { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+<!-- Sidebar Navigation -->
+<aside class="sidebar">
+<div class="sidebar-brand">
+<h1>AetherFlow</h1>
+<p>Precision Weather</p>
+</div>
+<nav>
+<ul class="nav-list">
+<li>
+<a class="nav-item active" href="#">
+<svg class="icon" viewbox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.5-7.5-7.5-7.5"></path></svg>
+<span>Radar</span>
+</a>
+</li>
+<li>
+<a class="nav-item" href="#">
+<svg class="icon" viewbox="0 0 24 24"><path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0-4c3.31 0 6 2.69 6 6 0 3.13-2.13 5.48-5.14 6.64l.86 1.73C17.06 15.34 19 12.8 19 10c0-3.87-3.13-7-7-7s-7 3.13-7 7c0 2.8 1.94 5.34 5.28 6.37l.86-1.73C8.13 13.48 6 11.13 6 8c0-3.31 2.69-6 6-6z"></path></svg>
+<span>Air Quality</span>
+</a>
+</li>
+<li>
+<a class="nav-item" href="#">
+<svg class="icon" viewbox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"></path></svg>
+<span>History</span>
+</a>
+</li>
+<li>
+<a class="nav-item" href="#">
+<svg class="icon" viewbox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg>
+<span>Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+<div class="sidebar-footer">
+<button class="btn-upgrade">Upgrade Pro</button>
+<div class="footer-links">
+<a href="#">Help</a>
+<a href="#">Privacy</a>
+</div>
+</div>
+</aside>
+
+<!-- Main Content Wrapper -->
+<main class="main-content">
+
+<header class="app-header">
+<div class="header-left">
+<a class="header-link active" href="#">Now</a>
+<a class="header-link" href="#">Hourly</a>
+<a class="header-link" href="#">Daily</a>
+</div>
+<div class="search-container">
+<svg class="icon search-icon" viewbox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+<input class="search-input" placeholder="Search cities..." type="text"/>
+</div>
+<div class="header-right">
+<svg class="icon" viewbox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"></path></svg>
+<div class="user-avatar">
+<img alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJLtEW3B3Ok1a414tAQTq9mpWkT_bhKbt2an_Rr7D7xK6M2NAK708_JuNviWnAwRa9AlSZi3DcQ5doftXHb1Q7Sy7DRxXmWI41eTshewKV5DWam6vfTqkyi02euzamViCeJabX3BAEIPCppS4VJlYS_vLOkU-Aio2ymPAoiuR4CXW1Wgf1NBwsiZymHEhgySRabC2dAbWBj8q0oY-fW565ig4vfItnumTSamWy_ctBU_dcsMuCOjQ7Jntry0ZfZkS4WpdXeKdr0Mb6"/>
+</div>
+</div>
+</header>
+
+<div class="dashboard">
+<!-- Hero Section -->
+<section class="bento-card hero-card">
+<div class="hero-bg-icon">
+<svg fill="currentColor" height="240" viewbox="0 0 24 24" width="240"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+</div>
+<div class="hero-header">
+<div class="location-info">
+<svg class="icon" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path></svg>
+<h2>San Francisco, CA</h2>
+</div>
+<p class="current-date">Monday, 12 June</p>
+</div>
+<div class="weather-main">
+<div class="temp-display">
+<span class="temp-val">22°</span>
+<div class="temp-details">
+<span class="weather-desc">Partly Cloudy</span>
+<span class="feels-like">Feels like 24° • H: 26° L: 18°</span>
+</div>
+</div>
+<div class="quick-stats">
+<div class="stat-item">
+<svg class="icon icon-sm" style="color: var(--primary); margin-bottom: 4px;" viewbox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.47-8 11.72 0 4.44 3.58 8.03 8 8.03s8-3.58 8-8.03c0-3.25-2.67-7.17-8-11.72z"></path></svg>
+<span class="stat-val">12%</span>
+<span class="stat-label">Precip</span>
+</div>
+<div class="stat-item">
+<svg class="icon icon-sm" style="color: var(--primary); margin-bottom: 4px;" viewbox="0 0 24 24"><path d="M13.96 16.04c.8 0 1.5-.3 2.11-.91.61-.61.91-1.31.91-2.11s-.3-1.5-.91-2.11c-.61-.61-1.31-.91-2.11-.91-.8 0-1.5.3-2.11.91-.61.61-.91 1.31-.91 2.11s.3 1.5.91 2.11c.61.61 1.31.91 2.11.91zM7 11h3V9H7v2zm0 4h10v-2H7v2zm0 4h7v-2H7v2z"></path></svg>
+<span class="stat-val">14 km/h</span>
+<span class="stat-label">Wind</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Forecast Section -->
+<section class="bento-card forecast-card">
+<span class="card-label">5-Day Forecast</span>
+<div class="forecast-list">
+<div class="forecast-row">
+<span class="day-name">Tue</span>
+<svg class="icon-sm" style="color: #eab308" viewbox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+<div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+<span class="day-temp">24°</span>
+</div>
+<div class="forecast-row">
+<span class="day-name">Wed</span>
+<svg class="icon-sm" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4 1.16-.54.36-1.02.81-1.41 1.32-.86 1.1-1.43 2.45-1.54 3.92C2.34 10.84 0 13.18 0 16c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="currentColor"></path></svg>
+<div class="temp-bar"><div class="temp-range" style="left: 33%; right: 20%"></div></div>
+<span class="day-temp">21°</span>
+</div>
+<div class="forecast-row">
+<span class="day-name">Thu</span>
+<svg class="icon-sm" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M19 13a4.99 4.99 0 0 1-4.65-3.17c-.39-.12-.78-.27-1.15-.45-1.1-.53-2.03-1.32-2.75-2.25l-.2-.25A6.5 6.5 0 1 1 15.5 13zM6 14a3 3 0 1 0 0 6h9a3 3 0 1 0 0-6H6z" fill="currentColor"></path></svg>
+<div class="temp-bar"><div class="temp-range" style="left: 25%; right: 33%"></div></div>
+<span class="day-temp">19°</span>
+</div>
+<div class="forecast-row">
+<span class="day-name">Fri</span>
+<svg class="icon-sm" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z" fill="currentColor"></path></svg>
+<div class="temp-bar"><div class="temp-range" style="left: 50%; right: 25%"></div></div>
+<span class="day-temp">23°</span>
+</div>
+<div class="forecast-row">
+<span class="day-name">Sat</span>
+<svg class="icon-sm" style="color: #eab308" viewbox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+<div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+<span class="day-temp">25°</span>
+</div>
+</div>
+<button class="view-report">
+                        View full report 
+                        <svg class="icon-sm" style="fill:none; stroke:currentColor; stroke-width:2" viewbox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"></path></svg>
+</button>
+</section>
+
+<!-- Hourly Forecast -->
+<section class="bento-card hourly-card">
+<span class="card-label">Hourly Forecast</span>
+<div class="hourly-scroll">
+<div class="hour-item">
+<span class="hour-time">NOW</span>
+<svg class="icon" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+<span class="hour-temp">22°</span>
+</div>
+<div class="hour-item">
+<span class="hour-time">13:00</span>
+<svg class="icon" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+<span class="hour-temp">23°</span>
+</div>
+<div class="hour-item">
+<span class="hour-time">14:00</span>
+<svg class="icon" style="color: #eab308" viewbox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+<span class="hour-temp">24°</span>
+</div>
+<div class="hour-item">
+<span class="hour-time">15:00</span>
+<svg class="icon" style="color: #eab308" viewbox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+<span class="hour-temp">25°</span>
+</div>
+<div class="hour-item">
+<span class="hour-time">16:00</span>
+<svg class="icon" style="color: #eab308" viewbox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+<span class="hour-temp">25°</span>
+</div>
+<div class="hour-item active">
+<span class="hour-time" style="color: var(--primary)">17:00</span>
+<svg class="icon" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z" fill="currentColor"></path></svg>
+<span class="hour-temp">24°</span>
+</div>
+<div class="hour-item">
+<span class="hour-time">18:00</span>
+<svg class="icon" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4 1.16-.54.36-1.02.81-1.41 1.32-.86 1.1-1.43 2.45-1.54 3.92C2.34 10.84 0 13.18 0 16c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="currentColor"></path></svg>
+<span class="hour-temp">22°</span>
+</div>
+<div class="hour-item">
+<span class="hour-time">19:00</span>
+<svg class="icon" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4 1.16-.54.36-1.02.81-1.41 1.32-.86 1.1-1.43 2.45-1.54 3.92C2.34 10.84 0 13.18 0 16c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="currentColor"></path></svg>
+<span class="hour-temp">21°</span>
+</div>
+<div class="hour-item">
+<span class="hour-time">20:00</span>
+<svg class="icon" style="color: var(--primary)" viewbox="0 0 24 24"><path d="M12.12 2.02a10.01 10.01 0 0 0-4.03 9.47 10.01 10.01 0 0 0 8.43 8.43 10 10 0 0 0 9.47-4.03 10.1 10.1 0 0 1-7.91-7.91 10.1 10.1 0 0 1-5.96-5.96z" fill="currentColor"></path></svg>
+<span class="hour-temp">19°</span>
+</div>
+</div>
+</section>
+
+<!-- Small Metrics -->
+<section class="bento-card metric-card">
+<span class="card-label">UV Index</span>
+<div>
+<span class="metric-val">4</span>
+<span class="metric-desc">Moderate</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill" style="width: 33%"></div>
+</div>
+</section>
+<section class="bento-card metric-card">
+<span class="card-label">Humidity</span>
+<div>
+<span class="metric-val">64%</span>
+<span class="metric-desc">The dew point is 15°</span>
+</div>
+<div class="metric-tag" style="color: var(--primary)">
+<svg class="icon-sm" viewbox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"></path></svg>
+<span>Normal Range</span>
+</div>
+</section>
+<section class="bento-card metric-card">
+<span class="card-label">Visibility</span>
+<div>
+<span class="metric-val">10 km</span>
+<span class="metric-desc">Perfectly clear sky</span>
+</div>
+<div class="metric-tag" style="color: var(--secondary)">
+<svg class="icon-sm" viewbox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"></path></svg>
+<span>Optimal</span>
+</div>
+</section>
+<section class="bento-card metric-card">
+<span class="card-label">Air Quality</span>
+<div>
+<span class="metric-val">42</span>
+<span class="metric-desc">Good (PM2.5)</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill" style="width: 42%; background-color: var(--secondary);"></div>
+</div>
+</section>
+
+<!-- Detailed Metrics -->
+<section class="bento-card pressure-card">
+<span class="card-label">Pressure</span>
+<div class="pressure-content">
+<div class="gauge-container">
+<svg height="128" style="transform: rotate(-90deg)" width="128">
+<circle cx="64" cy="64" fill="none" r="58" stroke="var(--surface-container)" stroke-dasharray="270 360" stroke-linecap="round" stroke-width="4"></circle>
+<circle cx="64" cy="64" fill="none" r="58" stroke="var(--primary)" stroke-dasharray="180 360" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+<div class="gauge-text" style="position: absolute;">
+<span class="gauge-val">1012</span>
+<span class="gauge-unit">hPa</span>
+</div>
+</div>
+<p class="pressure-text">The atmospheric pressure is stable and within normal ranges for the current season.</p>
+</div>
+</section>
+<section class="bento-card sun-card">
+<span class="card-label">Sunrise &amp; Sunset</span>
+<div class="sun-grid">
+<div class="sun-item">
+<div class="sun-icon sunrise-icon">
+<svg class="icon" viewbox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.92h-2V3.5h2V.58zm1.28 5.67l1.79-1.8 1.41 1.41-1.8 1.79-1.4-1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6h12c0-3.31-2.69-6-6-6zm-8 11h16c0-4.42-3.58-8-8-8s-8 3.58-8 8z" fill="currentColor"></path></svg>
+</div>
+<div class="sun-info">
+<span>Sunrise</span>
+<span class="sun-time">05:42 AM</span>
+</div>
+</div>
+<div class="sun-item">
+<div class="sun-icon sunset-icon">
+<svg class="icon" viewbox="0 0 24 24"><path d="M12.12 2.02a10.01 10.01 0 0 0-4.03 9.47 10.01 10.01 0 0 0 8.43 8.43 10 10 0 0 0 9.47-4.03 10.1 10.1 0 0 1-7.91-7.91 10.1 10.1 0 0 1-5.96-5.96z" fill="currentColor"></path></svg>
+</div>
+<div class="sun-info">
+<span>Sunset</span>
+<span class="sun-time">08:14 PM</span>
+</div>
+</div>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+<script>
+        // Micro-interactions simulation
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-2px)');
+            card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
+        });
+    </script>
+
+</body></html>

@@ -7,7 +7,7 @@
   height: 500px;
   margin: 20px 0;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
   background-color: transparent;
   display: block !important;
   border: 1px solid #ccc;
@@ -21,6 +21,7 @@
   flex-wrap: wrap;
   align-items: flex-start;
 }
+.section-extra-h2 {text-align: center !important}
 .section-extra-map { width: 1000px !important;}
 
 /* Leaflet map controls styling */

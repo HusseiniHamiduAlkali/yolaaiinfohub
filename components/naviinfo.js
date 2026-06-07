@@ -1169,49 +1169,9 @@ window.renderSection = function() {
 }
 
 // stopNaviResponse is now handled by setupStopButton in commonAI.js
-// Common helper for Gemini API call
+// Common helper for Gemini API call - delegate to centralized commonAI
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
-  try {
-    const contents = {
-      parts: []
-    };
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1]
-        }
-      });
-    }
-    const promptGuide = localStorage.getItem('navi_ai_prompt') || NAVI_AI_PROMPT;
-    contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
-    });
-    const modelVersion = 'gemini-2.5-flash';
-    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-      ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
-      : '/api/gemini';
-    
-    const fetchOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body
-    };
-    if (signal) {
-      fetchOptions.signal = signal;
-    }
-
-    let response = await fetch(url, fetchOptions);
-    
-    let data = await response.json();
-    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      throw err; // Re-throw abort errors to be handled by caller
-    }
-    throw new Error("Failed to get response from AI service");
-  }
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'navi');
 }
 window.sendNaviMessage = async function(faqText = '') {
   const input = document.getElementById('navi-chat-input');

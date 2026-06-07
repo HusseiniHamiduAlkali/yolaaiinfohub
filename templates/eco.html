@@ -105,44 +105,254 @@
     </div>
     </div>
 
-        <!-- Title -->
-    <section class="mb-8">
+    
+    <!-- Title -->
+    <!--<section class="mb-8" style="padding: 2rem 1rem;">-->
+    <section class="mb-8" >
     <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 15px;">Environmental Services in Yola</h2>
     <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Discover more about recycling, waste, or environmental services in Yola.</p>
     </section>
 
-        
-    <div class="section-eco">
-    <h2 data-i18n="section_eco_h2">Current Atmospheric Conditions</h2>
-        <div class="section-eco-div">
+  
+    <!-- AetherFlow Weather Dashboard -->
+    <div style="flex-direction: column;" class="section-eco aetherflow-container">
 
-            <div class="eco-tile"> 
-                <h2 class="eco-tile-h2" data-i18n="eco_tile_1" style="padding: 0;">Tempreature</h2>
-                <div class="tempreature"></div>
+      <h2 class="section-eco-h2" >Weather and Atmospheric conditions</h2>
+
+      <div class="dashboard">
+        <!-- Hero Section -->
+        <section class="bento-card hero-card">
+          <div class="hero-bg-icon">
+            <svg fill="currentColor" height="240" viewBox="0 0 24 24" width="240"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+          </div>
+          <div class="hero-header">
+            <div class="location-info">
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path></svg>
+              <h2>Yola, Adamawa</h2>
             </div>
+            <p class="current-date" id="current-date">Monday, 12 June</p>
+          </div>
+          <div class="weather-main">
+            <div class="temp-display">
+              <span class="temp-val" id="hero-temp">22°</span>
+              <div class="temp-details">
+                <span class="weather-desc" id="weather-desc">Partly Cloudy</span>
+                <span class="feels-like" id="feels-like">Feels like 24° • H: 26° L: 18°</span>
+              </div>
+            </div>
+            <div class="quick-stats">
+              <div class="stat-item">
+                <svg class="icon icon-sm" style="color: var(--primary); margin-bottom: 4px;" viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.47-8 11.72 0 4.44 3.58 8.03 8 8.03s8-3.58 8-8.03c0-3.25-2.67-7.17-8-11.72z"></path></svg>
+                <span class="stat-val" id="precip-val">12%</span>
+                <span class="stat-label">Precip</span>
+              </div>
+              <div class="stat-item">
+                <svg class="icon icon-sm" style="color: var(--primary); margin-bottom: 4px;" viewBox="0 0 24 24"><path d="M13.96 16.04c.8 0 1.5-.3 2.11-.91.61-.61.91-1.31.91-2.11s-.3-1.5-.91-2.11c-.61-.61-1.31-.91-2.11-.91-.8 0-1.5.3-2.11.91-.61.61-.91 1.31-.91 2.11s.3 1.5.91 2.11c.61.61 1.31.91 2.11.91zM7 11h3V9H7v2zm0 4h10v-2H7v2zm0 4h7v-2H7v2z"></path></svg>
+                <span class="stat-val" id="wind-val">14 km/h</span>
+                <span class="stat-label">Wind</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <div id="" class="eco-tile">
-                <h2 class="eco-tile-h2" data-i18n="eco_tile_2" style="padding: 0;">Windspeed</h2>
-                <div class="windspeed"></div>
-            </div>    
-    
-            <div id="" class="eco-tile">
-                <h2 class="eco-tile-h2" data-i18n="eco_tile_3" style="padding: 0;">Humidity</h2>
-                <div class="humidity"></div>
-            </div>    
-            
-            <div id="" class="eco-tile">
-                <h2 class="eco-tile-h2" data-i18n="eco_tile_4" style="padding: 0;">Air quality</h2>
-                <div class="air-quality"></div>
-            </div>    
-    
-        </div>
+        <!-- 5-Day Forecast -->
+        <section class="bento-card forecast-card">
+          <span class="card-label">5-Day Forecast</span>
+          <div class="forecast-list" id="forecast-list">
+            <div class="forecast-row">
+              <span class="day-name">Tue</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">24°</span>
+            </div>
+            <div class="forecast-row">
+              <span class="day-name">Wed</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">24°</span>
+            </div>
+            <div class="forecast-row">
+              <span class="day-name">Thurs</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">33°</span>
+            </div>
+            <div class="forecast-row">
+              <span class="day-name">Fri</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">37°</span>
+            </div>
+            <div class="forecast-row">
+              <span class="day-name">Sat</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">21°</span>
+            </div>
+          </div>
+          <button class="view-report" onclick="alert('Full report coming soon!')">
+            View full report 
+            <svg class="icon-sm" style="fill:none; stroke:currentColor; stroke-width:2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"></path></svg>
+          </button>
+        </section>
+
+        
+        <!-- Sunrise & Sunset -->
+        <section class="bento-card sun-card">
+          <span class="card-label">Sunrise &amp; Sunset</span>
+          <div class="sun-grid">
+            <div class="sun-item">
+              <div class="sun-icon sunrise-icon">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.92h-2V3.5h2V.58zm1.28 5.67l1.79-1.8 1.41 1.41-1.8 1.79-1.4-1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6h12c0-3.31-2.69-6-6-6zm-8 11h16c0-4.42-3.58-8-8-8s-8 3.58-8 8z" fill="currentColor"></path></svg>
+              </div>
+              <div class="sun-info">
+                <span>Sunrise</span>
+                <span class="sun-time" id="sunrise-time">05:42 AM</span>
+              </div>
+            </div>
+            <div class="sun-item">
+              <div class="sun-icon sunset-icon">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12.12 2.02a10.01 10.01 0 0 0-4.03 9.47 10.01 10.01 0 0 0 8.43 8.43 10 10 0 0 0 9.47-4.03 10.1 10.1 0 0 1-7.91-7.91 10.1 10.1 0 0 1-5.96-5.96z" fill="currentColor"></path></svg>
+              </div>
+              <div class="sun-info">
+                <span>Sunset</span>
+                <span class="sun-time" id="sunset-time">06:14 PM</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Hourly Forecast -->
+        <section class="bento-card hourly-card">
+          <span class="card-label">Hourly Forecast</span>
+          <div class="hourly-scroll" id="hourly-scroll">
+            <div class="hour-item">
+              <span class="hour-time">NOW</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">22°</span>
+            </div>
+            <div class="hour-item">
+              <span class="hour-time">--</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">--°</span>
+            </div>
+            <div class="hour-item">
+              <span class="hour-time">--</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">--°</span>
+            </div>
+            <div class="hour-item">
+              <span class="hour-time">--</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">--°</span>
+            </div>
+            <div class="hour-item">
+              <span class="hour-time">--</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">--°</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- UV Index -->
+        <section class="bento-card metric-card">
+          <span class="card-label">UV Index</span>
+          <div style="display: flex; flex-direction: column; ">
+            <span class="metric-val" id="uv-index">4</span>
+            <span class="metric-desc" id="uv-status">Moderate</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="uv-progress" style="width: 33%"></div>
+          </div>
+        </section>
+
+
+        <!-- Visibility -->
+        <section class="bento-card metric-card">
+          <span class="card-label">Visibility</span>
+          <div style="display: flex; flex-direction: column; ">
+            <span class="metric-val" id="visibility-val">10 km</span>
+            <span class="metric-desc">Perfectly clear sky</span>
+          </div>
+          <div class="metric-tag" style="color: var(--secondary)">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"></path></svg>
+            <span>Optimal</span>
+          </div>
+        </section>
+
+        <!-- Air Quality -->
+        <section class="bento-card metric-card">
+          <span class="card-label">Air Quality</span>
+          <div style="display: flex; flex-direction: column; ">
+            <span class="metric-val" id="air-quality-val">42</span>
+            <span class="metric-desc" id="air-quality-status">Good (PM2.5)</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="air-quality-progress" style="width: 42%; background-color: var(--secondary);"></div>
+          </div>
+        </section>
+
+        
+        <!-- Humidity -->
+        <section class="bento-card metric-card">
+          <span class="card-label">Humidity</span>
+          <div style="display: flex; flex-direction: column; ">
+            <span class="metric-val" id="humidity-val">64%</span>
+            <span class="metric-desc" id="dew-point">The dew point is 15°</span>
+          </div>
+          <div class="metric-tag" style="color: var(--primary)">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"></path></svg>
+            <span>Normal Range</span>
+          </div>
+        </section>
+        
+        <!-- Pressure -->
+        <section class="bento-card pressure-card pressure-card-desktop" style="gap:0;">
+          <span class="card-label">Pressure</span>
+          <div class="pressure-content">
+            <div class="gauge-container">
+              <svg height="128" style="transform: rotate(-90deg)" width="128">
+                <circle cx="64" cy="64" fill="none" r="58" stroke="var(--surface-container)" stroke-dasharray="270 360" stroke-linecap="round" stroke-width="4"></circle>
+                <circle cx="64" cy="64" fill="none" r="58" stroke="var(--primary)" stroke-dasharray="180 360" stroke-linecap="round" stroke-width="4"></circle>
+              </svg>
+              <div class="gauge-text" style="position: absolute;">
+                <span class="gauge-val" id="pressure-val">1012</span>
+                <span class="gauge-unit">hPa</span>
+              </div>
+            </div>
+            <p class="pressure-text">The atmospheric pressure is stable and within normal ranges for the current season.</p>
+          </div>
+        </section>
+
+        
+        <!-- Pressure Mobile -->
+        <section class="bento-card pressure-card pressure-card-mobile" style="gap:0;">
+          <span class="card-label">Pressure</span>
+          <div class="pressure-content">
+            <div class="gauge-container">
+              <svg height="128" style="transform: rotate(-90deg)" width="128">
+                <circle cx="64" cy="64" fill="none" r="58" stroke="var(--surface-container)" stroke-dasharray="270 360" stroke-linecap="round" stroke-width="4"></circle>
+                <circle cx="64" cy="64" fill="none" r="58" stroke="var(--primary)" stroke-dasharray="180 360" stroke-linecap="round" stroke-width="4"></circle>
+              </svg>
+              <div class="gauge-text" style="position: absolute;">
+                <span class="gauge-val" id="pressure-val">1012</span>
+                <span class="gauge-unit">hPa</span>
+              </div>
+            </div>
+            <p class="pressure-text">The atmospheric pressure is stable and within normal ranges for the current season.</p>
+          </div>
+        </section>
+
+      </div>
+      
     </div>
+  
 
+    
     <!-- Search -->
     <section class="search-bar">
     <span class="fas fa-search material-symbols-outlined"></span>
-    <input placeholder="Search for institutions, courses, or events..." type="text"/>
+    <input placeholder="Type here to search..." type="text"/>
     </section>
     <!-- Filters -->
     <section class="filter-chips mb-8">

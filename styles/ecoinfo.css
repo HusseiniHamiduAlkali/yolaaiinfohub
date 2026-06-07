@@ -2,8 +2,11 @@
 .section-eco {
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+/*  box-shadow: 0 2px 12px rgba(0,0,0,0.4);*/
+  box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
   padding: 1.5rem;
+  padding-bottom: 5px;
   width: 830px;
   display: flex;
   flex-direction: column;
@@ -14,7 +17,8 @@
 }
 
 .section-eco h2 {
-  padding-top: 0; 
+  padding-top: 0 !important; 
+  margin: 5px 0 10px 0 !important;
   /*display: flex; 
   flex-direction: row;*/
 }

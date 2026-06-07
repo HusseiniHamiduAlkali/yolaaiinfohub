@@ -232,3 +232,155 @@ window.addEventListener('load', () => {
 });
 
 // SPA router logic is now unified in index.html. No section loader here.
+
+// Intercept "Learn more" detail links and translate pages on demand using Gemini
+(function(){
+  async function translateDetailsAndReplacePage(e, anchor) {
+    try {
+      e.preventDefault();
+      const href = anchor.getAttribute('href');
+      if (!href || !href.startsWith('details/')) return window.location.href = href;
+
+      // Determine section and file
+      const parts = href.split('/').filter(Boolean);
+      const section = parts[1] || '';
+      const file = parts[parts.length - 1];
+
+      // Determine target language from app settings
+      const appLang = (window.getCurrentAppLanguage && window.getCurrentAppLanguage()) || localStorage.getItem('appLanguage') || 'en';
+      const code = (appLang || 'en').toString().substring(0,2).toLowerCase();
+      const langMap = { en: 'En', ar: 'Ar', fr: 'Fr', ha: 'Ha', ff: 'Fu', fu: 'Fu', yo: 'Yo', ig: 'Ig', pcm: 'Pi', pi: 'Pi' };
+      const targetFolder = langMap[code] || 'En';
+
+      // Prefer English source to translate from
+      const sourcePath = `details/${section}/En/${file}`;
+
+      // Check session cache first
+      const cacheKey = `yola_translated::${sourcePath}::${targetFolder}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        try {
+          history.pushState({}, '', href);
+          document.open();
+          document.write(cached);
+          document.close();
+          return;
+        } catch (err) {
+          console.warn('Failed to write cached translated page:', err);
+        }
+      }
+
+      // Fetch source HTML (fallback to requested href if English not found)
+      let htmlText = '';
+      try {
+        let r = await fetch(sourcePath);
+        if (r.ok) htmlText = await r.text();
+        else {
+          r = await fetch(href);
+          if (r.ok) htmlText = await r.text();
+          else return window.location.href = href; // can't fetch, navigate normally
+        }
+      } catch (err) {
+        return window.location.href = href;
+      }
+
+      // show minimal full-screen loader while translating
+      const loader = document.createElement('div');
+      loader.id = 'yola-translation-loading';
+      loader.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;z-index:2147483647;font-size:18px;color:#222';
+      loader.textContent = 'Translating page—please wait…';
+      document.documentElement.appendChild(loader);
+
+      const languageName = (window.SUPPORTED_LANGUAGES && window.SUPPORTED_LANGUAGES[code]) || (code === 'en' ? 'English' : code);
+      const instruction = `Translate the following HTML page into ${languageName}. Preserve all HTML tags, attributes, scripts and inline styles. ONLY translate visible user-facing text (headings, paragraphs, link text, button labels, alt text). Do NOT change URLs, data- attributes, or structural markup. Return only the translated full HTML.`;
+
+      const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
+        : '/api/gemini';
+
+      try {
+        const payload = { model: 'gemini-2.5-pro', contents: [{ text: instruction + '\n\n' + htmlText }] };
+        console.log('Translating via API URL:', apiUrl, 'payload size:', (payload.contents[0].text || '').length);
+        const r = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), credentials: 'include' });
+        let dataText = '';
+        try { dataText = await r.text(); } catch (e) { dataText = ''; }
+        let data = null;
+        try { data = dataText ? JSON.parse(dataText) : null; } catch (e) { data = null; }
+        console.log('Gemini proxy response status:', r.status, 'body parsed:', !!data, 'raw length:', dataText.length);
+
+        if (!r.ok) {
+          console.error('Gemini proxy returned error status', r.status, data || dataText);
+          if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation failed (server error ${r.status}). Check console for details.</div>`;
+          return;
+        }
+
+        const translated = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        if (!translated) {
+          console.error('No translated text returned; proxy body:', data || dataText);
+          if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation failed — no translated content returned. See console for proxy response.</div>`;
+          return;
+        }
+
+        // Cache translated HTML for session
+        try { sessionStorage.setItem(cacheKey, translated); } catch (e) { /* ignore storage errors */ }
+
+        // Update history and replace entire document with translated HTML
+        history.pushState({}, '', href);
+        document.open();
+        document.write(translated);
+        document.close();
+      } catch (err) {
+        console.error('Translation error', err);
+        if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation error. Check console for details.</div>`;
+        return;
+      }
+    } catch (outerErr) {
+      console.error('translateDetailsAndReplacePage error', outerErr);
+    }
+  }
+
+  // Intercept clicks on details links that are "Learn more" anchors
+  document.addEventListener('click', function(e) {
+    try {
+      const a = e.target.closest && e.target.closest('a[href*="details/"]');
+      if (!a) return;
+      const isLearnMore = (a.dataset && a.dataset.i18n === 'learn_more') || /learn\s*more/i.test((a.textContent||''));
+      if (!isLearnMore) return;
+      // Normalize href to use English source before translating
+      try {
+        const href = a.getAttribute('href') || '';
+        const clean = href.split('?')[0].split('#')[0];
+        const parts = clean.split('/').filter(Boolean);
+        const idx = parts.indexOf('details');
+        if (idx !== -1 && parts.length >= idx + 3) {
+          const section = parts[idx+1];
+          const file = parts[parts.length - 1];
+          const newHref = `details/${section}/En/${file}`;
+          a.setAttribute('href', newHref);
+        }
+      } catch (normalizeErr) { /* ignore */ }
+
+      translateDetailsAndReplacePage(e, a);
+    } catch (err) { /* ignore */ }
+  }, true);
+})();
+
+// Also normalize existing detail links on load so templates pointing to localized files are rewritten
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    document.querySelectorAll('a[href*="details/"]').forEach(a => {
+      try {
+        const href = a.getAttribute('href') || '';
+        const clean = href.split('?')[0].split('#')[0];
+        const parts = clean.split('/').filter(Boolean);
+        const idx = parts.indexOf('details');
+        if (idx !== -1 && parts.length >= idx + 3) {
+          const section = parts[idx+1];
+          const file = parts[parts.length - 1];
+          const newHref = `details/${section}/En/${file}`;
+          a.setAttribute('href', newHref);
+        }
+      } catch (inner) { /* ignore */ }
+    });
+  } catch (e) { /* ignore */ }
+});

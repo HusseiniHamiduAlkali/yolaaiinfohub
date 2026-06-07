@@ -268,47 +268,7 @@ window.sendMediMessage = async function(faqText = '') {
   window.mediAbortController = null;
 };
 
-// Common helper for Gemini API call
+// Common helper for Gemini API call - delegate to centralized commonAI
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
-  try {
-    const contents = {
-      parts: []
-    };
-    if (imageData) {
-      contents.parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: imageData.split(',')[1]
-        }
-      });
-    }
-    const promptGuide = localStorage.getItem('medi_ai_prompt') || MEDI_AI_PROMPT;
-    contents.parts.push({
-      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${localData}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
-    });
-    const modelVersion = 'gemini-2.5-flash';
-    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
-    const url = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
-      : '/api/gemini';
-    
-    const fetchOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body
-    };
-    if (signal) {
-      fetchOptions.signal = signal;
-    }
-
-    let res = await fetch(url, fetchOptions);
-    let data = await res.json();
-    // Server will automatically handle fallback from 2.5 to 1.5 if needed
-    return (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) ? data.candidates[0].content.parts[0].text : "Sorry, I couldn't get a response from the AI.";
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      throw err; // Re-throw abort errors
-    }
-    return "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
-  }
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'medi');
 }

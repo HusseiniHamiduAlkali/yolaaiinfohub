@@ -1930,3 +1930,107 @@ window.getNotificationPreferences = function() {
 
 // Alias for backward compatibility and easier calling
 window.callGeminiAI = getGeminiAnswer;
+
+// Expose getGeminiAnswer on window as well for backward compatibility
+window.getGeminiAnswer = async function(localData, msg, apiKey, mediaData = null, signal = null, section = 'home', attachments = []) {
+  return getGeminiAnswer(localData, msg, apiKey, mediaData, signal, section, attachments);
+};
+
+/**
+ * Load local details HTML/data from details/<section>/En folder.
+ * Tries a set of common filenames and returns concatenated text.
+ * @param {string} section - section folder name (e.g., 'Home', 'Edu', 'Agro')
+ * @param {string} langFolder - language folder name (default 'En')
+ * @returns {Promise<string>} concatenated local content or empty string
+ */
+window.fetchLocalDetails = async function(section, langFolder = 'En') {
+  if (!section) return '';
+  const base = `details/${section}/${langFolder}`;
+  const candidates = ['template.html', 'index.html', `${section}.html`, 'content.html', 'template_text.html'];
+  let combined = '';
+  for (const name of candidates) {
+    const url = `${base}/${name}`;
+    try {
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (res && res.ok) {
+        const text = await res.text();
+        combined += '\n' + text;
+      }
+    } catch (e) {
+      // ignore missing files
+    }
+  }
+
+  // As a last resort, try to fetch the base folder (some static servers list dir)
+  try {
+    const res = await fetch(`${base}/`, { cache: 'no-cache' });
+    if (res && res.ok) {
+      const t = await res.text();
+      combined += '\n' + t;
+    }
+  } catch (e) {
+    // ignore
+  }
+  return combined || '';
+};
+
+/**
+ * Unified send wrapper used by components to send a user message to the AI.
+ * Handles aborts, stop button wiring, local details loading, UI appends and error handling.
+ * opts: { section, message, containerId, sendBtn, attachments, apiKey, persistHistory }
+ */
+window.sendAIRequest = async function(opts = {}) {
+  const section = (opts.section || 'home').toLowerCase();
+  const msg = opts.message || '';
+  const containerId = opts.containerId || `${section}-chat-messages`;
+  const sendBtn = opts.sendBtn || document.querySelector(`#${section}-send-btn`) || document.querySelector('.send-button');
+  const attachments = opts.attachments || [];
+  const apiKey = opts.apiKey || window.GEMINI_API_KEY || window.GEMINI_API_KEY;
+  const persist = typeof opts.persistHistory === 'boolean' ? opts.persistHistory : true;
+
+  // Load local details for this section (English folder) to pass into the AI
+  const localDetails = await window.fetchLocalDetails(section.charAt(0).toUpperCase() + section.slice(1), 'En');
+
+  // Wire up stop button and get abort controller
+  const abortController = window.setupStopButton ? window.setupStopButton({ sendBtn, section }) : (new AbortController());
+  const signal = abortController ? abortController.signal : null;
+
+  try {
+    // Append user message to UI and history
+    if (msg && msg.trim()) {
+      window.appendChatMessage({ section, containerId, role: 'user', content: msg, persistHistory: persist });
+    }
+
+    // Call centralized AI function
+    const aiText = await window.callGeminiAI(localDetails, msg, apiKey, null, signal, section, attachments);
+
+    // Format AI response and append
+    const formatted = formatAIResponse(aiText || 'Sorry, I could not generate a response.');
+    window.appendChatMessage({ section, containerId, role: 'ai', content: formatted, persistHistory: persist });
+
+    // Add to history (already done inside appendChatMessage)
+    return aiText;
+  } catch (err) {
+    // Handle abort separately
+    if (err && (err.name === 'AbortError' || err.message === 'AbortError')) {
+      window.appendChatMessage({ section, containerId, role: 'ai', content: `<div class='error-message'>Request aborted by user</div>`, persistHistory: false });
+      throw err;
+    }
+    const friendly = window.friendlyAIErrorMessage ? window.friendlyAIErrorMessage(err) : 'The AI is unavailable.';
+    window.appendChatMessage({ section, containerId, role: 'ai', content: `<div class='error-message'>${friendly}</div>`, persistHistory: false });
+    console.error('sendAIRequest error', err);
+    throw err;
+  } finally {
+    // Restore send button UI
+    try {
+      if (sendBtn) {
+        sendBtn.classList.remove('sending');
+        sendBtn.textContent = 'Send';
+        sendBtn.style.backgroundColor = '';
+      }
+    } catch (e) {}
+  }
+};
+
+// Mark common AI module as loaded so other components can rely on it
+window.commonAILoaded = true;

@@ -6,7 +6,9 @@
   padding: 0 ;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  border: 1px solid #e2e8f0;
+  /*box-shadow: 0 2px 12px rgba(0,0,0,0.4);*/
+  box-shadow: 0 4px 30px rgba(0,0,0,0.05);
 }
 .section2-home-image-placeholder {
   overflow: hidden; 

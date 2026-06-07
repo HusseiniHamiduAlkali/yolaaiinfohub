@@ -35,5 +35,10 @@ function walk(dir) {
 
 // run for templates and frontend/pages
 walk(path.join(__dirname, 'templates'));
-walk(path.join(__dirname, 'frontend', 'pages'));
+const frontendPages = path.join(__dirname, 'frontend', 'pages');
+if (fs.existsSync(frontendPages)) {
+    walk(frontendPages);
+} else {
+    console.log('Skipping frontend/pages — folder not present.');
+}
 console.log('Done adding lazy loading.');

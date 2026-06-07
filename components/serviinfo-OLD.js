@@ -95,7 +95,7 @@ window.renderSection = function() {
 
 // stopServiResponse is now handled by setupStopButton in commonAI.js
 
-// Common helper for Gemini API call - delegated to centralized commonAI
+// Common helper for Gemini API call - delegate to centralized commonAI
 async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
   return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'servi');
 }
@@ -262,152 +262,23 @@ window.sendServiMessage = async function(faqText = '') {
 // Currency Converter - Card Based UI
 window._exchangeRatesCache = window._exchangeRatesCache || {};
 
-// Predefined currency data with flag URLs and names attached safely to window
-window.currencyData = window.currencyData || {
-  'USD': { name: 'US Dollar', symbol: '$', flag: 'https://flagcdn.com/48x36/us.png' },
-  'EUR': { name: 'Euro', symbol: '€', flag: 'https://flagcdn.com/48x36/eu.png' },
-  'GBP': { name: 'British Pound', symbol: '£', flag: 'https://flagcdn.com/48x36/gb.png' },
-  'JPY': { name: 'Japanese Yen', symbol: '¥', flag: 'https://flagcdn.com/48x36/jp.png' },
-  'NGN': { name: 'Nigerian Naira', symbol: '₦', flag: 'https://flagcdn.com/48x36/ng.png' },
-  'CAD': { name: 'Canadian Dollar', symbol: 'CA$', flag: 'https://flagcdn.com/48x36/ca.png' },
-  'AUD': { name: 'Australian Dollar', symbol: 'A$', flag: 'https://flagcdn.com/48x36/au.png' },
-  'CHF': { name: 'Swiss Franc', symbol: 'CHF', flag: 'https://flagcdn.com/48x36/ch.png' },
-  'CNY': { name: 'Chinese Yuan', symbol: '¥', flag: 'https://flagcdn.com/48x36/cn.png' },
-  'INR': { name: 'Indian Rupee', symbol: '₹', flag: 'https://flagcdn.com/48x36/in.png' },
-  'ZAR': { name: 'South African Rand', symbol: 'R', flag: 'https://flagcdn.com/48x36/za.png' },
-  'XAF': { name: 'CFA Franc', symbol: 'FCFA', flag: 'https://flagcdn.com/48x36/cm.png' },
-  'KES': { name: 'Kenyan Shilling', symbol: 'KSh', flag: 'https://flagcdn.com/48x36/ke.png' },
-  'GHS': { name: 'Ghanaian Cedi', symbol: '₵', flag: 'https://flagcdn.com/48x36/gh.png' }
+// Predefined currency data with flag URLs and names
+const currencyData = {
+  'USD': { name: 'US Dollar', symbol: 'USD' },
+  'EUR': { name: 'Euro', symbol: 'EUR' },
+  'GBP': { name: 'British Pound', symbol: 'GBP' },
+  'JPY': { name: 'Japanese Yen', symbol: 'JPY' },
+  'NGN': { name: 'Nigerian Naira', symbol: 'NGN' },
+  'CAD': { name: 'Canadian Dollar', symbol: 'CAD' },
+  'AUD': { name: 'Australian Dollar', symbol: 'AUD' },
+  'CHF': { name: 'Swiss Franc', symbol: 'CHF' },
+  'CNY': { name: 'Chinese Yuan', symbol: 'CNY' },
+  'INR': { name: 'Indian Rupee', symbol: 'INR' },
+  'ZAR': { name: 'South African Rand', symbol: 'ZAR' },
+  'XAF': { name: 'CFA Franc', symbol: 'XAF' },
+  'KES': { name: 'Kenyan Shilling', symbol: 'KES' },
+  'GHS': { name: 'Ghanaian Cedi', symbol: 'GHS' }
 };
-
-// Idempotent helper to build a custom dropdown from the native <select>
-if (typeof window.createCustomSelect === 'undefined') {
-  window.createCustomSelect = function(state) {
-    const native = state.select;
-    if (!native || native.dataset.customized === '1') return;
-
-    native.style.display = 'none';
-    native.dataset.customized = '1';
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'custom-select-wrapper';
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'custom-select-button';
-    button.setAttribute('aria-haspopup', 'listbox');
-    button.setAttribute('aria-expanded', 'false');
-
-    const img = document.createElement('img');
-    img.className = 'flag-img-sm custom-select-flag';
-    img.alt = '';
-    img.style.marginRight = '8px';
-
-    const label = document.createElement('div');
-    label.className = 'custom-select-label';
-    // two-part label: short code/title and full name
-    const titleSpan = document.createElement('span');
-    titleSpan.className = 'custom-select-title';
-    titleSpan.style.marginRight = '6px';
-    titleSpan.style.alignSelf = 'start';
-    titleSpan.style.fontWeight = '700';
-    titleSpan.style.fontSize = 'larger';
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'custom-select-name';
-    nameSpan.style.fontSize = '12px';
-    nameSpan.style.color = '#535656'
-    label.appendChild(titleSpan);
-    label.appendChild(nameSpan);
-
-    const caret = document.createElement('span');
-    caret.className = 'custom-select-caret';
-    caret.textContent = '▾';
-    caret.style.marginLeft = '8px';
-
-    button.appendChild(img);
-    button.appendChild(label);
-    button.appendChild(caret);
-
-    const list = document.createElement('ul');
-    list.className = 'custom-select-list';
-    list.setAttribute('role', 'listbox');
-    list.style.display = 'none';
-
-    const nativeOptions = Array.from(native.options || []);
-    nativeOptions.forEach(opt => {
-      const code = opt.value;
-      const text = opt.textContent || code;
-      const flag = opt.dataset.flag || '';
-      const li = document.createElement('li');
-      li.className = 'custom-select-item';
-      li.setAttribute('role', 'option');
-      li.tabIndex = 0;
-
-      const iimg = document.createElement('img');
-      iimg.className = 'flag-img-sm';
-      iimg.src = flag || '';
-      iimg.alt = code + ' flag';
-      iimg.style.marginRight = '8px';
-      iimg.style.width = '28px';
-      iimg.style.height = '20px';
-      iimg.style.objectFit = 'cover';
-
-      const span = document.createElement('span');
-      span.textContent = text;
-
-      li.appendChild(iimg);
-      li.appendChild(span);
-      list.appendChild(li);
-
-      li.addEventListener('click', () => {
-        native.value = code;
-        img.src = flag || '';
-        // update both spans
-        titleSpan.textContent = code;
-        nameSpan.textContent = text;
-        list.style.display = 'none';
-        button.setAttribute('aria-expanded', 'false');
-        const ev = new Event('change', { bubbles: true });
-        native.dispatchEvent(ev);
-      });
-    });
-
-    // initialize button with native's current value
-    const initOpt = native.querySelector(`option[value="${native.value}"]`) || native.options[0];
-    const initCode = initOpt ? (initOpt.value || '') : (native.value || '');
-    const initName = initOpt ? (initOpt.textContent || initCode) : initCode;
-    const initFlag = initOpt ? (initOpt.dataset.flag || '') : '';
-    img.src = initFlag || '';
-    // populate both spans
-    titleSpan.textContent = initCode || '';
-    nameSpan.textContent = initName || '';
-
-    button.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const showing = list.style.display === 'block';
-      document.querySelectorAll('.custom-select-list').forEach(l => l.style.display = 'none');
-      document.querySelectorAll('.custom-select-button').forEach(b => b.setAttribute('aria-expanded', 'false'));
-      if (!showing) {
-        list.style.display = 'block';
-        button.setAttribute('aria-expanded', 'true');
-      } else {
-        list.style.display = 'none';
-        button.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    document.addEventListener('click', () => {
-      list.style.display = 'none';
-      button.setAttribute('aria-expanded', 'false');
-    });
-
-    wrapper.appendChild(button);
-    wrapper.appendChild(list);
-    native.parentNode.insertBefore(wrapper, native.nextSibling);
-
-    state._customButton = button;
-    state._customList = list;
-  };
-}
 
 async function getRatesForBase(base) {
   if (!base) return null;
@@ -459,7 +330,7 @@ window.initCurrencyConverter = async function() {
     return;
   }
 
-  const currencyOptions = Object.keys(window.currencyData);
+  const currencyOptions = Object.keys(currencyData);
   const cardStates = cards.map(card => ({
     card,
     select: card.querySelector('.currency-card-select'),
@@ -476,50 +347,20 @@ window.initCurrencyConverter = async function() {
     return;
   }
 
-  // Insert currency symbol prefix before each amount input (idempotent)
-  cardStates.forEach(state => {
-    try {
-      if (!state._prefix) {
-        const inp = state.amountInput;
-        const wrapper = document.createElement('div');
-        wrapper.className = 'currency-input-wrapper';
-        // Replace input with wrapper containing the prefix and the input
-        inp.parentNode.insertBefore(wrapper, inp);
-        wrapper.appendChild(inp);
-
-        const prefix = document.createElement('span');
-        prefix.className = 'currency-prefix';
-        const code = state.select && state.select.value ? state.select.value : '';
-        const info = window.currencyData && window.currencyData[code] ? window.currencyData[code] : null;
-        prefix.textContent = (info && info.symbol) ? info.symbol : (code || '');
-        wrapper.insertBefore(prefix, inp);
-        // ensure input has enough left padding
-        inp.style.paddingLeft = inp.style.paddingLeft || '48px';
-        state._prefix = prefix;
-      }
-    } catch (e) {
-      console.warn('Failed to create currency prefix element:', e);
-    }
-  });
-
   const defaultCurrencies = ['EUR', 'GBP', 'JPY'];
   cardStates.forEach((state, index) => {
     state.select.innerHTML = '';
     currencyOptions.forEach(code => {
       const option = document.createElement('option');
       option.value = code;
-      const info = window.currencyData[code] || { name: code, flag: '' };
-      option.textContent = `${code} — ${info.name || code}`;
-      if (info.flag) option.dataset.flag = info.flag;
+      option.textContent = code;
       state.select.appendChild(option);
     });
 
     const selected = defaultCurrencies[index] || currencyOptions[0];
     state.select.value = selected;
     state.amountInput.value = index === 0 ? '1.00' : '';
-    // Update native labels and then replace the native <select> with a custom flag+name dropdown
     updateCurrencyCardLabels(state);
-    try { createCustomSelect(state); } catch (err) { console.warn('createCustomSelect failed:', err); }
   });
 
   const rates = await getRatesForBase('USD');
@@ -572,28 +413,10 @@ window.initCurrencyConverter = async function() {
 
   function updateCurrencyCardLabels(state) {
     const code = state.select.value;
-    const info = window.currencyData[code] || { name: code, symbol: code };
-    // Keep the visible card title as the currency code
-    state.titleEl.textContent = code;
+    const info = currencyData[code] || { name: code, symbol: code };
+    state.titleEl.textContent = info.symbol || code;
     state.nameEl.textContent = info.name || code;
     state.flagImg.alt = `${code} flag`;
-    if (info.flag) {
-      // update the small flag img inside the card (kept for fallback/visual)
-      try { state.flagImg.src = info.flag; } catch (e) {}
-    }
-    // If a custom select button exists, update its image and label too
-    if (state._customButton) {
-      const btnImg = state._customButton.querySelector('img.custom-select-flag');
-      const btnTitle = state._customButton.querySelector('.custom-select-title');
-      const btnName = state._customButton.querySelector('.custom-select-name');
-      if (btnImg) btnImg.src = info.flag || '';
-      if (btnTitle) btnTitle.textContent = code;
-      if (btnName) btnName.textContent = info.name || code;
-    }
-    // Update the prefix (currency symbol) if present
-    if (state._prefix) {
-      try { state._prefix.textContent = info.symbol || code; } catch (e) {}
-    }
   }
 
   cardStates.forEach((state, index) => {
@@ -629,3 +452,4 @@ if (!window.populateDropdown) {
     });
   };
 }
+
