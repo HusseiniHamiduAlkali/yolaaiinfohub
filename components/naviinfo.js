@@ -1445,3 +1445,55 @@ window.sendNaviMessage = async function(faqText = '') {
   if (stopBtn) stopBtn.style.display = 'none';
   window.naviAbortController = null;
 };
+
+
+function ensureToggleDetailsIcons() {
+  if (document.getElementById('toggle-details-icons')) return;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.style.position = 'absolute';
+  svg.style.width = '0';
+  svg.style.height = '0';
+  svg.style.overflow = 'hidden';
+  svg.id = 'toggle-details-icons';
+
+  const createSymbol = (id, pathD) => {
+    const symbol = document.createElementNS(svgNS, 'symbol');
+    symbol.id = id;
+    symbol.setAttribute('viewBox', '0 0 24 24');
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', '12');
+    circle.setAttribute('cy', '12');
+    circle.setAttribute('r', '9');
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', pathD);
+    symbol.appendChild(circle);
+    symbol.appendChild(path);
+    return symbol;
+  };
+
+  svg.appendChild(createSymbol('toggle-icon-closed', 'M8 10l4 4 4-4'));
+  svg.appendChild(createSymbol('toggle-icon-open', 'M8 14l4-4 4 4'));
+  document.body.insertBefore(svg, document.body.firstChild);
+}
+
+function toggleDetails(button) {
+  ensureToggleDetailsIcons();
+  const yola_map = document.getElementById('tomtom-map');
+  if (!yola_map) return;
+
+  const isHidden = yola_map.style.display === 'none' || getComputedStyle(yola_map).display === 'none';
+  const open = isHidden;
+  yola_map.style.display = open ? 'flex' : 'none';
+
+  const useEl = button.querySelector('use');
+  if (useEl) {
+    const symbol = open ? '#toggle-icon-open' : '#toggle-icon-closed';
+    useEl.setAttribute('href', symbol);
+    useEl.setAttribute('xlink:href', symbol);
+  }
+
+  button.setAttribute('aria-expanded', open ? 'true' : 'false');
+  button.title = open ? 'Hide details' : 'Show details';
+}

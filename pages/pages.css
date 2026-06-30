@@ -311,7 +311,8 @@ input, select, .feedback-textarea {
 .auth-submit {
     width: 100%;
     padding: 16px;
-    background: var(--primary-teal);
+    /*background: var(--primary-teal);*/
+    background: #3182ce;
     color: white;
     border: none;
     border-radius: 8px;
@@ -374,19 +375,14 @@ input, select, .feedback-textarea {
     .form-section {width: 100% !important; margin-top: 3rem;}
     .form-wrapper {border: 2px solid #acb3bc; border-radius: 24px; padding: 15px;}
     header h2 { margin-bottom: 25px; text-align: center;}
-    
     .welcome-back {margin-bottom: 1rem; font-family: initial; font-size: xx-large; text-align: center; color: #544f4f;}
 }
-
-
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   border: 1.5px solid #3182ce;
 }
-
-
 /* Disabled/Loading button state */
 .auth-submit:disabled, .auth-page-form button:disabled {
   background: #cbd5e1;
@@ -394,7 +390,6 @@ input, select, .feedback-textarea {
   cursor: not-allowed;
   opacity: 0.7;
 }
-
 .auth-submit:disabled::after, .auth-page-form button:disabled::after {
   content: '';
   display: inline-block;

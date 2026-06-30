@@ -213,6 +213,7 @@ nav.navbar {
   }
 }
 /* Merged styles for auth-btn across all definitions */
+#signup-btn {display: none !important;}
 .auth-btn {
   border-color: #cbd5e1;
   border: double;
@@ -740,18 +741,19 @@ nav.navbar {
     border: none;
     padding: 0;
     z-index: 1000;
-    width: 20px;
-    height: 21px;
+    width: 15px;
+    height: 18px;
     top:0;
   }
 
   .hamburger span {
+
     display: block;
-    width: 25px;
-    height: 3px;
-    background: #fff;
-    border-radius: 2px;
-    margin: 2px 0;
+    height: 2px;
+    width: 24px;
+    background: rgb(255, 255, 255);
+    border-radius: 5px;
+    margin: 0px;
   }
   .login-suggestion {
     display: none;

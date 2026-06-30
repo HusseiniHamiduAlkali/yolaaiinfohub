@@ -7,6 +7,23 @@
           <span data-i18n="home_chat_header">Home AI Chat</span>
           <div style="display: flex; align-items: center; gap: 1rem;">
             <div class="model-switch">
+              
+
+              <label for="category">AI model</label>
+              <select id="category">
+                <option value="">select</option>
+                <option value="1.5 flash">1.5 flash</option>
+                <option value="2.5 flash">2.5 flash</option>
+              </select>
+              <div id="itemList" style="margin-top: 12px;"></div>
+
+              <select aria-haspopup="listbox" aria-expanded="true">
+                <ul role="listbox">
+                  <li>gemini 1.5 Flash</li>
+                  <li>gemini 2.5 Flash</li>
+                </ul>
+              </select>
+
               <label class="switch">
                 <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('home', this.checked)">
                 <span class="slider round"></span>
@@ -103,7 +120,6 @@
         <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Ask and discover anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the settings and about page.</p>
       </section>
 
-      <!--<div class="section2" style="box-shadow: 0 2px 12px rgba(0,0,0,0.4);" >-->
       <div class="section2" >
         <h2 style="margin-bottom: 25px;" data-i18n="history_of_yola">History of Yola</h2>
         <div class="section2-home-image-placeholder" >

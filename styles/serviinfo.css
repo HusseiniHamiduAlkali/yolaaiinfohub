@@ -68,21 +68,16 @@
   align-items: center;
   align-self: center;
   margin-bottom: 0px !important;
+  justify-content: center;
 }
 
 .currency-selector-item {
   border: solid 2px #cdcfd4;
-  height: 150px;
+  height: 160px;
   flex-direction: column;
   gap: 6px;  
   padding-top: 0;
-  width: 17vw;
-  /*
-    background: #f6f5f3;
-    width: 150px;
-    padding: 10px;
-    border-radius: 15px;
-  */
+  width: 18vw;
   padding: 16px;
   display: flex;
   justify-content: space-between;
@@ -106,22 +101,15 @@
   margin: 6px 0px 3px 0px;
 }
 
+.currency-card-amount { margin-bottom: 0.9rem !important;}
+.currency-selector-item-div {margin-bottom: 0.75rem ; width: 100%;}
 
 @media  screen and (min-width: 700px) and (max-width: 900px) {
    .currency-selector-item {
-    width: 190px;
-   }
-   /*
-   .exchange-amount {
-    margin: 13px 13px;
+    /*width: 190px;*/
+    width: 20vw;
    }
    
-   .currency-converter label {
-    margin: 0 35px 0 35px;
-   }
-   .currency-converter select {
-    margin: 7px 25px 0px 30px;
-   }*/
 }
 @media screen and (min-width: 700px) and (max-width: 1024px) {
     .currency-converter {padding: 15px !important;}
@@ -129,342 +117,222 @@
 }
 
 @media screen and (max-width: 700px) {
-  .currency-converter {padding: 15px !important;}
+  .currency-converter {padding: 10px !important;}
   .currency-converter-h3 {font-size: 20px; margin-bottom: 10px !important; margin-top: 0 !important;}
   .currency-converter-h3-p {margin: 0.5rem 0px 3rem !important;}
 
   .currency-selectors {display: grid !important; margin-bottom: 15px !important}
-  .currency-selector-item {width: 320px !important; height: 90px !important; flex-direction: row;}
+  .currency-selector-item {width: 100% !important; height: 90px !important; flex-direction: row; padding: 5px !important;}
+  .currency-card-amount {margin-bottom: 0 !important; padding: 17px 15px !important;}
+  .currency-selector-item-div {margin-bottom: 0 !important; width: 55% !important;}
+  .custom-select-caret { margin-left: 0px !important;}
+  .currency-input-wrapper .currency-card-amount { padding-left: 30px !important; }
+  .currency-prefix { left: 12px !important; top: 49% !important;}
+
 }
 
 
+  .badge {
+      background-color: var(--secondary-container);
+      color: var(--on-secondary-container);
+      padding: 4px 8px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+  }
 
+  .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--secondary);
+  }
 
+  .currency-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-container-low);
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--outline-variant);
+  }
 
-/* Currency converter styling */
-/*
-.currency-converter {
-  margin: 20px 0;
-  padding: 15px;
-  background-color: #f2f2f2;
-  border-radius: 6px;
-  max-width: 600px;
-}
-.currency-converter h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  color: #222;
-}
-.currency-converter .currency-selectors {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-.currency-converter label {
-  font-size: 14px;
-  margin-right: 5px;
-}
-.currency-converter select {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-.currency-converter button#fetch-rates {
-  margin-top: 10px;
-  padding: 8px 12px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.currency-converter button#fetch-rates:hover {
-  background-color: #0056b3;
-}
-.currency-converter #exchange-results {
-  margin-top: 12px;
-  font-size: 14px;
-  color: #333;
-}
-*/
+  .flag-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--outline-variant);
+  }
 
+  .flag-img-sm {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--outline-variant);
+  }
 
+  /* Buttons */
+  .swap-btn {
+      background-color: var(--secondary);
+      color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: -24px auto;
+      position: relative;
+      z-index: 10;
+      cursor: pointer;
+  }
 
+  .primary-btn {
+      width: 100%;
+      background-color: var(--primary);
+      color: var(--on-primary);
+      font-weight: 700;
+      font-size: 1.125rem;
+      padding: 16px;
+      border-radius: 0.75rem;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+  }
 
+  /* Utils */
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-2 { gap: 8px; }
+  .gap-4 { gap: 16px; }
+  .gap-6 { gap: 24px; }
+  .text-right { text-align: right; }
+  .text-sm { font-size: 0.875rem; }
+  .text-xs { font-size: 0.75rem; }
+  .text-secondary { color: var(--secondary); }
+  .text-muted { color: var(--on-surface-variant); }
+  .font-bold { font-weight: 700; }
+  .font-semibold { font-weight: 600; }
+  .text-2xl { font-size: 1.5rem; }
+  .text-xl { font-size: 1.25rem; }
 
-        /*
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  /* Navigation */
+  /*
+  nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 50;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 16px 24px 16px;
+      background: var(--surface-container);
+      border-top: 1px solid var(--outline-variant);
+      box-shadow: var(--shadow-md);
+  }
+      */
 
-        body {
-            font-family: system-ui, -apple-system, sans-serif; 
-            background-color: var(--background);
-            color: var(--on-surface);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+  .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 16px;
+      color: var(--on-surface-variant);
+      gap: 2px;
+  }
 
-        
-        .font-headline { font-weight: 700; }
-        .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.875rem; }
-        
-        
-        header {
-            background: white;
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            height: 64px;
-            border-bottom: 1px solid var(--outline-variant);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 24px;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-        }
+  .nav-item.active {
+      background-color: var(--secondary-container);
+      color: var(--on-secondary-container);
+      border-radius: var(--radius-full);
+  }
 
-        main {
-            flex-grow: 1;
-            padding: 24px 16px 128px 16px;
-            max-width: 448px; 
-            width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-        */
-        
-        /*
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--outline-variant);
-            border-radius: 0.75rem;
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-        }
+  svg {
+      display: block;
+  }
 
-        .converted-card {
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 320px;
-        }
-        */
+  /* Custom select (flag + name) styles */
+  .custom-select-wrapper {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    width: 100%;
+    overflow: visible;
+    z-index: 9999;
+  }
+  .custom-select-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0px;
+    width: 100%;
+    padding: 6px 8px;
+    background: white;
+    border: 1px solid var(--outline-variant);
+    border-radius: 8px;
+    cursor: pointer;
+    justify-content: space-around;
+  }
+  .custom-select-button img.custom-select-flag { width: 45px; height: 30px; border-radius: 4px; object-fit: contain; border: none;}
+  .custom-select-label { font-size: 13px; color: var(--on-surface); display: flex; flex-direction: column; gap: 4px;}
+  .custom-select-caret { opacity: 0.7; font-size: 20px; margin-left: 8px; align-self: center;}
+  .custom-select-list {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 99999;
+    background: white;
+    border: 1px solid var(--outline-variant);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    max-height: 220px;
+    overflow: auto;
+    min-width: 220px;
+    box-sizing: border-box;
+  }
+  .custom-select-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .custom-select-item:hover, .custom-select-item:focus {
+    background: var(--surface-variant);
+  }
 
+  /* Input prefix (currency symbol) */
+  .currency-input-wrapper { position: relative; }
+  .currency-prefix {
+    position: absolute;
+    left: 30px;
+    top: 36%;
+    transform: translateY(-50%);
+    font-weight: normal;
+    pointer-events: none;
+    color: var(--on-surface-variant);
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+    font-size: 24px;
+  }
+  .currency-input-wrapper .currency-card-amount {
+    padding-left: 48px;
+  }
 
-        .badge {
-            background-color: var(--secondary-container);
-            color: var(--on-secondary-container);
-            padding: 4px 8px;
-            border-radius: var(--radius-full);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--secondary);
-        }
-
-        .currency-selector {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--surface-container-low);
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--outline-variant);
-        }
-
-        .flag-img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--outline-variant);
-        }
-
-        .flag-img-sm {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--outline-variant);
-        }
-
-        /* Buttons */
-        .swap-btn {
-            background-color: var(--secondary);
-            color: white;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: none;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: -24px auto;
-            position: relative;
-            z-index: 10;
-            cursor: pointer;
-        }
-
-        .primary-btn {
-            width: 100%;
-            background-color: var(--primary);
-            color: var(--on-primary);
-            font-weight: 700;
-            font-size: 1.125rem;
-            padding: 16px;
-            border-radius: 0.75rem;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: var(--shadow-md);
-            cursor: pointer;
-        }
-
-        /* Utils */
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-2 { gap: 8px; }
-        .gap-4 { gap: 16px; }
-        .gap-6 { gap: 24px; }
-        .text-right { text-align: right; }
-        .text-sm { font-size: 0.875rem; }
-        .text-xs { font-size: 0.75rem; }
-        .text-secondary { color: var(--secondary); }
-        .text-muted { color: var(--on-surface-variant); }
-        .font-bold { font-weight: 700; }
-        .font-semibold { font-weight: 600; }
-        .text-2xl { font-size: 1.5rem; }
-        .text-xl { font-size: 1.25rem; }
-
-        /* Navigation */
-        /*
-        nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 50;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 16px 24px 16px;
-            background: var(--surface-container);
-            border-top: 1px solid var(--outline-variant);
-            box-shadow: var(--shadow-md);
-        }
-            */
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 4px 16px;
-            color: var(--on-surface-variant);
-            gap: 2px;
-        }
-
-        .nav-item.active {
-            background-color: var(--secondary-container);
-            color: var(--on-secondary-container);
-            border-radius: var(--radius-full);
-        }
-
-        svg {
-            display: block;
-        }
-
-        /* Custom select (flag + name) styles */
-        .custom-select-wrapper {
-          display: inline-block;
-          position: relative;
-          vertical-align: middle;
-        }
-        .custom-select-button {
-          display: inline-flex;
-          align-items: center;
-          gap: 0px;
-          padding: 6px 8px;
-          background: white;
-          border: 1px solid var(--outline-variant);
-          border-radius: 8px;
-          cursor: pointer;
-        }
-        .custom-select-button img.custom-select-flag { width: 45px; height: 30px; border-radius: 4px; object-fit: contain; border: none;}
-        .custom-select-label { font-size: 13px; color: var(--on-surface); display: flex; flex-direction: column; gap: 4px;}
-        .custom-select-caret { opacity: 0.7; font-size: 20px; }
-        .custom-select-list {
-          position: absolute;
-          left: 0;
-          top: calc(100% + 6px);
-          z-index: 50;
-          background: white;
-          border: 1px solid var(--outline-variant);
-          border-radius: 8px;
-          box-shadow: var(--shadow-lg);
-          list-style: none;
-          margin: 0;
-          padding: 6px;
-          max-height: 220px;
-          overflow: auto;
-          min-width: 220px;
-        }
-        .custom-select-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 8px;
-          cursor: pointer;
-          border-radius: 6px;
-        }
-        .custom-select-item:hover, .custom-select-item:focus {
-          background: var(--surface-variant);
-        }
-
-        /* Input prefix (currency symbol) */
-        .currency-input-wrapper { position: relative; }
-        .currency-prefix {
-          position: absolute;
-          left: 30px;
-          top: 36%;
-          transform: translateY(-50%);
-          font-weight: normal;
-          pointer-events: none;
-          color: var(--on-surface-variant);
-          font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
-          font-size: 24px;
-        }
-        .currency-input-wrapper .currency-card-amount {
-          padding-left: 48px !important;
-        }
-
-        @media screen and (max-width: 700px) {
-          .currency-input-wrapper .currency-card-amount { padding-left: 44px !important; }
-          .currency-prefix { left: 10px; }
-
-        }

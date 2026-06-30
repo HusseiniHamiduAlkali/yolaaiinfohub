@@ -130,14 +130,16 @@ Wednesday, July 30, 2025
 
 .section3-title {
   font-size: 1.6rem;
-  margin-bottom: 2rem;
   padding: 0.1rem;
   width: 100%;
   border-radius: 10px;
   text-align: center;
+  border-bottom: solid 1px #9ca6b9;
+  border-radius: 0px;
+  padding-bottom: 20px;
 }
-.section3-title::before { content: ''; width: 20px;}
 
+.section3-title::before { content: ''; width: 20px;}
 
 .section4-container {
   display: grid;
@@ -149,7 +151,8 @@ Wednesday, July 30, 2025
   padding: 1.5rem;
   max-width: 1400px;
   box-sizing: border-box;
-  border: 2px solid #9ba5b6;
+  border: solid 2px #95abd5;
+  /*border: 2px solid #9ba5b6;*/
   border-radius: 25px;
 }
 
@@ -620,6 +623,7 @@ Wednesday, July 30, 2025
   width: 120px;
   overflow: hidden;
   border-radius: 9px;
+  margin-left: 9px;
 }
 .chat-preview:empty {
   display: none;
@@ -965,7 +969,7 @@ main {
   /* Tablet styles */
   .chat-container {top: 51% !important;}
   .info-section h2 {
-    padding-top: 50px;
+    padding-top: 30px;
   }
   .faq-list {
     width: 97% !important;
@@ -1120,7 +1124,8 @@ main {
   }
   .section3-title {
     font-size: 1.1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0rem !important;
+    padding-bottom: 10px !important;
   }
   .section4-container {
     grid-template-columns: 1fr !important;
@@ -1130,6 +1135,7 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 40px;
   }
   .section4 {
     padding: 0.7rem;

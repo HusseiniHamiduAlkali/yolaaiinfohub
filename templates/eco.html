@@ -116,10 +116,21 @@
   
     <!-- AetherFlow Weather Dashboard -->
     <div style="flex-direction: column;" class="section-eco aetherflow-container">
+        
+      <div style="display: flex; flex-direction: row; width: 100%; margin-bottom: 12px;">
+          <div style="width: 100%;">
+              <h2 class="section-eco-h2" >Weather and Atmospheric conditions</h2>
+          </div>
+          <div style="width: fit-content; align-self: center; background: transparent; margin-left: 10px;">
+              <button onclick="toggleDetails(this)" aria-expanded="false" title="Show details">                  
+                  <svg class="toggle-details-icon" width="24" height="24" aria-hidden="true">
+                      <use xlink:href="#toggle-icon-closed" href="#toggle-icon-closed"></use>
+                  </svg>
+              </button>
+          </div>
+      </div>
 
-      <h2 class="section-eco-h2" >Weather and Atmospheric conditions</h2>
-
-      <div class="dashboard">
+      <div class="dashboard" id="dashboard" style="display: none;">
         <!-- Hero Section -->
         <section class="bento-card hero-card">
           <div class="hero-bg-icon">

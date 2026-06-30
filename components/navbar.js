@@ -392,6 +392,7 @@ function renderNavbar(isLoading = false) {
       newHamburger.style.marginLeft = '';
 
       // Style the hamburger lines
+      /*
       const lines = newHamburger.querySelectorAll('.hamburger-line');
       lines.forEach(line => {
           line.style.display = 'block';
@@ -401,6 +402,7 @@ function renderNavbar(isLoading = false) {
           line.style.borderRadius = '5px';
           line.style.margin = '0';
       });
+      */
 
       // Move profile link into a temporary holder so we can reinsert into mobile menu
       try {

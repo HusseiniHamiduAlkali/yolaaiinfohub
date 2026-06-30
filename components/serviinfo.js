@@ -331,6 +331,12 @@ if (typeof window.createCustomSelect === 'undefined') {
     list.className = 'custom-select-list';
     list.setAttribute('role', 'listbox');
     list.style.display = 'none';
+    list.style.position = 'fixed';
+    list.style.left = '0';
+    list.style.top = '0';
+    list.style.minWidth = '220px';
+    list.style.boxSizing = 'border-box';
+    list.style.zIndex = '99999';
 
     const nativeOptions = Array.from(native.options || []);
     nativeOptions.forEach(opt => {
@@ -384,12 +390,20 @@ if (typeof window.createCustomSelect === 'undefined') {
     titleSpan.textContent = initCode || '';
     nameSpan.textContent = initNameOnly || '';
 
+    const setListPosition = () => {
+      const rect = button.getBoundingClientRect();
+      list.style.left = `${rect.left}px`;
+      list.style.top = `${rect.bottom + 6}px`;
+      list.style.minWidth = `${rect.width}px`;
+    };
+
     button.addEventListener('click', (e) => {
       e.stopPropagation();
       const showing = list.style.display === 'block';
       document.querySelectorAll('.custom-select-list').forEach(l => l.style.display = 'none');
       document.querySelectorAll('.custom-select-button').forEach(b => b.setAttribute('aria-expanded', 'false'));
       if (!showing) {
+        setListPosition();
         list.style.display = 'block';
         button.setAttribute('aria-expanded', 'true');
       } else {
@@ -398,14 +412,25 @@ if (typeof window.createCustomSelect === 'undefined') {
       }
     });
 
+    window.addEventListener('resize', () => {
+      if (list.style.display === 'block') {
+        setListPosition();
+      }
+    });
+    window.addEventListener('scroll', () => {
+      if (list.style.display === 'block') {
+        setListPosition();
+      }
+    }, true);
+
     document.addEventListener('click', () => {
       list.style.display = 'none';
       button.setAttribute('aria-expanded', 'false');
     });
 
     wrapper.appendChild(button);
-    wrapper.appendChild(list);
     native.parentNode.insertBefore(wrapper, native.nextSibling);
+    document.body.appendChild(list);
 
     state._customButton = button;
     state._customList = list;
@@ -631,4 +656,63 @@ if (!window.populateDropdown) {
       dropdown.appendChild(option);
     });
   };
+}
+
+
+
+
+
+
+
+
+
+function ensureToggleDetailsIcons() {
+  if (document.getElementById('toggle-details-icons')) return;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.style.position = 'absolute';
+  svg.style.width = '0';
+  svg.style.height = '0';
+  svg.style.overflow = 'hidden';
+  svg.id = 'toggle-details-icons';
+
+  const createSymbol = (id, pathD) => {
+    const symbol = document.createElementNS(svgNS, 'symbol');
+    symbol.id = id;
+    symbol.setAttribute('viewBox', '0 0 24 24');
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', '12');
+    circle.setAttribute('cy', '12');
+    circle.setAttribute('r', '9');
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', pathD);
+    symbol.appendChild(circle);
+    symbol.appendChild(path);
+    return symbol;
+  };
+
+  svg.appendChild(createSymbol('toggle-icon-closed', 'M8 10l4 4 4-4'));
+  svg.appendChild(createSymbol('toggle-icon-open', 'M8 14l4-4 4 4'));
+  document.body.insertBefore(svg, document.body.firstChild);
+}
+
+function toggleDetails(button) {
+  ensureToggleDetailsIcons();
+  const currency_selectors = document.getElementById('currency-selectors');
+  if (!currency_selectors) return;
+
+  const isHidden = currency_selectors.style.display === 'none' || getComputedStyle(currency_selectors).display === 'none';
+  const open = isHidden;
+  currency_selectors.style.display = open ? 'flex' : 'none';
+
+  const useEl = button.querySelector('use');
+  if (useEl) {
+    const symbol = open ? '#toggle-icon-open' : '#toggle-icon-closed';
+    useEl.setAttribute('href', symbol);
+    useEl.setAttribute('xlink:href', symbol);
+  }
+
+  button.setAttribute('aria-expanded', open ? 'true' : 'false');
+  button.title = open ? 'Hide details' : 'Show details';
 }

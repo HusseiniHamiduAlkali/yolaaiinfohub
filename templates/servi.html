@@ -105,19 +105,31 @@
     <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 15px;">Informations about Professionals and Services</h2>
     <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Connect with electricians, plumbers, teachers, or other professionals in Yola.</p>
     </section>
-
+    
     
     <div class="section-extra">
         <div class="currency-converter">
-            <h3 class="currency-converter-h3 font-headline text-xl" style="padding-left: 4px;">Currency Converter</h3>
+            <div style="display: flex; flex-direction: row; justify-content: space-evenly;">
+                <div style="width: 200%;">
+                    <h3 class="currency-converter-h3 font-headline text-xl" style="padding-left: 4px;">Currency Converter</h3>    
+                </div>
+                <div style="width: fit-content; align-self: center; background: transparent;">
+                    <button onclick="toggleDetails(this)" aria-expanded="false" title="Show details">                  
+                        <svg class="toggle-details-icon" width="24" height="24" aria-hidden="true">
+                            <use xlink:href="#toggle-icon-closed" href="#toggle-icon-closed"></use>
+                        </svg>
+                    </button>
+                </div>
+            </div>    
+                        
+            <div class="currency-selectors" id="currency-selectors"  style="display: none;">
             <p class="currency-converter-h3-p">Select any currency for each card and enter a value in any field to convert across the others.</p>
-            <div class="currency-selectors">
 
                 <div class="currency-selector-item converted-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; gap: 0.75rem;">
+                    <div class="currency-selector-item-div" style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
                         <select class="currency-card-select" style="flex: 1; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(0,0,0,0.12); background: var(--surface); color: inherit; text-align: end;"></select>
                     </div>
-                    <input class="currency-card-amount" type="number" min="0" step="0.01" value="1" placeholder="0.00" style="width: 100%; padding: 0.9rem 1rem; font-size: 1rem; border-radius: 14px; border: 1px solid rgba(0,0,0,0.12); margin-bottom: 0.9rem; background: var(--surface); color: inherit; text-align: end;" />
+                    <input class="currency-card-amount" type="number" min="0" step="0.01" value="1" placeholder="0.00" style="width: 100%; padding: 0.9rem 0.9rem 1rem 50px; font-size: 1rem; border-radius: 14px; border: 1px solid rgba(0,0,0,0.12); background: var(--surface); color: inherit; text-align: end;" />
                     <div class="text-right" style="display: none;">
                         <div class="font-headline text-xl currency-card-value">1.00</div>
                         <div class="font-mono text-xs text-secondary currency-rate">1 USD = 1.0000 USD</div>
@@ -125,10 +137,10 @@
                 </div>
 
                 <div class="currency-selector-item glass-card converted-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; gap: 0.75rem;">
+                    <div class="currency-selector-item-div" style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
                         <select class="currency-card-select" style="flex: 1; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(0,0,0,0.12); background: var(--surface); color: inherit;"></select>
                     </div>
-                    <input class="currency-card-amount" type="number" min="0" step="0.01" value="" placeholder="0.00" style="width: 100%; padding: 0.9rem 1rem; font-size: 1rem; border-radius: 14px; border: 1px solid rgba(0,0,0,0.12); margin-bottom: 0.9rem; background: var(--surface); color: inherit; text-align: end;" />
+                    <input class="currency-card-amount" type="number" min="0" step="0.01" value="" placeholder="0.00" style="width: 100%; padding: 0.9rem 0.9rem 1rem 50px; font-size: 1rem; border-radius: 14px; border: 1px solid rgba(0,0,0,0.12); background: var(--surface); color: inherit; text-align: end;" />
                     <div class="text-right" style="display: none;">
                         <div class="font-headline text-xl currency-card-value">0.00</div>
                         <div class="font-mono text-xs text-secondary currency-rate">1 USD = 0.0000 USD</div>
@@ -136,20 +148,22 @@
                 </div>
 
                 <div class="currency-selector-item glass-card converted-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; gap: 0.75rem;">
+                    <div class="currency-selector-item-div" style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
                         <select class="currency-card-select" style="flex: 1; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(0,0,0,0.12); background: var(--surface); color: inherit;"></select>
                     </div>
-                    <input class="currency-card-amount" type="number" min="0" step="0.01" value="" placeholder="0.00" style="width: 100%; padding: 0.9rem 1rem; font-size: 1rem; border-radius: 14px; border: 1px solid rgba(0,0,0,0.12); margin-bottom: 0.9rem; background: var(--surface); color: inherit; text-align: end;" />
+                    <input class="currency-card-amount" type="number" min="0" step="0.01" value="" placeholder="0.00" style="width: 100%; padding: 0.9rem 0.9rem 1rem 50px; font-size: 1rem; border-radius: 14px; border: 1px solid rgba(0,0,0,0.12); background: var(--surface); color: inherit; text-align: end;" />
                     <div class="text-right" style="display: none;">
                         <div class="font-headline text-xl currency-card-value">0.00</div>
                         <div class="font-mono text-xs text-secondary currency-rate">1 USD = 0.0000 USD</div>
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
+     
 
-    
+
     <!-- Search -->
     <section class="search-bar">
     <span class="fas fa-search material-symbols-outlined"></span>
@@ -477,4 +491,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
 </script>
