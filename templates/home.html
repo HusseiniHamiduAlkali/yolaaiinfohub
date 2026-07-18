@@ -1,127 +1,20 @@
+    <section class="mb-8 hero">
+      <div class="hero-inner">
+        <span style="" class="eyebrow">· Your AI-powered information ·</span>
+        <h1>Welcome to <em>Yola AI Info Hub</em></h1>
+        <!--<h2 style="font-size: 32px; color: #2920a0; margin-bottom: 30px;">Welcome to Yola AI Info Hub</h2>
+        <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Ask and discover anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the settings and about page.</p>-->
+        <p>Ask and discover anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the settings and about page.</p>
+      </div>
+      <div class="hero-glow" aria-hidden="true"></div>
+    </section>
 
     <section class="info-section">
       <!--<h2 data-i18n="home_title">Welcome to Yola AI Info Hub</h2>
       <p data-i18n="home_description">Ask anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the About section.</p>-->
-      <div class="chat-container">
-        <div class="chat-header">
-          <span data-i18n="home_chat_header">Home AI Chat</span>
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <div class="model-switch">
-              
 
-              <label for="category">AI model</label>
-              <select id="category">
-                <option value="">select</option>
-                <option value="1.5 flash">1.5 flash</option>
-                <option value="2.5 flash">2.5 flash</option>
-              </select>
-              <div id="itemList" style="margin-top: 12px;"></div>
-
-              <select aria-haspopup="listbox" aria-expanded="true">
-                <ul role="listbox">
-                  <li>gemini 1.5 Flash</li>
-                  <li>gemini 2.5 Flash</li>
-                </ul>
-              </select>
-
-              <label class="switch">
-                <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('home', this.checked)">
-                <span class="slider round"></span>
-              </label>
-              <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
-            </div>
-            <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem;">✕</button>
-          </div>
-        </div>
-        <div class="chat-messages" id="home-chat-messages"></div>
-        <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendHomeMessage();">
-          <div id="home-chat-preview" class="chat-preview"></div>
-          <input type="text" id="home-chat-input" data-i18n-placeholder="home_chat_placeholder" placeholder="Ask anything..." required />
-          <button type="submit" class="send-button" data-i18n="send">Send</button>
-        </form>
-        <div class="input-options">
-
-          <button type="button" onclick="window.captureImage('home')" title="Capture Image" >
-            <!-- Camera -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7
-              a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-            </svg>
-          </button>
-
-          <button type="button" onclick="window.recordAudio('home')" title="Record Audio">      
-            <!-- Microphone -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <rect x="9" y="2" width="6" height="12" rx="3"/>
-              <path d="M5 10a7 7 0 0 0 14 0"/>
-              <line x1="12" y1="19" x2="12" y2="22"/>
-            </svg>
-          </button>
-
-          <label class="file-upload-btn" title="Upload File">            
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5
-              a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>  
-            <input type="file" style="display:none" onchange="window.uploadFile(event, 'home')" />
-          </label>
-        
-          <button type="button" id="home-voice-call-btn" onclick="window.startVoiceCall('home')" title="Start Live Voice Call with AI">            
-            <!-- Phone -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18
-              2 19.79 19.79 0 0 1-8.63-3.07
-              19.5 19.5 0 0 1-6-6A19.79
-              19.79 0 0 1 2.11 4.18 2
-              2 0 0 1 4.11 2h3a2 2 0 0
-              1 2 1.72c.12.89.32 1.76.59
-              2.59a2 2 0 0 1-.45 2.11L8.09
-              9.91a16 16 0 0 0 6 6l1.49-1.49
-              a2 2 0 0 1 2.11-.45c.83.27
-              1.7.47 2.59.59A2 2 0 0 1 22 16.92z"/>
-            </svg>
-          </button>
-          <button type="button" id="home-mute-btn" onclick="window.toggleVoiceCallMute('home')" title="Mute/Unmute Microphone" style="display: none;">
-            <i class="fas fa-microphone-slash"></i> Mute
-          </button>
-          <div id="home-voice-indicator" class="voice-indicator" style="display: none;">
-            Listening...
-          </div>
-          <div id="home-call-duration" class="call-duration" style="display: none;">00:00</div>
-
-        </div>
-        <div class="faq-list">
-        <h3 data-i18n="general_faqs">General FAQs</h3>
-        <ul>
-          <li><a class="faq-link" data-i18n="faq_1" onclick="window.sendFAQInCurrentLang('faq_1', 'Home')">The capital of Adamawa State</a></li>
-          <li><a class="faq-link" data-i18n="faq_2" onclick="window.sendFAQInCurrentLang('faq_2', 'Home')">What is the current time in Yola</a></li>
-          <li><a class="faq-link" data-i18n="faq_3" onclick="window.sendFAQInCurrentLang('faq_3', 'Home')">What are popular places to visit</a></li>
-          <li><a class="faq-link" data-i18n="faq_4" onclick="window.sendFAQInCurrentLang('faq_4', 'Home')">Brief history of Yola</a></li>
-          <li><a class="faq-link" data-i18n="faq_5" onclick="window.sendFAQInCurrentLang('faq_5', 'Home')">What is the origin of Yola</a></li>
-          <li><a class="faq-link" data-i18n="faq_6" onclick="window.sendFAQInCurrentLang('faq_6', 'Home')">Emergency contact information</a></li>
-        </ul>
-      </div>
-      </div>
-
-            <!-- Title -->
-      <section class="mb-8">
-        <h2 style="font-size: 32px; color: #2920a0; margin-bottom: 30px;">Welcome to Yola AI Info Hub</h2>
-        <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Ask and discover anything about Yola, Adamawa State, Nigeria.<br>For features and capabilities of this platform visit the settings and about page.</p>
-      </section>
-
-      <div class="section2" >
-        <h2 style="margin-bottom: 25px;" data-i18n="history_of_yola">History of Yola</h2>
+      <div class="section2 section2-home" >
+        <!--<h2 style="margin-bottom: 25px;" data-i18n="history_of_yola">History of Yola</h2>-->
         <div class="section2-home-image-placeholder" >
           <img class="section2-home-img1" src="Data/Images/gemini-palace3.png" alt="Yola Palace"  loading="lazy" />
           <img class="section2-home-img2" src="Data/Images/palace-gemini.png" alt="Yola Palace"  loading="lazy" />
@@ -147,10 +40,10 @@
                 <img src="Data/Images/lamido.png" alt=""  loading="lazy" />
               </div>
 
-              <div style="display:flex; flex-direction: column;">
-                <h4 data-i18n="history_of_yola_palace">Explore the mysterious and ground-breaking emirate council and the kingdom of the 12th Lamido Fombina. His royal highness Alh. (Dr.) Muhammad Barkindo Aliyu Musdafa PhD. CFR. The primere ruler of Adamawa and the grand patron of Tabital Pulaaku International.</h4>
+              <div class="section4-home-p-container" >
+                <p style="margin: 15px; line-height: 2rem;" data-i18n="history_of_yola_palace">Explore the mysterious and ground-breaking emirate council and the kingdom of the 12th Lamido Fombina. His royal highness Alh. (Dr.) Muhammad Barkindo Aliyu Musdafa PhD. CFR. The primere ruler of Adamawa and the grand patron of Tabital Pulaaku International.</p>
                 <h4 style="height: auto;">
-                  <a class="learn-more-link" data-section="Home" data-i18n="explore_more" data-file="fombinakingdom.html" >Explore more →</a>
+                  <a class="learn-more-link section4-home-a" data-section="Home" data-i18n="explore_more" data-file="fombinakingdom.html" >Explore more →</a>
                 </h4>
               </div>
               
@@ -168,10 +61,10 @@
                 <img src="Data/Images/fintiri.png" alt=""  loading="lazy" />
               </div>
 
-              <div style=" display:flex; flex-direction: column;">
-                <h4 data-i18n="history_of_yola_government">Meet the cabinet of the Executive governor of Adamawa state, His excellency Rt. Hon. Ahmadu Umaru Fintiri OON. And the state executive council (ADSEC).</h4>
+              <div class="section4-home-p-container">
+                <p style="margin: 15px; line-height: 2rem;" data-i18n="history_of_yola_government">Meet the cabinet of the Executive governor of Adamawa state, His excellency Rt. Hon. Ahmadu Umaru Fintiri OON. And the state executive council (ADSEC).</p>
                 <h4 style="height: auto;">
-                  <a class="learn-more-link" data-section="Home" data-i18n="explore_more" data-file="adamawaexecutivecouncil.html" >Explore more →</a>
+                  <a class="learn-more-link section4-home-a" data-section="Home" data-i18n="explore_more" data-file="adamawaexecutivecouncil.html" >Explore more →</a>
                 </h4>
               </div>
               
@@ -188,43 +81,31 @@
 
     </section>        
     
-      <footer class="site-footer">
-        <!-- Bottom Row -->
+    <footer class="site-footer">
         <div class="footer-bottom-container">
-          <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
-          <span style="display: flex; justify-content: space-evenly;">
-            <a href="#">
-              <i class="fab fa-whatsapp fa-2x" href="#"></i>
-            </a>
-            <a href="#">
-              <i class="fab fa-instagram fa-2x" href="#"></i>
-            </a>
-            <a href="#">
-              <i class="fab fa-facebook fa-2x" href="#"></i>
-            </a>
-            <a href="#">
-              <i class="fab fa-linkedin fa-2x" href="#"></i>
-            </a>
-            
-            <a href="#">
-              <i class="fab fa-x-twitter fa-2x" href="#"></i>
-            </a>
-          </span>
+            <p class="follow-label">Follow us on social media</p>
+            <div class="social-row">
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+            </div>
         </div>
 
-        <div>
-          <div class="legal-links">
-              <a class="footer-link" href="#">Privacy Policy</a>
-              <a class="footer-link" href="#">Terms of Service</a>
-              <a class="footer-link" href="../pages/report.html">Report an issue or comment</a>
-              <a class="footer-link" href="../pages/about.html">About</a>
-          </div>
-          <div class="copyright" style="margin-top: 15px;">
-             <p>© 2026 AlkaliCodes. All rights reserved.</p> 
-          </div>
+        <div class="footer-legal">
+            <div class="legal-links">
+                <a class="footer-link" href="#">Privacy Policy</a>
+                <a class="footer-link" href="#">Terms of Service</a>
+                <a class="footer-link" href="../pages/report.html">Report an issue</a>
+                <a class="footer-link" href="../pages/about.html">About</a>
+            </div>
+            <div class="copyright">
+                <p>© 2026 AlkaliCodes. All rights reserved.</p>
+            </div>
         </div>
-      </footer>
-  
+    </footer>
+
 
 <script>
 function getLangFolder() {

@@ -11,8 +11,8 @@ nav.navbar {
   align-items: stretch;
   justify-content: space-between;
   /*background: #2d3748;*/
-  background: #112041;
-  color: #fff;
+  background: linear-gradient(90deg, var(--emerald-900, #04322a) 0%, var(--emerald-800, #064e3b) 60%);
+  color: var(--cream, #f5f0e0);
   padding: 0.5rem 1rem;
   position: fixed;
   top: 0;
@@ -157,7 +157,7 @@ nav.navbar {
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 0rem;
+  gap: 10px;
   justify-content: flex-end;
   width: 100%;
 }
@@ -168,13 +168,15 @@ nav.navbar {
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
-  padding: 0.5rem 0.8rem;
+  padding: 8px 8px;
   border-radius: 4px;
   transition: background 0.2s;
+  font-family: cursive;
 }
 
 .navbar-links li button:hover {
-  background: #4a5568;
+  background: rgba(245, 240, 224, 0.08);
+  color: var(--emerald-900, #04322a);
 }
 
 /* Merged styles for navbar-auth across all definitions */
@@ -226,12 +228,12 @@ nav.navbar {
   transition: background 0.2s;
   
   font-weight: 500;
-  height: fit-content;
+  height: 35px;
 }
 
 .auth-btn:hover {
-  background: #cbd5e1;
-  color: black;
+  background: var(--gold-200, #d9bd6a);
+  color: var(--emerald-900, #04322a);
 }
 
 
@@ -301,7 +303,7 @@ nav.navbar {
 }
 
 .hamburger.active span {
-  background: #cbd5e1;
+  background: var(--gold-200, #d9bd6a);
 }
 
 /* Hamburger Animation */
@@ -329,7 +331,7 @@ nav.navbar {
   right: 0;
   width: 65%;
   height: 100vh;
-  background: #112041;
+  background: linear-gradient(180deg, var(--emerald-900, #04322a), var(--emerald-800, #064e3b));
   border-radius: 0 0 0 16px;
   box-shadow: -2px 0 16px rgba(0, 0, 0, 0.3);
   padding: 4rem 1rem 2rem 1rem;
@@ -371,6 +373,7 @@ nav.navbar {
   transition: all 0.2s ease;
   display: block;
   text-decoration: none;
+  font-family: cursive;
 }
 
 .mobile-menu li button:hover {
@@ -398,7 +401,7 @@ nav.navbar {
 }
 
 .mobile-menu-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background:#bcbfc1 !important;
   color: #fff;
   transform: scale(1.05);
 }
@@ -406,9 +409,10 @@ nav.navbar {
 /* Highlight for active nav button */
 .navbar-links button.active,
 .mobile-menu li button.active {
-  background: #bcbfc1 !important; /* A distinct blue */
-  color: #222 !important;
-  box-shadow: 0 2px 8px 0 rgba(43, 108, 176, 0.3);
+  background: linear-gradient(90deg, var(--gold-400, #d9bd6a), var(--gold-500, #c9a84c)) !important;
+  color: var(--emerald-900, #04322a) !important;
+  /*box-shadow: 0 4px 12px rgba(0,0,0,0.12);*/
+  box-shadow: -2.8px 3px 3px 1px #93894a;
   font-weight: 600;
   border-radius: 8px;
   z-index: 2;
@@ -419,8 +423,9 @@ nav.navbar {
 /* Hover color for non-active */
 .navbar-links button:not(.active):hover,
 .mobile-menu button:not(.active):hover {
-  background: #cbd5e1;
-  color: #000000;
+  /*background: rgba(245, 240, 224, 0.08) !important;*/
+  background: #b4a754 !important;
+  color: var(--emerald-900, #04322a);
 }
 
 /* Ensure username container displays in mobile menu */
@@ -524,7 +529,7 @@ nav.navbar {
 
 .navbar-username-container { display: flex !important; }
 .navbar-username-text { color: #e4e4e4; font-size: 1.05rem; margin-right: 1rem; }
-.navbar-appname {margin-left: 10px;}
+.navbar-appname {margin-left: 10px; width: 29vw; height: 90px;}
 
 /* PC Screens (>=1151px) */
 @media screen and (min-width: 1151px) {
@@ -618,6 +623,8 @@ nav.navbar {
   .navbar-appname {
     font-size: 1.8rem;
     font-weight: bold;
+    width: 50vw;
+    height: 65px;
   }
   
 
@@ -640,8 +647,8 @@ nav.navbar {
     display: flex !important;
     flex-direction: row;
     justify-content: center;
-    width: 100%;
-    gap: 0rem;
+    width: auto;
+    gap: 10px;
     margin-top: 0;
   }
   
@@ -653,7 +660,7 @@ nav.navbar {
 /* Mobile Screens (<=700px) */
 @media screen and (max-width: 700px) {
   .auth-btn {
-    font-size: 0.9rem;
+    font-size: 11px;
     padding: 0.3rem 0.1rem !important;
     width: 60px;
   }
@@ -702,6 +709,8 @@ nav.navbar {
     margin-right: auto;
     font-weight: bold;
     margin-left: 1px !important;
+    width: 50vw;
+    height: 57px;
   }
 
   .navbar-right {
@@ -778,6 +787,11 @@ nav.navbar {
   }
 }*/
 
+  .login-suggestion {
+    margin-right: 0 !important;
+    margin-left: 15px;
+    width: 370px;
+  }
 /* Dark Mode Toggle Button Styles */
 .dark-mode-toggle {
     background: #4a5568;

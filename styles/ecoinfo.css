@@ -92,9 +92,10 @@
   .section-eco {
    /* width: -moz-available;*/
    
-    width: 81vw !important;
+    width: auto !important;
     height: auto;
     max-width: 600px !important;
+    min-width: 90%;
   }
 
   

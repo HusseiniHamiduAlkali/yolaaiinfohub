@@ -1,117 +1,22 @@
 
+
+
+
+<header class="hero">
+    <div class="hero-inner">
+        <span class="eyebrow">Yola · Environment</span>
+        <h1>Environmental <em>Information</em></h1>
+        <p>Discover more about recycling, waste, or environmental services in Yola.</p>
+    </div>
+    <div class="hero-glow" aria-hidden="true"></div>
+</header>
+
+
 <section class="info-section">
 <!--<h2 data-i18n="ecoinfo_title">EcoInfo - Environmental Help</h2>
     
     <p data-i18n="ecoinfo_description">Ask about recycling, waste, or environmental services in Yola.</p>-->
-    <div class="chat-container">
-    <div class="chat-header">
-        <span data-i18n="eco_chat_header">EcoInfo AI Chat</span>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div class="model-switch">
-            <label class="switch">
-                <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('eco', this.checked)">
-                <span class="slider round"></span>
-            </label>
-            <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
-            </div>
-            <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem;">✕</button>
-        </div>
-    </div>
-    <div class="chat-messages" id="chat-messages"></div>
-    <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendEcoMessage();">
-        <div id="eco-chat-preview" class="chat-preview"></div>
-        <input type="text" id="eco-chat-input" data-i18n-placeholder="eco_chat_placeholder" placeholder="Ask about environment..." required />
-        <div class="send-button-group">
-        <button type="submit" class="send-button" data-i18n="send">
-            <span class="send-text" data-i18n="send">Send</span>
-
-        </button>
-        <button type="button" class="stop-button" style="display:none" onclick="window.stopEcoResponse()">Stop</button>
-        </div>
-    </form>
-    <div class="input-options">
-        
-          <button type="button" onclick="window.captureImage('eco')" title="Capture Image" >
-            <!-- Camera -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7
-              a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-            </svg>
-          </button>
-
-          <button type="button" onclick="window.recordAudio('eco')" title="Record Audio">      
-            <!-- Microphone -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <rect x="9" y="2" width="6" height="12" rx="3"/>
-              <path d="M5 10a7 7 0 0 0 14 0"/>
-              <line x1="12" y1="19" x2="12" y2="22"/>
-            </svg>
-          </button>
-
-          <label class="file-upload-btn" title="Upload File">            
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5
-              a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>  
-            <input type="file" style="display:none" onchange="window.uploadFile(event, 'eco')" />
-          </label>
-        
-          <button type="button" id="home-voice-call-btn" onclick="window.startVoiceCall('eco')" title="Start Live Voice Call with AI">            
-            <!-- Phone -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18
-              2 19.79 19.79 0 0 1-8.63-3.07
-              19.5 19.5 0 0 1-6-6A19.79
-              19.79 0 0 1 2.11 4.18 2
-              2 0 0 1 4.11 2h3a2 2 0 0
-              1 2 1.72c.12.89.32 1.76.59
-              2.59a2 2 0 0 1-.45 2.11L8.09
-              9.91a16 16 0 0 0 6 6l1.49-1.49
-              a2 2 0 0 1 2.11-.45c.83.27
-              1.7.47 2.59.59A2 2 0 0 1 22 16.92z"/>
-            </svg>
-          </button>
-          <button type="button" id="eco-mute-btn" onclick="window.toggleVoiceCallMute('eco')" title="Mute/Unmute Microphone" style="display: none;">
-            <i class="fas fa-microphone-slash"></i> Mute
-          </button>
-          <div id="eco-voice-indicator" class="voice-indicator" style="display: none;">
-            Listening...
-          </div>
-          <div id="eco-call-duration" class="call-duration" style="display: none;">00:00</div>
-        </div>
     
-    <div class="faq-list">
-    <h3 data-i18n="eco_faqs">EcoInfo FAQs</h3>
-    <ul>
-        <li><a class="faq-link" data-i18n="eco_faq_1" onclick="window.sendFAQInCurrentLang('eco_faq_1', 'Eco')">How do I recycle waste in Yola</a></li>
-        <li><a class="faq-link" data-i18n="eco_faq_2" onclick="window.sendFAQInCurrentLang('eco_faq_2', 'Eco')">Current weather in Yola</a></li>
-        <li><a class="faq-link" data-i18n="eco_faq_3" onclick="window.sendFAQInCurrentLang('eco_faq_3', 'Eco')">Where are the parks and green spaces</a></li>
-        <li><a class="faq-link" data-i18n="eco_faq_4" onclick="window.sendFAQInCurrentLang('eco_faq_4', 'Eco')">How can I report illegal dumping</a></li>
-        <li><a class="faq-link" data-i18n="eco_faq_5" onclick="window.sendFAQInCurrentLang('eco_faq_5', 'Eco')">What are the environmental organizations in Yola</a></li>
-        <li><a class="faq-link" data-i18n="eco_faq_6" onclick="window.sendFAQInCurrentLang('eco_faq_6', 'Eco')">Where to get nursery plants</a></li>
-        
-    </ul>
-    </div>
-    </div>
-
-    
-    <!-- Title -->
-    <!--<section class="mb-8" style="padding: 2rem 1rem;">-->
-    <section class="mb-8" >
-    <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 15px;">Environmental Services in Yola</h2>
-    <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Discover more about recycling, waste, or environmental services in Yola.</p>
-    </section>
 
   
     <!-- AetherFlow Weather Dashboard -->
@@ -122,9 +27,10 @@
               <h2 class="section-eco-h2" >Weather and Atmospheric conditions</h2>
           </div>
           <div style="width: fit-content; align-self: center; background: transparent; margin-left: 10px;">
-              <button onclick="toggleDetails(this)" aria-expanded="false" title="Show details">                  
-                  <svg class="toggle-details-icon" width="24" height="24" aria-hidden="true">
-                      <use xlink:href="#toggle-icon-closed" href="#toggle-icon-closed"></use>
+              <button onclick="toggleDetails(this)" aria-expanded="false" title="Show details" style="border: none; background: transparent;">                  
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="toggle-details-icon" aria-hidden="true">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M8 10l4 4 4-4" />
                   </svg>
               </button>
           </div>
@@ -360,19 +266,22 @@
   
 
     
-    <!-- Search -->
-    <section class="search-bar">
-    <span class="fas fa-search material-symbols-outlined"></span>
-    <input placeholder="Type here to search..." type="text"/>
-    </section>
-    <!-- Filters -->
-    <section class="filter-chips mb-8">
-    <div class="chip active edu">All</div>
-    <div class="chip edu" data-filter="Recyclers">Recyclers</div>
-    <div class="chip edu" data-filter="Organisations">Organisations</div>
-    <div class="chip edu" data-filter="Initiatives">Initiatives</div>
-    <div class="chip edu" data-filter="Parks">Parks</div>
-    </section>
+    <div class="controls">
+        <div class="search-bar">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input id="searchInput" placeholder="Search for environmental services, organisations, or initiatives..." type="text" aria-label="Search environmental services" />
+            <button type="button" class="clear-btn" id="clearBtn" aria-label="Clear search" hidden>
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="filter-chips" role="tablist" aria-label="Filter by category">
+            <button class="chip active" data-filter="All" role="tab" aria-selected="true">All</button>
+            <button class="chip" data-filter="Recyclers" role="tab">Recyclers</button>
+            <button class="chip" data-filter="Organisations" role="tab">Organisations</button>
+            <button class="chip" data-filter="Initiatives" role="tab">Initiatives</button>
+            <button class="chip" data-filter="Parks" role="tab">Parks</button>
+        </div>
+    </div>
 
     <div class="section2">
     <!--<h2 data-i18n="eco_section2_h2">Environmental Services in Yola</h2>-->
@@ -385,9 +294,11 @@
             <div class="img-placeholder">
               <img src="Data/Images/domesticcollectors.png" alt="Yola Domestic Waste Collectors - Professional waste collection services for households" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_1">Yola Domestic Waste Collectors.</h3>
-            <p data-i18n="Eco_section4_p_1">Licensed waste management service specializing in domestic waste collection and disposal in Yola.</p>
-            <a data-i18n="learn_more" href="details/Eco/yola-domestic-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_1">Yola Domestic Waste Collectors.</h3>
+              <p data-i18n="Eco_section4_p_1">Licensed waste management service specializing in domestic waste collection and disposal in Yola.</p>
+              <a data-i18n="learn_more" href="details/Eco/yola-domestic-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
+            </div>
         </div>
 
         
@@ -395,46 +306,56 @@
             <div class="img-placeholder">
             <img src="Data/Images/plasticcollectors.png" alt="Plastic Waste Collectors Yola - Specialized plastic waste collection and recycling services" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_2">Plastic Waste Collectors, Yola.</h3>
-            <p data-i18n="Eco_section4_p_2">Specialized service for collecting and recycling plastic waste materials throughout Yola metropolitan area.</p>
-            <a data-i18n="learn_more" href="details/Eco/plastic-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_2">Plastic Waste Collectors, Yola.</h3>
+              <p data-i18n="Eco_section4_p_2">Specialized service for collecting and recycling plastic waste materials throughout Yola metropolitan area.</p>
+              <a data-i18n="learn_more" href="details/Eco/plastic-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
+            </div>
         </div>
 
         
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/metalcollectors.png" alt="Metal Waste and Scraps Collectors Yola - Professional metal recycling services" loading="lazy" />
+              <img src="Data/Images/metalcollectors.png" alt="Metal Waste and Scraps Collectors Yola - Professional metal recycling services" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_3">Metal Waste and Scraps Collectors, Yola.</h3>
-            <p data-i18n="Eco_section4_p_3">Professional metal waste collection service focusing on scrap metal recycling and responsible disposal in Yola region.</p>
-            <a data-i18n="learn_more" href="details/Eco/metal-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_3">Metal Waste and Scraps Collectors, Yola.</h3>
+              <p data-i18n="Eco_section4_p_3">Professional metal waste collection service focusing on scrap metal recycling and responsible disposal in Yola region.</p>
+              <a data-i18n="learn_more" href="details/Eco/metal-waste-collectors.html" data-i18n="learn_more">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/recyclingcompany.png" alt="Yola Plastics and Polythenes Waste Recycling Company - Specialized plastic recycling" loading="lazy" />
+              <img src="Data/Images/recyclingcompany.png" alt="Yola Plastics and Polythenes Waste Recycling Company - Specialized plastic recycling" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_4">Yola Plastics and Polythenes Waste Recycling Company.</h3>
-            <p data-i18n="Eco_section4_p_4">Leading plastic recycling facility in Yola specializing in processing and recycling all types of plastics and polythene materials.</p>
-        <a data-i18n="learn_more" href="details/Eco/green-cycle-solutions.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_4">Yola Plastics and Polythenes Waste Recycling Company.</h3>
+              <p data-i18n="Eco_section4_p_4">Leading plastic recycling facility in Yola specializing in processing and recycling all types of plastics and polythene materials.</p>
+              <a data-i18n="learn_more" href="details/Eco/green-cycle-solutions.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
-        <div class="img-placeholder">
-            <img src="Data/Images/ecowastemanagement.png" alt="EcoWaste Management - Industrial and commercial recycling services" loading="lazy" />
-        </div>
-        <h3 data-i18n="Eco_section4_h3_5">EcoWaste Management</h3>
-        <p data-i18n="Eco_section4_p_5">Professional industrial and commercial waste recycling services with eco-friendly practices and sustainable disposal methods.</p>
-        <a data-i18n="learn_more" href="details/Eco/ecowaste-management.html">Learn more →</a>
+          <div class="img-placeholder">
+              <img src="Data/Images/ecowastemanagement.png" alt="EcoWaste Management - Industrial and commercial recycling services" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <h3 data-i18n="Eco_section4_h3_5">EcoWaste Management</h3>
+            <p data-i18n="Eco_section4_p_5">Professional industrial and commercial waste recycling services with eco-friendly practices and sustainable disposal methods.</p>
+            <a data-i18n="learn_more" href="details/Eco/ecowaste-management.html">Learn more →</a>
+          </div>
         </div>
 
         <div class="section4">
-        <div class="img-placeholder">
-            <img src="Data/Images/recyclelimited.jpg" alt="Adamawa Waste To Wealth Recyclers - Professional waste recycling and processing services" loading="lazy" />
-        </div>
-        <h3 data-i18n="Eco_section4_h3_6">Adamawa Waste To Wealth Recyclers Limited.</h3>
-        <p data-i18n="Eco_section4_p_6">Leading recycling company providing industrial and commercial waste processing services with commitment to environmental sustainability and waste resource recovery in Adamawa.</p></p>
-        <a data-i18n="learn_more" href="details/Eco/adamawa-waste-to-wealth.html">Learn more →</a>
+          <div class="img-placeholder">
+              <img src="Data/Images/recyclelimited.jpg" alt="Adamawa Waste To Wealth Recyclers - Professional waste recycling and processing services" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <h3 data-i18n="Eco_section4_h3_6">Adamawa Waste To Wealth Recyclers Limited.</h3>
+            <p data-i18n="Eco_section4_p_6">Leading recycling company providing industrial and commercial waste processing services with commitment to environmental sustainability and waste resource recovery in Adamawa.</p></p>
+            <a data-i18n="learn_more" href="details/Eco/adamawa-waste-to-wealth.html">Learn more →</a>
+          </div>
         </div>
 
     </div>
@@ -447,59 +368,71 @@
         
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/gesollogo.png" alt="Green Environment Solutions Initiative GESOL - Environmental protection and advocacy" loading="lazy" />
+              <img src="Data/Images/gesollogo.png" alt="Green Environment Solutions Initiative GESOL - Environmental protection and advocacy" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_7">Green Environment Solutons Initiative, Yola.</h3>
-            <p data-i18n="Eco_section4_p_7">Community-based organization working on environmental protection, conservation, and public awareness campaigns for sustainable practices in Yola.</p>
-            <a data-i18n="learn_more" href="details/Eco/eco-warriors.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_7">Green Environment Solutons Initiative, Yola.</h3>
+              <p data-i18n="Eco_section4_p_7">Community-based organization working on environmental protection, conservation, and public awareness campaigns for sustainable practices in Yola.</p>
+              <a data-i18n="learn_more" href="details/Eco/eco-warriors.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/nesrea.jpg" alt="NESREA Yola - Environmental standards and regulations enforcement" loading="lazy" />
+              <img src="Data/Images/nesrea.jpg" alt="NESREA Yola - Environmental standards and regulations enforcement" loading="lazy" />
             </div>
-            <!--<h3 data-i18n="Eco_section4_h3_8">National Environmental Standards And Regulations Enforcement Agency, Yola.</h3>-->
-            <h3>National Environmental Standards And Regulations Enforcement Agency.</h3>
-            <p data-i18n="Eco_section4_p_8">Government agency responsible for enforcing environmental standards and promoting sustainable urban development.</p></p>
-            <a data-i18n="learn_more" href="details/Eco/clean-yola-project.html">Learn more →</a>
+            <div class="card-body">
+              <!--<h3 data-i18n="Eco_section4_h3_8">National Environmental Standards And Regulations Enforcement Agency, Yola.</h3>-->
+              <h3>National Environmental Standards And Regulations Enforcement Agency.</h3>
+              <p data-i18n="Eco_section4_p_8">Government agency responsible for enforcing environmental standards and promoting sustainable urban development.</p></p>
+              <a data-i18n="learn_more" href="details/Eco/clean-yola-project.html">Learn more →</a>
+            </div>
         </div>
     
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/ecoassociation1.png" alt="Association of Plastic Recyclers Yola - Environmental education and plastic waste management" loading="lazy" />
+              <img src="Data/Images/ecoassociation1.png" alt="Association of Plastic Recyclers Yola - Environmental education and plastic waste management" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_9">Association Of Plastic Recyclers, Yola.</h3>
-            <p data-i18n="Eco_section4_p_9">Non-profit organization focused on environmental education, plastic waste reduction, conservation of natural resources, and community awareness in Yola.</p></p>
-            <a data-i18n="learn_more" href="details/Eco/association-of-plastic-recyclers.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_9">Association Of Plastic Recyclers, Yola.</h3>
+              <p data-i18n="Eco_section4_p_9">Non-profit organization focused on environmental education, plastic waste reduction, conservation of natural resources, and community awareness in Yola.</p></p>
+              <a data-i18n="learn_more" href="details/Eco/association-of-plastic-recyclers.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/greeninitiative.png" alt="UNDP Go Green Initiative Yola - Environmental development and conservation programs" loading="lazy" />
+              <img src="Data/Images/greeninitiative.png" alt="UNDP Go Green Initiative Yola - Environmental development and conservation programs" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_10">UNDP 'Go Green' Initiative Yola</h3>
-            <p data-i18n="Eco_section4_p_10">United Nations Development Programme initiative focused on environmental education, green development, and sustainability conservation in Yola and Adamawa State.</p></p>
-            <a data-i18n="learn_more" href="details/Eco/undp.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_10">UNDP 'Go Green' Initiative Yola</h3>
+              <p data-i18n="Eco_section4_p_10">United Nations Development Programme initiative focused on environmental education, green development, and sustainability conservation in Yola and Adamawa State.</p></p>
+              <a data-i18n="learn_more" href="details/Eco/undp.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/wapan.png" alt="WAPAN - Waste Pickers Association of Nigeria - Waste collection and environmental cleanup" loading="lazy" />
+              <img src="Data/Images/wapan.png" alt="WAPAN - Waste Pickers Association of Nigeria - Waste collection and environmental cleanup" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_11">Waste Pickers Association Of Nigeria (WAPAN), Yola.</h3>
-            <!--<p data-i18n="Eco_section4_p_11">Community-based organization representing waste collectors and environmental workers, promoting environmental protection, waste management, and livelihood improvement in Yola.</p></p>-->
-            <p >Community-based organization representing waste collectors and environmental workers, promoting environmental protection, waste management, and livelihood improvements</p>
-            <a data-i18n="learn_more" href="details/Eco/wapan-yola.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_11">Waste Pickers Association Of Nigeria (WAPAN), Yola.</h3>
+              <!--<p data-i18n="Eco_section4_p_11">Community-based organization representing waste collectors and environmental workers, promoting environmental protection, waste management, and livelihood improvement in Yola.</p></p>-->
+              <p >Community-based organization representing waste collectors and environmental workers, promoting environmental protection, waste management, and livelihood improvements</p>
+              <a data-i18n="learn_more" href="details/Eco/wapan-yola.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/naswon.png" alt="NASWON - National Association of Scrap and Waste Pickers - Waste management and livelihood" loading="lazy" />
+              <img src="Data/Images/naswon.png" alt="NASWON - National Association of Scrap and Waste Pickers - Waste management and livelihood" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_12">National Asssociation OF Scraps And Wate Pickers Of Nigeria (NASWON), Yola.</h3>
-            <!--<p data-i18n="Eco_section4_p_12">Professional association supporting scrap and waste pickers through advocacy, environmental cleanup, community sanitation, and sustainable waste management practices in Yola.</p>-->
-            <p>Professional association supporting scrap and waste pickers through advocacy, environmental cleanup, community sanitation, and sustainable waste management.</p>
-            <a data-i18n="learn_more" href="details/Eco/naswon-yola.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_12">National Asssociation OF Scraps And Wate Pickers Of Nigeria (NASWON), Yola.</h3>
+              <!--<p data-i18n="Eco_section4_p_12">Professional association supporting scrap and waste pickers through advocacy, environmental cleanup, community sanitation, and sustainable waste management practices in Yola.</p>-->
+              <p>Professional association supporting scrap and waste pickers through advocacy, environmental cleanup, community sanitation, and sustainable waste management.</p>
+              <a data-i18n="learn_more" href="details/Eco/naswon-yola.html">Learn more →</a>
+            </div>
         </div>
 
         </div>
@@ -508,54 +441,67 @@
     <div class="section3" data-category="Initiatives">
         <h3 class="section3-title"  data-i18n="eco_section3_h3_3">Sustainable Initiatives</h3>
         <div class="section4-container">
-        <div class="section4">
+        
+          <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/solar.jpg" alt="Solar Power" loading="lazy" />
+              <img src="Data/Images/solar.jpg" alt="Solar Power" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_13">Yola Solar Initiative</h3>
-            <p data-i18n="Eco_section4_p_13">Promoting solar energy adoption and renewable power solutions.</p>
-            <a data-i18n="learn_more" href="details/Eco/yola-solar-initiative.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_13">Yola Solar Initiative</h3>
+              <p data-i18n="Eco_section4_p_13">Promoting solar energy adoption and renewable power solutions.</p>
+              <a data-i18n="learn_more" href="details/Eco/yola-solar-initiative.html">Learn more →</a>
+            </div>
         </div>
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/waterconservation.png" alt="Water Conservation" loading="lazy" />
+              <img src="Data/Images/waterconservation.png" alt="Water Conservation" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_14">Water Conservation Project</h3>
-            <p data-i18n="Eco_section4_p_14">Programs for water conservation and sustainable water management.</p>
-            <a data-i18n="learn_more" href="details/Eco/water-conservation-project.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_14">Water Conservation Project</h3>
+              <p data-i18n="Eco_section4_p_14">Programs for water conservation and sustainable water management.</p>
+              <a data-i18n="learn_more" href="details/Eco/water-conservation-project.html">Learn more →</a>
+            </div>
         </div>
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/gesol4.jpg" alt="Green Transport" loading="lazy" />
+              <img src="Data/Images/gesol4.jpg" alt="Green Transport" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_15">Yola Tree Planting Project.</h3>
-            <p data-i18n="Eco_section4_p_15">Promoting eco-friendly activities in Yola.</p>
-            <a data-i18n="learn_more" href="details/Eco/green-transport-network.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_15">Yola Tree Planting Project.</h3>
+              <p data-i18n="Eco_section4_p_15">Promoting eco-friendly activities in Yola.</p>
+              <a data-i18n="learn_more" href="details/Eco/green-transport-network.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/communityconservation.png" alt="Community-Led Environmental Conservation Project - Local initiatives for environmental protection" loading="lazy" />
+              <img src="Data/Images/communityconservation.png" alt="Community-Led Environmental Conservation Project - Local initiatives for environmental protection" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_16">Community-Led Environmental Conservation Project, Yola.</h3>
-            <p data-i18n="Eco_section4_p_16">Grassroots initiative engaging local communities in environmental conservation efforts and sustainable practices.</p>
-            <a data-i18n="learn_more" href="details/Eco/community-conservation.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_16">Community-Led Environmental Conservation Project, Yola.</h3>
+              <p data-i18n="Eco_section4_p_16">Grassroots initiative engaging local communities in environmental conservation efforts and sustainable practices.</p>
+              <a data-i18n="learn_more" href="details/Eco/community-conservation.html">Learn more →</a>
+            </div>
         </div>
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/wastetowealth.png" alt="Yola Waste To Wealth Initiative - Converting waste into economic opportunities" loading="lazy" />
+              <img src="Data/Images/wastetowealth.png" alt="Yola Waste To Wealth Initiative - Converting waste into economic opportunities" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_17">Yola 'Waste To Wealth' Initiative.</h3>
-            <p data-i18n="Eco_section4_p_17">Innovative program transforming waste materials into valuable resources while creating economic opportunities for local residents.</p>
-            <a data-i18n="learn_more" href="details/Eco/waste-to-wealth.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_17">Yola 'Waste To Wealth' Initiative.</h3>
+              <p data-i18n="Eco_section4_p_17">Innovative program transforming waste materials into valuable resources while creating economic opportunities for local residents.</p>
+              <a data-i18n="learn_more" href="details/Eco/waste-to-wealth.html">Learn more →</a>
+            </div>
         </div>
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/trashtotreasure.png" alt="Trash To Treasure Initiative Yola - Creative upcycling and waste transformation" loading="lazy" />
+              <img src="Data/Images/trashtotreasure.png" alt="Trash To Treasure Initiative Yola - Creative upcycling and waste transformation" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_18">'Trash To Treasure' Initiative, Yola.</h3>
-            <p data-i18n="Eco_section4_p_18">Creative upcycling program turning waste materials into art and useful products while promoting environmental awareness.</p>
-            <a data-i18n="learn_more" href="details/Eco/trash-to-treasure.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_18">'Trash To Treasure' Initiative, Yola.</h3>
+              <p data-i18n="Eco_section4_p_18">Creative upcycling program turning waste materials into art and useful products while promoting environmental awareness.</p>
+              <a data-i18n="learn_more" href="details/Eco/trash-to-treasure.html">Learn more →</a>
+            </div>
         </div>
 
     </div>
@@ -568,61 +514,71 @@
         
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/riverbenuevalley.jpeg" alt="Benue Valley Reserve - Protected natural area and biodiversity conservation" loading="lazy" />
+              <img src="Data/Images/riverbenuevalley.jpeg" alt="Benue Valley Reserve - Protected natural area and biodiversity conservation" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_21">Benue Valley Reserve</h3>
-            <p data-i18n="Eco_section4_p_21">Protected natural area with rich biodiversity featuring conservation programs, wildlife habitat protection, and ecological research initiatives.</p></p>
-            <a data-i18n="learn_more" href="details/Eco/benue-valley-reserve.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_21">Benue Valley Reserve</h3>
+              <p data-i18n="Eco_section4_p_21">Protected natural area with rich biodiversity featuring conservation programs, wildlife habitat protection, and ecological research initiatives.</p></p>
+              <a data-i18n="learn_more" href="details/Eco/benue-valley-reserve.html">Learn more →</a>
+            </div>
         </div>
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/wetlands2.jpeg" alt="Yola Community Garden - Public space for community farming and environmental education" loading="lazy" />
+              <img src="Data/Images/wetlands2.jpeg" alt="Yola Community Garden - Public space for community farming and environmental education" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_19">Yola Community Garden</h3>
-            <p data-i18n="Eco_section4_p_19">Public garden space dedicated to community farming, environmental education, and sustainable food production for residents of Yola.</p></p>
-            <a data-i18n="learn_more" href="details/Eco/yola-community-garden.html">Learn more →</a>
+            <div class="card-body">  
+              <h3 data-i18n="Eco_section4_h3_19">Yola Community Garden</h3>
+              <p data-i18n="Eco_section4_p_19">Public garden space dedicated to community farming, environmental education, and sustainable food production for residents of Yola.</p></p>
+              <a data-i18n="learn_more" href="details/Eco/yola-community-garden.html">Learn more →</a>
+            </div>
         </div>
         <div class="section4">
             <div class="img-placeholder">
-            <img src="Data/Images/wetlands6.jpeg" alt="Yola Eco Park - Sustainable park with native plants and environmental education" loading="lazy" />
+              <img src="Data/Images/wetlands6.jpeg" alt="Yola Eco Park - Sustainable park with native plants and environmental education" loading="lazy" />
             </div>
-            <h3 data-i18n="Eco_section4_h3_20">Yola Eco Park</h3>
-            <p data-i18n="Eco_section4_p_20">Sustainable park featuring native plants, ecological exhibits, and environmental education programs for community awareness and conservation in Yola.</p></p>
-            <a data-i18n="learn_more" href="details/Eco/yola-eco-park.html">Learn more →</a>
+            <div class="card-body">
+              <h3 data-i18n="Eco_section4_h3_20">Yola Eco Park</h3>
+              <p data-i18n="Eco_section4_p_20">Sustainable park featuring native plants, ecological exhibits, and environmental education programs for community awareness and conservation in Yola.</p></p>
+              <a data-i18n="learn_more" href="details/Eco/yola-eco-park.html">Learn more →</a>
+            </div>
         </div>
         </div>
     </div>
 
     </div>
     </div>
+
+        <div class="empty-state" id="emptyState" hidden>
+            <i class="fas fa-search"></i>
+            <p>No environmental services match your search.</p>
+        </div>
 </section>
 
-      <footer class="site-footer">
-        <!-- Bottom Row -->
+    <footer class="site-footer">
         <div class="footer-bottom-container">
-          <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
-          <span style="display: flex; justify-content: space-evenly;">
-            <a href="#"><i class="fab fa-whatsapp fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-instagram fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-facebook fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-linkedin fa-2x" href="#"></i></a>
-            
-            <a href="#"><i class="fab fa-x-twitter fa-2x" href="#"></i></a>
-          </span>
+            <p class="follow-label">Follow us on social media</p>
+            <div class="social-row">
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+            </div>
         </div>
 
-        <div>
-          <div class="legal-links">
-              <a class="footer-link" href="#">Privacy Policy</a>
-              <a class="footer-link" href="#">Terms of Service</a>
-              <a class="footer-link" href="../pages/report.html">Report an issue or comment</a>
-              <a class="footer-link" href="../pages/about.html">About</a>
-          </div>
-          <div class="copyright" style="margin-top: 15px;">
-             <p>© 2026 AlkaliCodes. All rights reserved.</p> 
-          </div>
+        <div class="footer-legal">
+            <div class="legal-links">
+                <a class="footer-link" href="#">Privacy Policy</a>
+                <a class="footer-link" href="#">Terms of Service</a>
+                <a class="footer-link" href="../pages/report.html">Report an issue</a>
+                <a class="footer-link" href="../pages/about.html">About</a>
+            </div>
+            <div class="copyright">
+                <p>© 2026 AlkaliCodes. All rights reserved.</p>
+            </div>
         </div>
-      </footer>
+    </footer>
+
 <script>
 function getLangFolder() {
   const langMap = {

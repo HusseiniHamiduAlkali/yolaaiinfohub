@@ -1,0 +1,90 @@
+# Robots.txt for Yola AI Info Hub
+# This file guides web crawlers on how to index the website
+
+# Allow all bots by default
+User-agent: *
+Allow: /
+
+# Disallow sensitive paths and endpoints
+Disallow: /api/
+Disallow: /server/
+Disallow: /components/
+Disallow: /scripts/
+Disallow: /tools/
+Disallow: /.git/
+Disallow: /.github/
+Disallow: /node_modules/
+Disallow: /netlify/
+Disallow: /pages/auth.html
+Disallow: /pages/navbar.html
+
+# Disallow admin and sensitive pages
+Disallow: */admin
+Disallow: */login
+Disallow: */private
+Disallow: */internal
+
+# Allow search engines to crawl common paths
+Allow: /styles/
+Allow: /Data/
+Allow: /templates/
+Allow: /pages/signin.html
+Allow: /pages/signup.html
+Allow: /pages/profile.html
+Allow: /pages/reset-password.html
+Allow: /pages/forgot-password.html
+Allow: /pages/report.html
+
+# Query strings - allow crawling
+Allow: /?*
+
+# Sitemap location
+Sitemap: https://yolaaiinfohub.com/sitemap.xml
+
+# Crawl delay to prevent server overload (in seconds)
+# This is optional and can be adjusted based on server capacity
+Crawl-delay: 1
+
+# Specific directives for different bots
+
+# Google Bot - full access
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /server/
+Disallow: /node_modules/
+
+# Bing Bot
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /server/
+Disallow: /node_modules/
+
+# Other search engines
+User-agent: msnbot
+Allow: /
+Disallow: /api/
+
+User-agent: slurp
+Allow: /
+Disallow: /api/
+
+# Bad bots - block completely
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Allow favicon and robots.txt requests
+Allow: /favicon.ico
+Allow: /robots.txt
+Allow: /sitemap.xml
+Allow: /manifest.json

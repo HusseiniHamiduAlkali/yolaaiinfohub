@@ -1,122 +1,30 @@
+    
+    <header class="hero">
+        <div class="hero-inner">
+            <span class="eyebrow">Yola · Transport</span>
+            <h1>Transportation <em>Information</em></h1>
+            <p>Explore routes, services, and navigation information across Yola.</p>
+        </div>
+        <div class="hero-glow" aria-hidden="true"></div>
+    </header>
 
 <section class="info-section">
     <!--<h2 data-i18n="naviinfo_header">NaviInfo - Navigation Help</h2>
     <p data-i18n="naviinfo_desc">Ask for directions, locations, or transportation information in Yola.</p>-->
-    <div class="chat-container">
-    <div class="chat-header">
-        <span data-i18n="naviinfo_chat_header">NaviInfo AI Chat</span>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div class="model-switch">
-            <label class="switch">
-                <input type="checkbox" id="model-toggle" title="Toggle AI Model" onchange="window.toggleGeminiModel('navi', this.checked)">
-                <span class="slider round"></span>
-            </label>
-            <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
-            </div>
-            <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem;">✕</button>
-        </div>
-    </div>
-    <div class="chat-messages" id="navi-chat-messages"></div>
-    <form class="chat-input-area" onsubmit="event.preventDefault(); window.sendNaviMessage();">
-        <div id="navi-chat-preview" class="chat-preview"></div>
-        <input type="text" id="navi-chat-input" title="Navigation Chat Input" placeholder="Ask for directions..." data-i18n-placeholder="naviinfo_chat_placeholder" required />
-        <div class="send-button-group">
-        <button type="submit" class="send-button">Send</button>
-        </div>
-    </form>
-    <div class="input-options">
-        
-          <button type="button" onclick="window.captureImage('navi')" title="Capture Image" >
-            <!-- Camera -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7
-              a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-            </svg>
-          </button>
-
-          <button type="button" onclick="window.recordAudio('navi')" title="Record Audio">      
-            <!-- Microphone -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <rect x="9" y="2" width="6" height="12" rx="3"/>
-              <path d="M5 10a7 7 0 0 0 14 0"/>
-              <line x1="12" y1="19" x2="12" y2="22"/>
-            </svg>
-          </button>
-
-          <label class="file-upload-btn" title="Upload File">            
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5
-              a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>  
-            <input type="file" style="display:none" onchange="window.uploadFile(event, 'navi')" />
-          </label>
-        
-          <button type="button" id="home-voice-call-btn" onclick="window.startVoiceCall('navi')" title="Start Live Voice Call with AI">            
-            <!-- Phone -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18
-              2 19.79 19.79 0 0 1-8.63-3.07
-              19.5 19.5 0 0 1-6-6A19.79
-              19.79 0 0 1 2.11 4.18 2
-              2 0 0 1 4.11 2h3a2 2 0 0
-              1 2 1.72c.12.89.32 1.76.59
-              2.59a2 2 0 0 1-.45 2.11L8.09
-              9.91a16 16 0 0 0 6 6l1.49-1.49
-              a2 2 0 0 1 2.11-.45c.83.27
-              1.7.47 2.59.59A2 2 0 0 1 22 16.92z"/>
-            </svg>
-          </button>
-          <button type="button" id="navi-mute-btn" onclick="window.toggleVoiceCallMute('navi')" title="Mute/Unmute Microphone" style="display: none;">
-            <i class="fas fa-microphone-slash"></i> Mute
-          </button>
-          <div id="navi-voice-indicator" class="voice-indicator" style="display: none;">
-            Listening...
-          </div>
-          <div id="navi-call-duration" class="call-duration" style="display: none;">00:00</div>
-        </div>
-    <div class="faq-list">
-    <h3 data-i18n="naviinfo_faq_title">NaviInfo FAQs</h3>
-    <ul>
-        <li><a class="faq-link" data-i18n="naviinfo_faq_1" onclick="window.sendFAQInCurrentLang('naviinfo_faq_1', 'Navi')">How do I get to the lamido's palace from the airport</a></li>
-        <li><a class="faq-link" data-i18n="naviinfo_faq_2" onclick="window.sendFAQInCurrentLang('naviinfo_faq_2', 'Navi')">Road safety officials emergency line</a></li>
-        <li><a class="faq-link" data-i18n="naviinfo_faq_3" onclick="window.sendFAQInCurrentLang('naviinfo_faq_3', 'Navi')">Is there a reliable taxi service</a></li>
-        <li><a class="faq-link" data-i18n="naviinfo_faq_4" onclick="window.sendFAQInCurrentLang('naviinfo_faq_4', 'Navi')">What are the public transportation options</a></li>
-        <li><a class="faq-link" data-i18n="naviinfo_faq_5" onclick="window.sendFAQInCurrentLang('naviinfo_faq_5', 'Navi')">Where is the main market in Yola</a></li>
-        <li><a class="faq-link" data-i18n="naviinfo_faq_6" onclick="window.sendFAQInCurrentLang('naviinfo_faq_6', 'Navi')">Traffic updates in Yola</a></li>
-    </ul>
-    </div>
-    </div>
-    
-
-        <!-- Title -->
-    <section class="mb-8">
-    <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 30px;">Transportation Information</h2>
-    <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Explore more about directions, locations, or transportation information in Yola.</p>
-    </section>
 
     
     <div class="section-extra section-extra-map">
         
 
-            <div style="display: flex; flex-direction: row; width: 100%; margin-bottom: 10px;">
+            <div style="display: flex; flex-direction: row; width: 100%; margin-bottom: 0px;">
                 <div style="width: 100%;">
-                    <h2 data-i18n="section_extra_h2">Yola Map</h2>
+                    <h2 data-i18n="section_extra_h2" style="padding: 0;">Yola Map</h2>
                 </div>
                 <div style="width: fit-content; align-self: center; background: transparent; margin-right: 10px; margin-top: 12px;">
-                    <button onclick="toggleDetails(this)" aria-expanded="false" title="Show details">                  
-                        <svg class="toggle-details-icon" width="24" height="24" aria-hidden="true">
-                            <use xlink:href="#toggle-icon-closed" href="#toggle-icon-closed"></use>
+                    <button onclick="toggleDetails(this)" aria-expanded="false" title="Show details" style="border: none; background: transparent;">                  
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="toggle-details-icon" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M8 10l4 4 4-4" />
                         </svg>
                     </button>
                 </div>
@@ -128,22 +36,26 @@
     </div>
 
     <!-- Search -->
-    <section class="search-bar">
-    <span class="fas fa-search material-symbols-outlined"></span>
-    <input placeholder="Type here to search..." type="text"/>
-    </section>
-    <!-- Filters -->
-    <section class="filter-chips mb-8">
-    <div class="chip active edu" data-filters="All">All</div>
-    <div class="chip edu" data-filter="Agents" >Agents & stations</div>
-    <div class="chip edu" data-filter="Parks">Parks & recreations</div>
-    <div class="chip edu" data-filter="Commercial_centers">Commercial centers</div>
-    <div class="chip edu" data-filter="Hotels">Hotels & restaurants</div>
-    <div class="chip edu" data-filter="Religious centers">Religious centers</div>
-    <div class="chip edu" data-filter="Banks">Banks & ATM kiosks</div>
-    <div class="chip edu" data-filter="Sports">Sports & SPA</div>
-    <div class="chip edu"data-filter="Others">Others</div>
-    </section>
+    <div class="controls">
+        <div class="search-bar">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input id="searchInput" placeholder="Search transport services, stations, or destinations..." type="text" aria-label="Search navigation information" />
+            <button type="button" class="clear-btn" id="clearBtn" aria-label="Clear search" hidden>
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="filter-chips" role="tablist" aria-label="Filter by category">
+            <button class="chip active" data-filter="All" role="tab" aria-selected="true">All</button>
+            <button class="chip" data-filter="Agents" role="tab">Agents & stations</button>
+            <button class="chip" data-filter="Parks" role="tab">Parks & recreations</button>
+            <button class="chip" data-filter="Commercial_centers" role="tab">Commercial centers</button>
+            <button class="chip" data-filter="Hotels" role="tab">Hotels & restaurants</button>
+            <button class="chip" data-filter="Religious centers" role="tab">Religious centers</button>
+            <button class="chip" data-filter="Banks" role="tab">Banks & ATM kiosks</button>
+            <button class="chip" data-filter="Sports" role="tab">Sports & SPA</button>
+            <button class="chip" data-filter="Others" role="tab">Others</button>
+        </div>
+    </div>
 
     <div class="section2">
     <h2></h2>
@@ -152,59 +64,71 @@
         <h3 class="section3-title" data-i18n="navi_section3_h3_1">Transport Agents and Motor Parks</h3>
     
         <div class="section4-container">
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/aluta.jpg" alt="Fresh Air Mass Transit Buses" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_1">Fresh Air Mass Transit Buses.</h3>
             <p data-i18n="Navi_section4_p_1">Inter-state transport service with modern buses and regular routes.</p>
             <a data-i18n="learn_more" href="details/Navi/fresh-air-transit.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
         
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/napep.png" alt="Keke Napep Tricycle" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_2">Keke Napep (Tricycle).</h3>
             <p data-i18n="Navi_section4_p_2">Popular local transportation option for short distances within Yola.</p>
             <a data-i18n="learn_more" href="details/Navi/keke-napep.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
         
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/adamawasunshine.jpg" alt="Adamawa Sunshine Motor Park" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_3">Adamawa Sunshine Motor Park.</h3>
             <p data-i18n="Navi_section4_p_3">State-owned transport terminal providing intercity bus services.</p>
             <a data-i18n="learn_more" href="details/Navi/adamawa-sunshine-motor.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
 
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/sauki.jpg" alt="Sauki Motor Park Jimeta" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_4">Sauki Motor Park, jimeta Yola.</h3>
             <p data-i18n="Navi_section4_p_4">Major transportation hub in Jimeta area serving multiple routes.</p>
             <a data-i18n="learn_more" href="details/Navi/sauki-motor-park.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
         
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/jambutumotorpark.jpg" alt="Jamubutu Motor Park Yola" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_5">Jamubutu Motor Park, Yola.</h3>
             <p data-i18n="Navi_section4_p_5">Strategic transport terminal connecting Yola with surrounding regions.</p>
             <a data-i18n="learn_more" href="details/Navi/jamubutu-motor-park.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
         
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/airport.jpg" alt="Airport" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_6">Lamido Aliyu Musdafa Int'l Airport, Yola.</h3>
             <p data-i18n="Navi_section4_p_6">An international airport with many airlines offering trips to any destinations.</p>
             <a data-i18n="learn_more" href="details/Navi/yola-airport.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
 
         </div>
         </div>
@@ -214,32 +138,38 @@
         <h3 class="section3-title"  data-i18n="navi_section3_h3_2">Parks and Recreation</h3>
         <div class="section4-container">
         
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/wetlands.jpeg" alt="Wetlands Park and Gardens Yola - Urban park with botanical gardens and events space" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_7">Wetlands Park and gardens</h3>
             <p data-i18n="Navi_section4_p_7">Beautiful urban park featuring botanical gardens, event spaces, walking trails, and recreational facilities for families and visitors in Yola.</p>
             <a data-i18n="learn_more" href="details/Navi/wetlands-park.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
 
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/gorilla3.jpeg" alt="Gorilla Park Yola - Recreational park with wildlife observation and green spaces" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_8">Gorilla Park</h3>
             <p data-i18n="Navi_section4_p_8">Beautiful recreational park in Yola featuring green spaces, walking trails, wildlife observation areas, and children's play facilities for family recreation.</p>
             <a data-i18n="learn_more" href="details/Navi/gorilla-park.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
 
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/zoo.jpeg" alt="Animals at Yola Zoo" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_9">Yola Zoo</h3>
             <p data-i18n="Navi_section4_p_9">City zoo featuring local and exotic animals with educational exhibits.</p>
             <a data-i18n="learn_more" href="details/Navi/yola-zoo.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
 
         </div>
     </div>
@@ -247,38 +177,46 @@
     <div class="section3" data-category="Commercial_centers">
         <h3 class="section3-title"  data-i18n="navi_section3_h3_3">Markets and Shopping complexes</h3>
         <div class="section4-container">
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/jimetamarket.jpg" alt="Jimeta Modern Market" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_10">Jimeta Modern Market</h3>
             <p data-i18n="Navi_section4_p_10">Large commercial center offering a wide range of goods and services.</p>
             <a data-i18n="learn_more" href="details/Navi/jimeta-market.html">Learn more →</a>
-        </div>
-        <div class="section4">
+            </div>
+        </article>
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/yolamarket2.jpg" alt="Yola Old Market" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_11">Yola Old Market</h3>
             <p data-i18n="Navi_section4_p_11">Historic market known for traditional goods and local crafts.</p>
             <a data-i18n="learn_more" href="details/Navi/yola-market.html">Learn more →</a>
-        </div>
-        <div class="section4">
+            </div>
+        </article>
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/sanhusein.png" alt="SanHusein Shopping Mall Yola - Modern retail shopping center" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_12">SanHusein Shopping Mall</h3>
             <p data-i18n="Navi_section4_p_12">Modern shopping mall in Yola offering diverse retail stores, textile shops, household items, and quality merchandise for shoppers.</p>
             <a data-i18n="learn_more" href="details/Navi/sanhusein-mall.html">Learn more →</a>
-        </div>
-        <div class="section4">
+            </div>
+        </article>
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/jabbama.jpg" alt="Jabbama Shopping Plaza Yola - Multi-store shopping complex with electronics and household goods" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_13">Jabbama Shopping Plaza</h3>
             <p data-i18n="Navi_section4_p_13">Leading shopping plaza in Yola featuring electronics retailers, household items, appliances, and diverse commercial services in a modern setting.</p>
             <a data-i18n="learn_more" href="details/Navi/jabbama-plaza.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
     <!--    
         <div class="section4">
             <div class="img-placeholder">
@@ -290,23 +228,27 @@
             <a data-i18n="learn_more" href="details/Navi/yakubu-plaza.html">Learn more →</a>
         </div>
     -->    
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/top10.png" alt="Top10 Plaza Yola - Premier shopping center with retail stores and services" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_14">Top10 Plaza, Yola.</h3>
             <p data-i18n="Navi_section4_p_14">Premier shopping destination in Yola featuring diverse retail stores, restaurants, entertainment venues, and quality commercial services.</p>
             <a data-i18n="learn_more" href="details/Navi/top10-plaza.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
 
-        <div class="section4">
+        <article class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/jumia.jpg" alt="Jumia Black Friday Shop Yola - Online retail with seasonal discounts" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_15">Jumia Pickup Shop, Yola.</h3>
             <p data-i18n="Navi_section4_p_15">Jumia retail pickup location in Yola offering online shopping delivery, special seasonal discounts, electronics, and merchandise with competitive pricing.</p>
             <a data-i18n="learn_more" href="details/Navi/jumia-pickup-shop.html">Learn more →</a>
-        </div>
+            </div>
+        </article>
 
         </div>
     </div>
@@ -320,153 +262,187 @@
             <div class="img-placeholder">
             <img src="Data/Images/muna2.jpg" alt="Muna Hotel" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_16">Muna Hotel</h3>
             <p data-i18n="Navi_section4_p_16">Luxury hotel offering comfortable accommodations and modern amenities.</p>
             <a data-i18n="learn_more" href="details/Navi/muna-hotel.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/citygreen.jpg" alt="City Green Hotels Yola - Premium hotel with conference facilities" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_17">City Green Hotels</h3>
             <p data-i18n="Navi_section4_p_17">Premium hotel in Yola offering luxury accommodations, conference facilities, business centers, and restaurant services for corporate and leisure guests.</p>
             <a data-i18n="learn_more" href="details/Navi/city-green-hotel.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/dantsoho.jpg" alt="Dantshoho Hotels Yola - Family-friendly accommodation with excellent service" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_18">Dantshoho Hotels</h3>
             <p data-i18n="Navi_section4_p_18">Family-friendly hotel in Yola featuring comfortable rooms, excellent service, central location, and amenities suitable for families and business travelers.</p>
             <a data-i18n="learn_more" href="details/Navi/dantshoho-hotel.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/aunhotel2.jpg" alt="AUN Hotel Yola - Academic accommodation with quality amenities" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_19">AUN Hotel</h3>
             <p data-i18n="Navi_section4_p_19">Academic-oriented hotel providing convenient accommodation for visitors and professionals in Yola.</p>
             <a data-i18n="learn_more" href="details/Navi/aun-hotel.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/vortex.jpg" alt="Vortex Hotels Yola - Luxury accommodation with modern amenities" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_20">Vortex Hotels</h3>
             <p data-i18n="Navi_section4_p_20">Upscale luxury hotel in Yola offering premium comfortable accommodations, modern amenities, restaurant services, and meeting facilities for distinguished guests.</p>
             <a data-i18n="learn_more" href="details/Navi/vortex-hotels.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/madugu.jpg" alt="Madugu Rockview Hotel Yola - Contemporary hotel with scenic views" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_21">Madugu Rockview Hotel</h3>
             <p data-i18n="Navi_section4_p_21">Contemporary hotel in Yola featuring comfortable rooms, panoramic city views, restaurant services, and facilities for business and leisure travelers.</p>
             <a data-i18n="learn_more" href="details/Navi/madugu-rockview-hotel.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/mammachare.jpg" alt="Mamma-chare Hotel Yola - Traditional local hotel with warm hospitality" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_22">Mamma-chare Hotel, Yola</h3>
             <p data-i18n="Navi_section4_p_22">Locally-owned hotel in Yola known for warm, welcoming hospitality, traditional ambiance, authentic local cuisine, and personalized guest service.</p>
             <a data-i18n="learn_more" href="details/Navi/mamma-chare-hotel.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/goldenalphine.jpg" alt="Golden-alpihne Hotels Yola - Upscale hotel with elegant rooms and premium services" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_23">Golden-alpihne Hotels, Yola</h3>
             <p data-i18n="Navi_section4_p_23">Upscale hotel in Yola featuring elegant rooms, premium guest services, fine dining, and facilities suitable for discerning travelers and corporate guests.</p>
             <a data-i18n="learn_more" href="details/Navi/golden-alpihne-hotels.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/duragi.jpg" alt="Duragi Hotels Yola - Business-friendly accommodation with meeting facilities" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_24">Duragi Hotels Yola</h3>
             <p data-i18n="Navi_section4_p_24">Business-friendly hotel in Yola offering comfortable accommodations, conference facilities, meeting rooms, and services tailored for corporate travelers.</p>
             <a data-i18n="learn_more" href="details/Navi/duragi-hotels.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/aunhotel.jpeg" alt="AUN Hotel - Jabbama Restaurant - Fine dining with international cuisine" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_25">AUN Hotel - Jabbama Restaurant</h3>
             <p data-i18n="Navi_section4_p_25">Elegant fine dining restaurant in Yola serving international and fusion cuisine in sophisticated atmosphere. Professional service and premium beverages available.</p>
             <a data-i18n="learn_more" href="details/Navi/aun-jabbama-restaurant.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/items7.jpeg" alt="Items7 Restaurant Yola - Modern casual dining with diverse menu" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_26">Items7 restaurant</h3>
             <p data-i18n="Navi_section4_p_26">Modern casual dining restaurant in Yola offering diverse menu selections, international dishes, and comfortable atmosphere for families and friends.</p>
             <a data-i18n="learn_more" href="details/Navi/items7-restaurant.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/mevish.jpeg" alt="Mevish Cafe Yola - Cozy coffee shop with pastries and light meals" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_27">Mevish Cafe</h3>
             <p data-i18n="Navi_section4_p_27">Cozy and welcoming cafe in Yola serving premium coffee, espresso drinks, fresh pastries, light meals, and homemade desserts in a relaxed atmosphere.</p>
             <a data-i18n="learn_more" href="details/Navi/mevish-cafe.html">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/chickencottage.png" alt="Chicken Cottage Yola - Fast-food specializing in chicken dishes" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_28">Chicken cottage Yola</h3>
             <p data-i18n="Navi_section4_p_28">Popular fast-food restaurant in Yola specializing in fried chicken, grilled chicken dishes, chicken sandwiches, sides, and quick meal packages.</p>
             <a data-i18n="learn_more" href="details/Navi/chicken-cottage-yola.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/uptownspot.png" alt="Uptown Exclusive Spot Yola - High-end dining with premium cuisine" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_29">Uptown Exclusive Spot Yola.</h3>
             <p data-i18n="Navi_section4_p_29">High-end dining venue in Yola offering premium cuisine, exclusive atmosphere, fine wines, and sophisticated service for discerning diners.</p>
             <a data-i18n="learn_more" href="details/Navi/uptown-exclusive-spot.html">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/oasis.jpg" alt="OASIS Bakery Yola - Fresh bread, pastries and custom cakes" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_30">OASIS Bakery, Yola.</h3>
             <p data-i18n="Navi_section4_p_30">Local bakery in Yola renowned for fresh-baked bread, assorted pastries, custom cakes for special occasions, and quality baked goods with traditional recipes.</p>
             <a data-i18n="learn_more" href="details/Navi/oasis-bakery.html">Learn more →</a>
+            </div>
         </div>
             
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/marwa.jpg" alt="Marwa Shawarma & Grills Yola - Middle Eastern restaurant with grilled specialties" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_31">Marwa shawarma & grills, Yola.</h3>
             <p data-i18n="Navi_section4_p_31">Popular restaurant in Yola known for authentic shawarma, expert grilling, marinated meats, grilled platters, and Middle Eastern cuisine specialties.</p>
             <a data-i18n="learn_more" href="details/Navi/marwa-shawarma-grills.html">Learn more →</a>
+            </div>
         </div>
             
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/yahuza.png" alt="OASIS Yola" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_32">Yahuza Suya Spot, Yola.</h3>
             <p data-i18n="Navi_section4_p_32">Famous local spot for traditional Nigerian grilled meat (suya).</p>
             <a data-i18n="learn_more" href="details/Navi/yahuza.html">Learn more →</a>
+            </div>
         </div>
 
         
@@ -474,9 +450,11 @@
             <div class="img-placeholder">
             <img src="Data/Images/icecreamplanet.png" alt="Icecream Planet, Yola" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_33">Icecream Planet, Yola</h3>
             <p data-i18n="Navi_section4_p_33">Specialty dessert shop offering various ice cream flavors and treats.</p>
             <a data-i18n="learn_more" href="details/Navi/icecream-planet.html">Learn more →</a>
+            </div>
         </div>
 
         </div>
@@ -490,81 +468,99 @@
             <div class="img-placeholder">
             <img src="Data/Images/macm2.jpg" alt="Modibbo Adama Central Mosque, Yola" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_34">Modibbo Adama Central Mosque, Yola</h3>
             <p data-i18n="Navi_section4_p_34">A very large and historic mosque of the Lamido palace.</p>
-            <a data-i18n="learn_more" href="details/Navi/modibbo-adama-central-mosque.html">Learn more →</a>\m
+            <a data-i18n="learn_more" href="details/Navi/modibbo-adama-central-mosque.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/modibbozailani.png" alt="Gorilla Park" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_35">Modibbo Zailani Mosque, Yola</h3>
             <p data-i18n="Navi_section4_p_35">Historic mosque with distinctive architecture and cultural significance.</p>
             <a data-i18n="learn_more" href="details/Navi/modibbo-zailani-mosque.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/agga.jpeg" alt="Agga Islamic Center" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_36">Agga Islamic Center, Yola</h3>
             <p data-i18n="Navi_section4_p_36">Islamic educational and worship center serving the local Muslim community.</p>
             <a data-i18n="learn_more" href="details/Navi/agga-islamic-center.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/mauthmasjid.png" alt="Central Park" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_37">MAUTH Jumma'at Mosque, Yola.</h3>
             <p data-i18n="Navi_section4_p_37">Major mosque serving the university community with regular prayer services.</p>
             <a data-i18n="learn_more" href="details/Navi/mauth-mosque.html">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/ammi.png" alt="Central Park" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_38">Hajja Ammi Jumma'at Mosque, Yola.</h3>
             <p data-i18n="Navi_section4_p_38">Community mosque known for its welcoming atmosphere and regular services.</p>
             <a data-i18n="learn_more" href="details/Navi/hajja-ammi-mosque.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/alibaba.png" alt="Central Park" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_39">Alibaba Jumma'at Mosque.</h3>
             <p data-i18n="Navi_section4_p_39">Local mosque providing daily prayers and community gatherings.</p>
             <a data-i18n="learn_more" href="details/Navi/alibaba-mosque.html">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/catholic.jpg" alt="" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_40">Catholic Secreteriat, Yola.</h3>
             <p data-i18n="Navi_section4_p_40">Administrative center for the Catholic Diocese of Yola.</p>
             <a data-i18n="learn_more" href="details/Navi/catholic-secreteriat.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/lccn.jpg" alt="" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_41">Lutheran Church Of Christ (LCCN) No 1, Yola</h3>
             <p data-i18n="Navi_section4_p_41">Historic Lutheran church serving as a major Christian worship center.</p>
             <a data-i18n="learn_more" href="details/Navi/lccn.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/eyn.jpg" alt="" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_42">EYN Church Yola.</h3>
             <p data-i18n="Navi_section4_p_42">Church of the Brethren congregation offering regular worship services.</p>
             <a data-i18n="learn_more" href="details/Navi/eyn.html">Learn more →</a>
+            </div>
         </div>
 
         </div>
@@ -579,54 +575,66 @@
             <div class="img-placeholder">
             <img src="Data/Images/gtgate.jpg" alt="GT Bank" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_43">Guarantee Trust (GT) Bank, Yola</h3>
             <p data-i18n="Navi_section4_p_43">Financial institution known for its reliable services.</p>
             <a data-i18n="learn_more" href="details/Navi/gt-bank.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/zenithgate.jpg" alt="Zenith Bank" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_44">Zenith Bank</h3>
             <p data-i18n="Navi_section4_p_44">Leading commercial bank providing comprehensive banking services.</p>
             <a data-i18n="learn_more" href="details/Navi/zenith-bank.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/fidelitygate.jpg" alt="Fidelity Bank" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_45">Fidelity Bank</h3>
             <p data-i18n="Navi_section4_p_45">Full-service bank offering personal and business banking solutions.</p>
             <a data-i18n="learn_more" href="details/Navi/fidelity-bank.html">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/stanbic.jpg" alt="Stanbic IBTC" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_46">Stanbic IBTC Bank, Yola Branch.</h3>
             <p data-i18n="Navi_section4_p_46">International bank providing diverse financial services and investment options.</p>
             <a data-i18n="learn_more" href="details/Navi/stanbic-ibtc-bank.html">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/access.png" alt="" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_47">Access Bank, Yola Branch.</h3>
             <p data-i18n="Navi_section4_p_47">Leading retail bank offering digital and traditional banking services.</p>
             <a data-i18n="learn_more" href="details/Navi/access-bank.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/sterling.jpg" alt="" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_48">Sterling Bank, Yola Branch.</h3>
             <p data-i18n="Navi_section4_p_48">Commercial bank providing comprehensive financial services and solutions.</p>
             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
+            </div>
         </div>
 
         </div>
@@ -644,54 +652,66 @@
         <div class="img-placeholder">
             <img src="Data/Images/mausports.jpg" alt="MAU Sports Center" loading="lazy" />
         </div>
-        <h3 data-i18n="Navi_section4_h3_49">MAU Yola sports center.</h3>
-        <p data-i18n="Navi_section4_p_49">University sports complex with modern facilities for various athletic activities.</p>
-        <a data-i18n="learn_more" href="details/Navi/mau-sports-center.html">Learn more →</a>
+        <div class="card-body">
+            <h3 data-i18n="Navi_section4_h3_49">MAU Yola sports center.</h3>
+            <p data-i18n="Navi_section4_p_49">University sports complex with modern facilities for various athletic activities.</p>
+            <a data-i18n="learn_more" href="details/Navi/mau-sports-center.html">Learn more →</a>
+        </div>
         </div>
 
         <div class="section4">
         <div class="img-placeholder">
             <img src="Data/Images/ffitness.jpg" alt="F-Fitness Gym and Spa" loading="lazy" />
         </div>
-        <h3 data-i18n="Navi_section4_h3_50">F - Fitness Gymnastics & Spa, Yola.</h3>
-        <p data-i18n="Navi_section4_p_50">Modern fitness center offering gym equipment, classes and spa services.</p>
-        <a data-i18n="learn_more" href="details/Navi/f-fitness.html">Learn more →</a>
+        <div class="card-body">     
+            <h3 data-i18n="Navi_section4_h3_50">F - Fitness Gymnastics & Spa, Yola.</h3>
+            <p data-i18n="Navi_section4_p_50">Modern fitness center offering gym equipment, classes and spa services.</p>
+            <a data-i18n="learn_more" href="details/Navi/f-fitness.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
         <div class="img-placeholder">
             <img src="Data/Images/beastfitness.jpg" alt="Beast Fitness Arena" loading="lazy" />
         </div>
-        <h3 data-i18n="Navi_section4_h3_51">Beast Fitness Arena, Yola.</h3>
-        <p data-i18n="Navi_section4_p_51">High-intensity training facility with specialized workout equipment.</p>
-        <a data-i18n="learn_more" href="details/Navi/beast-fitness.html">Learn more →</a>
+        <div class="card-body">
+            <h3 data-i18n="Navi_section4_h3_51">Beast Fitness Arena, Yola.</h3>
+            <p data-i18n="Navi_section4_p_51">High-intensity training facility with specialized workout equipment.</p>
+            <a data-i18n="learn_more" href="details/Navi/beast-fitness.html">Learn more →</a>
+        </div>
         </div>
 
         <div class="section4">
         <div class="img-placeholder">
             <img src="Data/Images/gauniarena.jpg" alt="Gauni Sports Arena" loading="lazy" />
         </div>
-        <h3 data-i18n="Navi_section4_h3_52">Gauni Sports Arena, Yola.</h3>
-        <p data-i18n="Navi_section4_p_52">Multi-purpose sports facility hosting various athletic events and competitions.</p>
-        <a data-i18n="learn_more" href="details/Navi/gauni-sports-arena.html">Learn more →</a>
+        <div class="card-body">
+            <h3 data-i18n="Navi_section4_h3_52">Gauni Sports Arena, Yola.</h3>
+            <p data-i18n="Navi_section4_p_52">Multi-purpose sports facility hosting various athletic events and competitions.</p>
+            <a data-i18n="learn_more" href="details/Navi/gauni-sports-arena.html">Learn more →</a>
+        </div>
         </div>
 
         <div class="section4">
         <div class="img-placeholder">
             <img src="Data/Images/fcepitch.jpg" alt="FCE Football Pitch" loading="lazy" />
         </div>
-        <h3 data-i18n="Navi_section4_h3_53">Federal College of Education (FCE) Yola, Footbal Pitch</h3>
-        <p data-i18n="Navi_section4_p_53">College football field used for sports events and student activities.</p>
-        <a data-i18n="learn_more" href="details/Navi/fce-footbal-pitch.html">Learn more →</a>
+        <div class="card-body">
+            <h3 data-i18n="Navi_section4_h3_53">Federal College of Education (FCE) Yola, Footbal Pitch</h3>
+            <p data-i18n="Navi_section4_p_53">College football field used for sports events and student activities.</p>
+            <a data-i18n="learn_more" href="details/Navi/fce-footbal-pitch.html">Learn more →</a>
+        </div>
         </div>
 
         <div class="section4">
         <div class="img-placeholder">
             <img src="Data/Images/polo2.jpg" alt="International Polo Ground" loading="lazy" />
         </div>
-        <h3 data-i18n="Navi_section4_h3_54">International Polo Ground, Yola</h3>
-        <p data-i18n="Navi_section4_p_54">Professional polo field hosting tournaments and equestrian events.</p>
-        <a data-i18n="learn_more" href="details/Navi/yola-polo-ground.html">Learn more →</a>
+        <div class="card-body">
+            <h3 data-i18n="Navi_section4_h3_54">International Polo Ground, Yola</h3>
+            <p data-i18n="Navi_section4_p_54">Professional polo field hosting tournaments and equestrian events.</p>
+            <a data-i18n="learn_more" href="details/Navi/yola-polo-ground.html">Learn more →</a>
+        </div>
         </div>
 
         </div>
@@ -705,54 +725,66 @@
             <div class="img-placeholder">
             <img src="Data/Images/gemini-jippujam.png" alt="Jabbama Jippu Jam Toll Gate" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_55">Jabbama Jippu Jam (Yola Toll Gate)</h3>
             <p data-i18n="Navi_section4_p_55">Historic toll gate serving as a major entrance point to Yola city.</p>
             <a data-i18n="learn_more" href="details/Navi/jippujam.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/flyover.jpg" alt="Police Roundabout Flyover" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_56">Police Roundabout Flyover, Jimeta Yola.</h3>
             <p data-i18n="Navi_section4_p_56">Modern elevated roadway improving traffic flow in central Jimeta.</p>
             <a data-i18n="learn_more" href="details/Navi/police-roundabout-flyover.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/welcometoyola.jpeg" alt="Welcome to Yola Gate" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_57">Yola main entrance gate</h3>
             <p data-i18n="Navi_section4_p_57">Iconic welcome arch marking the main entrance to Yola city.</p>
             <a data-i18n="learn_more" href="details/Navi/welcome-to-yola.html">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/jambutu.jpg" alt="Jambutu Flyover" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_58">Jambutu Flyover, Jimeta Yola.</h3>
             <p data-i18n="Navi_section4_p_58">Elevated roadway connecting Jambutu area with central Jimeta.</p>
             <a data-i18n="learn_more" href="details/Navi/jambutu-flyover.html">Learn more →</a>
+            </div>
         </div>
         
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/underpass.jpg" alt="Fire Service Roundabout Underpass Construction" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_59">Underpass at Fire Service Roundabout, Jimeta Yola.</h3>
             <p data-i18n="Navi_section4_p_59">Infrastructure development project to improve traffic flow at busy intersection.</p>
             <a data-i18n="learn_more" href="details/Navi/yola-underpass.html">Learn more →</a>
+            </div>
         </div>
 
         <div class="section4">
             <div class="img-placeholder">
             <img src="Data/Images/maishanu.jpg" alt="Maishanu Roundabout" loading="lazy" />
             </div>
+            <div class="card-body">
             <h3 data-i18n="Navi_section4_h3_60">Roundabout Maishanu Jimeta, Yola.</h3>
             <p data-i18n="Navi_section4_p_60">Major traffic circle connecting multiple main roads in Jimeta area.</p>
             <a data-i18n="learn_more" href="details/Navi/roundabout-maishanu.html">Learn more →</a>
+            </div>
         </div>
 
         </div>
@@ -760,36 +792,41 @@
     
 
     
+        </div>
+        <div class="empty-state" id="emptyState" hidden>
+            <i class="fas fa-search"></i>
+            <p>No navigation services matched your search. Try rephrasing your word.</p>
+        </div>
     </div>
     
 </section>
 
-      <footer class="site-footer">
-        <!-- Bottom Row -->
+    
+    <footer class="site-footer">
         <div class="footer-bottom-container">
-          <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
-          <span style="display: flex; justify-content: space-evenly;">
-            <a href="#"><i class="fab fa-whatsapp fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-instagram fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-facebook fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-linkedin fa-2x" href="#"></i></a>
-            
-            <a href="#"><i class="fab fa-x-twitter fa-2x" href="#"></i></a>
-          </span>
+            <p class="follow-label">Follow us on social media</p>
+            <div class="social-row">
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+            </div>
         </div>
 
-        <div>
-          <div class="legal-links">
-              <a class="footer-link" href="#">Privacy Policy</a>
-              <a class="footer-link" href="#">Terms of Service</a>
-              <a class="footer-link" href="../pages/report.html">Report an issue or comment</a>
-              <a class="footer-link" href="../pages/about.html">About</a>
-          </div>
-          <div class="copyright" style="margin-top: 15px;">
-             <p>© 2026 AlkaliCodes. All rights reserved.</p> 
-          </div>
+        <div class="footer-legal">
+            <div class="legal-links">
+                <a class="footer-link" href="#">Privacy Policy</a>
+                <a class="footer-link" href="#">Terms of Service</a>
+                <a class="footer-link" href="../pages/report.html">Report an issue</a>
+                <a class="footer-link" href="../pages/about.html">About</a>
+            </div>
+            <div class="copyright">
+                <p>© 2026 AlkaliCodes. All rights reserved.</p>
+            </div>
         </div>
-      </footer>
+    </footer>
+
 <script>
 function getLangFolder() {
   const langMap = {

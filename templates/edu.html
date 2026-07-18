@@ -1,477 +1,379 @@
 
-<section class="info-section">
-    <!--
-    <h2 data-i18n="eduinfo_title">EduInfo - Education Help</h2>
-    <p data-i18n="eduinfo_description">Ask about schools, universities, courses, or educational services in Yola.</p>
-    -->
-    <div id="eduinfo-chat-container" class="chat-container">
-    <div class="chat-header">
-        <span data-i18n="eduinfo_chat_header">EduInfo AI Chat</span>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div class="model-switch">
-            
-            <label class="switch">
-                <span class="sr-only" style="display:none" id="edu-model-toggle-label">Toggle AI Model</span>
-                <input type="checkbox" id="edu-model-toggle" aria-labelledby="edu-model-toggle-label" title="Toggle AI Model"
-                        onchange="window.toggleGeminiModel('edu', this.checked)" 
-                        ${window.useGemini25 ? 'checked' : ''}>
-                <span class="slider round"></span>
-            </label>
-            <span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>
+    <!-- Hero -->
+    <header class="hero">
+        <div class="hero-inner">
+            <span class="eyebrow">Adamawa State · Education</span>
+            <h1>Educational <em>Information</em></h1>
+            <p>Discover the top-tier educational institutions shaping the future of Adamawa State — from universities and colleges to schools, libraries and knowledge centers.</p>
+        </div>
+        <div class="hero-glow" aria-hidden="true"></div>
+    </header>
+
+    <section class="info-section">
+
+        <!-- Sticky controls -->
+        <div class="controls">
+            <div class="search-bar">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input id="searchInput" placeholder="Search for institutions, courses, or events..." type="text" aria-label="Search institutions" />
+                <button type="button" class="clear-btn" id="clearBtn" aria-label="Clear search" hidden>
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem;">✕</button>
-        </div>
-    </div>
-    <div id="eduinfo-chat-messages" class="chat-messages"></div>
-    
-    <form class="chat-input-area" style="flex-direction:column;"  onsubmit="event.preventDefault(); window.sendEduMessage();">
-        <div class="chat-input-area">
-        <div id="edu-chat-preview" class="chat-preview"></div>
-        <input type="text" id="edu-chat-input" title="Education Chat Input" data-i18n-placeholder="edu_chat_placeholder" placeholder="Ask about education..." required />
-        <div class="send-button-group">
-            <button type="submit" class="send-button" data-i18n="send">Send</button>
-        </div>
-        </div>
-        <div class="input-options">
-          
-          <button type="button" onclick="window.captureImage('edu')" title="Capture Image" >
-            <!-- Camera -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7
-              a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-            </svg>
-          </button>
 
-          <button type="button" onclick="window.recordAudio('edu')" title="Record Audio">      
-            <!-- Microphone -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <rect x="9" y="2" width="6" height="12" rx="3"/>
-              <path d="M5 10a7 7 0 0 0 14 0"/>
-              <line x1="12" y1="19" x2="12" y2="22"/>
-            </svg>
-          </button>
-
-          <label class="file-upload-btn" title="Upload File">            
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5
-              a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>  
-            <input type="file" style="display:none" onchange="window.uploadFile(event, 'edu')" />
-          </label>
-        
-          <button type="button" id="home-voice-call-btn" onclick="window.startVoiceCall('edu')" title="Start Live Voice Call with AI">            
-            <!-- Phone -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" stroke="currentColor" stroke-width="2"
-            viewBox="0 0 24 24">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18
-              2 19.79 19.79 0 0 1-8.63-3.07
-              19.5 19.5 0 0 1-6-6A19.79
-              19.79 0 0 1 2.11 4.18 2
-              2 0 0 1 4.11 2h3a2 2 0 0
-              1 2 1.72c.12.89.32 1.76.59
-              2.59a2 2 0 0 1-.45 2.11L8.09
-              9.91a16 16 0 0 0 6 6l1.49-1.49
-              a2 2 0 0 1 2.11-.45c.83.27
-              1.7.47 2.59.59A2 2 0 0 1 22 16.92z"/>
-            </svg>
-          </button>
-          <button type="button" id="edu-mute-btn" onclick="window.toggleVoiceCallMute('edu')" title="Mute/Unmute Microphone" style="display: none;">
-            <i class="fas fa-microphone-slash"></i> Mute
-          </button>
-          <div id="edu-voice-indicator" class="voice-indicator" style="display: none;">
-            Listening...
-          </div>
-          <div id="edu-call-duration" class="call-duration" style="display: none;">00:00</div>
+            <div class="filter-chips" role="tablist" aria-label="Filter by category">
+                <button class="chip active" data-filter="All" role="tab" aria-selected="true">All</button>
+                <button class="chip" data-filter="Universities" role="tab">Universities</button>
+                <button class="chip" data-filter="Colleges" role="tab">Colleges</button>
+                <button class="chip" data-filter="Schools" role="tab">Schools</button>
+                <button class="chip" data-filter="Libraries" role="tab">Libraries</button>
+            </div>
         </div>
-    </form>
-    <div class="faq-list">
-    <h3 data-i18n="edu_faqs">EduInfo FAQs</h3>
-    <ul>
-        <li><a class="faq-link" data-i18n="edu_faq_1" onclick="window.sendFAQInCurrentLang('edu_faq_1', 'Edu')">What are the top universities in Yola</a></li>
-        <li><a class="faq-link" data-i18n="edu_faq_2" onclick="window.sendFAQInCurrentLang('edu_faq_2', 'Edu')">Adamawa state scholarship program</a></li>
-        <li><a class="faq-link" data-i18n="edu_faq_3" onclick="window.sendFAQInCurrentLang('edu_faq_3', 'Edu')">Are there vocational training centers</a></li>
-        <li><a class="faq-link" data-i18n="edu_faq_4" onclick="window.sendFAQInCurrentLang('edu_faq_4', 'Edu')">Highly rated primary schools in Yola</a></li>
-        <li><a class="faq-link" data-i18n="edu_faq_5" onclick="window.sendFAQInCurrentLang('edu_faq_5', 'Edu')">JAMB accredited CBT centers in Yola</a></li>
-        <li><a class="faq-link" data-i18n="edu_faq_6" onclick="window.sendFAQInCurrentLang('edu_faq_6', 'Edu')">Adult education programs in Yola</a></li>
-    </ul>
-    </div>
-    </div>
 
-    <!-- Title -->
-    <section class="mb-8">
-    <h2 style="font-size: 32px; color: var(--primary); margin-bottom: 15px;">Educational Information</h2>
-    <p style="color: var(--on-surface-variant); font-size: 18px; max-width: 680px;">Discover the top-tier educational institutions shaping the future of Adamawa State.</p>
+        <div class="section2">
+
+            <div class="section3" data-category="Universities">
+                <h2 class="section3-title">Universities</h2>
+                <div class="section4-container">
+                    
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/gemini-maugate.png" alt="Modibbo Adama University" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_3">Modibbo Adama University (MAU), Yola.</h3>
+                            <p data-i18n="Edu_section4_p_3">Federal university offering comprehensive programs in science, technology, and humanities. Features modern research facilities.</p>
+                            <a data-i18n="learn_more" href="details/Edu/mau.html">Learn more →</a>
+                        </div>
+                    </article>
+
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/adsulogo.jpg" alt="Adamawa State University" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_1">Adamawa State University (ADSU), Mubi</h3>
+                            <p data-i18n="Edu_section4_p_1">A state-owned university offering various undergraduate and postgraduate programs. Located in Mubi, with modern facilities and diverse academic departments.</p>
+                            <a data-i18n="learn_more" href="details/Edu/adsu.html">Learn more →</a>
+                        </div>
+                    </article>
+
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/aunlogo.jpg" alt="American University of Nigeria" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_2">American University of Nigeria (AUN), Main campus Yola</h3>
+                            <p data-i18n="Edu_section4_p_2">Premier private university providing American-style education. Known for its state-of-the-art facilities and international standards.</p>
+                            <a data-i18n="learn_more" href="details/Edu/aun.html">Learn more →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="section3" data-category="Colleges">
+                <h2 class="section3-title">Colleges</h2>
+                <div class="section4-container">
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/gemini-fce-gate.png" alt="Federal College of Education" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_4">Federal College of Education</h3>
+                            <p data-i18n="Edu_section4_p_4">Leading institution for teacher training and educational development.</p>
+                            <a data-i18n="learn_more" href="details/Edu/fce-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/spylogo.jpg" alt="State Polytechnic" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_5">State Polytechnic</h3>
+                            <p data-i18n="Edu_section4_p_5">Technical institution offering diploma and certificate programs.</p>
+                            <a data-i18n="learn_more" href="details/Edu/spy-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/polylogo.jpg" alt="Federal Polytechnic" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_6">Federal Polytechnic</h3>
+                            <p data-i18n="Edu_section4_p_6">Technical institution offering diploma and certificate programs.</p>
+                            <a data-i18n="learn_more" href="details/Edu/fed-poly-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/centrallogo.jpeg" alt="Central College Of Health Sciences And Technology, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_9">Central College OF Health Sciences And Technology, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_9">Leading institution providing comprehensive education in health sciences, medical technology, and allied professions in Yola.</p>
+                            <a data-i18n="learn_more" href="details/Edu/central-college.html">Learn more →</a>
+                        </div>
+                    </article>
+
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/conmy-gate-gemini.png" alt="School of Nursing" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_7">School of Nursing</h3>
+                            <p data-i18n="Edu_section4_p_7">Specialized institution for nursing education and healthcare training.</p>
+                            <a data-i18n="learn_more" href="details/Edu/nursing-school-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/clslogo.jpg" alt="College For Legal Studies, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_8">College For Legal Studies, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_8">Professional institution dedicated to legal education and training for aspiring legal practitioners in Yola.</p>
+                            <a data-i18n="learn_more" href="details/Edu/cls-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="section3" data-category="Schools">
+                <h2 class="section3-title">Elementary And Secondary Schools</h2>
+                <div class="section4-container">
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/elkenemy-gate-gemini.png" alt="El-kenemy College" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_10">El-kenemy College of Islamic Theology, Yola</h3>
+                            <p data-i18n="Edu_section4_p_10">Premier islamic secondary school known for academic excellence and character development.</p>
+                            <a data-i18n="learn_more" href="details/Edu/el-kenemy-college.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/amclogo.jpg" alt="Aliyu Musdafa College" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_11">Aliyu Musdafa College, (AMC) Yola</h3>
+                            <p data-i18n="Edu_section4_p_11">Historic institution providing quality education to students across the state.</p>
+                            <a data-i18n="learn_more" href="details/Edu/amc-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/caalogo.jpg" alt="Chiroma Ahmad Academy" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_12">Chiroma Ahmad Academy, Yola</h3>
+                            <p data-i18n="Edu_section4_p_12">Modern secondary school offering international curriculum and quality education.</p>
+                            <a data-i18n="learn_more" href="details/Edu/chiroma-ahmad-academy.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/adroit.png" alt="Adroit International Academy" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_14">Adroit International Academy, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_14">Historic institution providing quality education to students across the state.</p>
+                            <a data-i18n="learn_more" href="details/Edu/adroit-academy.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/gmmc-gate-gemini.png" alt="General Murtala Muhammad College (GMMC), Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_13">General Murtala Muhammad College (GMMC), Yola</h3>
+                            <p data-i18n="Edu_section4_p_13">Historic government secondary school known for academic excellence and comprehensive education in science and arts.</p>
+                            <a data-i18n="learn_more" href="details/Edu/gmmc-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/gtclogo.jpg" alt="Government Technical College, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_15">Government Technical College, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_15">Public technical college providing hands-on training in various technical and vocational skills to prepare students for technical careers.</p>
+                            <a data-i18n="learn_more" href="details/Edu/gtc-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/arc-gate-gemini.png" alt="Ahmadu Ribadu College" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_20">Ahmadu Ribadu College (ARC), Yola.</h3>
+                            <p data-i18n="Edu_section4_p_20">Historic institution providing quality education to students across the state.</p>
+                            <a data-i18n="learn_more" href="details/Edu/sra-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/albayan.png" alt="Al-Bayaan Bilingual Academy, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_16">Al-Bayaan Bilingual Academy, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_16">Modern bilingual educational institution providing quality education in both English and Arabic languages with an integrated curriculum.</p>
+                            <a data-i18n="learn_more" href="details/Edu/albayaan-academy.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/baitulateeq.png" alt="Baitul-Ateeq College" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_17">Baitul-Ateeq College, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_17">Historic institution providing quality education to students across the state.</p>
+                            <a data-i18n="learn_more" href="details/Edu/baitul-ateeq.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/governmentday.jpg" alt="Government Day Secondary School, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_18">Government Day Secondary School, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_18">Public secondary school providing affordable quality education with a focus on academic excellence and character development.</p>
+                            <a data-i18n="learn_more" href="details/Edu/gdss-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/ube-gate.jpg" alt="UBEC Smart School, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_19">UBEC Smart School, Yola</h3>
+                            <p data-i18n="Edu_section4_p_19">Modern educational facility incorporating technology and digital learning tools to provide innovative education in Yola.</p>
+                            <a data-i18n="learn_more" href="details/Edu/ubec-smart-school.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/sralogo.png" alt="Sulaiman Ribadu Academy" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_20">Sulaiman Ribadu Academy, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_20">Historic institution providing quality education to students across the state.</p>
+                            <a data-i18n="learn_more" href="details/Edu/sra-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/fggclogo.jpeg" alt="Federal Government Girls' College Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_21">Federal Government Girls' College, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_21">Modern secondary school offering international curriculum and quality education.</p>
+                            <a data-i18n="learn_more" href="details/Edu/fggc-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/eynacademy.jpeg" alt="EYN Secondary School, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_22">EYN Academy, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_22">Faith-based educational institution providing quality secondary education with emphasis on academic excellence and moral values.</p>
+                            <a data-i18n="learn_more" href="details/Edu/eyn-secondary.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/binaniacademy.jpg" alt="BINANI Football Academy, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3>BINANI Football Academy, Yola.</h3>
+                            <p>Specialized sports academy providing football training and education to develop young talented athletes in Yola.</p>
+                            <a data-i18n="learn_more" href="details/Edu/binani-academy.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/alnaab.png" alt="Al-Na'ab Academy, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3>Al-Na'ab Academy, Yola.</h3>
+                            <p>Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.</p>
+                            <a data-i18n="learn_more" href="details/Edu/alnaab-academy.html">Learn more →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="section3" data-category="Libraries">
+                <h2 class="section3-title">Libraries And Knowledge Centers</h2>
+                <div class="section4-container">
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/gemini-nln.png" alt="Public Library" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_25">National Library Of Nigeria (NLN), Yola Branch.</h3>
+                            <p data-i18n="Edu_section4_p_25">Public library and educational resource center.</p>
+                            <a data-i18n="learn_more" href="details/Edu/library.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/bkc.png" alt="Bindir Knowledge Center (BKC), Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_26">Bindir Knowledge Center (BKC),Yola.</h3>
+                            <p data-i18n="Edu_section4_p_26">Modern knowledge hub providing access to educational resources, research materials, and digital learning facilities.</p>
+                            <a data-i18n="learn_more" href="details/Edu/bkc-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                    <article class="section4">
+                        <div class="img-placeholder">
+                            <img src="Data/Images/cosmotech.png" alt="Cosmotech Learning center, Yola" loading="lazy" />
+                        </div>
+                        <div class="card-body">
+                            <h3 data-i18n="Edu_section4_h3_27">Cosmotech Learning center, Yola.</h3>
+                            <p data-i18n="Edu_section4_p_27">Technology-focused learning center offering digital skills training, computer education, and modern learning resources.</p>
+                            <a data-i18n="learn_more" href="details/Edu/cosmotech-yola.html">Learn more →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="empty-state" id="emptyState" hidden>
+            <i class="fas fa-search"></i>
+            <p>No institutions match your search.</p>
+        </div>
+
     </section>
-
-    <!-- Search -->
-    <section class="search-bar">
-    <span class="fas fa-search material-symbols-outlined"></span>
-    <input placeholder="Search for institutions, courses, or events..." type="text"/>
-    </section>
-    <!-- Filters -->
-    <section class="filter-chips mb-8">
-    <div class="chip active edu" data-filter="All">All</div>
-    <div class="chip edu" data-filter="Universities">Universities</div>
-    <div class="chip edu" data-filter="Colleges">Colleges</div>
-    <div class="chip edu" data-filter="Schools">Schools</div>
-    <div class="chip edu" data-filter="Libraries">Libraries</div>
-    </section>
-
-    <div class="section2">
-    <!--<h2 data-i18n="edu_section2_h2">Educational Instituitions within Yola and environs.</h2> -->
-    
-    <div class="section3" data-category="Universities">
-        <!--<h3 class="section3-title" data-i18n="edu_section3_h3_">Universities</h3>-->
-        <h3 class="section3-title" >Universities</h3>
-        <div class="section4-container">
-
-            
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/gemini-maugate.png" alt="Modibbo Adama University" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_3">Modibbo Adama University (MAU), Yola.</h3>
-            <p data-i18n="Edu_section4_p_3">Federal university offering comprehensive programs in science, technology, and humanities. Features modern research facilities.</p>
-            <a data-i18n="learn_more" href="details/Edu/mau.html" data-i18n="learn_more">Learn more →</a>
-        </div>
-
-        <div class="section4">
-            <div class="img-placeholder">
-                <img src="Data/Images/adsulogo.jpg" alt="Adamawa State University" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_1">Adamawa State University (ADSU), Mubi</h3>
-            <p data-i18n="Edu_section4_p_1">A state-owned university offering various undergraduate and postgraduate programs. Located in Mubi, with modern facilities and diverse academic departments.</p>
-            <a data-i18n="learn_more" href="details/Edu/adsu.html" data-i18n="learn_more">Learn more →</a>
-        </div>
-
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/aunlogo.jpg" alt="American University of Nigeria" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_2">American University of Nigeria (AUN), Main campus Yola</h3>
-            <p data-i18n="Edu_section4_p_2">Premier private university providing American-style education. Known for its state-of-the-art facilities and international standards.</p>
-            <a data-i18n="learn_more" href="details/Edu/aun.html" data-i18n="learn_more">Learn more →</a>
-        </div>
-
-        </div>
-    </div>
-
-
-    <div class="section3" data-category="Colleges">
-        <!--<h3 class="section3-title" data-i18n="edu_section3_h3_2">Colleges</h3>-->
-        <h3 class="section3-title" >Colleges</h3>
-        <div class="section4-container">
-
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/gemini-fce-gate.png" alt="Federal College of Education" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_4">Federal College of Education</h3>
-            <p data-i18n="Edu_section4_p_4">Leading institution for teacher training and educational development.</p>
-            <a data-i18n="learn_more" href="details/Edu/fce-yola.html" data-i18n="learn_more">Learn more →</a>
-        </div>
-
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/spylogo.jpg" alt="State Polytechnic" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_5">State Polytechnic</h3>
-            <p data-i18n="Edu_section4_p_5">Technical institution offering diploma and certificate programs.</p>
-            <a data-i18n="learn_more" href="details/Edu/spy-yola.html">Learn more →</a>
-        </div>
-
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/polylogo.jpg" alt="Federal Polytechnic" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_6">Federal Polytechnic</h3>
-            <p data-i18n="Edu_section4_p_6">Technical institution offering diploma and certificate programs.</p>
-            <a data-i18n="learn_more" href="details/Edu/fed-poly-yola.html">Learn more →</a>
-        </div>
-
-        
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/centrallogo.jpeg" alt="Central College OF Health Sciences And Technology, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_9">Central College OF Health Sciences And Technology, Yola.</h3>
-            <p data-i18n="Edu_section4_p_9">Leading institution providing comprehensive education in health sciences, medical technology, and allied professions in Yola.</p>
-            <a data-i18n="learn_more" href="details/Edu/central-college.html">Learn more →</a>
-        </div>
-
-        
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/conmy-gate-gemini.png" alt="School of Nursing" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_7">School of Nursing</h3>
-            <p data-i18n="Edu_section4_p_7">Specialized institution for nursing education and healthcare training.</p>
-            <a data-i18n="learn_more" href="details/Edu/nursing-school-yola.html">Learn more →</a>
-        </div>
-
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/clslogo.jpg" alt="College For Legal Studies, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_8">College For Legal Studies, Yola.</h3>
-            <p data-i18n="Edu_section4_p_8">Professional institution dedicated to legal education and training for aspiring legal practitioners in Yola.</p>
-            <a data-i18n="learn_more" href="details/Edu/cls-yola.html">Learn more →</a>
-        </div>
-
-    </div>
-    </div>
-
-
-    <div class="section3" data-category="Schools">
-        <!--<h3 class="section3-title" data-i18n="edu_section3_h3_3">Elementary And Secondary Schools</h3>-->
-        <h3 class="section3-title" >Elementary And Secondary Schools</h3>
-    <div class="section4-container">
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/elkenemy-gate-gemini.png" alt="El-kenemy College" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_10">El-kenemy College of Islamic Theology, Yola</h3>
-            <p data-i18n="Edu_section4_p_10">Premier islamic secondary school known for academic excellence and character development.</p>
-            <a data-i18n="learn_more" href="details/Edu/el-kenemy-college.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/amclogo.jpg" alt="Aliyu Musdafa College" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_11">Aliyu Musdafa College, (AMC) Yola</h3>
-            <p data-i18n="Edu_section4_p_11">Historic institution providing quality education to students across the state.</p>
-            <a data-i18n="learn_more" href="details/Edu/amc-yola.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/caalogo.jpg" alt="Chiroma Ahmad Academy" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_12">Chiroma Ahmad Academy, Yola</h3>
-            <p data-i18n="Edu_section4_p_12">Modern secondary school offering international curriculum and quality education.</p>
-            <a data-i18n="learn_more" href="details/Edu/chiroma-ahmad-academy.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/adroit.png" alt=" College" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_14">Adroit International Academy, Yola.</h3>
-            <p data-i18n="Edu_section4_p_14">Historic institution providing quality education to students across the state.</p>
-            <a data-i18n="learn_more" href="details/Edu/adroit-academy.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/gmmc-gate-gemini.png" alt="General Murtala Muhammad College (GMMC), Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_13">General Murtala Muhammad College (GMMC), Yola</h3>
-            <p data-i18n="Edu_section4_p_13">Historic government secondary school known for academic excellence and comprehensive education in science and arts.</p>
-            <a data-i18n="learn_more" href="details/Edu/gmmc-yola.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/gtclogo.jpg" alt="Government Technical College, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_15">Government Technical College, Yola.</h3>
-            <p data-i18n="Edu_section4_p_15">Public technical college providing hands-on training in various technical and vocational skills to prepare students for technical careers.</p>
-            <a data-i18n="learn_more" href="details/Edu/gtc-yola.html">Learn more →</a>
-        </div>
-        
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/arc-gate-gemini.png" alt="Ahmadu Ribadu College Logo" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_20">Ahmadu Ribadu College (ARC), Yola.</h3>
-            <p data-i18n="Edu_section4_p_20">Historic institution providing quality education to students across the state.</p>
-            <a data-i18n="learn_more" href="details/Edu/sra-yola.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/albayan.png" alt="Al-Bayaan Bilingual Academy, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_16">Al-Bayaan Bilingual Academy, Yola.</h3>
-            <p data-i18n="Edu_section4_p_16">Modern bilingual educational institution providing quality education in both English and Arabic languages with an integrated curriculum.</p>
-            <a data-i18n="learn_more" href="details/Edu/albayaan-academy.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/baitulateeq.png" alt="Baitul-Ateeq College Logo" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_17">Baitul-Ateeq College, Yola.</h3>
-            <p data-i18n="Edu_section4_p_17">Historic institution providing quality education to students across the state.</p>
-            <a data-i18n="learn_more" href="details/Edu/baitul-ateeq.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/governmentday.jpg" alt="Government Day Secondary School, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_18">Government Day Secondary School, Yola.</h3>
-            <p data-i18n="Edu_section4_p_18">Public secondary school providing affordable quality education with a focus on academic excellence and character development.</p>
-            <a data-i18n="learn_more" href="details/Edu/gdss-yola.html">Learn more →</a>
-        </div>
-        
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/ube-gate.jpg" alt="UBEC Smart School, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_19">UBEC Smart School, Yola</h3>
-            <p data-i18n="Edu_section4_p_19">Modern educational facility incorporating technology and digital learning tools to provide innovative education in Yola.</p>
-            <a data-i18n="learn_more" href="details/Edu/ubec-smart-school.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/sralogo.png" alt="Sulaiman Ribadu Academy Logo" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_20">Sulaiman Ribadu Academy, Yola.</h3>
-            <p data-i18n="Edu_section4_p_20">Historic institution providing quality education to students across the state.</p>
-            <a data-i18n="learn_more" href="details/Edu/sra-yola.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/fggclogo.jpeg" alt="Federal Government Girls' College Yola Logo" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_21">Federal Government Girls' College, Yola.</h3>
-            <p data-i18n="Edu_section4_p_21">Modern secondary school offering international curriculum and quality education.</p>
-            <a data-i18n="learn_more" href="details/Edu/fggc-yola.html">Learn more →</a>
-        </div>
-        <!-- Commneted out for now
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/eynacademy.jpeg" alt="EYN Secondary School, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_22">EYN Academy, Yola.</h3>
-            <p data-i18n="Edu_section4_p_22">Faith-based educational institution providing quality secondary education with emphasis on academic excellence and moral values.</p>
-            <a data-i18n="learn_more" href="details/Edu/eyn-secondary.html">Learn more →</a>
-        </div>
-        -->
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/binaniacademy.jpg" alt="BINANI Football Academy, Yola" loading="lazy" />
-            </div>
-            <!--<h3 data-i18n="Edu_section4_h3_">BINANI Football Academy, Yola.</h3>
-            <p data-i18n="Edu_section4_p_">Specialized sports academy providing football training and education to develop young talented athletes in Yola.</p>-->
-            <h3 >BINANI Football Academy, Yola.</h3>
-            <p >Specialized sports academy providing football training and education to develop young talented athletes in Yola.</p>
-            <a data-i18n="learn_more" href="details/Edu/binani-academy.html">Learn more →</a>
-        </div>
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/alnaab.png" alt="Al-Na'ab Academy, Yola" loading="lazy" />
-            </div>
-            <!--<h3 data-i18n="Edu_section4_h3_24">Al-Na'ab Academy, Yola.</h3>
-            <p data-i18n="Edu_section4_p_24">Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.</p>-->
-            <h3 >Al-Na'ab Academy, Yola.</h3>
-            <p >Private Islamic school offering integrated curriculum combining religious education with modern academic subjects.</p>
-            <a data-i18n="learn_more" href="details/Edu/alnaab-academy.html">Learn more →</a>
-        </div>
-        </div>
-    </div>
-
-    
-    
-    <div class="section3" data-category="Libraries">
-        <h3 class="section3-title" >Libraries And Knowledge Centers</h3>
-        <!--<h3 class="section3-title" data-i18n="edu_section3_h3_">Libraries And Knowledge Centers</h3>-->
-        <div class="section4-container">
-        
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/gemini-nln.png" alt="Public Library" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_25">National Library Of Nigeria (NLN), Yola Branch.</h3>
-            <p data-i18n="Edu_section4_p_25">Public library and educational resource center.</p>
-            <a data-i18n="learn_more" href="details/Edu/library.html">Learn more →</a>
-        </div>
-        
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/bkc.png" alt="Bindir Knowledge Center (BKC), Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_26">Bindir Knowledge Center (BKC),Yola.</h3>
-            <p data-i18n="Edu_section4_p_26">Modern knowledge hub providing access to educational resources, research materials, and digital learning facilities.</p>
-            <a data-i18n="learn_more" href="details/Edu/bkc-yola.html">Learn more →</a>
-        </div>
-        
-        <div class="section4">
-            <div class="img-placeholder">
-            <img src="Data/Images/cosmotech.png" alt="Cosmotech Learning center, Yola" loading="lazy" />
-            </div>
-            <h3 data-i18n="Edu_section4_h3_27">Cosmotech Learning center, Yola.</h3>
-            <p data-i18n="Edu_section4_p_27">Technology-focused learning center offering digital skills training, computer education, and modern learning resources.</p>
-            <a data-i18n="learn_more" href="details/Edu/cosmotech-yola.html">Learn more →</a>
-        </div>
-        </div>
-    </div>
-
-
-
-</section>
-
-
 
     <footer class="site-footer">
-        <!-- Bottom Row -->
         <div class="footer-bottom-container">
-          <p style="margin-bottom: 15px;">Follow us on our social media handles:</p>
-          <span style="display: flex; justify-content: space-evenly;">
-            <a href="#"><i class="fab fa-whatsapp fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-instagram fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-facebook fa-2x" href="#"></i></a>
-            <a href="#"><i class="fab fa-linkedin fa-2x" href="#"></i></a>
-            
-            <a href="#"><i class="fab fa-x-twitter fa-2x" href="#"></i></a>
-          </span>
+            <p class="follow-label">Follow us on social media</p>
+            <div class="social-row">
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+            </div>
         </div>
 
-        <div>
-          <div class="legal-links">
-              <a class="footer-link" href="#">Privacy Policy</a>
-              <a class="footer-link" href="#">Terms of Service</a>
-              <a class="footer-link" href="../pages/report.html">Report an issue or comment</a>
-              <a class="footer-link" href="../pages/about.html">About</a>
-          </div>
-          <div class="copyright" style="margin-top: 15px;">
-             <p>© 2026 AlkaliCodes. All rights reserved.</p> 
-          </div>
+        <div class="footer-legal">
+            <div class="legal-links">
+                <a class="footer-link" href="#">Privacy Policy</a>
+                <a class="footer-link" href="#">Terms of Service</a>
+                <a class="footer-link" href="../pages/report.html">Report an issue</a>
+                <a class="footer-link" href="../pages/about.html">About</a>
+            </div>
+            <div class="copyright">
+                <p>© 2026 AlkaliCodes. All rights reserved.</p>
+            </div>
         </div>
     </footer>
-
-<script>
-function getLangFolder() {
-  const langMap = {
-    'en': 'En',
-    'ar': 'Ar',
-    'fr': 'Fr',
-    'ha': 'Ha',
-    'ff': 'Fu',
-    'yo': 'Yo',
-    'ig': 'Ig',
-    'pcm': 'Pi'
-  };
-  const lang = window.getAppLanguage ? window.getAppLanguage() : 'en';
-  return langMap[lang] || 'En';
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('a[href^="details/"]').forEach(link => {
-    const href = link.getAttribute('href');
-    const parts = href.split('/');
-    if (parts.length >= 3) {
-      const section = parts[1];
-      const file = parts[2];
-      link.classList.add('learn-more-link');
-      link.dataset.section = section;
-      link.dataset.file = file;
-      link.setAttribute('href', `details/${section}/${getLangFolder()}/${file}`);
-    }
-  });
-});
-</script>

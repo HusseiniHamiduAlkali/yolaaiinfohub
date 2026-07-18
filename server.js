@@ -332,8 +332,201 @@ app.post('/api/gemini', async (req, res) => {
   }
 });
 
+// ============ UNIFIED CHAT ENDPOINT ============
+// Routes to different AI providers based on model selection
+// Supports: OpenAI (GPT-5.5, GPT-5-mini) and Google (Gemini 2.5 Flash, Gemini 2.5 Pro)
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { model, messages } = req.body;
 
-const RESET_URL_BASE = isProduction 
+    if (!model || !messages) {
+      return res.status(400).json({ error: 'Missing model or messages' });
+    }
+
+    // Route based on model provider
+    if (model.startsWith('openai/')) {
+      return handleOpenAIChat(req, res, model, messages);
+    } else if (model.startsWith('google/')) {
+      return handleGeminiChat(req, res, model, messages);
+    } else {
+      return res.status(400).json({ error: `Unknown model provider: ${model}` });
+    }
+  } catch (error) {
+    console.error('Chat API error:', error);
+    res.status(500).json({ error: error.message || 'Error processing chat request' });
+  }
+});
+
+// ============ OPENAI HANDLER ============
+async function handleOpenAIChat(req, res, model, messages) {
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+  if (!OPENAI_API_KEY) {
+    console.error('OPENAI_API_KEY not set in environment');
+    return res.status(500).json({ error: 'OpenAI API key not configured' });
+  }
+
+  try {
+    // Map model names to actual OpenAI models
+    const modelMap = {
+      'openai/gpt-5.5': 'gpt-4o',
+      'openai/gpt-5-mini': 'gpt-4o-mini'
+    };
+
+    const actualModel = modelMap[model] || 'gpt-4o';
+
+    console.log(`Calling OpenAI API with model: ${actualModel} (requested: ${model})`);
+
+    // Convert message format from chat.html to OpenAI format
+    const openaiMessages = messages.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.parts
+        ? msg.parts
+            .map(part => {
+              if (part.type === 'text') {
+                return part.text;
+              } else if (part.type === 'file') {
+                return `[File: ${part.filename || 'attachment'}]`;
+              }
+              return '';
+            })
+            .join('\n')
+        : ''
+    }));
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: actualModel,
+        messages: openaiMessages,
+        temperature: 0.7,
+        max_tokens: 2000,
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      return res.status(response.status).json({
+        error: errorData.error?.message || 'OpenAI API error',
+        details: errorData
+      });
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || '';
+
+    // Return in format compatible with frontend streaming expectations
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.write(content);
+    res.end();
+  } catch (error) {
+    console.error('OpenAI handler error:', error);
+    res.status(500).json({ error: error.message || 'Error processing OpenAI request' });
+  }
+}
+
+// ============ GEMINI HANDLER ============
+async function handleGeminiChat(req, res, model, messages) {
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+  if (!GEMINI_API_KEY) {
+    console.error('GEMINI_API_KEY not set in environment');
+    return res.status(500).json({ error: 'Gemini API key not configured' });
+  }
+
+  try {
+    // Map model names
+    const modelMap = {
+      'google/gemini-2.5-flash': 'gemini-2.5-flash',
+      'google/gemini-2.5-pro': 'gemini-2.5-pro'
+    };
+
+    let actualModel = modelMap[model] || 'gemini-2.5-flash';
+
+    console.log(`Calling Gemini API with model: ${actualModel} (requested: ${model})`);
+
+    // Convert message format to Gemini format
+    const geminiMessages = messages.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: msg.parts
+        ? msg.parts.map(part => {
+            if (part.type === 'text') {
+              return { text: part.text };
+            } else if (part.type === 'file') {
+              return { text: `[File: ${part.filename || 'attachment'}]` };
+            }
+            return { text: '' };
+          })
+        : [{ text: '' }]
+    }));
+
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${actualModel}:generateContent?key=${GEMINI_API_KEY}`;
+
+    const response = await fetch(geminiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: geminiMessages,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 2000
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      console.error('Gemini API error:', data);
+      
+      // Fallback for older model versions
+      if (data.error?.code === 404 && actualModel === 'gemini-2.5-flash') {
+        console.log('Falling back to gemini-1.5-flash');
+        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        const fallbackResponse = await fetch(fallbackUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: geminiMessages,
+            generationConfig: { temperature: 0.7, maxOutputTokens: 2000 }
+          })
+        });
+
+        if (fallbackResponse.ok) {
+          const content = await fallbackResponse.text();
+          res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+          res.write(content);
+          res.end();
+          return;
+        }
+      }
+
+      return res.status(response.status).json({
+        error: data.error?.message || 'Gemini API error',
+        details: data
+      });
+    }
+
+    const data = await response.json();
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Return as streaming text
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.write(content);
+    res.end();
+  } catch (error) {
+    console.error('Gemini handler error:', error);
+    res.status(500).json({ error: error.message || 'Error processing Gemini request' });
+  }
+}
+
   ? 'https://yolaaiinfohub.netlify.app/pages/reset-password.html'
   : 'http://localhost:5500/pages/reset-password.html';
 
