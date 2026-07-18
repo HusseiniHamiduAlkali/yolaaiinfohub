@@ -76,6 +76,17 @@ function initChatBackdrop() {
   }
 }
 
+function ensureChatIframeLoaded() {
+  const iframe = document.getElementById('chat-iframe');
+  if (!iframe) return;
+  if (!iframe.src || iframe.src.trim() === '') {
+    const src = iframe.dataset.src || iframe.getAttribute('data-src');
+    if (src) {
+      iframe.src = src;
+    }
+  }
+}
+
 function initFloatingChatButton() {
   let floatingBtn = document.querySelector('.floating-chat-btn');
   
@@ -110,6 +121,7 @@ function toggleChatContainer(e) {
     const isActive = chatContainer.classList.contains('active');
     
     if (!isActive) {
+      ensureChatIframeLoaded();
       chatContainer.classList.add('active');
       if (backdrop) backdrop.classList.add('active');
       floatingBtn.classList.add('active');

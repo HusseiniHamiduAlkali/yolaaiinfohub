@@ -140,10 +140,7 @@ window.updateAuthUI = function(user) {
       console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
     }
     
-    // Load chat histories from backend for this logged-in user
-    if (window.loadAllChatHistoriesFromBackend) {
-      window.loadAllChatHistoriesFromBackend().catch(e => console.warn('Error loading chat histories:', e));
-    }
+    // No section-based chat history preload is needed for the standalone chat window.
   } else {
     // User is logged out
     if (authButtons) authButtons.style.display = 'flex';

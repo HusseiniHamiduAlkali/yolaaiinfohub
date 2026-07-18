@@ -47,13 +47,7 @@ window.renderSection = function() {
     return fetch('templates/edu.html').then(r => r.text()).then(html => {
         document.getElementById('main-content').innerHTML = html;
         
-        // Load chat history AFTER template is inserted
-        setTimeout(() => { 
-          window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('edu', 'eduinfo-chat-messages');
-          // Ensure auto-scroll observer is attached for this section
-          window.observeChatContainers && window.observeChatContainers();
-        }, 50);
-        
+        // Section-specific chat history is no longer preloaded here.
         // Wire model toggle after template is inserted
         const mt = document.getElementById('model-toggle');
         if (mt) mt.onchange = function() { window.toggleGeminiModel('edu', this.checked); };

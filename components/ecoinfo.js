@@ -586,7 +586,7 @@ window.renderSection = function() {
       };
 
       initializeAetherflow();
-      window.initAndRestoreSectionHistory && window.initAndRestoreSectionHistory('eco', 'chat-messages');
+      // Section-specific chat history is no longer preloaded here.
       window.observeChatContainers && window.observeChatContainers();
     }, 100);
     
