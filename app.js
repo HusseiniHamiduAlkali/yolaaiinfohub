@@ -25,7 +25,7 @@ function ensureGlobalStyles() {
   if (!document.getElementById('global-css')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'styles/global.css';
+    link.href = '/styles/global.css';
     link.id = 'global-css';
     document.head.appendChild(link);
   }

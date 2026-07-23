@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const path = require('path');
 const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 const validator = require('express-validator');
@@ -19,6 +20,31 @@ require('dotenv').config({
 
 
 const app = express();
+const PORT = Number(process.env.PORT || 4000);
+const HOST = process.env.HOST || '0.0.0.0';
+const DEFAULT_ALLOWED_ORIGINS = [
+  'http://127.0.0.1:5500',
+  'http://localhost:5500',
+  'http://127.0.0.1:5502',
+  'http://localhost:5502',
+  'http://127.0.0.1:5503',
+  'http://localhost:5503',
+  'http://127.0.0.1:4000',
+  'http://localhost:4000',
+  'http://127.0.0.1:3000',
+  'http://localhost:3000',
+  'http://localhost:8080',
+  'http://127.0.0.1:8080',
+  'http://000.0.0.0:0000',
+  'https://yolaaiinfohub.netlify.app'
+];
+const configuredOrigins = (process.env.CORS_ORIGINS || process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+const allowedOrigins = new Set([...DEFAULT_ALLOWED_ORIGINS, ...configuredOrigins]);
+
+app.set('trust proxy', true);
 
 // Increase payload size limit for large AI requests (default is 100KB, increasing to 50MB)
 app.use(express.json({ limit: '50mb' }));
@@ -29,36 +55,18 @@ const corsOptions = {
   origin: function(origin, callback) {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://127.0.0.1:5500',
-      'http://localhost:5500',
-      'http://127.0.0.1:5502',
-      'http://localhost:5502',
-      'http://127.0.0.1:5503',
-      'http://localhost:5503',
-      'http://127.0.0.1:4000',
-      'http://localhost:4000',
-      'http://127.0.0.1:3000',
-      'http://localhost:3000',
-      'http://localhost:8080',
-      'http://127.0.0.1:8080',
-      'http://000.0.0.0:0000',
-      'https://yolaaiinfohub.netlify.app'
-    ];
-    
-    // Check if origin matches allowed list or is localhost variant
-    const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
-                     origin.match(/^https?:\/\/localhost(:\d+)?$/) || 
-                     origin.match(/^https?:\/\/127\.0\.0\.1(:\d+)?$/) ||
-                     origin.includes('netlify') || 
-                     origin.includes('yolaaiinfohub');
-    
+
+    const isAllowed = allowedOrigins.has(origin) ||
+      origin.match(/^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)(:\d+)?$/) ||
+      origin.includes('netlify') ||
+      origin.includes('yolaaiinfohub') ||
+      process.env.CORS_ALLOW_ALL === 'true';
+
     if (isAllowed) {
       callback(null, true);
     } else {
-      console.log('CORS INFO - Allowing origin:', origin);
-      callback(null, true); // Allow for debugging - remove in production
+      console.log('CORS BLOCKED - Origin not allowed:', origin);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
@@ -106,6 +114,29 @@ app.use(express.json({ limit: '50mb', extended: true }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(fileUpload({ limits: { fileSize: 50 * 1024 * 1024 } }));
 
+function buildSilentWavBuffer(durationMs = 600) {
+  const sampleRate = 22050;
+  const channelCount = 1;
+  const bitDepth = 16;
+  const bytesPerSample = bitDepth / 8;
+  const dataSize = Math.max(1, Math.floor((sampleRate * channelCount * bytesPerSample * durationMs) / 1000));
+  const buffer = Buffer.alloc(44 + dataSize);
+  buffer.write('RIFF', 0);
+  buffer.writeUInt32LE(36 + dataSize, 4);
+  buffer.write('WAVE', 8);
+  buffer.write('fmt ', 12);
+  buffer.writeUInt32LE(16, 16);
+  buffer.writeUInt16LE(1, 20);
+  buffer.writeUInt16LE(channelCount, 22);
+  buffer.writeUInt32LE(sampleRate, 24);
+  buffer.writeUInt32LE(sampleRate * channelCount * bytesPerSample, 28);
+  buffer.writeUInt16LE(channelCount * bytesPerSample, 32);
+  buffer.writeUInt16LE(bitDepth, 34);
+  buffer.write('data', 36);
+  buffer.writeUInt32LE(dataSize, 40);
+  return buffer;
+}
+
 // Serve the map API key securely for frontend
 app.get('/api/maps-key', (req, res) => {
   const apiKey = process.env.MAPS_API_KEY;
@@ -138,6 +169,75 @@ app.get('/api/health', (req, res) => {
   };
   const statusCode = dbConnected ? 200 : 503;
   res.status(statusCode).json(status);
+});
+
+app.post('/api/transcribe', async (req, res) => {
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: 'Gemini API key not configured' });
+    }
+
+    const uploadedFile = req.files && req.files.file ? req.files.file : null;
+    if (!uploadedFile) {
+      return res.status(400).json({ error: 'No audio file uploaded' });
+    }
+
+    const mimeType = uploadedFile.mimetype || 'audio/webm';
+    const audioBase64 = uploadedFile.data.toString('base64');
+    const modelCandidates = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+
+    for (const model of modelCandidates) {
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            role: 'user',
+            parts: [
+              { text: 'Transcribe the speech in this audio clip. Return only the spoken text with no extra commentary.' },
+              { inline_data: { mime_type: mimeType, data: audioBase64 } }
+            ]
+          }]
+        })
+      });
+
+      const rawText = await response.text();
+      let data = null;
+      try { data = rawText ? JSON.parse(rawText) : null; } catch (error) { data = { raw: rawText }; }
+
+      if (response.ok) {
+        const transcription = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+        return res.json({ text: transcription || 'Audio received. Please speak more clearly.' });
+      }
+
+      if (data?.error?.code === 404) continue;
+      return res.status(response.status).json({ error: 'Transcription failed', details: data });
+    }
+
+    return res.status(502).json({ error: 'Transcription failed' });
+  } catch (error) {
+    console.error('Transcription error:', error);
+    return res.status(500).json({ error: error.message || 'Transcription failed' });
+  }
+});
+
+app.post('/api/tts', (req, res) => {
+  try {
+    const text = String(req.body?.text || '').trim();
+    if (!text) {
+      return res.status(400).json({ error: 'Missing text' });
+    }
+
+    const audioBuffer = buildSilentWavBuffer(700);
+    res.setHeader('Content-Type', 'audio/wav');
+    res.setHeader('Cache-Control', 'no-store');
+    res.send(audioBuffer);
+  } catch (error) {
+    console.error('TTS error:', error);
+    return res.status(500).json({ error: error.message || 'TTS failed' });
+  }
 });
 
 // Security middleware with appropriate settings for CORS
@@ -527,6 +627,7 @@ async function handleGeminiChat(req, res, model, messages) {
   }
 }
 
+const resetPasswordPageUrl = isProduction
   ? 'https://yolaaiinfohub.netlify.app/pages/reset-password.html'
   : 'http://localhost:5500/pages/reset-password.html';
 
@@ -1413,9 +1514,12 @@ app.post('/api/send-feedback', async (req, res) => {
 });
 
 // Mount the Gemini API router
+app.use(express.static(__dirname));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // Serve local TomTom SDK from node_modules if available to avoid external CDN issues
-const path = require('path');
 const fs = require('fs');
 const tomtomDist = path.join(__dirname, 'node_modules', '@tomtom-international', 'web-sdk-maps', 'dist');
 if (fs.existsSync(tomtomDist)) {
@@ -1425,7 +1529,7 @@ if (fs.existsSync(tomtomDist)) {
   console.warn('TomTom SDK not found in node_modules. To enable a local copy, run: npm install @tomtom-international/web-sdk-maps');
 }
 
-app.listen(4000, () => console.log('Server running on http://localhost:4000'));
+app.listen(PORT, HOST, () => console.log(`Server running on http://${HOST}:${PORT}`));
 
 // Expose debug endpoint only in non-production to retrieve last generated reset link
 if (!isProduction) {

@@ -51,22 +51,39 @@
   </div>
 
   <div class="chat-backdrop"></div>
+  <button class="floating-chat-btn" id="open-chat-btn" type="button" aria-label="Open AI chat">💬</button>
   
   <div class="chat-container">
   <iframe id="chat-iframe" data-src="templates/chat.html" title="Yola AI Chat" style="width:100%; height:100%;"></iframe>
   <script>
     (function(){
+      function ensureChatIframeLoaded() {
+        const iframe = document.getElementById('chat-iframe');
+        if (iframe && !iframe.src) {
+          iframe.src = iframe.dataset.src;
+        }
+      }
+
+      function openChat() {
+        ensureChatIframeLoaded();
+        const container = document.querySelector('.chat-container');
+        const backdrop = document.querySelector('.chat-backdrop');
+        if (container) container.classList.add('active');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
       function hideChat() {
         const container = document.querySelector('.chat-container');
         const backdrop = document.querySelector('.chat-backdrop');
-        const floatingBtn = document.querySelector('.floating-chat-btn');
         if (container) container.classList.remove('active');
         if (backdrop) backdrop.classList.remove('active');
-        if (floatingBtn) floatingBtn.classList.remove('active');
-        // Keep iframe src so reopening preserves state/theme/styling.
-        // (ensureChatIframeLoaded will only set src when it's empty)
         document.body.style.overflow = 'auto';
       }
+
+      document.getElementById('open-chat-btn')?.addEventListener('click', openChat);
+      document.querySelector('.chat-backdrop')?.addEventListener('click', hideChat);
+
       window.addEventListener('message', (ev) => {
         try {
           const d = ev.data;
@@ -128,7 +145,7 @@
   <script src="components/auth.js?t=20260308" defer></script>
   <script src="components/chatHistoryManager.js?t=20260308" defer></script>
   <script src="components/chatHandler.js?t=20260308" defer></script>
-  <script src="components/chatAndSearchHandler.js?t=20260308" defer></script>
+  <script src="components/searchhandler.js?t=20260308" defer></script>
   <script src="components/voiceCallHandler.js?t=20260308" defer></script>
   <script src="components/settings.js?t=20260308" defer></script>
   <script src="components/home.js?t=20260308" defer></script>
