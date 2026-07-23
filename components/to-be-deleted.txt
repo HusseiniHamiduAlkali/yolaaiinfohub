@@ -1,0 +1,3798 @@
+
+
+/*
+// stopServiResponse is now handled by setupStopButton in commonAI.js
+
+// Common helper for Gemini API call - delegated to centralized commonAI
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'servi');
+}
+*/
+
+
+/*
+window.sendServiMessage = async function(faqText = '') {
+  const input = document.getElementById('servi-chat-input');
+  const chat = document.getElementById('servi-chat-messages');
+  const preview = document.getElementById('servi-chat-preview');
+  const sendBtn = document.querySelector('#servi-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#servi-chat-input + .send-button-group .stop-button');
+
+  // Always extract attachment from preview before clearing
+  let msg = faqText || input.value.trim();
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
+  let mediaData = null;
+  if (preview) {
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe elements
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
+  }
+
+  const attachments = window.getMessageAttachmentsFromPreview('servi', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+  if (!msg && !attach) return;
+
+  // Setup stop button with commonAI utility (creates AbortController) - with fallback if not loaded
+  if (sendBtn && typeof window.setupStopButton === 'function') {
+    window.setupStopButton({ sendBtn, section: 'servi' });
+  }
+
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
+  msgGroup.innerHTML = `
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Servi AI typing...</span></div>
+  `;
+  chat.appendChild(msgGroup);
+  window.clearPreviewAndRemoveBtn(preview);
+  if (!faqText) input.value = '';
+
+  let finalAnswer = "";
+  try {
+    const signal = window.serviAbortController ? window.serviAbortController.signal : null;
+
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
+
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+    // Define all known HTML files in details/Servi
+    const htmlFileNames = [
+      'alumintech-solutions.html', 'atm-aluminium.html', 'bitbyte-technologies.html', 'cac.html', 
+      'evans-carpentry.html', 'homeserve-plumbing.html', 'ict-republic.html', 'jabbama-electronics.html', 
+      'modern-electric.html', 'nde.html', 'nipost.html', 'novelty-glass-aluminium.html', 
+      'pc-klinic.html', 'pure-life.html', 'quality-plumbing.html', 'redcross.html', 
+      'rhs-woodworks.html', 'rm-photography.html', 'sj-graphics.html', 'virtual-assistance-freelancers.html', 
+      'worksmanship-furniture.html', 'ymca.html', 'yola-plumbers.html', 'yola-power-services.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Servi/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+
+    // Ensure in-memory history exists for servi
+    window.initChatHistory && window.initChatHistory('servi', 10);
+    // Reserve slot for user message (AI will be added after response)
+    window.addToChatHistory && window.addToChatHistory('servi', 'user', msg);
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('servi', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    
+    // Combine all local data
+    const allLocalDataWithHistory = allLocalData + historyContext;
+
+    finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'servi', attachments);
+    // Add AI response to in-memory history
+    window.addToChatHistory && window.addToChatHistory('servi', 'assistant', finalAnswer);
+  } catch (e) {
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+      finalAnswer = 'Request cancelled.';
+    } else if (typeof window.friendlyAIErrorMessage === 'function') {
+      finalAnswer = window.friendlyAIErrorMessage(e);
+    } else {
+      console.error("Error fetching local data or Gemini API call:", e);
+      finalAnswer = "The AI is currently unavailable. Please try again later.";
+    }
+  }
+
+  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+  if (typeof window.addActionsToMsgGroup === 'function') {
+    window.addActionsToMsgGroup(msgGroup, 'servi', 'servi-chat-messages');
+  }
+  chat.scrollTop = chat.scrollHeight;
+
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+  }
+  window.serviAbortController = null;
+};
+*/
+
+
+/*
+// Edit this prompt to instruct the AI on how to answer user messages for ServiInfo
+window.SERVI_AI_PROMPT = window.SERVI_AI_PROMPT || `You are an AI service directory advisor for Yola, Adamawa State, Nigeria.
+Help users find professional services, service providers, and skilled workers.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze images of service work or service-related documents
+  - Identify types of services shown (plumbing, electrical, construction, etc.)
+  - Recommend appropriate service providers for similar work
+  - Assess quality of work from photos
+- **Audio Analysis**: Listen to service inquiries and requests
+  - Transcribe service requirements from voice messages
+  - Recommend appropriate service providers
+- **Document Analysis**: Review service quotes, proposals, invoices
+  - Compare service quotes and pricing
+  - Verify legitimacy of service providers
+
+### Service Categories:
+- Plumbing, electrical, and maintenance services
+- Construction and renovation services
+- Cleaning and sanitation services
+- Transportation and logistics services
+- IT and technical services
+- Beauty, hair, and personal care services
+- Automotive and mechanic services
+- Home and furniture services
+
+### Response Guidelines:
+- Provide comprehensive service provider information
+- For images: Identify service type and recommend qualified providers
+- For audio: Transcribe service needs and recommend providers
+- Include ratings, contact info, and pricing estimates
+- If info unavailable: "Sorry, I don't have that specific information. Please contact a local service directory for further help."
+
+### Section Referrals:
+- Health → MediInfo | Education → EduInfo | Community → CommunityInfo | Navigation → NaviInfo | Agriculture → AgroInfo`;
+
+window.serviAbortController = window.serviAbortController || null;
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+window.sendAgroMessage = async function(faqText = '') {
+  const input = document.getElementById('agro-chat-input');
+  const chat = document.getElementById('agro-chat-messages');
+  const preview = document.getElementById('agro-chat-preview');
+  const sendBtn = document.querySelector('#agro-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#agro-chat-input + .send-button-group .stop-button');
+
+  // Always extract attachment from preview before clearing
+  let msg = faqText || input.value.trim();
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
+  let mediaData = null;
+  if (preview) {
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe previews
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
+  }
+
+  const attachments = window.getMessageAttachmentsFromPreview('agro', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+
+  if (!msg && !attach) return;
+
+  // Setup stop button with commonAI utility and capture controller (with fallback if not loaded)
+  let controller = null;
+  if (typeof window.setupStopButton === 'function') {
+    controller = window.setupStopButton({ sendBtn, section: 'agro' });
+  }
+
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
+  msgGroup.innerHTML = `
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Agro AI typing...</span></div>
+  `;
+  chat.appendChild(msgGroup);
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
+  if (!faqText) input.value = '';
+
+  // Load existing chat history using commonAI.js
+  window.initChatHistory && window.initChatHistory('agro', 10);
+  let chatHistory = window.getChatHistory ? window.getChatHistory('agro') : [];
+
+
+  let finalAnswer = "";
+  try {
+    // Fetch main local data using controller signal when available
+    const signal = controller ? controller.signal : (window.agroAbortController ? window.agroAbortController.signal : null);
+
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
+
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+    // Define all known HTML files in details/Agro
+    const htmlFileNames = [
+      'acresal.html', 'afan.html', 'chikun-chicks.html', 'climate-smart-seed.html', 
+      'coldhubs.html', 'comfort-agro-inputs.html', 'critters-vet.html', 'divine-pet-vet.html', 
+      'easy-life.html', 'every-home-garden.html', 'fintiri-inputs-distribution.html', 'fison.html', 
+      'golden-inputs.html', 'hoofline-vet.html', 'hyfan.html', 'iita.html', 
+      'jambutu-fish-market.html', 'jambutu-vegetables-market.html', 'kandimi-inputs.html', 'la-crest.html', 
+      'mia-agro-inputs.html', 'nazareth-inputs.html', 'ngurore-market.html', 'peasant.html', 
+      'ricogado.html', 'rifan.html', 'rmrdc.html', 'sare-kosam.html', 
+      'shamad.html', 'smallholder.html', 'swofon.html', 'trade-fair.html', 
+      'wakili-farms.html', 'yusash-inputs.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Agro/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+
+    // Include chat history in the context
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('agro', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+
+    // Combine all local data
+    const allLocalDataWithHistory = allLocalData + historyContext;
+    try {
+      finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'agro', attachments);
+      // Store in chat history (keep last 10 messages)
+      window.addToChatHistory && window.addToChatHistory('agro', 'user', msg);
+      window.addToChatHistory && window.addToChatHistory('agro', 'assistant', finalAnswer);
+    } catch (e) {
+      if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+        finalAnswer = "Request cancelled.";
+      } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        finalAnswer = window.friendlyAIErrorMessage(e);
+      } else {
+        console.error("Error in Gemini API call:", e);
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
+      }
+    }
+  } catch (e) {
+    console.error("Error fetching local data or Gemini API call:", e);
+    finalAnswer = "Sorry, I could not access the local information or the AI at this time. Please check your connection!";
+  }
+
+  msgGroup.querySelector('.ai-msg-text').innerHTML = `
+    <div class="ai-response">
+      ${finalAnswer.replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>').replace(/\n/g, '<br>')}
+    </div>
+  `;
+  if (typeof window.addActionsToMsgGroup === 'function') {
+    window.addActionsToMsgGroup(msgGroup, 'agro', 'agro-chat-messages');
+  }
+  chat.scrollTop = chat.scrollHeight;
+
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+  }
+  window.agroAbortController = null;
+};
+
+
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'agro');
+}
+*/
+
+
+/*
+// Gemini model preference
+window.useGemini25 = window.useGemini25 || true;
+
+// Initialize model preference from storage
+if (typeof window.useGemini25 === 'undefined') {
+    const storedPreference = localStorage.getItem('gemini_model_preference');
+    window.useGemini25 = storedPreference === '1.5' ? false : true; // Default to 2.5
+}
+
+// Edit this prompt to instruct the AI on how to answer user messages for AgroInfo
+window.AGRO_AI_PROMPT = window.AGRO_AI_PROMPT || `You are an expert AI agricultural advisor for Yola, Adamawa State, Nigeria.
+Provide specialized guidance on farming, crop production, livestock, agro-business, and soil management.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze crop images, soil conditions, pest infestations, plant diseases
+  - Identify crop diseases from photos
+  - Assess soil quality from visual inspection
+  - Detect pest damage and recommend treatments
+  - Analyze harvested crops for quality assessment
+- **Audio Analysis**: Listen to farmers' voice recordings about problems/questions
+  - Transcribe farming concerns from audio messages
+  - Provide voice-suitable agricultural advice
+- **Document Analysis**: Review agricultural documents, farming plans, produce specifications
+  - Analyze market data and commodity prices
+  - Review farming schedules and crop rotation plans
+  - Assess agricultural business documents
+
+### Agricultural Expertise Areas:
+- Crop diseases and pest management
+- Soil testing and fertilizer recommendations
+- Crop varieties suited for Adamawa climate
+- Irrigation and water management
+- Sustainable farming practices
+- Post-harvest handling and storage
+- Agricultural equipment recommendations
+- Market information and pricing
+- Livestock health and management
+
+### Response Guidelines:
+- Provide practical, actionable agricultural advice
+- For images: Identify crops/issues and provide specific treatment/management recommendations
+- For audio: Transcribe concerns and provide detailed farming guidance
+- Include local agricultural suppliers and organizations in Yola
+- If info unavailable: "Sorry, I don't have that specific information. Please contact a local agricultural authority for further help."
+
+### Section Referrals:
+- Education → EduInfo | Health → MediInfo | Navigation → NaviInfo | Community → CommunityInfo | Jobs → JobsConnect`;
+
+window.agroAbortController = window.agroAbortController || null;
+
+// stopAgroResponse is now handled by setupStopButton in commonAI.js
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// stopCommunityResponse is now handled by setupStopButton in commonAI.js
+
+window.sendCommunityMessage = async function(faqText = '') {
+  let input = document.getElementById('chat-input') || document.querySelector('.chat-input-area input[type="text"]');
+  if (!input) {
+    console.warn('Community input element not found; aborting sendCommunityMessage');
+    return;
+  }
+  const chat = document.getElementById('chat-messages');
+  const preview = document.getElementById('chat-preview');
+  const sendBtn = document.querySelector('#chat-input + .send-button-group .send-button') || document.querySelector('.send-button');
+
+  let msg = faqText || input.value.trim();
+  let attach = '';
+  const previewContainer = preview.querySelector('.preview-container');
+  if (previewContainer) {
+    const clone = previewContainer.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
+  if (!msg && !attach) return;
+
+  // Extract media data if present in preview
+  let mediaData = null;
+  const previewContainer2 = preview.querySelector('.preview-container');
+
+  if (previewContainer2) {
+    const fileData = previewContainer2.getAttribute('data-file-data');
+    const fileMime = previewContainer2.getAttribute('data-file-mime');
+
+    if (fileData && fileMime) {
+      mediaData = {
+        dataUrl: fileData,
+        mimeType: fileMime,
+        fileName: previewContainer2.getAttribute('data-file-name')
+      };
+    } else {
+      const previewImg = previewContainer2.querySelector('img');
+      const previewAudio = previewContainer2.querySelector('audio');
+      const previewVideo = previewContainer2.querySelector('video');
+      const previewIframe = previewContainer2.querySelector('iframe');
+      if (previewImg && previewImg.src) {
+        mediaData = previewImg.src;
+        msg = msg + "\nPlease analyze this image and provide relevant community information or suggestions.";
+      } else if (previewAudio && previewAudio.src) {
+        mediaData = previewAudio.src;
+      } else if (previewVideo && previewVideo.src) {
+        mediaData = previewVideo.src;
+      } else if (previewIframe && previewIframe.src) {
+        mediaData = previewIframe.src;
+      }
+    }
+  }
+
+  const attachments = window.getMessageAttachmentsFromPreview('community', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+
+  let controller = null;
+  if (typeof window.setupStopButton === 'function') {
+    controller = window.setupStopButton({ sendBtn, section: 'community' });
+  }
+
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
+  msgGroup.innerHTML = `
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Community AI typing...</span></div>
+  `;
+  chat.appendChild(msgGroup);
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
+  if (!faqText) input.value = '';
+
+  let finalAnswer = "";
+  try {
+    const signal = controller ? controller.signal : (window.communityAbortController ? window.communityAbortController.signal : null);
+
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
+
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+    // Define all known HTML files in details/Community
+    const htmlFileNames = [
+      'abcyola.html', 'adamawa-united.html', 'admin-services.html', 'amc-hall.html', 'atv.html', 
+      'aun-community.html', 'aun-graduation-ceremony.html', 'aun-graduation.html', 'aun-hall.html', 
+      'aun-townhall.html', 'bako-youth.html', 'banquet-hall.html', 'blackout.html', 'breastfeeding-week.html', 
+      'childrens-day.html', 'cleaning-day.html', 'conference-center.html', 'crystal-palace.html', 
+      'digital-hall.html', 'digital-literacy.html', 'edu-volunteer.html', 'education-day.html', 
+      'elderly.html', 'env-volunteer.html', 'fastnet.html', 'fce-hall.html', 
+      'female-education.html', 'festival.html', 'fintiri-wallet.html', 'flood.html', 
+      'fombinafm.html', 'gotelfm.html', 'governors-cup.html', 'health-volunteer.html', 
+      'independence-day.html', 'lamido-cinema.html', 'law-students.html', 'lcng-station.html', 
+      'lgi-workshop.html', 'malaria-day.html', 'market-rebuild.html', 'market.html', 
+      'nasfm.html', 'ntayola.html', 'pulaakufm.html', 'redcross-society.html', 
+      'redcross.html', 'renewal-foundation.html', 'ribadu-square.html', 'tvgotel.html', 
+      'undp-training.html', 'universal-youth.html', 'usakufm.html', 'wards-proximity.html', 
+      'water-scheme.html', 'women.html', 'womens-day.html', 'workshop.html', 
+      'yawef.html', 'yawef2.html', 'yedc-meters.html', 'yola-renewal-foundation.html', 
+      'yolde-pate-youth.html', 'youth-skills.html', 'youth.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Community/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+
+    // Ensure in-memory history exists for community
+    window.initChatHistory && window.initChatHistory('community', 10);
+    // Reserve slot for user message (AI will be added after response)
+    window.addToChatHistory && window.addToChatHistory('community', 'user', msg);
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('community', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+
+    // Combine all local data
+    const allLocalDataWithHistory = allLocalData + historyContext;
+    
+    try {
+      finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'community', attachments);
+      // Add AI response to in-memory history
+      window.addToChatHistory && window.addToChatHistory('community', 'assistant', finalAnswer);
+    } catch (e) {
+      if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+        finalAnswer = "Request cancelled.";
+      } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        finalAnswer = window.friendlyAIErrorMessage(e);
+      } else {
+        console.error("Error in Gemini API call:", e);
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
+      }
+    }
+  } catch (e) {
+    console.error("Error fetching local data or Gemini API call:", e);
+    finalAnswer = "Sorry, I could not access the local information or the AI at this time. Please check your connection!";
+    window.addActionsToMsgGroup(msgGroup, 'community', 'chat-messages');
+  }
+
+  // Update the AI message display with the actual response
+  msgGroup.querySelector('.ai-msg-text').innerHTML = window.formatAIResponse(finalAnswer);
+
+  // Add speech button if available
+  if (typeof window.addSpeechButton === 'function') {
+    const speechBtn = window.addSpeechButton(finalAnswer, 'community');
+    if (speechBtn) {
+      msgGroup.querySelector('.ai-msg-text').appendChild(speechBtn);
+    }
+  }
+
+  chat.scrollTop = chat.scrollHeight;
+
+  const currentBtn = document.querySelector('#chat-input + .send-button-group .send-button') || document.querySelector('.send-button');
+  if (currentBtn) {
+    const restoredBtn = currentBtn.cloneNode(true);
+    restoredBtn.type = 'submit';
+    currentBtn.parentNode.replaceChild(restoredBtn, currentBtn);
+
+    restoredBtn.classList.remove('sending');
+    restoredBtn.textContent = 'Send';
+    restoredBtn.style.backgroundColor = '';
+
+    restoredBtn.addEventListener('click', (e) => { if (e && typeof e.preventDefault === 'function') e.preventDefault(); window.sendCommunityMessage(); });
+  }
+};
+
+
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'community');
+}
+*/
+
+/*
+// Edit this prompt to instruct the AI on how to answer user messages for CommunityInfo
+window.COMMUNITY_AI_PROMPT = window.COMMUNITY_AI_PROMPT || `You are an AI community coordinator for Yola, Adamawa State, Nigeria.
+Help users find community events, organizations, services, and social information.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze community-related images
+  - Identify locations and community facilities in photos
+  - Recognize community events and gatherings
+  - Analyze flyers and community announcements
+- **Audio Analysis**: Listen to community inquiries and concerns
+  - Transcribe community event information
+  - Help with community communication needs
+- **Document Analysis**: Review community documents and announcements
+  - Summarize community guidelines and events
+  - Extract event details and community information
+
+### Community Information Areas:
+- Community events and gatherings
+- Cultural and social organizations
+- Community development projects
+- Religious institutions and services
+- Sports and recreation facilities
+- Market information and trade associations
+- Community safety and emergency services
+- Social services and support organizations
+- Volunteer and community engagement opportunities
+
+### Response Guidelines:
+- Provide helpful information about community events and organizations
+- For images: Identify community locations and activities, provide context
+- For audio: Transcribe community concerns and provide relevant information
+- Include relevant Yola community organizations and contacts
+- Emphasize community participation and engagement
+- If info unavailable: "Sorry, I don't have that specific information. Please contact local community leaders for further help."
+
+### Section Referrals:
+- Health → MediInfo | Education → EduInfo | Navigation → NaviInfo | Agriculture → AgroInfo | Jobs → JobsConnect`;
+
+window.communityAbortController = window.communityAbortController || null;
+// Robust navbar loader
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// Add sendEcoMessage function
+window.sendEcoMessage = async function(faqText = '') {
+  const input = document.getElementById('eco-chat-input');
+  const chat = document.getElementById('chat-messages');
+  const preview = document.getElementById('eco-chat-preview');
+  const sendBtn = document.querySelector('#eco-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#eco-chat-input + .send-button-group .stop-button');
+
+  // Get message from input or FAQ
+  // Always extract attachment from preview before clearing
+  let msg = faqText || input.value.trim();
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
+  let mediaData = null;
+  if (preview) {
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe elements
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
+  }
+
+  const attachments = window.getMessageAttachmentsFromPreview('eco', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+
+  if (!msg && !attach) return;
+
+  // Ensure in-memory history exists for eco
+  window.initChatHistory && window.initChatHistory('eco', 10);
+  // Reserve slot for user message (AI will be added after response)
+  window.addToChatHistory && window.addToChatHistory('eco', 'user', msg);
+
+  // Add context to message if image is present
+  if (mediaData && mediaData.startsWith) {
+    // Legacy string format (data URL)
+    msg = (msg || '') + "\nPlease analyze this image and provide relevant environmental information or recommendations.";
+  } else if (mediaData && typeof mediaData === 'object' && mediaData.dataUrl) {
+    // New object format
+    if (mediaData.mimeType.startsWith('image/')) {
+      msg = (msg || '') + "\nPlease analyze this image and provide relevant environmental information or recommendations.";
+    }
+  }
+
+  // Handle abort controller - use commonAI utility (with fallback if not loaded)
+  if (typeof window.setupStopButton === 'function') {
+    window.setupStopButton({ sendBtn, section: 'eco' });
+  }
+
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
+  msgGroup.innerHTML = `
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Eco AI typing...</span></div>
+  `;
+  chat.appendChild(msgGroup);
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
+  if (!faqText) input.value = '';
+
+  let finalAnswer = "";
+  try {
+    const signal = window.ecoAbortController ? window.ecoAbortController.signal : null;
+
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
+
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+    // Define all known HTML files in details/Eco
+    const htmlFileNames = [
+      'adamawa-waste-to-wealth.html',
+      'association-of-plastic-recyclers.html',
+      'benue-valley-reserve.html',
+      'clean-yola-project.html',
+      'community-conservation.html',
+      'eco-warriors.html',
+      'ecowaste-management.html',
+      'green-cycle-solutions.html',
+      'green-transport-network.html',
+      'metal-waste-collectors.html',
+      'naswon-yola.html',
+      'plastic-waste-collectors.html',
+      'trash-to-treasure.html',
+      'undp.html',
+      'wapan-yola.html',
+      'waste-to-wealth.html',
+      'water-conservation-project.html',
+      'yola-community-garden.html',
+      'yola-domestic-waste-collectors.html',
+      'yola-eco-park.html',
+      'yola-solar-initiative.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Eco/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const htmlContents = await Promise.all(allHtmlPromises);
+    const allLocalData = htmlContents.filter(content => content.length > 0).join('\n');
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('eco', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    
+    // Combine all local data
+    const allLocalDataWithHistory = allLocalData + historyContext;
+    
+    const contents = {
+      parts: []
+    };
+    // Extract image data if mediaData is an image
+    let imageData = null;
+    if (mediaData && typeof mediaData === 'string' && mediaData.startsWith('data:image/')) {
+      imageData = mediaData;
+    } else if (mediaData && typeof mediaData === 'object' && mediaData.dataUrl && mediaData.mimeType.startsWith('image/')) {
+      imageData = mediaData.dataUrl;
+    }
+    
+    if (imageData) {
+      contents.parts.push({
+        inlineData: {
+          mimeType: "image/jpeg",
+          data: imageData.split(',')[1]
+        }
+      });
+    }
+    const promptGuide = localStorage.getItem('eco_ai_prompt') || ECO_AI_PROMPT;
+    contents.parts.push({
+      text: `${promptGuide}\n\n--- LOCAL DATA START ---\n${allLocalDataWithHistory}\n--- LOCAL DATA END ---\n\nUser question: ${msg}`
+    });
+    const modelVersion = 'gemini-2.5-flash';
+    let body = JSON.stringify({ model: modelVersion, contents: [contents] });
+    // Determine the server URL based on the environment
+    const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? (window.API_BASE || 'http://localhost:4000') + '/api/gemini'
+      : 'https://yolainfohub.netlify.app/api/gemini';
+    
+    const fetchOptions = {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      credentials: 'include',
+      mode: 'cors',
+      body
+    };
+    if (window.ecoAbortController) {
+      fetchOptions.signal = window.ecoAbortController.signal;
+    }
+
+    let res = await fetch(serverUrl, fetchOptions);
+    let data = await res.json();
+    finalAnswer = (data.candidates && data.candidates[0] && data.candidates[0].content && 
+                  data.candidates[0].content.parts && data.candidates[0].content.parts[0] && 
+                  data.candidates[0].content.parts[0].text) 
+                  ? data.candidates[0].content.parts[0].text 
+                  : "Sorry, I couldn't get a response from the AI.";
+    // Add AI response to in-memory history
+    window.addToChatHistory && window.addToChatHistory('eco', 'assistant', finalAnswer);
+  } catch (e) {
+    console.error("Error fetching local data or Gemini API call:", e);
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) finalAnswer = 'Request cancelled.';
+    else if (typeof window.friendlyAIErrorMessage === 'function') finalAnswer = window.friendlyAIErrorMessage(e);
+    else finalAnswer = "The AI is currently unavailable. Please try again later.";
+  }
+
+  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+    if (typeof window.addActionsToMsgGroup === 'function') {
+      window.addActionsToMsgGroup(msgGroup, 'eco', 'ecoinfo-chat-messages');
+    }
+
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+  }
+  window.ecoAbortController = null;
+};
+
+// stopEcoResponse is now handled by setupStopButton in commonAI.js
+*/
+
+/*
+// Edit this prompt to instruct the AI on how to answer user messages for EcoInfo
+window.ECO_AI_PROMPT = window.ECO_AI_PROMPT || `You are an AI environmental and sustainability advisor for Yola, Adamawa State, Nigeria.
+Provide expert guidance on environmental conservation, waste management, renewable energy, and eco-friendly practices.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze environmental and ecological images
+  - Identify waste types and recycling opportunities
+  - Assess environmental conditions from photos
+  - Recognize flora/fauna and provide conservation info
+  - Evaluate product packaging for sustainability
+- **Audio Analysis**: Listen to environmental concerns and sustainability questions
+  - Transcribe environmental issues from voice messages
+  - Provide eco-friendly solutions and recommendations
+- **Document Analysis**: Review environmental reports, sustainability plans
+  - Analyze waste and carbon data
+  - Review environmental policies and compliance
+
+### Expertise Areas:
+- Waste management and recycling programs
+- Renewable energy and solar solutions
+- Water conservation and management
+- Carbon footprint calculation and reduction
+- Pollution control and air quality
+- Conservation and biodiversity protection
+- Sustainable agriculture and green practices
+- Environmental regulations and compliance
+- Climate change adaptation
+
+### Response Guidelines:
+- Provide practical environmental solutions
+- For images: Identify environmental items and provide sustainability guidance
+- For audio: Transcribe environmental concerns and suggest solutions
+- Include local environmental organizations and resources in Yola
+- Promote sustainable practices and conservation
+- If info unavailable: "Sorry, I don't have that specific information. Please contact a local environmental authority for further help."
+
+### Section Referrals:
+- Health → MediInfo | Education → EduInfo | Community → CommunityInfo | Navigation → NaviInfo | Agriculture → AgroInfo | Services → ServiInfo`;
+
+window.ecoAbortController = window.ecoAbortController || null;
+
+
+
+
+
+  // The following code should be outside the getGeminiAnswer function
+  async function handleEcoChatMessage(msg, attach, chat, preview, faqText, input, sendBtn, stopBtn, imageData) {
+    const msgGroup = document.createElement('div');
+    msgGroup.className = 'chat-message-group';
+    msgGroup.innerHTML = `
+      <div class='user-msg'>${msg}${attach ? "<br>" + attach : ""}</div>
+      <div class='ai-msg'><span class='ai-msg-text'>Eco AI typing...</span></div>
+    `;
+    chat.appendChild(msgGroup);
+    if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+      window.clearPreviewAndRemoveBtn(preview);
+    } else {
+      preview.innerHTML = '';
+    }
+    if (!faqText) input.value = '';
+  
+    let finalAnswer = "";
+    try {
+      const localData = await fetch('Data/EcoInfo/ecoinfo.txt').then(r => r.text());
+      finalAnswer = await window.callGeminiAI(localData, msg, window.GEMINI_API_KEY, mediaData, window.ecoAbortController ? window.ecoAbortController.signal : null, 'eco', attachments);
+    } catch (e) {
+      console.error("Error fetching local data or Gemini API call:", e);
+      finalAnswer = "Sorry, I could not access local information or the AI at this time. Pls check your internet connection!";
+    }
+  
+    msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+    if (typeof window.addActionsToMsgGroup === 'function') {
+      window.addActionsToMsgGroup(msgGroup, 'eco', 'ecoinfo-chat-messages');
+    }
+    
+    // Add speech button if supported
+    if ('speechSynthesis' in window) {
+      const speechBtn = document.createElement('button');
+      speechBtn.className = 'speech-btn';
+      speechBtn.innerHTML = '🔊';
+      speechBtn.title = 'Read aloud';
+      speechBtn.onclick = () => readAloud(finalAnswer, 'eco');
+      msgGroup.querySelector('.ai-msg-text').appendChild(speechBtn);
+    }
+  
+    chat.scrollTop = chat.scrollHeight;
+  
+    if (sendBtn) {
+      sendBtn.disabled = false;
+      sendBtn.classList.remove('sending');
+      sendBtn.textContent = 'Send';
+    }
+    if (stopBtn) stopBtn.style.display = 'none';
+    window.ecoAbortController = null;
+  }
+
+async function readAloud(text, section) {
+  // Cancel previous speech for this section
+  if (section === 'eco' && ecoAbortController) {
+    ecoAbortController.abort();
+  } else if (section === 'edu' && eduAbortController) {
+    eduAbortController.abort();
+  }
+  // Create a new AbortController for this speech
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+  if (section === 'eco') ecoAbortController = abortController;
+  else if (section === 'edu') eduAbortController = abortController;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  // Optional: Set language, voice, pitch, rate, volume
+  utterance.lang = 'en-US';
+  utterance.pitch = 1;
+  utterance.rate = 1;
+  utterance.volume = 1;
+
+  // Event listeners for speech status
+  utterance.onstart = () => {
+    console.log('Speech started for ' + section);
+  };
+  utterance.onend = () => {
+    console.log('Speech ended for ' + section);
+    if (section === 'eco') ecoAbortController = null;
+    else if (section === 'edu') eduAbortController = null;
+  };
+  utterance.onerror = (event) => {
+    if (event.error === 'canceled') {
+      console.log('Speech canceled for ' + section);
+    } else {
+      console.error('Speech synthesis error for ' + section + ':', event.error);
+    }
+    if (section === 'eco') ecoAbortController = null;
+    else if (section === 'edu') eduAbortController = null;
+  };
+
+  try {
+    await new Promise((resolve, reject) => {
+      signal.addEventListener('abort', () => {
+        speechSynthesis.cancel();
+        reject(new DOMException('Speech aborted', 'AbortError'));
+      });
+      speechSynthesis.speak(utterance);
+      utterance.onend = resolve;
+      utterance.onerror = reject;
+    });
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Read aloud operation was aborted.');
+    } else {
+      console.error('Error during read aloud:', error);
+    }
+  }
+}
+
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// AI Prompt for EduInfo
+window.EDU_AI_PROMPT = `You are an expert AI tutor and educational advisor for Yola, Adamawa State, Nigeria.
+Specialize in all levels of education from primary school through university.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze diagrams, equations, photos of textbooks, handwritten assignments, and educational materials
+  - Explain complex concepts shown in images
+  - Help solve math problems or physics diagrams
+  - Identify errors in student work
+- **Audio Analysis**: Listen to educational audio files and lectures
+  - Answer questions about audio content
+  - Transcribe key points from educational recordings
+- **Document Analysis**: Review PDFs, educational documents, course materials
+  - Summarize educational content
+  - Answer questions about document content
+  - Provide study guidance
+
+### Response Guidelines:
+- Focus ONLY on education-related topics for Yola
+- Provide clear, student-friendly explanations
+- For images: Identify subject matter and provide detailed educational guidance
+- For audio: Transcribe intent and provide educational support
+- Include relevant schools/institutions in Yola when helpful
+- If info unavailable: "Sorry, I don't have that specific information. Please contact a local education authority for further help."
+
+### Section Referrals:
+- Health matters → MediInfo | Navigation → NaviInfo | Community → CommunityInfo
+- Agriculture → AgroInfo | Jobs → JobsConnect | Environment → EcoInfo
+
+### Conversation History:
+{history}`;
+
+// Abort controller for fetch requests
+window.eduAbortController = null;
+// Initialize EduInfo Section
+
+
+// Send Message to AI
+window.sendEduMessage = async function(faqText = '') {
+    const input = document.getElementById('edu-chat-input');
+    const chat = document.getElementById('eduinfo-chat-messages');
+    const preview = document.getElementById('edu-chat-preview');
+    const sendBtn = document.querySelector('#edu-chat-input + .send-button-group .send-button');
+    const stopBtn = document.querySelector('#edu-chat-input + .send-button-group .stop-button');
+
+    let msg = faqText || input.value.trim();
+    let attach = '';
+    const previewContainer = preview.querySelector('.preview-container');
+    if (previewContainer) {
+      const clone = previewContainer.cloneNode(true);
+      const btn = clone.querySelector('.remove-btn');
+      if (btn) btn.remove();
+      attach = clone.outerHTML;
+    } else {
+      attach = preview.innerHTML;
+    }
+    if (!msg && !attach) return;
+
+    // Setup stop button with commonAI utility (with fallback if not loaded)
+    if (typeof window.setupStopButton === 'function') {
+      window.setupStopButton({ sendBtn, section: 'edu' });
+    }
+
+    const msgGroup = document.createElement('div');
+    msgGroup.className = 'chat-message-group';
+    // generate a temporary message id now so we can reuse for actions
+    const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+    msgGroup.setAttribute('data-msg-id', mid);
+    msgGroup.innerHTML = `
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Edu AI typing...</span></div>
+  `;
+    chat.appendChild(msgGroup);
+    // Extract media data from preview (image, audio, or file)
+    let mediaData = null;
+    const previewContainer2 = preview.querySelector('.preview-container');
+    
+    if (previewContainer2) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = previewContainer2.getAttribute('data-file-data');
+      const fileMime = previewContainer2.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: previewContainer2.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio elements
+        const imgElement = previewContainer2.querySelector('img');
+        const audioElement = previewContainer2.querySelector('audio');
+        const videoElement = previewContainer2.querySelector('video');
+        const iframeElement = previewContainer2.querySelector('iframe');
+
+        if (imgElement && imgElement.src) {
+          mediaData = imgElement.src;
+        } else if (audioElement && audioElement.src) {
+          mediaData = audioElement.src;
+        } else if (videoElement && videoElement.src) {
+          mediaData = videoElement.src;
+        } else if (iframeElement && iframeElement.src) {
+          mediaData = iframeElement.src;
+        }
+      }
+    }
+
+    const attachments = window.getMessageAttachmentsFromPreview('edu', preview) || [];
+    if (attachments.length > 0) {
+      const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+      msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+    }
+
+    // Use shared function to clear preview and remove button
+    if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+      window.clearPreviewAndRemoveBtn(preview);
+    } else {
+      preview.innerHTML = '';
+    }
+    if (!faqText) input.value = '';
+
+  // Initialize in-memory history for edu and add user entry
+  window.initChatHistory && window.initChatHistory('edu', 10);
+  window.addToChatHistory && window.addToChatHistory('edu', 'user', msg);
+
+  // Build history context from in-memory pairs
+  const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('edu', 5) : [];
+
+  let finalAnswer = "";
+    try {
+        const signal = window.eduAbortController ? window.eduAbortController.signal : null;
+
+        // Get current language from i18n or localStorage
+        const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+        const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+        const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                            langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                            langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
+
+        // List of all available language directories
+        const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+        
+        // Prioritize current language, then fall back to English if current not available
+        const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+        
+        // Remove duplicates
+        const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+        // Define all known HTML files in details/Edu
+        const htmlFileNames = [
+            'adroit-academy.html', 'adsu.html', 'albayaan-academy.html', 'alnaab-academy.html',
+            'amc-yola.html', 'aun.html', 'baitul-ateeq.html', 'binani-academy.html',
+            'bkc-yola.html', 'central-college.html', 'chiroma-ahmad-academy.html', 'cls-yola.html',
+            'cosmotech-yola.html', 'el-kenemy-college.html', 'eyn-secondary.html', 'fce-yola.html',
+            'fed-poly-yola.html', 'fggc-yola.html', 'gdss-yola.html', 'gmmc-yola.html',
+            'gtc-yola.html', 'library.html', 'mau.html', 'nursing-school-yola.html',
+            'spy-yola.html', 'sra-yola.html', 'ubec-smart-school.html'
+        ];
+
+        // Fetch HTML content from language directories
+        const allHtmlPromises = [];
+        for (const langDir of uniqueLangDirs) {
+            for (const fileName of htmlFileNames) {
+                const filePath = `details/Edu/${langDir}/${fileName}`;
+                allHtmlPromises.push(
+                    fetch(filePath, signal ? { signal } : {})
+                        .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+                        .catch(() => '')
+                );
+            }
+        }
+
+        const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+        
+        // Get chat history for this section
+        const historyContext = historyPairs.length > 0 
+            ? "\n\nRecent chat history:\n" + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n')
+            : "";
+        
+        // Combine all local data
+        const allLocalDataWithHistory = allLocalData + historyContext;
+            
+  finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, window.eduAbortController ? window.eduAbortController.signal : null, 'edu', attachments);
+  // Add user message to history
+  window.addToChatHistory && window.addToChatHistory('edu', 'user', msg);
+  // Add assistant reply to in-memory history
+  window.addToChatHistory && window.addToChatHistory('edu', 'assistant', finalAnswer);
+    } catch (e) {
+      if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+        finalAnswer = "Request cancelled.";
+      } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        finalAnswer = window.friendlyAIErrorMessage(e);
+      } else {
+        console.error("Error fetching local data or Gemini API call:", e);
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
+      }
+    }
+
+    msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+    if (typeof window.addActionsToMsgGroup === 'function') {
+      window.addActionsToMsgGroup(msgGroup, 'edu', 'eduinfo-chat-messages');
+    }
+    chat.scrollTop = chat.scrollHeight;
+
+    if (sendBtn) {
+        sendBtn.classList.remove('sending');
+        sendBtn.textContent = 'Send';
+        sendBtn.style.backgroundColor = '';
+    }
+    window.eduAbortController = null;
+};
+
+// Common helper for Gemini API call - delegated to central commonAI
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'edu');
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// Common helper for Gemini API call - delegate to centralized implementation in commonAI
+async function getGeminiAnswer(localData, msg, apiKey, mediaData = null, signal = null) {
+  return window.callGeminiAI(localData, msg, apiKey, mediaData, signal, 'home');
+}
+
+async function tryGeminiAPI(msg, localData, imageData) {
+  try {
+    return await getGeminiAnswer(localData, msg, window.GEMINI_API_KEY, imageData);
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error; // Re-throw abort errors
+    }
+    console.error('Gemini 2.5 failed, error:', error);
+    // The server.js will handle fallback automatically, so this shouldn't be reached
+    // but keep it for safety in case the error is network-related
+    return "Sorry, I'm having trouble connecting to the AI at the moment. Please try again later.";
+  }
+}
+
+window.homeAbortController = window.homeAbortController || null;
+
+window.stopHomeResponse = function() {
+  if (window.homeAbortController) {
+    window.homeAbortController.abort();
+    window.homeAbortController = null;
+  }
+  const sendBtn = document.querySelector('.send-button');
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+  }
+};
+
+window.sendHomeMessage = async function sendHomeMessage(faqText = '') {
+  const input = document.getElementById('home-chat-input');
+  const chat = document.getElementById('home-chat-messages');
+  const preview = document.getElementById('home-chat-preview');
+  const submitBtn = document.querySelector('#home-chat-input + button[type="submit"]');
+
+  let msg = faqText || input.value.trim();
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
+  if (!msg && !attach) return;
+
+  // Cancel any ongoing request
+  // Setup stop button with commonAI utility (with fallback if not loaded)
+  if (typeof window.setupStopButton === 'function') {
+    window.setupStopButton({ sendBtn: submitBtn, section: 'home' });
+  } else {
+    // Fallback: ensure commonAI is loaded
+    if (!window.commonAILoaded) {
+      const script = document.createElement('script');
+      script.src = 'components/commonAI.js?v=' + Date.now();
+      script.onload = () => { 
+        window.commonAILoaded = true;
+        if (typeof window.setupStopButton === 'function') {
+          window.setupStopButton({ sendBtn: submitBtn, section: 'home' });
+        }
+      };
+      document.head.appendChild(script);
+    }
+  }
+
+  // Extract media data from preview (image, audio, or file)
+  let mediaData = null;
+  if (preview && preview.innerHTML) {
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio elements
+        const imgElement = container.querySelector('img');
+        const audioElement = container.querySelector('audio');
+        
+        if (imgElement && imgElement.src) {
+          mediaData = imgElement.src;
+        } else if (audioElement && audioElement.src) {
+          mediaData = audioElement.src;
+        }
+      }
+    }
+  }
+
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
+  msgGroup.innerHTML = `
+    <div class='user-msg' data-msg-id='${mid}'>${msg}${attach ? "<br>" + attach : ""}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><div><span class='ai-msg-text'>Home AI typing...</span></div></div>
+  `;
+  chat.appendChild(msgGroup);
+  // Replace direct clearing of preview with the shared function
+  window.clearPreviewAndRemoveBtn(preview);
+  if (!faqText) input.value = '';
+
+  let finalAnswer = "";
+  const stopBtn = document.querySelector('.stop-btn');
+  if (stopBtn) stopBtn.style.display = 'inline-block';
+
+  try {
+    const signal = window.homeAbortController ? window.homeAbortController.signal : null;
+
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
+
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+    // Define all known HTML files in details/Home
+    const htmlFileNames = [
+      'adamawaexecutivecouncil.html', 'fombinakingdom.html', 'yolaadamawa.html', 'local-data.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Home/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const localData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+
+    // Ensure in-memory history exists for home
+    window.initChatHistory && window.initChatHistory('home', 10);
+    // Reserve slot for user message (AI will be added after response)
+    window.addToChatHistory && window.addToChatHistory('home', 'user', msg);
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('home', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    
+    // Combine all local data
+    const allLocalDataWithHistory = localData + historyContext;
+
+    finalAnswer = await getGeminiAnswer(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal);
+    // Add AI response to in-memory history
+    window.addToChatHistory && window.addToChatHistory('home', 'assistant', finalAnswer);
+  } catch (e) {
+    if (e && e.name === 'AbortError') {
+      finalAnswer = "Request cancelled.";
+    } else if (typeof window.friendlyAIErrorMessage === 'function') {
+      finalAnswer = window.friendlyAIErrorMessage(e);
+    } else {
+      console.error("Error fetching local data or Gemini API call:", e);
+      finalAnswer = "The AI is currently unavailable. Please try again later.";
+    }
+  }
+
+  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+  // add and wire up action buttons now that we have a real response
+  if (typeof window.addActionsToMsgGroup === 'function') {
+    window.addActionsToMsgGroup(msgGroup, 'home', 'home-chat-messages');
+  }
+  chat.scrollTop = chat.scrollHeight;
+
+  if (submitBtn) {
+    submitBtn.classList.remove('sending');
+    submitBtn.textContent = 'Send';
+    submitBtn.style.backgroundColor = '';
+  }
+  
+  // Reset abort controller
+  abortController = null;
+};
+
+// Ensure sendHomeMessage is always attached to window (last line)
+if (typeof window.sendHomeMessage !== 'function') {
+  window.sendHomeMessage = sendHomeMessage;
+}
+
+
+
+window.HOME_AI_PROMPT = window.HOME_AI_PROMPT || `You are an intelligent AI assistant for Yola, Adamawa State, Nigeria.
+Your role is to help users with comprehensive information about Yola including culture, business, events, transportation, and local services.
+
+### Analysis Capabilities:
+- **Image Analysis**: When users share images, analyze them to identify locations in Yola, provide context, suggest related services/activities
+- **Audio Analysis**: Listen to voice messages and respond helpfully to audio questions
+- **Document Analysis**: Review uploaded documents, PDFs, or text files for relevant information
+
+### Response Guidelines:
+- IMPORTANT: Only greet if user greets first (e.g., "hello", "hi", "greetings")
+- Answer questions directly and helpfully using local database + internet knowledge
+- For images: Identify what's shown, provide historical/cultural context if relevant
+- For audio: Transcribe intent and provide relevant information
+- If info not available: "Sorry, I don't have that specific information. Please contact a local authority for further help."
+
+### Section Referrals:
+- Agriculture → AgroInfo | Education → EduInfo | Navigation → NaviInfo
+- Community → CommunityInfo | Health → MediInfo | Jobs → ServiInfo | Environment → EcoInfo
+
+### Conversation History:
+{history}`;
+
+// Chat history management
+// Use shared in-memory chat history helpers
+window.initChatHistory && window.initChatHistory('home', 10);
+function loadHomeChatHistory() {
+  try {
+    window.loadChatHistoryToDOM && window.loadChatHistoryToDOM('home', 'home-chat-messages');
+  } catch (e) {
+    console.error('Error loading chat history:', e);
+  }
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// stopMediResponse is now handled by setupStopButton in commonAI.js
+
+window.sendMediMessage = async function(faqText = '') {
+  const input = document.getElementById('medi-chat-input');
+  const chat = document.getElementById('medi-chat-messages');
+  const preview = document.getElementById('medi-chat-preview');
+  const sendBtn = document.querySelector('#medi-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#medi-chat-input + .send-button-group .stop-button');
+
+  // Ensure input element exists
+  if (!input) {
+    console.warn('Medi input element not found; aborting sendMediMessage');
+    return;
+  }
+
+  // Always extract attachment from preview before clearing
+  let msg = faqText || input.value.trim();
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
+  let mediaData = null;
+  if (preview) {
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe elements
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
+  }
+
+  const attachments = window.getMessageAttachmentsFromPreview('medi', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+
+  if (!msg && !attach) return;
+
+  // Setup stop button with commonAI utility (with fallback if not loaded)
+  if (typeof window.setupStopButton === 'function') {
+    window.setupStopButton({ sendBtn, section: 'medi' });
+  }
+
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
+  msgGroup.innerHTML = `
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Medi AI typing...</span></div>
+  `;
+  chat.appendChild(msgGroup);
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
+  if (!faqText) input.value = '';
+
+  // Load existing chat history using commonAI.js
+  window.initChatHistory && window.initChatHistory('medi', 10);
+  let chatHistory = window.getChatHistory ? window.getChatHistory('medi') : [];
+
+
+  let finalAnswer = "";
+  try {
+    // Fetch main local data
+    const signal = window.mediAbortController ? window.mediAbortController.signal : null;
+
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
+
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+    // Define all known HTML files in details/Medi
+    const htmlFileNames = [
+      'alfijr-pharmacy.html', 'fortland-hospital.html', 'galbose-hospital.html', 'german-hospital.html', 
+      'jasar-pharmacy.html', 'jds-pharmacy.html', 'kerion-pharmacy.html', 'kingblaise-pharmacy.html', 
+      'lekki-pharmacy.html', 'malamre-clinic.html', 'mauth-yola.html', 'meddy-clinic.html', 
+      'meddy-pharmacy.html', 'mufami-pharmacy.html', 'nets-distribution.html', 'newboshang-hospital.html', 
+      'polio-immunization.html', 'redcross-awareness.html', 'shekinah-pharmacy.html', 'specialist-hospital.html', 
+      'valli-clinic.html', 'yola-dispensary.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Medi/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+
+    // Ensure in-memory history exists for medi
+    window.initChatHistory && window.initChatHistory('medi', 10);
+    // Reserve slot for user message (AI will be added after response)
+    window.addToChatHistory && window.addToChatHistory('medi', 'user', msg);
+
+    // Get chat history context from in-memory helper
+    const historyPairs = window.getQAHistoryForSection ? window.getQAHistoryForSection('medi', 5) : [];
+    const historyContext = historyPairs.length > 0 ? '\n\nRecent chat history:\n' + historyPairs.map(h => `User: ${h.user}\nAI: ${h.ai}`).join('\n\n') : '';
+    
+    // Combine all local data
+    const allLocalDataWithHistory = allLocalData + historyContext;
+
+    finalAnswer = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, window.mediAbortController ? window.mediAbortController.signal : null, 'medi', attachments);
+    // Add AI response to in-memory history
+    window.addToChatHistory && window.addToChatHistory('medi', 'assistant', finalAnswer);
+  } catch (e) {
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+        finalAnswer = "Request cancelled.";
+    } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        finalAnswer = window.friendlyAIErrorMessage(e);
+    } else {
+        console.error("Error fetching local data or Gemini API call:", e);
+        finalAnswer = "The AI is currently unavailable. Please try again later.";
+    }
+  }
+
+  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+    if (typeof window.addActionsToMsgGroup === 'function') {
+      window.addActionsToMsgGroup(msgGroup, 'medi', 'medi-chat-messages');
+    }
+
+  if (sendBtn) {
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+  }
+  window.mediAbortController = null;
+};
+
+// Common helper for Gemini API call - delegate to centralized commonAI
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'medi');
+}
+*/
+
+
+/*
+// Edit this prompt to instruct the AI on how to answer user messages for MediInfo
+window.MEDI_AI_PROMPT = window.MEDI_AI_PROMPT || `You are an AI health information advisor for Yola, Adamawa State, Nigeria.
+Provide health and medical information with appropriate disclaimers about professional medical advice.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze medical/health-related images with caution
+  - Identify common health conditions from symptoms shown
+  - Provide educational information about visible health issues
+  - Suggest when professional medical consultation is needed
+- **Audio Analysis**: Listen to health concerns expressed in voice recordings
+  - Transcribe symptoms and health questions
+  - Provide general health information and guidance
+- **Document Analysis**: Review health records, medical reports, wellness plans
+  - Explain medical terminology and test results
+  - Provide general health guidance based on documents
+
+### Health Information Areas:
+- Common diseases, symptoms, and general treatments
+- Preventive health practices and hygiene
+- Nutrition and wellness advice
+- First aid information
+- Mental health resources
+- Maternal and child health information
+- Common medication information
+- Local healthcare facilities in Yola
+
+### CRITICAL Response Guidelines:
+- ⚠️ DISCLAIMER: "This is general health information only and not a substitute for professional medical diagnosis or treatment."
+- For images: Provide general educational information and strongly recommend professional consultation
+- For audio: Identify concerns and recommend appropriate healthcare providers
+- Always recommend consulting qualified medical professionals for diagnosis
+- Include local hospitals and clinics in Yola
+- For emergencies, direct to nearest hospital
+
+### Section Referrals:
+- Education → EduInfo | Nutrition/Agriculture → AgroInfo | Navigation → NaviInfo | Community → CommunityInfo | Jobs → JobsConnect`;
+
+window.mediAbortController = window.mediAbortController || null;
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// Function to initialize NaviInfo section
+window.initNaviInfo = () => {
+    const naviSection = document.getElementById('naviinfo-content');
+    if (!naviSection) { return; }
+    
+    // Create section content if it doesn't exist
+    if (!naviSection.querySelector('.section-content')) {
+      naviSection.innerHTML = `
+        <div class="section-content">
+          <h1>Navigation Information</h1>
+          <p>Get directions, distances, and transportation information for Yola, Adamawa State.</p>
+                
+          <div id="naviinfo-chat-container" class="chat-container">
+            <div id="naviinfo-chat-messages" class="chat-messages"></div>
+            <div id="naviinfo-chat-preview"></div>
+            <div class="chat-input-area">
+              <input type="text" id="naviinfo-chat-input" placeholder="Ask for directions, locations, or transport info...">
+              <div class="send-button-group">
+                <button type="submit" class="send-button" onclick="sendMessage('naviinfo')">Send</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="map-section">
+            <div class="map-controls">
+              <button onclick="window.toggleMapView && window.toggleMapView()">Toggle Street View</button>
+              <button onclick="window.resetMapCenter && window.resetMapCenter()">Center on Yola</button>
+            </div>
+            <div id="tomtom-map" style="height: 500px; width: 100%; border: 1px solid #ccc; position: relative; display: flex; align-items: center; justify-content: center;">
+              <iframe id="google-maps-iframe" 
+                style="width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0;" 
+                frameborder="0" 
+                allowfullscreen="" 
+                aria-hidden="false" 
+                loading="lazy"
+                tabindex="0">
+              </iframe>
+              <div id="street-view-container" 
+                style="width: 100%; height: 100%; display: none; position: absolute; top: 0; left: 0;">
+              </div>
+            </div>
+            <div class="map-info"></div>
+            <div class="route-info"></div>
+          </div>
+        </div>
+      `;
+    }
+    // Show satellite availability message
+    setTimeout(() => {
+      const satInfo = document.getElementById('satellite-info');
+      if (satInfo) {
+        satInfo.textContent = '';
+      }
+    }, 2000);
+};
+*/
+
+/*
+// Edit this prompt to instruct the AI on how to answer user messages for NaviInfo
+
+window.NAVI_AI_PROMPT = window.NAVI_AI_PROMPT || `You are an AI navigation and directions assistant for Yola, Adamawa State, Nigeria.
+Help users find locations, plan routes, and get travel information using TomTom mapping APIs.
+
+### Analysis Capabilities:
+- **Image Analysis**: Analyze maps, location photos, street view images
+  - Identify locations from photos
+  - Provide navigation context based on visual landmarks
+  - Suggest nearby facilities and attractions
+- **Audio Analysis**: Listen to location inquiries and navigation questions
+  - Transcribe destination requests from voice messages
+  - Provide turn-by-turn directions via audio format
+- **Document Analysis**: Review maps, itineraries, and travel documents
+  - Extract destination information from travel plans
+  - Provide navigation advice based on schedules
+
+### Navigation Features:
+- Route planning and distance calculation
+- Travel time estimation and traffic information
+- Public and private transportation options
+- Landmark identification and location descriptions
+- Facility finder (hospitals, hotels, restaurants, etc.)
+- Emergency location services
+
+### Automatic System Features:
+When user mentions TWO place names (e.g., "from Lamido Palace to Jimeta"):
+1. Route automatically drawn on satellite map
+2. Distance calculated in kilometers
+3. Estimated travel time computed
+4. Metrics displayed in chat
+
+DO NOT estimate distances/times yourself - let the system calculate them.
+
+### Response Guidelines:
+- For images: Identify locations and provide travel context
+- For audio: Transcribe destinations and provide navigation guidance
+- Provide detailed descriptions of locations and routes
+- Include transportation options and recommendations
+- If info unavailable: "I don't have that specific information. Please contact local transport authorities."
+
+### Section Referrals:
+- Health → MediInfo | Education → EduInfo | Community → CommunityInfo | Agriculture → AgroInfo | Services → ServiInfo`;
+*/
+
+/*
+// stopNaviResponse is now handled by setupStopButton in commonAI.js
+// Common helper for Gemini API call - delegate to centralized commonAI
+async function getGeminiAnswer(localData, msg, apiKey, imageData = null, signal = null) {
+  return window.callGeminiAI(localData, msg, apiKey, imageData, signal, 'navi');
+}
+window.sendNaviMessage = async function(faqText = '') {
+  const input = document.getElementById('navi-chat-input');
+  const chat = document.getElementById('navi-chat-messages');
+  const preview = document.getElementById('navi-chat-preview');
+  const sendBtn = document.querySelector('#navi-chat-input + .send-button-group .send-button');
+  const stopBtn = document.querySelector('#navi-chat-input + .send-button-group .stop-button');
+
+  // Always extract attachment from preview before clearing
+  let msg = faqText || input.value.trim();
+  let attach = '';
+  const container = preview.querySelector('.preview-container');
+  if (container) {
+    const clone = container.cloneNode(true);
+    const btn = clone.querySelector('.remove-btn');
+    if (btn) btn.remove();
+    attach = clone.outerHTML;
+  } else {
+    attach = preview.innerHTML;
+  }
+  let mediaData = null;
+  if (preview) {
+    const container = preview.querySelector('.preview-container');
+    
+    if (container) {
+      // Check if container has stored file data (for non-visual files)
+      const fileData = container.getAttribute('data-file-data');
+      const fileMime = container.getAttribute('data-file-mime');
+      
+      if (fileData && fileMime) {
+        mediaData = {
+          dataUrl: fileData,
+          mimeType: fileMime,
+          fileName: container.getAttribute('data-file-name')
+        };
+      } else {
+        // Fallback to checking for image/audio/video/iframe elements
+        const img = container.querySelector('img');
+        const audio = container.querySelector('audio');
+        const video = container.querySelector('video');
+        const iframe = container.querySelector('iframe');
+        if (img && img.src) mediaData = img.src;
+        else if (audio && audio.src) mediaData = audio.src;
+        else if (video && video.src) mediaData = video.src;
+        else if (iframe && iframe.src) mediaData = iframe.src;
+      }
+    }
+  }
+
+  const attachments = window.getMessageAttachmentsFromPreview('navi', preview) || [];
+  if (attachments.length > 0) {
+    const attDesc = attachments.map(att => `${att.name || 'file'} (${att.type || 'unknown'})`).join(', ');
+    msg = msg ? `${msg}\n\nAttached files: ${attDesc}` : `Attached files: ${attDesc}`;
+  }
+
+  if (!msg && !attach) return;
+
+  let controller = null;
+  if (sendBtn && typeof window.setupStopButton === 'function') {
+    // Setup stop button with commonAI utility (creates AbortController) and capture controller
+    controller = window.setupStopButton({ sendBtn, section: 'navi' });
+  }
+
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  // generate a temporary message id now so we can reuse for actions
+  const mid = Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  msgGroup.setAttribute('data-msg-id', mid);
+  msgGroup.innerHTML = `
+    <div style="align-self: flex-end"> ${attach ? "<br>" + attach : ""} </div>
+    <div class='user-msg' data-msg-id='${mid}'>${msg}</div>
+    <div class='ai-msg' data-msg-id='${mid}'><span class='ai-msg-text'>Navi AI typing...</span></div>
+  `;
+  chat.appendChild(msgGroup);
+  if (typeof window.clearPreviewAndRemoveBtn === 'function') {
+    window.clearPreviewAndRemoveBtn(preview);
+  } else {
+    preview.innerHTML = '';
+  }
+  if (!faqText) input.value = '';
+
+  // Load existing chat history using commonAI.js
+  window.initChatHistory && window.initChatHistory('navi', 10);
+  let chatHistory = window.getChatHistory ? window.getChatHistory('navi') : [];
+
+  let finalAnswer = "";
+  try {
+    const signal = controller ? controller.signal : (window.naviAbortController ? window.naviAbortController.signal : null);
+
+    // Get current language from i18n or localStorage
+    const currentLang = (window.i18n && window.i18n.language) || localStorage.getItem('language') || 'En';
+    const langCode = currentLang.substring(0, 2).toUpperCase(); // Extract first 2 letters for directory name
+    const langDirCode = langCode === 'EN' ? 'En' : langCode === 'AR' ? 'Ar' : langCode === 'FR' ? 'Fr' : 
+                        langCode === 'FU' ? 'Fu' : langCode === 'HA' ? 'Ha' : langCode === 'IG' ? 'Ig' : 
+                        langCode === 'PI' ? 'Pi' : langCode === 'YO' ? 'Yo' : 'En'; // Default to English
+
+    // List of all available language directories
+    const availableLangs = ['En', 'Ar', 'Fr', 'Fu', 'Ha', 'Ig', 'Pi', 'Yo'];
+    
+    // Prioritize current language, then fall back to English if current not available
+    const langDirsToLoad = availableLangs.includes(langDirCode) ? [langDirCode, 'En'] : ['En'];
+    
+    // Remove duplicates
+    const uniqueLangDirs = [...new Set(langDirsToLoad)];
+
+    // Define all known HTML files in details/Navi
+    const htmlFileNames = [
+      'access-bank.html', 'adamawa-sunshine-motor.html', 'agga-islamic-center.html', 'alibaba-mosque.html', 
+      'aun-hotel.html', 'aun-jabbama-restaurant.html', 'beast-fitness.html', 'catholic-secreteriat.html', 
+      'chicken-cottage-yola.html', 'city-green-hotel.html', 'dantshoho-hotel.html', 'duragi-hotels.html', 
+      'eyn.html', 'f-fitness.html', 'fce-footbal-pitch.html', 'fidelity-bank.html', 
+      'fresh-air-transit.html', 'gauni-sports-arena.html', 'golden-alpihne-hotels.html', 'gorilla-park.html', 
+      'gt-bank.html', 'hajja-ammi-mosque.html', 'icecream-planet.html', 'items7-restaurant.html', 
+      'jabbama-plaza.html', 'jambutu-flyover.html', 'jamubutu-motor-park.html', 'jimeta-market.html', 
+      'jippujam.html', 'jumia-pickup-shop.html', 'keke-napep.html', 'lccn.html', 
+      'madugu-rockview-hotel.html', 'mamma-chare-hotel.html', 'marwa-shawarma-grills.html', 'mau-sports-center.html', 
+      'mauth-mosque.html', 'mevish-cafe.html', 'modibbo-adama-central-mosque.html', 'modibbo-zailani-mosque.html', 
+      'muna-hotel.html', 'oasis-bakery.html', 'peace-park.html', 'police-roundabout-flyover.html', 
+      'roundabout-maishanu.html', 'sanhusein-mall.html', 'sauki-motor-park.html', 'stanbic-ibtc-bank.html', 
+      'sterling-bank.html', 'top10-plaza.html', 'uptown-exclusive-spot.html', 'vortex-hotels.html', 
+      'welcome-to-yola.html', 'wetlands-park.html', 'yahuza.html', 'yakubu-plaza.html', 
+      'yola-airport.html', 'yola-market.html', 'yola-polo-ground.html', 'yola-underpass.html', 
+      'yola-zoo.html', 'zenith-bank.html'
+    ];
+
+    // Fetch HTML content from language directories
+    const allHtmlPromises = [];
+    for (const langDir of uniqueLangDirs) {
+      for (const fileName of htmlFileNames) {
+        const filePath = `details/Navi/${langDir}/${fileName}`;
+        allHtmlPromises.push(
+          fetch(filePath, signal ? { signal } : {})
+            .then(res => res.ok ? res.text().then(text => `\n--- ${fileName} (${langDir}) ---\n${text}`) : '')
+            .catch(() => '')
+        );
+      }
+    }
+
+    const allLocalData = (await Promise.all(allHtmlPromises)).filter(content => content.length > 0).join('\n');
+    
+    // Include chat history in the context
+    const historyContext = chatHistory.length > 0 
+        ? "\n\nRecent conversation history:\n" + chatHistory.map(h => `User: ${h.role === 'user' ? h.content : ''}\nAI: ${h.role === 'assistant' ? h.content : ''}`).filter(Boolean).join('\n\n')
+        : "";
+    
+    // Combine all local data
+    const allLocalDataWithHistory = allLocalData + historyContext;
+
+    // Try to get an AI response but do NOT bail out on failure — routing must continue.
+    let aiText = '';
+    try {
+      aiText = await window.callGeminiAI(allLocalDataWithHistory, msg, window.GEMINI_API_KEY, mediaData, signal, 'navi', attachments);
+    } catch (aiErr) {
+      if (aiErr && (aiErr.name === 'AbortError' || aiErr.message === 'AbortError')) {
+        aiText = "Request cancelled.";
+      } else if (typeof window.friendlyAIErrorMessage === 'function') {
+        aiText = window.friendlyAIErrorMessage(aiErr);
+      } else {
+        aiText = "The AI is currently unavailable. Please try again later.";
+      }
+      // Log but continue to run routing and metrics below
+      console.warn('Gemini AI unavailable for navi section, continuing with route calculations:', aiErr);
+    }
+
+    // Start the finalAnswer with whatever AI text (or friendly fallback) we have
+    finalAnswer = aiText;
+
+    // Store user message in chat history (keep last 10 messages)
+    window.addToChatHistory && window.addToChatHistory('navi', 'user', msg);
+
+    // NEW: Detect places in user message and switch maps accordingly
+    const allPlaces = detectPlaces(msg);
+    const yolaPlaces = allPlaces.filter(place => isPlaceInYola(place));
+    const nonYolaPlaces = allPlaces.filter(place => !isPlaceInYola(place));
+    let routeDrawn = false;
+    let geocodedPlaces = [...yolaPlaces]; // Start with Yola places
+
+    // Attempt to geocode non-Yola places
+    if (nonYolaPlaces.length > 0) {
+      console.log('🔍 Attempting to geocode non-Yola places:', nonYolaPlaces);
+      for (const place of nonYolaPlaces) {
+        try {
+          const coords = await window.geocodeWithMultipleServices(place);
+          if (coords) {
+            console.log(`✅ Successfully geocoded "${place}":`, coords);
+            geocodedPlaces.push(place);
+          } else {
+            console.log(`❌ Failed to geocode "${place}"`);
+          }
+        } catch (err) {
+          console.warn(`⚠️ Geocoding error for "${place}":`, err.message);
+        }
+      }
+    }
+
+    // Use geocodedPlaces for routing (mix of Yola and geocoded places)
+    // Use ONLY the first 2 unique places to avoid routing to duplicates
+    const uniquePlaces = [...new Set(geocodedPlaces)];
+    if (uniquePlaces.length >= 2) {
+      console.log('🎯 Two or more places available (Yola + geocoded):', uniquePlaces);
+      await switchToTomTomMap();
+      const route = await window.drawTomTomRoute(uniquePlaces[0], uniquePlaces[1]);
+      if (route && typeof route.distance !== 'undefined' && typeof route.time !== 'undefined') {
+        routeDrawn = true;
+        const mapInstruction = `\n\n📍 **Route Details (TomTom):**\n- **Distance:** ${route.distance.toFixed ? route.distance.toFixed(1) : route.distance} km\n- **Estimated Travel Time:** ${Math.round(route.time)} minutes\n\n👇 **Scroll down to see the map with the route drawn between ${uniquePlaces[0]} and ${uniquePlaces[1]}**`;
+        finalAnswer += mapInstruction;
+        console.log('✅ TomTom route metrics added to response');
+      } else {
+        console.log('⚠️ TomTom route unavailable; not adding distance/time details from Gemini.');
+        finalAnswer += '\n\n⚠️ TomTom routing unavailable right now; no distance/time details can be shown.';
+      }
+    } else if (geocodedPlaces.length === 1) {
+      console.log('📍 Single place detected:', geocodedPlaces[0]);
+      await switchToGoogleMaps();
+      await window.centerGoogleMapsOnLocation(geocodedPlaces[0]);
+      const mapInstruction = `\n\n📍 **Location Details:**\nI've centered the map on **${geocodedPlaces[0]}**. Scroll down to see the location and its details on the map.`;
+      finalAnswer += mapInstruction;
+      console.log('✅ Google Maps centered on location');
+    } else if (geocodedPlaces.length === 0) {
+      console.log('ℹ No specific places detected or geocoded in message');
+      // Keep current map (default to Google Maps)
+    }
+
+    if (nonYolaPlaces.length > 0 && geocodedPlaces.length < allPlaces.length) {
+      const failedPlaces = nonYolaPlaces.filter(p => !geocodedPlaces.includes(p));
+      if (failedPlaces.length > 0) {
+        const failedText = failedPlaces.map(p => `"${p}"`).join(', ');
+        finalAnswer += `\n\n⚠️ Could not locate ${failedText}. These places were not found in the Yola database or through geocoding services. Try using different place names.`;
+        console.log('⚠️ Failed to geocode places:', failedPlaces);
+      }
+    }
+
+    if (geocodedPlaces.length > 0 && geocodedPlaces.length < 2) {
+      finalAnswer += '\n\n⚠️ Route drawing requires at least two places. Provide a second location to view route guidance.';
+      console.log('⚠️ Not enough places for route drawing (need 2, got ' + geocodedPlaces.length + ')');
+    }
+
+    if (geocodedPlaces.length >= 2 && !routeDrawn) {
+      finalAnswer += '\n\n⚠️ No route could be drawn for the detected places, either due to map service issue or mismatch in geocoding. Please rephrase or try again later.';
+      console.log('⚠️ Route not drawn despite two places being available');
+    }
+
+    if (yolaPlaces.length === 0 && nonYolaPlaces.length > 0) {
+      finalAnswer += '\n\nℹ️ Since no valid Yola place was available, map routing is not shown.';
+      console.log('ℹ️ All detected places are non-Yola; map routing disabled');
+    }
+
+    window.addToChatHistory && window.addToChatHistory('navi', 'assistant', finalAnswer);
+  } catch (e) {
+    if (e && (e.name === 'AbortError' || e.message === 'AbortError')) {
+      finalAnswer = "Request cancelled.";
+    } else if (typeof window.friendlyAIErrorMessage === 'function') {
+      finalAnswer = window.friendlyAIErrorMessage(e);
+    } else {
+      console.error("Error fetching local data or Gemini API call:", e);
+      finalAnswer = "The AI is currently unavailable. Please try again later.";
+    }
+  }
+
+  msgGroup.querySelector('.ai-msg-text').innerHTML = formatAIResponse(finalAnswer);
+  if (typeof window.addActionsToMsgGroup === 'function') {
+    window.addActionsToMsgGroup(msgGroup, 'navi', 'navi-chat-messages');
+  }
+  chat.scrollTop = chat.scrollHeight;
+
+  if (sendBtn) {
+    sendBtn.disabled = false;
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+  }
+  if (stopBtn) stopBtn.style.display = 'none';
+  window.naviAbortController = null;
+};
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- SHARED STOP BUTTON ABORT LOGIC ---
+/**
+ * Shared handler for Stop button abort logic in all AI chat sections.
+ * @param {Object} opts - Options object
+ * @param {AbortController} opts.abortController - The AbortController instance to abort
+ * @param {string} opts.section - Section name (e.g., 'home', 'edu', etc.)
+ * @param {string} [opts.chatContainerId] - ID of the chat messages container (e.g., 'home-chat-messages')
+ * @param {string} [opts.stopBtnSelector] - Selector for the Stop button (e.g., '.stop-btn' or '.stop-button')
+ * @param {string} [opts.abortMsg] - Custom abort message (optional)
+ */
+window.handleStopButtonAbort = function({ abortController, section, chatContainerId, stopBtnSelector, abortMsg }) {
+  if (abortController) {
+    abortController.abort();
+  }
+  // Hide Stop button if selector provided
+  if (stopBtnSelector) {
+    const stopBtn = document.querySelector(stopBtnSelector);
+    if (stopBtn) stopBtn.style.display = 'none';
+  }
+  // Show user-aborted message in chat
+  if (chatContainerId) {
+    const chatMessages = document.getElementById(chatContainerId);
+    if (chatMessages) {
+      const abortMessage = document.createElement('div');
+      abortMessage.className = 'chat-message';
+      abortMessage.innerHTML = `<div class="error-message">${abortMsg || 'Request aborted by user'}</div>`;
+      chatMessages.appendChild(abortMessage);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  }
+};
+
+// Global handler: any element with class `stop-button` will abort all known section controllers.
+// This protects against sections that didn't wire their local stop button correctly.
+document.addEventListener('click', function(e) {
+  try {
+    const el = e.target.closest && e.target.closest('.stop-button');
+    if (!el) return;
+
+    // List all known controllers and their section names
+    const controllers = {
+      home: window.homeAbortController,
+      edu: window.eduAbortController,
+      agro: window.agroAbortController,
+      medi: window.mediAbortController,
+      eco: window.ecoAbortController,
+      community: window.communityAbortController,
+      servi: window.serviAbortController,
+      navi: window.naviAbortController
+    };
+
+    Object.keys(controllers).forEach(section => {
+      const ctrl = controllers[section];
+      if (ctrl && typeof ctrl.abort === 'function') {
+        try { ctrl.abort(); } catch (err) { /* ignore */ }
+      }
+    });
+
+    // Update UI: hide generic stop buttons and reset send buttons
+    const sendButtons = document.querySelectorAll('.send-button');
+    sendButtons.forEach(btn => {
+      btn.classList.remove('sending');
+      btn.textContent = 'Send';
+      btn.style.backgroundColor = '';
+      // restore type if it was changed to button
+      if (btn.dataset.origType) btn.type = btn.dataset.origType;
+    });
+
+    // Show a generic aborted message in any visible chat container
+    const chatContainers = document.querySelectorAll('.chat-messages');
+    chatContainers.forEach(c => {
+      const abortMessage = document.createElement('div');
+      abortMessage.className = 'chat-message';
+      abortMessage.innerHTML = `<div class="error-message">Request aborted by user</div>`;
+      c.appendChild(abortMessage);
+      c.scrollTop = c.scrollHeight;
+    });
+  } catch (err) {
+    console.warn('Global stop handler error', err);
+  }
+});
+
+/**
+ * Setup Stop button functionality for a section with proper abort handling.
+ * Call this during message sending to automatically wire up the Stop button.
+ * @param {Object} opts - Options object
+ * @param {HTMLElement} opts.sendBtn - The Send/Stop button element to wire up
+ * @param {string} opts.section - Section name (e.g., 'home', 'edu', 'agro', etc.)
+ * @param {string} [opts.controllerName] - Global controller variable name (defaults to `${section}AbortController`)
+ * @returns {AbortController} - The abort controller instance
+ */
+window.setupStopButton = function({ sendBtn, section, controllerName }) {
+  if (!sendBtn) return null;
+  
+  // Determine controller variable name
+  const ctrlName = controllerName || (section + 'AbortController');
+  
+  // Create or reset the abort controller
+  if (window[ctrlName]) {
+    try { window[ctrlName].abort(); } catch (e) { /* ignore */ }
+  }
+  window[ctrlName] = new AbortController();
+  
+  // Set up the button UI and handler
+  sendBtn.classList.add('sending');
+  sendBtn.textContent = 'Stop';
+  sendBtn.style.backgroundColor = '#ff4444';
+  
+  // Store original type for restoration
+  const originalType = sendBtn.type;
+  sendBtn.type = 'button'; // Prevent form submission during stop
+  
+  // Store controller info on the button itself for delegation
+  sendBtn.dataset.aborting = 'true';
+  sendBtn.dataset.section = section;
+  sendBtn.dataset.ctrlName = ctrlName;
+  
+  // Create stop handler with proper event handling
+  const stopHandler = (e) => {
+    // Only handle if this is actually being stopped
+    if (sendBtn.dataset.aborting !== 'true') return;
+    
+    if (e) {
+      if (typeof e.preventDefault === 'function') {
+        e.preventDefault();
+      }
+      if (typeof e.stopPropagation === 'function') {
+        e.stopPropagation();
+      }
+    }
+    
+    // Abort the controller
+    if (window[ctrlName]) {
+      try { 
+        window[ctrlName].abort();
+      } catch (err) { /* ignore */ }
+      window[ctrlName] = null;
+    }
+    
+    // Clean up - mark as not aborting so handler doesn't re-trigger
+    sendBtn.dataset.aborting = 'false';
+    
+    // Reset button UI
+    sendBtn.classList.remove('sending');
+    sendBtn.textContent = 'Send';
+    sendBtn.style.backgroundColor = '';
+    sendBtn.type = originalType;
+  };
+  
+  // Add the click handler - will be called every time until removed
+  sendBtn.addEventListener('click', stopHandler);
+  
+  // Return the controller so the calling function can use it
+  return window[ctrlName];
+};
+
+/**
+ * Helper to safely fetch with abort signal, properly handling AbortError.
+ * @param {string} url - URL to fetch
+ * @param {AbortSignal} [signal] - Abort signal from AbortController
+ * @param {Object} [options] - Additional fetch options
+ * @returns {Promise<Response>}
+ */
+window.fetchWithSignal = async function(url, signal, options = {}) {
+  const fetchOptions = {
+    ...options,
+    ...(signal && { signal })
+  };
+  return fetch(url, fetchOptions);
+};
+
+
+
+// Gemini model preference
+window.useGemini25 = window.useGemini25 || true;
+
+// Chat history management with localStorage persistence
+// In-memory storage for chat histories
+window.chatHistories = window.chatHistories || {};
+window.chatHistoriesMaxMessages = 20; // Max 20 messages per section per user (auto-clear older ones)
+window.chatStorageKey = 'chatHistories_v3'; // localStorage key
+
+// Load all chat histories from localStorage on startup
+window.loadChatHistoriesFromStorage = function() {
+  try {
+    const stored = localStorage.getItem(window.chatStorageKey);
+    if (stored) {
+      window.chatHistories = JSON.parse(stored);
+      let totalMessages = 0;
+      for (const key in window.chatHistories) {
+        if (Array.isArray(window.chatHistories[key])) {
+          totalMessages += window.chatHistories[key].length;
+        }
+      }
+      console.log(`%c📂 Loaded from localStorage: ${Object.keys(window.chatHistories).length} sections, ${totalMessages} total messages`, 'color: #8b5cf6; font-weight: bold;');
+    } else {
+      console.log('%c📂 No previous chat history found in localStorage (fresh start)', 'color: #6b7280;');
+    }
+  } catch (e) {
+    console.error('❌ Failed to load chat histories from storage:', e);
+  }
+};
+
+// Save all chat histories to localStorage
+window.saveChatHistoriesToStorage = function() {
+  try {
+    const dataToStore = {};
+    let totalMessages = 0;
+    for (const key in window.chatHistories) {
+      if (Array.isArray(window.chatHistories[key])) {
+        dataToStore[key] = window.chatHistories[key];
+        totalMessages += window.chatHistories[key].length;
+      }
+    }
+    localStorage.setItem(window.chatStorageKey, JSON.stringify(dataToStore));
+    console.log(`%c💾 Saved to localStorage: ${Object.keys(dataToStore).length} sections, ${totalMessages} total messages`, 'color: #6366f1; font-weight: bold;');
+    
+    // Also sync to backend if user is logged in
+    window.syncChatHistoriesToBackend();
+  } catch (e) {
+    console.error('❌ Failed to save chat histories to storage:', e);
+  }
+};
+
+// Sync chat history for a specific section to backend (optional - fails silently)
+window.syncChatHistoryToBackend = async function(section) {
+  const user = window.getLoggedInUser();
+  if (!user) return; // Only sync for logged-in users
+  
+  try {
+    const key = window.getChatHistoryKey(section);
+    const messages = window.chatHistories[key] || [];
+    
+    const res = await fetch(`${window.API_BASE}/api/chat-history/${section}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ messages }),
+      timeout: 2000
+    });
+    
+    // Silently fail if endpoint doesn't exist - localStorage is the primary storage
+    if (!res.ok) {
+      return;
+    }
+  } catch (e) {
+    // Silently ignore - backend sync is optional
+  }
+};
+
+// Sync all chat histories to backend (debounced)
+window.syncChatHistoriesToBackend = (function() {
+  let timeout = null;
+  return function() {
+    clearTimeout(timeout);
+    timeout = setTimeout(async () => {
+      const user = window.getLoggedInUser();
+      if (!user) return;
+      
+      // Sync all sections (exclude About which is now Settings-only)
+      const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'settings'];
+      for (const section of sections) {
+        window.syncChatHistoryToBackend(section);
+      }
+    }, 1000); // Debounce: sync 1 second after last message
+  };
+})();
+
+// Load chat history for a section from backend
+// Note: This is optional - falls back to localStorage if backend endpoints don't exist
+window.loadChatHistoryFromBackend = async function(section) {
+  const user = window.getLoggedInUser();
+  if (!user) return null;
+  
+  try {
+    const res = await fetch(`${window.API_BASE}/api/chat-history/${section}`, {
+      method: 'GET',
+      credentials: 'include',
+      timeout: 2000 // Quick timeout
+    });
+    
+    if (!res.ok) {
+      // Silently fail for 404 - endpoint doesn't exist yet, use localStorage
+      return null;
+    }
+    
+    const data = await res.json();
+    return data.messages || [];
+  } catch (e) {
+    // Silently fail - app works fine with localStorage
+    return null;
+  }
+};
+
+// Initialize chat history from backend on login (optional - fails silently if endpoints don't exist)
+window.loadAllChatHistoriesFromBackend = async function() {
+  const user = window.getLoggedInUser();
+  if (!user) return;
+  
+  // Silently attempt to load from backend
+  // If backend doesn't have endpoints, localStorage will be used instead
+  const sections = ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community', 'settings'];
+  let loadedCount = 0;
+  
+  for (const section of sections) {
+    try {
+      const backendMessages = await window.loadChatHistoryFromBackend(section);
+      if (backendMessages && backendMessages.length > 0) {
+        const key = window.getChatHistoryKey(section);
+        window.chatHistories[key] = backendMessages;
+        loadedCount++;
+      }
+    } catch (e) {
+      // Silently ignore - localStorage will be used
+    }
+  }
+  
+  // Only save to localStorage if we actually loaded something from backend
+  if (loadedCount > 0) {
+    window.saveChatHistoriesToStorage();
+  }
+};
+
+
+// Initialize chat history for a section (specific to current user)
+window.initChatHistory = function(section, maxMessages = 50) {
+  const key = window.getChatHistoryKey(section);
+  
+  // Skip if already initialized for this section
+  if (window.chatHistories[key] && window.chatHistories[key].length > 0) {
+    return;
+  }
+  
+  if (!window.chatHistories[key]) {
+    // Try to load from localStorage first
+    if (window.chatStorageKey) {
+      try {
+        const stored = localStorage.getItem(window.chatStorageKey);
+        if (stored) {
+          const histories = JSON.parse(stored);
+          if (histories[key]) {
+            window.chatHistories[key] = histories[key];
+          }
+        }
+      } catch (e) {
+        // If load fails, start fresh
+      }
+    }
+    
+    // If still empty, initialize empty array
+    if (!window.chatHistories[key]) {
+      window.chatHistories[key] = [];
+    }
+  }
+  
+  window.chatHistories[key].maxMessages = maxMessages || window.chatHistoriesMaxMessages;
+  
+  // Create global variables for each section for backward compatibility
+  const globalName = section + 'ChatHistory';
+  window[globalName] = window.chatHistories[key];
+  
+  if (window.chatHistories[key].length > 0) {
+    console.log(`%c📝 Chat history loaded for ${section} (${key}) - ${window.chatHistories[key].length} messages`, 'color: #10b981; font-weight: bold;');
+  }
+};
+
+// Initialize chat history AND restore previous messages to DOM
+window.initAndRestoreSectionHistory = function(section, elementId) {
+  // Initialize the in-memory history
+  window.initChatHistory(section);
+  
+  // Load existing messages from history to the DOM
+  window.loadChatHistoryToDOM(section, elementId);
+  
+  console.log(`%c🔄 Restored ${section} chat history to DOM`, 'color: #f59e0b; font-weight: bold;');
+};
+
+// Add a message to chat history with persistent storage
+window.addToChatHistory = function(section, role, content) {
+  const key = window.getChatHistoryKey(section);
+  if (!window.chatHistories[key]) {
+    window.initChatHistory(section);
+  }
+  
+  // Add message with timestamp and unique ID
+  const message = {
+    id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+    role,
+    content,
+    timestamp: Date.now(),
+    deleted: false // Flag for manually deleted messages
+  };
+  
+  window.chatHistories[key].push(message);
+  console.log(`%c➕ Added to history (${key}): ${role.toUpperCase()} - ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`, 'color: #059669;');
+  
+  // Keep only the last maxMessages - auto-delete oldest
+  const maxMessages = window.chatHistories[key].maxMessages || window.chatHistoriesMaxMessages;
+  if (window.chatHistories[key].length > maxMessages) {
+    // Remove oldest message
+    window.chatHistories[key].shift();
+    console.log(`%c🗑️ Auto-deleted oldest message (limit: ${maxMessages})`, 'color: #dc2626;');
+  }
+  
+  // Update global variable
+  const globalName = section + 'ChatHistory';
+  window[globalName] = window.chatHistories[key];
+  
+  // Persist to localStorage
+  window.saveChatHistoriesToStorage();
+};
+
+// Get chat history for a section
+window.getChatHistory = function(section) {
+  const key = window.getChatHistoryKey(section);
+  if (!window.chatHistories[key]) {
+    window.initChatHistory(section);
+  }
+  return window.chatHistories[key];
+};
+
+// Get raw chat history array (for API calls)
+window.getChatHistoryArray = function(section) {
+  const history = window.getChatHistory(section);
+  return history && Array.isArray(history) ? history.filter(msg => !msg.deleted) : [];
+};
+
+// Delete a specific message from chat history
+window.deleteFromChatHistory = function(section, messageId) {
+  const key = window.getChatHistoryKey(section);
+  if (!window.chatHistories[key]) return;
+  
+  const index = window.chatHistories[key].findIndex(msg => msg.id === messageId);
+  if (index !== -1) {
+    window.chatHistories[key].splice(index, 1);
+    
+    // Update global variable
+    const globalName = section + 'ChatHistory';
+    window[globalName] = window.chatHistories[key];
+    
+    // Persist to localStorage
+    window.saveChatHistoriesToStorage();
+    
+    return true;
+  }
+  return false;
+};
+
+// Clear all chat history for a section
+window.clearChatHistory = function(section) {
+  const key = window.getChatHistoryKey(section);
+  window.chatHistories[key] = [];
+  
+  // Update global variable
+  const globalName = section + 'ChatHistory';
+  window[globalName] = [];
+  
+  // Persist to localStorage
+  window.saveChatHistoriesToStorage();
+  
+  console.log(`%c🗑️ Chat history cleared for ${section}`, 'color: #ef4444; font-weight: bold;');
+};
+
+// Clear all chat histories for the current user (on logout)
+window.clearAllChatHistories = function() {
+  const user = window.getLoggedInUser();
+  if (user) {
+    // Remove all histories for this user
+    Object.keys(window.chatHistories).forEach(key => {
+      if (key.includes(`_${user}`)) {
+        delete window.chatHistories[key];
+      }
+    });
+  } else {
+    // Clear all non-user histories
+    const sections = ['home', 'edu', 'agro', 'medi', 'eco', 'community', 'servi', 'navi'];
+    sections.forEach(section => {
+      if (window.chatHistories[section]) {
+        delete window.chatHistories[section];
+      }
+    });
+  }
+  window.saveChatHistoriesToStorage();
+  console.log('%c🗑️ All chat histories cleared', 'color: #ef4444; font-weight: bold;');
+};
+
+
+// Generate storage key for a section-user combination
+window.getChatHistoryKey = function(section) {
+  const user = window.getLoggedInUser();
+  if (user) {
+    return `${section}_${user}`;
+  }
+  // For non-logged-in users, use the section name directly
+  return section;
+};
+// --- MESSAGE RENDERING HELPER ---
+// Load and render previous chat history for a section
+window.loadAndRenderChatHistory = function(section, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  
+  // Initialize history if not already done
+  window.initChatHistory(section);
+  
+  // Get all messages for this section
+  const history = window.getChatHistoryArray(section);
+  
+  console.log(`%c📚 Loading ${history.length} messages for ${section}`, 'color: #8b5cf6; font-weight: bold;');
+  
+  // Clear the container first
+  container.innerHTML = '';
+  
+  // Render all messages
+  history.forEach(message => {
+    const msgElement = window.createMessageElement(message, section, containerId);
+    if (msgElement) {
+      container.appendChild(msgElement);
+    }
+  });
+  
+  // Scroll to bottom
+  container.scrollTop = container.scrollHeight;
+};
+
+
+
+// Unified function to create message DOM elements with speak, copy, delete buttons for AI messages
+window.createMessageElement = function(message, section, containerId) {
+  const msgGroup = document.createElement('div');
+  msgGroup.className = 'chat-message-group';
+  const mid = message && message.id ? message.id : (Date.now() + '_' + Math.random().toString(36).substr(2,9));
+  msgGroup.setAttribute('data-msg-id', mid);
+  const isUser = message && message.role === 'user';
+  let contentHtml = message && message.content ? message.content : '';
+  
+  // Check if this is a "typing" message (no action buttons needed)
+  const isTypingMessage = contentHtml.includes('typing') || contentHtml.includes('Typing');
+  
+  if (!isUser && contentHtml) {
+    // remove any buttons that may have been included in earlier formats
+    const tmp = document.createElement('div');
+    tmp.innerHTML = contentHtml;
+    tmp.querySelectorAll('button').forEach(b => b.remove());
+    // also remove any stray action containers (e.g. old flex div wrappers)
+    tmp.querySelectorAll('.msg-actions, .ai-response').forEach(el => {
+      // keep ai-response container but strip nested buttons
+      if (el.classList.contains('ai-response')) return;
+      el.remove();
+    });
+    contentHtml = tmp.innerHTML;
+  }
+
+  if (isUser) {
+    msgGroup.innerHTML = `
+      <div class='user-msg' data-msg-id='${mid}'>
+        <span class='msg-text'>${contentHtml}</span>
+      </div>
+    `;
+  } else {
+    // AI message: content in ai-msg and actions placed below bubble (but only if NOT typing)
+    if (isTypingMessage) {
+      // No action buttons for typing messages
+      msgGroup.innerHTML = `
+        <div class='ai-msg' data-msg-id='${mid}'>
+          <span class='ai-msg-text msg-text'>${contentHtml}</span>
+        </div>
+      `;
+    } else {
+      // Add action buttons for actual responses
+      msgGroup.innerHTML = `
+      
+      
+        <div class='ai-msg' data-msg-id='${mid}'>
+          <span class='ai-msg-text msg-text'>${contentHtml}</span>
+        </div>
+        
+        <span class='msg-actions' data-msg-id='${mid}'>
+          <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+              d="M19.114 5.636a9 9 0 010 12.728M16.463
+              8.293a5.25 5.25 0 010 7.424M6.75
+              8.25l4.72-3.78A.75.75 0 0112.75
+              5.06v13.88a.75.75 0 01-1.28.53L6.75
+              15.75H3a.75.75 0 01-.75-.75v-6A.75.75
+              0 013 8.25h3.75z"/>
+            </svg>
+
+          </button>
+          <button class='copy-btn' data-msg-id='${mid}' title='Copy'>
+            <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            >
+            <rect width="14" height="14" x="8" y="8" rx="2"/>
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+            </svg>
+          </button>
+          <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>
+            <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            >
+            <path d="M3 6h18"/>
+            <path d="M8 6V4h8v2"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6"/>
+            <path d="M14 11v6"/>
+            </svg>
+          </button>
+        </span>
+        
+      
+      
+      `;
+
+      // Attach event listeners for AI message actions
+      // Speak
+      const speakBtn = msgGroup.querySelector('.read-aloud-btn');
+      if (speakBtn) {
+        speakBtn.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
+          if (txt) window.speakText(txt, speakBtn);
+        });
+      }
+      // Copy
+      const copyBtn = msgGroup.querySelector('.copy-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const txt = msgGroup.querySelector('.msg-text') ? msgGroup.querySelector('.msg-text').textContent : '';
+          if (!txt) return;
+          try {
+            await navigator.clipboard.writeText(txt);
+            window.showCopyTooltip(copyBtn, 'Message copied!');
+          } catch (err) {
+            console.warn('Copy failed', err);
+          }
+        });
+      }
+      // Delete
+      const deleteBtn = msgGroup.querySelector('.delete-msg-btn');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', (e) => {
+          e.preventDefault(); e.stopPropagation();
+          const msgId = deleteBtn.getAttribute('data-msg-id') || mid;
+          window.confirmDeleteMessage(section, containerId, msgId);
+        });
+      }
+    }
+  }
+  return msgGroup;
+};
+
+// Initialize chat histories for all sections
+  ['home', 'edu', 'agro', 'medi', 'navi', 'eco', 'servi', 'community'].forEach(section => {
+  window.initChatHistory(section, 10);
+});
+
+// Shared function to clear preview and remove the remove-btn
+// Use this instead of preview.innerHTML = '' in all section files
+window.clearPreviewAndRemoveBtn = function(previewElement) {
+  if (!previewElement) return;
+
+  try {
+    // Remove any preview children and specific remove button
+    // First, remove all remove buttons (in case there are multiple)
+    const removeButtons = previewElement.querySelectorAll('.remove-btn');
+    removeButtons.forEach(btn => {
+      try {
+        btn.remove();
+      } catch (e) {
+        // Ignore removal errors
+      }
+    });
+    
+    // Remove all preview containers
+    const containers = previewElement.querySelectorAll('.preview-container');
+    containers.forEach(container => {
+      try {
+        container.remove();
+      } catch (e) {
+        // Ignore removal errors
+      }
+    });
+
+    // Remove all remaining children to ensure complete clearing
+    while (previewElement.firstChild) {
+      try {
+        previewElement.removeChild(previewElement.firstChild);
+      } catch (e) {
+        // Ignore removal errors
+      }
+    }
+
+    // Clear all remaining content including any orphaned elements
+    previewElement.innerHTML = '';
+
+    // Also clear attachment registry for this section if possible
+    try {
+      const id = previewElement.id || '';
+      const m = id.match(/^(.+)-chat-preview$/);
+      if (m && m[1] && typeof window.clearAttachments === 'function') {
+        window.clearAttachments(m[1]);
+      }
+    } catch (e) {
+      // ignore if registry clearing fails
+    }
+    // Observe and remove dynamically added remove buttons
+    const observer = new MutationObserver(() => {
+      const dynamicRemoveButtons = previewElement.querySelectorAll('.remove-btn');
+      dynamicRemoveButtons.forEach(btn => btn.remove());
+    });
+
+    observer.observe(previewElement, { childList: true, subtree: true });
+
+    // Disconnect observer after a short delay to avoid memory leaks
+    setTimeout(() => observer.disconnect(), 5000);
+  } catch (e) {
+    // Fallback: force clear all HTML content
+    previewElement.innerHTML = '';
+  }
+};
+
+// Convenience function called by the inline remove button
+window.removePreview = function(section) {
+  try {
+    const preview = document.getElementById(section + '-chat-preview');
+    if (preview) window.clearPreviewAndRemoveBtn(preview);
+    // Also clear attachments from registry
+    window.clearAttachments(section);
+  } catch (e) {
+    console.warn('removePreview error', e);
+  }
+};
+
+// Function to toggle between Gemini models
+window.toggleGeminiModel = function(section, useGemini25) {
+    window.useGemini25 = useGemini25;
+    const label = document.querySelector('.model-label');
+    if (label) {
+        label.textContent = useGemini25 ? 'Using Gemini 2.5 Flash' : 'Using Gemini 1.5 Flash';
+    }
+    // Store preference
+    localStorage.setItem('gemini_model_preference', useGemini25 ? '2.5' : '1.5');
+};
+
+// Initialize model preference from storage
+if (typeof window.useGemini25 === 'undefined') {
+    const storedPreference = localStorage.getItem('gemini_model_preference');
+    window.useGemini25 = storedPreference === '1.5' ? false : true; // Default to 2.5
+}
+
+// Global text-to-speech variables and functions
+window.currentSpeech = null;
+
+window.stopSpeaking = function() {
+  if (window.currentSpeech) {
+    speechSynthesis.cancel();
+    window.currentSpeech = null;
+  }
+};
+
+window.speakText = window.speakText || function(text) {
+  window.stopSpeaking();
+  
+  // Remove HTML tags and convert breaks to spaces
+  const cleanText = text.replace(/<[^>]*>/g, '').replace(/<br>/g, ' ');
+  
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  
+  // Set preferred voice (try to use a clear English voice if available)
+  const voices = speechSynthesis.getVoices();
+  const preferredVoice = voices.find(voice => 
+    voice.name.includes('Google') || voice.name.includes('Microsoft') || 
+    voice.name.includes('English')
+  );
+  if (preferredVoice) utterance.voice = preferredVoice;
+  
+  // Adjust speech parameters for better clarity
+  utterance.rate = 1.0;  // Normal speed
+  utterance.pitch = 1.0; // Normal pitch
+  utterance.volume = 1.0; // Full volume
+  
+  window.currentSpeech = utterance;
+  
+  // Visual feedback while speaking
+  const speakButton = document.querySelector('.read-aloud-btn');
+  if (speakButton) {
+    speakButton.style.backgroundColor = '#e2e8f0';
+    speakButton.style.transform = 'scale(1.1)';
+  }
+  
+  utterance.onend = () => {
+    window.currentSpeech = null;
+    if (speakButton) {
+      speakButton.style.backgroundColor = '';
+      speakButton.style.transform = '';
+    }
+  };
+  
+  speechSynthesis.speak(utterance);
+};
+
+// Define isMobile function if not already defined (to prevent redeclaration)
+if (typeof window.isMobile === 'undefined') {
+  const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  window.isMobile = isMobile;
+}
+
+// --- IMAGE CAPTURE ---
+window.captureImage = function(section) {
+    if (window.isMobile()) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.setAttribute('capture', 'environment');
+        input.onchange = (e) => window.uploadFile(e, section);
+        input.click();
+    } else {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.innerHTML = `
+            <div class="camera-modal">
+                <h3 style="margin-top:0">Take a Photo</h3>
+                <video id="camera-feed" autoplay playsinline></video>
+                <div class="controls">
+                    <button id="snap-btn">Capture</button>
+                    <button id="close-camera">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const video = document.getElementById('camera-feed');
+        let stream;
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(s => {
+                stream = s;
+                video.srcObject = stream;
+            })
+            .catch(() => {
+                alert("Camera access denied.");
+                overlay.remove();
+            });
+
+        document.getElementById('snap-btn').onclick = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+           
+            canvas.toBlob((blob) => {
+                const file = new File([blob], "photo.png", { type: "image/png" });
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                window.uploadFile({ target: { files: dt.files } }, section);
+            }, 'image/png');
+
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.remove();
+        };
+
+        document.getElementById('close-camera').onclick = () => {
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.remove();
+        };
+    }
+};
+
+// --- AUDIO RECORDING ---
+window.recordAudio = function(section) {
+    if (window.isMobile()) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'audio/*';
+        input.setAttribute('capture', 'capture');
+        input.onchange = (e) => window.uploadFile(e, section);
+        input.click();
+    } else {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        overlay.innerHTML = `
+            <div class="audio-modal">
+                <div class="recording-status">
+                    <div class="pulse"></div>
+                    <span id="record-timer">00:00</span>
+                </div>
+                <p class="recording-audio">Recording audio...</p>
+                <div class="controls">
+                    <button id="stop-recording">Stop & Save</button>
+                    <button id="close-audio">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let stream;
+        let seconds = 0;
+        let timerInterval;
+
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(s => {
+                stream = s;
+                mediaRecorder = new MediaRecorder(stream);
+               
+                // Start Timer
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                    const secs = (seconds % 60).toString().padStart(2, '0');
+                    document.getElementById('record-timer').innerText = `${mins}:${secs}`;
+                }, 1000);
+
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    clearInterval(timerInterval);
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const file = new File([audioBlob], "voice.webm", { type: "audio/webm" });
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    window.uploadFile({ target: { files: dt.files } }, section);
+                    if (stream) stream.getTracks().forEach(t => t.stop());
+                    overlay.remove();
+                };
+                mediaRecorder.start();
+            })
+            .catch(() => {
+                alert("Microphone access denied.");
+                overlay.remove();
+            });
+
+        document.getElementById('stop-recording').onclick = () => {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        };
+        document.getElementById('close-audio').onclick = () => {
+            clearInterval(timerInterval);
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.remove();
+        };
+    }
+};
+
+// --- FILE UPLOAD & PREVIEW ---
+/**
+ * Enhanced file upload handler supporting images, audio, video, PDF, and document files
+ * Properly converts files to base64 and extracts MIME types for API transmission
+ * @param {Event} e - File input change event
+ * @param {string} section - Section identifier (home, edu, agro, medi, community, eco, servi, navi)
+ */
+window.uploadFile = function(e, section) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const preview = document.getElementById(section + '-chat-preview');
+        if (!preview) return;
+       
+        // Create a container for the preview and the remove button
+        const container = document.createElement('div');
+        container.className = 'preview-container';
+        
+        // Extract base64 data from data URL (remove the "data:..." prefix)
+        const dataUrl = ev.target.result;
+        const base64Data = dataUrl.split(',')[1];
+        
+        // Store the file data URL, base64, MIME type as data attributes for API transmission
+        container.setAttribute('data-file-data', dataUrl);
+        container.setAttribute('data-file-base64', base64Data);
+        container.setAttribute('data-file-mime', file.type);
+        container.setAttribute('data-file-name', file.name);
+        container.setAttribute('data-file-size', file.size);
+
+        let mediaHtml = '';
+        const fileIcon = window.getFileTypeIcon(file.type);
+        
+        if (file.type.startsWith('image/')) {
+            mediaHtml = `<img src='${dataUrl}' style='max-width:120px;max-height:80px;border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;' alt='Preview' />`;
+        } else if (file.type.startsWith('audio/')) {
+            mediaHtml = `<audio src='${dataUrl}' controls style='max-width:160px; border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;'></audio>`;
+        } else if (file.type.startsWith('video/')) {
+            mediaHtml = `<video src='${dataUrl}' controls style='max-width:160px; border-radius:8px; display:flex; overflow:hidden; object-fit:fill; width:100%; height:100%;'></video>`;
+        } else if (file.type === 'application/pdf') {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:12px;"><span>${fileIcon} PDF</span><div style="font-size:10px; color:#666;">${file.name}</div></div>`;
+        } else if (file.type.includes('word') || file.type.includes('document') || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:12px;"><span>${fileIcon} Document</span><div style="font-size:10px; color:#666;">${file.name}</div></div>`;
+        } else if (file.type.includes('spreadsheet') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:12px;"><span>${fileIcon} Spreadsheet</span><div style="font-size:10px; color:#666;">${file.name}</div></div>`;
+        } else if (file.type.includes('text') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:12px;"><span>${fileIcon} Text</span><div style="font-size:10px; color:#666;">${file.name}</div></div>`;
+        } else {
+            mediaHtml = `<div style="padding:8px; background:#f1f1f1; border-radius:8px; font-size:11px;">📎 ${file.name}</div>`;
+        }
+
+        // Add the media and the "X" button to the container
+        container.innerHTML = `
+          ${mediaHtml}
+          <button class="remove-btn" onclick="window.removePreview('${section}')" title="Remove">✕</button>
+        `;
+
+        // Clear previous preview and add the new one
+        preview.innerHTML = '';
+        preview.appendChild(container);
+        
+        // Track attachment in global storage
+        window.addAttachment(section, file);
+    };
+   
+    reader.readAsDataURL(file);
+};
+
+/**
+ * Get appropriate icon for file type
+ * @param {string} mimeType - The MIME type of the file
+ * @returns {string} - An emoji or icon string
+ */
+window.getFileTypeIcon = function(mimeType) {
+    if (mimeType.startsWith('image/')) return '🖼️';
+    if (mimeType.startsWith('audio/')) return '🎵';
+    if (mimeType.startsWith('video/')) return '🎥';
+    if (mimeType === 'application/pdf') return '📄';
+    if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
+    if (mimeType.includes('spreadsheet')) return '📊';
+    if (mimeType.includes('text') || mimeType.includes('plain')) return '📄';
+    return '📎';
+};
+
+// Show copy tooltip notification
+window.showCopyTooltip = function(element, message = 'Copied!') {
+  const tooltip = document.createElement('div');
+  tooltip.className = 'copy-tooltip';
+  tooltip.textContent = message;
+  tooltip.style.position = 'fixed';
+  tooltip.style.backgroundColor = '#111827';
+  tooltip.style.color = '#fff';
+  tooltip.style.padding = '6px 8px';
+  tooltip.style.borderRadius = '6px';
+  tooltip.style.fontSize = '12px';
+  tooltip.style.zIndex = '9999';
+  tooltip.style.pointerEvents = 'none';
+  
+  document.body.appendChild(tooltip);
+  
+  // Position near element
+  const rect = element.getBoundingClientRect();
+  tooltip.style.top = (rect.top - 30) + 'px';
+  tooltip.style.left = (rect.left - tooltip.offsetWidth / 2 + element.offsetWidth / 2) + 'px';
+  
+  setTimeout(() => tooltip.remove(), 2000);
+};
+
+// Confirm and delete a message from history
+window.confirmDeleteMessage = function(section, containerId, messageId) {
+  const ok = confirm('Delete this message? This action cannot be undone.');
+  if (!ok) return;
+  
+  // Remove from DOM with animation
+  const msgElement = document.querySelector(`[data-msg-id="${messageId}"]`);
+  if (msgElement && msgElement.closest('.chat-message-group')) {
+    const msgGroup = msgElement.closest('.chat-message-group');
+    msgGroup.style.opacity = '0.5';
+    setTimeout(() => msgGroup.remove(), 300);
+  }
+  
+  // Remove from history
+  window.deleteFromChatHistory(section, messageId);
+};
+
+// Add speak/copy/delete action buttons to an AI message group (called after response arrives)
+window.addActionsToMsgGroup = function(msgGroup, section, containerId) {
+  if (!msgGroup || msgGroup.querySelector('.msg-actions')) return;
+  const mid = msgGroup.getAttribute('data-msg-id') || '';
+  const actions = document.createElement('span');
+  actions.className = 'msg-actions';
+  if (mid) actions.setAttribute('data-msg-id', mid);
+  actions.innerHTML = `
+
+    <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 24 24" stroke-width="1.5"
+      stroke="currentColor" width="24" height="24">
+      <path stroke-linecap="round" stroke-linejoin="round"
+      d="M19.114 5.636a9 9 0 010 12.728M16.463
+      8.293a5.25 5.25 0 010 7.424M6.75
+      8.25l4.72-3.78A.75.75 0 0112.75
+      5.06v13.88a.75.75 0 01-1.28.53L6.75
+      15.75H3a.75.75 0 01-.75-.75v-6A.75.75
+      0 013 8.25h3.75z"/>
+      </svg>
+    </button>
+    <button class='copy-btn' data-msg-id='${mid}' title='Copy'>
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      >
+      <rect width="14" height="14" x="8" y="8" rx="2"/>
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+      </svg>
+    </button>
+    <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      >
+      <path d="M3 6h18"/>
+      <path d="M8 6V4h8v2"/>
+      <path d="M19 6l-1 14H6L5 6"/>
+      <path d="M10 11v6"/>
+      <path d="M14 11v6"/>
+      </svg>
+    </button>
+<!--
+    <button class='read-aloud-btn' data-msg-id='${mid}' title='Listen'>🔊</button>
+    <button class='copy-btn' data-msg-id='${mid}' title='Copy'>📋</button>
+    <button class='delete-msg-btn' data-msg-id='${mid}' title='Delete message'>🗑️</button>
+    -->
+  `;
+  msgGroup.appendChild(actions);
+
+  // Send notification if app is in background
+  if (window.NotificationManager && window.NotificationManager.notifyMessageReceived) {
+    const aiMessage = msgGroup.querySelector('.ai-msg-text');
+    const preview = aiMessage ? aiMessage.textContent.substring(0, 100) : 'New response received';
+    window.NotificationManager.notifyMessageReceived(section, preview);
+  }
+
+  // wire events
+  const speakBtn = actions.querySelector('.read-aloud-btn');
+  if (speakBtn) {
+    speakBtn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = msgGroup.querySelector('.ai-msg-text') ? msgGroup.querySelector('.ai-msg-text').textContent : '';
+      if (txt) window.speakText(txt, speakBtn);
+    });
+  }
+  const copyBtn = actions.querySelector('.copy-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const txt = msgGroup.querySelector('.ai-msg-text') ? msgGroup.querySelector('.ai-msg-text').textContent : '';
+      if (!txt) return;
+      try {
+        await navigator.clipboard.writeText(txt);
+        window.showCopyTooltip(copyBtn, 'Message copied!');
+      } catch (err) {
+        console.warn('Copy failed', err);
+      }
+    });
+  }
+  const deleteBtn = actions.querySelector('.delete-msg-btn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      const msgId = deleteBtn.getAttribute('data-msg-id') || mid;
+      window.confirmDeleteMessage(section, containerId, msgId);
+    });
+  }
+};
+
+// Text-to-speech helper
+window.speakText = function(text, btnElement) {
+  // Remove emoji and special characters from text
+  const cleanText = text.replace(/[🔊📋🗑️\s]+$/g, '').trim();
+  
+  if (!cleanText) return;
+  
+  // Cancel any ongoing speech
+  window.speechSynthesis.cancel();
+  
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.rate = 1;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+  
+  // Visual feedback
+  if (btnElement) {
+    btnElement.classList.add('speaking-active');
+  }
+  
+  utterance.onend = () => {
+    if (btnElement) {
+      btnElement.classList.remove('speaking-active');
+    }
+  };
+  
+  utterance.onerror = (event) => {
+    console.error('Speech synthesis error:', event);
+    if (btnElement) {
+      btnElement.classList.remove('speaking-active');
+    }
+  };
+  
+  window.speechSynthesis.speak(utterance);
+};
+
+// Common function to format AI responses
+function formatAIResponse(text) {
+  let formatted = text
+    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '<b>$1</b>') // Bold
+    .replace(/\n/g, '<br>'); // Line breaks
+  
+  // only return the formatted content; action buttons will be rendered
+  // separately so they can be positioned at the bottom of the bubble.
+  return `
+    <div class="ai-response">
+      ${formatted}
+    </div>
+  `;
+}
+
+// Copy AI response to clipboard
+window.copyResponseToClipboard = function(btn) {
+  const responseDiv = btn.closest('.ai-response');
+  if (!responseDiv) return;
+  const text = responseDiv.textContent.replace(/[🔊📋🗑️]/g, '').trim();
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    window.showCopyTooltip(btn, 'Message copied!');
+  }).catch(err => console.warn('Copy failed:', err));
+};
+
+// Delete AI response message
+window.deleteAIResponse = function(btn) {
+  const ok = confirm('Delete this message? This action cannot be undone.');
+  if (!ok) return;
+  const msgGroup = btn.closest('.chat-message-group');
+  if (msgGroup) {
+    msgGroup.style.opacity = '0.5';
+    setTimeout(() => msgGroup.remove(), 300);
+  } else {
+    // Fallback: remove just the response div
+    const responseDiv = btn.closest('.ai-response');
+    if (responseDiv) {
+      responseDiv.style.opacity = '0.5';
+      setTimeout(() => responseDiv.remove(), 300);
+    }
+  }
+};
+
+
+/**
+ * Unified send wrapper used by components to send a user message to the AI.
+ * Handles aborts, stop button wiring, local details loading, UI appends and error handling.
+ * opts: { section, message, containerId, sendBtn, attachments, apiKey, persistHistory }
+ */
+window.sendAIRequest = async function(opts = {}) {
+  const section = (opts.section || 'home').toLowerCase();
+  const msg = opts.message || '';
+  const containerId = opts.containerId || `${section}-chat-messages`;
+  const sendBtn = opts.sendBtn || document.querySelector(`#${section}-send-btn`) || document.querySelector('.send-button');
+  const attachments = opts.attachments || [];
+  const apiKey = opts.apiKey || window.GEMINI_API_KEY || window.GEMINI_API_KEY;
+  const persist = typeof opts.persistHistory === 'boolean' ? opts.persistHistory : true;
+
+  // Load local details for this section (English folder) to pass into the AI
+  const localDetails = await window.fetchLocalDetails(section.charAt(0).toUpperCase() + section.slice(1), 'En');
+
+  // Wire up stop button and get abort controller
+  const abortController = window.setupStopButton ? window.setupStopButton({ sendBtn, section }) : (new AbortController());
+  const signal = abortController ? abortController.signal : null;
+
+  try {
+    // Append user message to UI and history
+    if (msg && msg.trim()) {
+      window.appendChatMessage({ section, containerId, role: 'user', content: msg, persistHistory: persist });
+    }
+
+    // Call centralized AI function
+    const aiText = await window.callGeminiAI(localDetails, msg, apiKey, null, signal, section, attachments);
+
+    // Format AI response and append
+    const formatted = formatAIResponse(aiText || 'Sorry, I could not generate a response.');
+    window.appendChatMessage({ section, containerId, role: 'ai', content: formatted, persistHistory: persist });
+
+    // Add to history (already done inside appendChatMessage)
+    return aiText;
+  } catch (err) {
+    // Handle abort separately
+    if (err && (err.name === 'AbortError' || err.message === 'AbortError')) {
+      window.appendChatMessage({ section, containerId, role: 'ai', content: `<div class='error-message'>Request aborted by user</div>`, persistHistory: false });
+      throw err;
+    }
+    const friendly = window.friendlyAIErrorMessage ? window.friendlyAIErrorMessage(err) : 'The AI is unavailable.';
+    window.appendChatMessage({ section, containerId, role: 'ai', content: `<div class='error-message'>${friendly}</div>`, persistHistory: false });
+    console.error('sendAIRequest error', err);
+    throw err;
+  } finally {
+    // Restore send button UI
+    try {
+      if (sendBtn) {
+        sendBtn.classList.remove('sending');
+        sendBtn.textContent = 'Send';
+        sendBtn.style.backgroundColor = '';
+      }
+    } catch (e) {}
+  }
+};
+

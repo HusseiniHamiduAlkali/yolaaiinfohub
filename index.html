@@ -53,141 +53,31 @@
   <div class="chat-backdrop"></div>
   
   <div class="chat-container">
-    <iframe id="chat-iframe" data-src="templates/chat.html" title="Yola AI Chat" style="width:100%; height:100%;"></iframe>
-    <!--
-    <div class="chat-header">
-      <div style="display: flex; flex-direction: column; align-self: flex-start; margin-top: 5px;">
-        <!--<span class="chat-header-name" data-i18n="home_chat_header">Home AI Chat</span>-->
-        <!--
-        <span class="chat-header-name">My Yola AI Chat</span>
-        <p style="font-size: small; color: #c4cae3; text-align: left; display: inline-flex; align-items: center; gap: 10px;">Online
-          <span class="online-pulse"></span>
-        </p>
-      </div>
-
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <div class="model-switch">
-          <label class="model-select-label" for="model-select-trigger">AI model:</label>
-          <div class="model-select-wrapper">
-            <button type="button" class="custom-select-trigger" id="model-select-trigger" aria-haspopup="listbox" aria-expanded="false">
-              <span class="custom-select-value">Gemini 2.5 Flash</span>
-              <span class="custom-select-arrow">▾</span>
-            </button>
-            <ul class="custom-select-options" id="model-select-options" role="listbox" tabindex="-1">
-              <li role="option" data-value="1.5">Gemini 1.5 Flash</li>
-              <li role="option" data-value="2.5" aria-selected="true">Gemini 2.5 Flash</li>
-            </ul>
-          </div>
-          <select id="model-select" class="model-select visually-hidden" aria-hidden="true">
-            <option value="1.5">Gemini 1.5 Flash</option>
-            <option value="2.5" selected>Gemini 2.5 Flash</option>
-          </select>
-          <div id="itemList" style="margin-top: 12px;"></div>
-          <!--<span class="model-label" data-i18n="model_label_flash">Using Gemini 2.5 Flash</span>-->
-          <!--
-        </div>
-        <div class="chat-header-btn-container">
-          <div class="chat-options-menu">
-            <button type="button" class="chat-options-trigger" id="chat-options-trigger" aria-haspopup="menu" aria-expanded="false" title="More options">
-              <svg class="more-svg-desktop" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="3" r="2"/>
-                <circle cx="12" cy="12" r="2"/>
-                <circle cx="12" cy="20" r="2"/>
-              </svg>
-              <svg class="more-svg-mobile" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="5" cy="12" r="2"/>
-                <circle cx="12" cy="12" r="2"/>
-                <circle cx="19" cy="12" r="2"/>
-              </svg>
-            </button>
-            <ul class="chat-options-list" id="chat-options-list" role="menu" tabindex="-1">
-              <li role="menuitem" data-action="mark-messages">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 12l2 2 4-4"/>
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                </svg>
-                <span>Mark messages</span>
-              </li>
-              <li role="menuitem" data-action="delete-all">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3 6 5 6 21 6"/>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                  <line x1="10" y1="11" x2="10" y2="17"/>
-                  <line x1="14" y1="11" x2="14" y2="17"/>
-                </svg>
-                <span>Delete all</span>
-              </li>
-            </ul>
-          </div>
-          <button type="button" class="chat-close-btn" onclick="window.hideChatContainer()" title="Close Chat" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.25rem; font-weight: bold;">✕</button>
-        </div>
-      </div>
-    </div>
-    <div class="chat-messages" id="home-chat-messages"></div>
-    <div style="display: flex; flex-direction: row">
-      <button class="voice-record-btn" style="margin-left: 10px; border-radius: 25%" type="button" onclick="window.recordAudio('home')" title="Record Audio">
-        <svg class="voice-record-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <rect x="9" y="2" width="6" height="12" rx="3"/>
-          <path d="M5 10a7 7 0 0 0 14 0"/>
-          <line x1="12" y1="19" x2="12" y2="22"/>
-        </svg>
-      </button>
-      <form class="chat-input-area" style="flex-direction: column;" onsubmit="event.preventDefault(); window.sendHomeMessage();">
-        <div id="home-chat-preview" class="chat-preview"></div>
-        <div class="chat-input-area">
-          <input type="text" id="home-chat-input" data-i18n-placeholder="home_chat_placeholder" placeholder="Ask anything about Yola..." required />
-          <button type="submit" class="send-button">
-            <svg class="send-button-svg" style="justify-self: center;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-              <path d="M9.78 18.65l.28-4.23l7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3l-4.04-1.27c-.88-.28-.9-.88.2-1.3l15.97-6.16c.73-.33 1.37.19 1.1 1.3l-2.72 12.8c-.2.91-.75 1.13-1.52.71l-4.22-3.11l-2.04 1.96c-.23.23-.42.42-.86.42z"/>
-            </svg>
-          </button>
-        </div>
-      </form>
-    </div>
-    <div class="input-options">
-      <button type="button" onclick="window.captureImage('home')" title="Capture Image">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7 a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-          <circle cx="12" cy="13" r="4"/>
-        </svg>
-      </button>
-      
-      <label class="file-upload-btn" title="Upload File">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5 a2 2 0 0 1-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" y1="3" x2="12" y2="15"/>
-        </svg>
-        <input type="file" style="display:none" onchange="window.uploadFile(event, 'home')" />
-      </label>
-      <button type="button" id="home-voice-call-btn" onclick="window.startVoiceCall('home')" title="Start Live Voice Call with AI">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.11 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.89.32 1.76.59 2.59a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.49-1.49 a2 2 0 0 1 2.11-.45c.83.27 1.7.47 2.59.59A2 2 0 0 1 22 16.92z"/>
-        </svg>
-      </button>
-      <button type="button" id="home-mute-btn" onclick="window.toggleVoiceCallMute('home')" title="Mute/Unmute Microphone" style="display: none;">
-        <i class="fas fa-microphone-slash"></i> Mute
-      </button>
-      <div id="home-voice-indicator" class="voice-indicator" style="display: none;">Listening...</div>
-      <div id="home-call-duration" class="call-duration" style="display: none;">00:00</div>
-    </div>
-    <div class="faq-list">
-      <h3>Try the General FAQs</h3>
-      <ul>
-        <li><a class="faq-link" data-i18n="faq_1" onclick="window.sendFAQInCurrentLang('faq_1', 'Home')">The capital of Adamawa State</a></li>
-        <li><a class="faq-link" data-i18n="faq_2" onclick="window.sendFAQInCurrentLang('faq_2', 'Home')">What is the current time in Yola</a></li>
-        <li><a class="faq-link" data-i18n="faq_3" onclick="window.sendFAQInCurrentLang('faq_3', 'Home')">What are popular places to visit</a></li>
-        <li><a class="faq-link" data-i18n="faq_4" onclick="window.sendFAQInCurrentLang('faq_4', 'Home')">Brief history of Yola</a></li>
-        <li><a class="faq-link" data-i18n="faq_5" onclick="window.sendFAQInCurrentLang('faq_5', 'Home')">What is the origin of Yola</a></li>
-        <li><a class="faq-link" data-i18n="faq_6" onclick="window.sendFAQInCurrentLang('faq_6', 'Home')">Emergency contact information</a></li>
-      </ul>
-    </div>
-  </div>
-  -->
+  <iframe id="chat-iframe" data-src="templates/chat.html" title="Yola AI Chat" style="width:100%; height:100%;"></iframe>
+  <script>
+    (function(){
+      function hideChat() {
+        const container = document.querySelector('.chat-container');
+        const backdrop = document.querySelector('.chat-backdrop');
+        const floatingBtn = document.querySelector('.floating-chat-btn');
+        if (container) container.classList.remove('active');
+        if (backdrop) backdrop.classList.remove('active');
+        if (floatingBtn) floatingBtn.classList.remove('active');
+        // Keep iframe src so reopening preserves state/theme/styling.
+        // (ensureChatIframeLoaded will only set src when it's empty)
+        document.body.style.overflow = 'auto';
+      }
+      window.addEventListener('message', (ev) => {
+        try {
+          const d = ev.data;
+          if (d && d.type === 'yola-hide-chat') hideChat();
+        } catch (e) { /* ignore */ }
+      });
+    })();
+  </script>
+        
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" defer onerror="console.debug('TensorFlow loaded (source map warnings are expected and safe)')"></script>
-  <!-- TomTom Maps SDK - loaded dynamically to avoid unnecessary network requests on other pages -->
-  <!-- the CSS/JS will be injected only when the navigation section is initialized -->
   <script>
     // ensures the TomTom SDK is loaded (local vendor copy preferred, fallback to CDN)
     window.ensureTomTomSDK = function(){
@@ -603,6 +493,43 @@
           });
       });
     }
+
+    </script>
+
+  <script>
+  const revealCards = document.querySelectorAll('.section4');
+  let lastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+  let scrollDirection = 'down';
+
+  window.addEventListener('scroll', () => {
+    const currentY = window.scrollY || document.documentElement.scrollTop || 0;
+    if (currentY > lastScrollY) {
+      scrollDirection = 'down';
+    } else if (currentY < lastScrollY) {
+      scrollDirection = 'up';
+    }
+    lastScrollY = currentY;
+  }, { passive: true });
+
+  if (revealCards.length && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove('hiding');
+          entry.target.classList.add('showing');
+          if (scrollDirection === 'up') {
+            entry.target.classList.add('instant');
+            requestAnimationFrame(() => entry.target.classList.remove('instant'));
+          }
+        } else if (scrollDirection === 'down') {
+          entry.target.classList.add('hiding');
+          entry.target.classList.remove('showing');
+        }
+      });
+    }, { threshold: 0.2 });
+
+    revealCards.forEach(card => observer.observe(card));
+  }
   </script>
 </body>
 </html>

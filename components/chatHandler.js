@@ -208,15 +208,6 @@ async function getGeminiAnswer(prompt, msg, section, apiKey, attachments = []) {
   }
 }
 
-// Use centralized `formatAIResponse` from components/commonAI.js
-
-// Image capture handled centrally in `components/commonAI.js` via `window.captureImage`.
-
-// Common audio recording function
-// Audio recording handled centrally in `components/commonAI.js` via `window.recordAudio(section)`.
-
-// File upload handled centrally in `components/commonAI.js` via `window.uploadFile(e, section)`.
-
 // Message handling function
 window.sendMessage = async function(section, faqText = '') {
   const input = document.getElementById(`${section}-chat-input`);

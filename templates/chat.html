@@ -223,7 +223,7 @@ html[data-theme="dark"] .theme-icon-light { display: none; }
 
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 40px; height: 40px;
+  width: 30px; height: 40px;
   background: none; border: none; border-radius: 10px;
   color: var(--ink); cursor: pointer;
   transition: background .15s ease, color .15s;
@@ -297,12 +297,12 @@ html[data-theme="dark"] .options-list li:hover { background: rgba(255,255,255,0.
 .msg-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0px;
   margin-top: 12px;
 }
 .msg-action-btn {
-  border: 1px solid rgba(26,28,75,0.12);
-  background: rgba(255,255,255,0.95);
+  border: none;
+  background: transparent;
   color: var(--ink);
   border-radius: 12px;
   padding: 8px 10px;
@@ -483,19 +483,20 @@ html[data-theme="dark"] .compose-btn:hover { color: var(--saffron); }
   .app.sidebar-open .sidebar-backdrop { display: block; }
   .sidebar-close { display: inline-flex !important; }
   .menu-btn { display: inline-flex !important; }
-  .chat-header { padding: 10px 12px; gap: 8px; }
-  .header-title { gap: 8px; }
+  .chat-header { padding: 10px 1px; gap: 5px; min-width: 385px !important; justify-content: space-around;}
+  .header-title { gap: 8px; max-width: fit-content;}
   .header-avatar { width: 34px; height: 34px; }
-  .header-name { font-size: 0.95rem; }
+  .header-name { font-size: 14px; width: 112px; }
   .header-status { font-size: 0.7rem; }
   .model-switch .model-label { display: none; }
-  .model-select { padding: 6px 8px; font-size: 0.8rem; max-width: 120px; }
-  .header-actions { gap: 4px; }
+  .model-select { padding: 6px 2px; font-size: 0.8rem; max-width: 120px; }
+  .header-actions { gap: 3px; }
   .composer-wrap { padding: 10px 10px 12px; }
   .composer { padding: 6px; gap: 2px; border-radius: 16px; }
-  .compose-btn { width: 36px; height: 36px; flex-basis: 36px; }
+  .compose-btn { width: 36px; height: 36px; flex-basis: 35px; }
   .send-btn { flex: 0 0 40px; height: 40px; }
   .input { font-size: 0.9rem; padding: 8px 6px; }
+  .icon-btn {padding-inline: 0; width: 21px;}
   .messages { padding: 16px 12px 4px; }
   .empty-state { padding: 24px 12px; }
   .empty-state h1 { font-size: 1.25rem; }
@@ -589,6 +590,19 @@ html[data-theme="dark"] .thread-list::-webkit-scrollbar-thumb { background: rgba
               </li>
             </ul>
           </div>
+
+          <div class="options-menu">
+            <button class="icon-btn" id="hide-chat-btn">
+              <!-- X -->
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+              stroke="currentColor" stroke-width="1.5"
+              viewBox="0 0 24 24" width="24" height="24">
+                <path d="M4 4l16 16M20 4L4 20"/>
+              </svg>
+            </button>            
+          </div>
+          
+
         </div>
       </header>
 
@@ -1486,11 +1500,24 @@ function wireEvents() {
     if (!e.target.closest(".options-menu")) toggleOptions(false);
   });
 
+  const hideBtn = $("#hide-chat-btn");
+  if (hideBtn) {
+    hideBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      try {
+        window.parent.postMessage({ type: "yola-hide-chat" }, "*");
+      } catch (err) {
+        console.warn('Unable to postMessage to parent', err);
+      }
+    });
+  }
+
   $("#theme-toggle").addEventListener("click", toggleTheme);
 
   // Focus input on load
   window.addEventListener("load", () => $("#input").focus());
 }
+
 
 // Bootstrap
 if (document.readyState === "loading") {
@@ -1498,6 +1525,135 @@ if (document.readyState === "loading") {
 } else {
   boot();
 }
+
+
+
+
+
+
+/**
+ * Detect the current app language setting from i18n
+ * @returns {string} - Language code (en, ha, ar, fr, ff, yo, ig, pcm)
+ */
+window.getCurrentAppLanguage = function() {
+  if (typeof window.i18n !== 'undefined' && window.i18n.getLanguage) {
+    return window.i18n.getLanguage();
+  }
+  // Fallback to localStorage
+  try {
+    const lang = localStorage.getItem('appLanguage');
+    return lang || 'en';
+  } catch (e) {
+    return 'en';
+  }
+};
+
+/**
+ * Simple language detection for user input text
+ * Uses character detection and common words to identify language
+ * @param {string} text - User message text
+ * @returns {string} - Detected language code or 'en' for unknown
+ */
+window.detectMessageLanguage = function(text) {
+  if (!text || text.length < 2) return window.getCurrentAppLanguage();
+  
+  const sampleText = text.substring(0, 500).toLowerCase();
+  
+  // Arabic characters (AR)
+  if (/[\u0600-\u06FF]/.test(sampleText)) return 'ar';
+  
+  // Hausa common words and patterns
+  if (/\b(na|ni|yi|shi|ba|uba|wani|tun|sai|ga)\b/i.test(sampleText)) return 'ha';
+  
+  // French common words (FR)
+  if (/\b(bonjour|merci|s'il vous|est|de|le|la|les|vous|nous|avec|pour|que|c'est|je|tu|il|qui)\b/i.test(sampleText)) return 'fr';
+  
+  // Fulfulde common words (FF)
+  if (/\b(ko|ɗo|ngaa|jom|nde|eɗen|laawol|pulaaku|firaande)\b/i.test(sampleText)) return 'ff';
+  
+  // Yoruba common words and tones (YO)
+  if (/[\u0300-\u0301]/.test(sampleText) || /\b(ẹ|ọ|ṣ|e|o|s|a|i|u|n|r)\b/i.test(sampleText) && 
+      /\b(o|e|a|wa|ti|fi|ri|ni|si|lo|wo|ye|bo|le|ke|lu|ju|sa|so|mi|ma|mu)\b/i.test(sampleText)) {
+    return 'yo';
+  }
+  
+  // Igbo common words (IG)
+  if (/\b(ọ|ụ|ị|ebe|mma|ike|chi|eze|okwa|ihe|mmad|nna|nne)\b/i.test(sampleText)) return 'ig';
+  
+  // Pidgin English patterns (PCM)
+  if (/\b(go|come|be|don|no|make|because|for|e|am|na|to|abi|sef|jare)\b/i.test(sampleText)) return 'pcm';
+  
+  // Default to current app language
+  return window.getCurrentAppLanguage();
+};
+
+/**
+ * Generate a multilingual prompt instruction for Gemini
+ * This tells Gemini to understand and respond in the detected language
+ * @param {string} userMessage - The user's message
+ * @param {string} section - The section/category (home, edu, agro, medi, eco, community, servi, navi)
+ * @returns {string} - Enhanced prompt with language instructions
+ */
+window.generateMultilingualPrompt = function(userMessage, section = 'home') {
+  const detectedLanguage = window.detectMessageLanguage(userMessage);
+  const appLanguage = window.getCurrentAppLanguage();
+  const languageName = window.SUPPORTED_LANGUAGES[detectedLanguage] || 'English';
+  
+  // Build language-aware prompt
+  let multilingualContext = `
+You are a helpful AI assistant for the Yola AI Info Hub application.
+
+LANGUAGE INFORMATION:
+- User's detected message language: ${languageName} (${detectedLanguage})
+- App interface language: ${window.SUPPORTED_LANGUAGES[appLanguage] || 'English'} (${appLanguage})
+
+IMPORTANT LANGUAGE REQUIREMENTS:
+1. The user's message is in ${languageName}. Please understand and respond appropriately to their request, EVEN IF IT'S NOT IN ENGLISH.
+2. You must be able to understand requests in ALL these languages: English, Hausa, Arabic, French, Fulfulde, Yoruba, Igbo, and Pidgin.
+3. Respond to the user in the same language they used in their message (${languageName}).
+4. If the user code-switches (mixes languages), respond primarily in the dominant language used.
+5. Maintain the context and meaning of Yola, Adamawa State, Nigeria throughout your responses.
+
+SECTION CONTEXT: ${section.toUpperCase()}
+Provide information relevant to the ${section} section of the Yola AI Info Hub.
+`;
+
+  return multilingualContext;
+};
+
+/**
+ * Translate a system prompt to match user's language preference
+ * @param {string} basePrompt - The base prompt in English
+ * @param {string} targetLanguage - Target language code (en, ha, ar, fr, ff, yo, ig, pcm)
+ * @returns {string} - Instruction to help Gemini understand language needs
+ */
+window.getLanguageAdjustedPrompt = function(basePrompt, targetLanguage = 'en') {
+  if (targetLanguage === 'en') return basePrompt;
+  
+  const languageName = window.SUPPORTED_LANGUAGES[targetLanguage] || 'English';
+  return `${basePrompt}
+
+IMPORTANT: Please understand that the user may respond in ${languageName}. 
+If they do, please comprehend their ${languageName} message and respond appropriately.
+You must be fluent in understanding requests in all major Nigerian and regional languages.`;
+};
+
+// Map various internal/network/API errors to friendly, non-technical messages
+window.friendlyAIErrorMessage = function(err) {
+  try {
+    if (!err) return "The AI is currently unavailable. Please try again later.";
+    const msg = (err && err.message) ? err.message : '';
+    if (msg.includes('API_RATE_LIMIT')) return "The AI is receiving too many requests right now. Please try again a little later.";
+    if (msg.includes('API_SERVER_ERROR')) return "The AI service is temporarily unavailable. Please try again later.";
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) return "Can't access the AI — please check your internet connection and try again.";
+    if (msg.includes('API_BAD_REQUEST')) return "I couldn't understand that request. Please try rephrasing your question.";
+    if (msg.includes('INVALID_JSON_RESPONSE') || msg.includes('INVALID_RESPONSE_FORMAT') || msg.includes('EMPTY_RESPONSE')) return "The AI returned an unexpected response. Please try again or ask something different.";
+    if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('authentication')) return "The AI service is not configured. Please check the app settings.";
+    return "The AI is currently unavailable. Please try again later.";
+  } catch (e) {
+    return "The AI is currently unavailable. Please try again later.";
+  }
+};
 
 </script>
 </body>

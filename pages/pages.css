@@ -31,7 +31,8 @@ body {
 
 .aside-minimal-nav { margin-bottom: 5rem;}
 .minimal-nav {
-  background: linear-gradient(180deg, #0d1526 0%, #16243d 100%);
+  /*background: linear-gradient(180deg, #0d1526 0%, #16243d 100%);*/
+  background: linear-gradient(90deg, var(--emerald-900, #04322a) 0%, var(--emerald-800, #064e3b) 60%);
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   padding: 0.5rem 0;
   position: fixed;
@@ -99,7 +100,8 @@ body {
 .hero-section {
     width: 40%;
     /*background: linear-gradient(180deg, #0d1526 0%, #16243d 100%);*/
-    background: #112041;
+    /*background: #112041;*/
+    background: linear-gradient(90deg, var(--emerald-900, #04322a) 0%, var(--emerald-800, #064e3b) 60%);
     color: var(--white);
     padding: 30px;
     display: flex;
@@ -209,6 +211,7 @@ body {
     width: 60%;
     padding: 60px 10%;
     overflow-y: auto;
+    color: #142520;
 }
 
 .form-wrapper {

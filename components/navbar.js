@@ -174,7 +174,8 @@ function renderNavbar(isLoading = false) {
              style="overflow: hidden; object-fit: fill; width: 100%; height: 100%; border-radius: 12px;">
       </div>
     </div>
-    <span class="navbar-appname">Yola AI Info Hub</span>
+    <!--<span class="navbar-appname">Yola AI Info Hub</span>-->
+    <span class="navbar-appname"><img src="Data/images/app-name.png" style="width:100%; height:100%;" ></img></span>
   `;
 
   // mark navbar element when user is logged in so we can target it with CSS

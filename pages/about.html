@@ -1,163 +1,298 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="sign_up">About</title>
-<!--  <link rel="stylesheet" href="../styles/global.css"> -->
-  <link rel="stylesheet" href="../styles/auth.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous">
-  <link rel="stylesheet" href="pages.css">
-  <link rel="stylesheet" href="../styles/dark-mode.css">
-  <style>
-    .section-title { margin-bottom: 30px !important;}
-    h3 {margin-bottom: 15px; margin-top: 30px;}
-    p {margin-bottom: 10px;}
-    @media screen and (max-width: 700px) {
-        .section-title {display: none !important;}
-        .welcome-back {font-size: x-large !important;}
-    }
-  </style>
-  <script src="../components/theme-switcher.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — Yola AI Info Hub</title>
+    <meta name="description" content="Yola AI Info Hub is an AI-powered information platform helping people discover accurate, timely and local information about Yola, Adamawa State, Nigeria.">
+    <meta property="og:title" content="About — Yola AI Info Hub">
+    <meta property="og:description" content="An AI-powered information platform for Yola, Adamawa State, Nigeria.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="about.css">
+    <link rel="stylesheet" href="pages.css">
+    <style>
+        @media screen and (max-width: 599px) {
+            .footer-links {align-items: flex-start !important;}
+        }
+        .footer-links {align-items: flex-start !important;}
+    </style>
 </head>
 <body>
-  <div class="minimal-nav">
-    <div class="minimal-nav-content">
-      <div href="../index.html" class="nav-logo">
-        <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
-        <span data-i18n="app_title">Yola AI Info Hub</span>
-      </div>
 
-      <a href="../index.html" class="return-home">
-        <i class="fas fa-home" style="font-size: x-large;"></i>
-        
-      </a>
-
-    </div>
-  </div>
-
-  <main class="auth-container">
-    <div class="main-container">
-
-        <aside class="hero-section">
-          
-          <nav class="aside-minimal-nav">
-            <div class="minimal-nav-content">
-              <div href="../index.html" class="nav-logo">
-                <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
-                <span data-i18n="app_title">Yola AI Info Hub</span>
-              </div>
-              <a href="../index.html" class="return-home">
-                <span class="icon-home" style="font-size: x-large;"></span>
-              </a>
+    <!-- Mobile-only header: brand lives here on small screens -->
+    <!--<header class="mobile-header" aria-label="Mobile app header">
+        <div class="brand-lockup">
+            <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <defs>
+                    <linearGradient id="iconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#064e3b"/>
+                        <stop offset="100%" stop-color="#17997a"/>
+                    </linearGradient>
+                </defs>
+                <rect width="48" height="48" rx="12" fill="url(#iconGrad)"/>
+                <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+            </svg>
+            <div class="brand-text">
+                <span class="brand-name">Yola AI Info Hub</span>
+                <span class="brand-tagline">AI-powered local info</span>
             </div>
-            
-          </nav>
-          
-          <h2></h2>
-          <p></p>
+        </div>
+    </header>-->
 
-        </aside>
-
-        <main class="form-section">
-
-            <div>
-              <h2 class="welcome-back">About Yola AI Info Hub</h2>
-            </div>
-
-            <div class="form-wrapper">
-                    
-                <header>
-                    <h2 class="section-title" data-i18n="about_header">About Yola AI Info Hub</h2>
-                </header>
-
-                <form id="signup-form" class="auth-form">
-                    
-                                
-                    <!-- About Section -->
-                    <div class="settings-section-box">
-                        
-                        <p data-i18n="about_desc_1" ><strong>Yola AI Info Hub</strong> is a modern, responsive web app that provides AI-powered information and assistance for education, agriculture, environment, health, community, and general inquiries in Yola, Adamawa State, Nigeria. Our goal is to make essential information accessible and easy to find for residents and visitors alike.</p>
-                        
-                        <h3 data-i18n="about_key_features">Key Features:</h3>
-                        <ul style="list-style: none;">
-                        <li><strong>AI-Powered Chat:</strong> Get instant answers to your questions across various categories.</li>
-                        <li><strong>Section-Specific Information:</strong> Dedicated sections for EduInfo, AgroInfo, EcoInfo, MediInfo, NaviInfo, and ServiInfo.</li>
-                        <li><strong>User-Friendly Interface and Responsiveness:</strong> A clean, intuitive design for seamless navigation on different devices <br> PC above 1150px, Tab from 900px to 1150px , Mobile below 900px,<br>with Hamburger Menu on Mobile Screen.</li>
-                        <li><strong>Image, Audio and Files Input:</strong> Interact with the AI using images, voice messages and other files for a richer experience.</li>
-                        <li><strong>Text-To-Speech:</strong> A text-to-speech option to listen to the AI's response in any section.</li>
-                        <li><strong>Local Focus:</strong> Specialized information relevant to Yola, Adamawa State, Nigeria.</li>
-                        <li><strong>Multi Modality:</strong> A special functionality, enabling user to switch between two different Gemini models for their response.</li>
-                        <li><strong>Chat History:</strong>Ability to remember recent chats history by the AI, for about 10 chats. For a continuous chat flow.</li>
-                        <li><strong>Frequently Asked Questions FAQs:</strong> FAQs available as clickable links directly below the chat areas of every section.</li>
-                        </ul>
-                        
-                        <h3>Section-specific Features:</h3>
-                        <ul style="list-style: none;">
-                        <li><strong>NaviInfo:</strong> Maps For Directions and Navigation.</li>
-                        <li><strong>EcoInfo:</strong> Carbon Calculator and an Eco Classifier, which is able to classify objects (images) as recyclable or not.</li>
-                        <li><strong>ServInfo:</strong>Currency converter which compares the values of upto three different international currencies to help both local and international users</ul>
-                        </ul>
-                        
-                        <h3>Contents of the Environment Variable (.env file):</h3>
-                        <ul style="list-style: none;">
-                        <li> 1. Google Gemini API key.</li>
-                        <li> 2. Google Maps API key.</li>
-                        <li> 3. Tomrom maps API key.</li>
-                        <li> 4. ExchangeRates API key.</li>
-                        <li> 5. Mongodb URI For User Authentication.</li>
-                        <li> 6. Dedicated e-mail address.</li>
-                        <li> 7. E-mail. Address 'App Password' For Password Reset Route.</li>
-                        <li> 8. Password reset URL base.</li>
-                        <li> 9. Front-end Netlify URL.</li>
-                        <li>10. Back-end Render URL.</li>
-                        <li>11. Email Host</li>
-                        <li>12. Email Port</li>
-                        <li>13. Email User</li>
-                        <li>14. Email Password</li>
-
-                        </ul>
-                        <!--
-                        <h3>Major Challenges:</h3>
-                        <ul style="list-style: none;">
-                        <li>Power/Electricity.</li>
-                        <li>Internet Access.</li>
-                        </ul>
-                        -->
-
-                        <p style="margin-top: 20px;">This platform is designed to be a comprehensive information hub, leveraging the power of Artificial Intelligence to serve the Yola community better. 
-                        <br> This Robust Project For My 3MTT NextGen Knowledge Showcase.</p>
-                        
-                        <div style="height: 30px;"></div>
-                        
-                        <h3 style="margin-bottom: 10px;">ABOUT THE DEVELOPER:</h3> <br> <p>Husseini Hamidu Alkali.</p>
-                        
-                        
-                        <h4 style="margin-top: 30px;">Phone:</h3> <br> <p>+234 7012244240 / 8032377428. </p> 
-                        <h4>Email:</h3> <br> <p> husseinihamidualkali@gmail.com</p>
-                        
-                        
-                    </div>
-
-                    <button class="auth-submit" href="../index.html">Return Home</button>
-                </form>
-
-                  <footer class="form-footer">
-                      <span>© 2026 AlkaliCodes. All rights reserved.</span>
-                      <div class="footer-links">
-                          <a href="../pages/report.html">Report an issue</a>
-                          <a href="#">Terms and conditions</a>
-                          <a href="#">Privacy policy</a>
-                          <a href="../pages/about.html">About</a>
-                      </div>
-                  </footer>
-
-            </div>
     
-        </main>   
-    </div>    
-  </main>
-  
+    <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../Data/images/app-name.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../index.html" class="return-home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Desktop hero: brand lives here on larger screens -->
+    <header class="hero" aria-label="About Yola AI Info Hub">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner">
+            <span class="eyebrow">Yola, Adamawa State · Nigeria</span>
+            <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+
+                <!--<svg class="hero-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="heroIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#064e3b"/>
+                            <stop offset="100%" stop-color="#17997a"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="48" height="48" rx="12" fill="url(#heroIconGrad)"/>
+                    <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                    <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                    <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                </svg>
+                <h1 class="hero-title">Yola AI Info Hub</h1>-->
+                <div href="../index.html" class="nav-logo">
+                    <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                    <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                    <span class="navbar-appname"><img src="../Data/images/app-name-2.png" style="width:93%; height:58px;" ></img></span>
+                </div>
+            </div>
+            <p class="hero-subtitle">AI-powered information platform for Yola, Adamawa State, Nigeria. Discover accurate, timely and local knowledge — from education and health to government services and everyday life.</p>
+            <div class="hero-actions">
+                <a href="../index.html" class="btn btn-primary">Explore the platform</a>
+                <!--<a href="report.html" class="btn btn-secondary">Report / comment</a>-->
+            </div>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <!-- Mobile intro (shown only on small screens where the hero is hidden) -->
+        <section class="mobile-intro" aria-label="Introduction">
+            <h1 class="mobile-title">Yola AI Info Hub</h1>
+            <p class="lead">AI-powered information platform for Yola, Adamawa State, Nigeria. Discover accurate, timely and local knowledge.</p>
+        </section>
+
+        <section class="section" aria-labelledby="about-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Who we are</span>
+                <h2 id="about-heading" class="section-title">About the hub</h2>
+            </div>
+            <p class="lead">
+                Yola AI Info Hub is built to make local information effortless. We combine artificial intelligence with carefully curated local data to help residents, students, visitors and businesses find what they need in Yola — fast.
+            </p>
+            <p>
+                Whether you are looking for a school, a hospital, a government office, a local event or a trusted service, our platform gathers it in one place, keeps it updated, and presents it in a way that is easy to understand. The goal is simple: a smarter, more connected Yola.
+            </p>
+        </section>
+
+        <section class="section" aria-labelledby="mission-heading">
+            <div class="mission-cards">
+                <article class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-bullseye" aria-hidden="true"></i>
+                    </div>
+                    <h3 id="mission-heading">Our mission</h3>
+                    <p>To democratize access to local information through AI, so everyone in Yola can make better, faster decisions.</p>
+                </article>
+                <article class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-eye" aria-hidden="true"></i>
+                    </div>
+                    <h3>Our vision</h3>
+                    <p>A Yola where every citizen can find accurate answers, discover opportunities and connect with services in seconds.</p>
+                </article>
+                <article class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-handshake" aria-hidden="true"></i>
+                    </div>
+                    <h3>Our values</h3>
+                    <p>Accuracy, inclusivity, openness and community. We build with Yola, for Yola, and we listen to your feedback.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="features-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Capabilities</span>
+                <h2 id="features-heading" class="section-title">What you can do</h2>
+            </div>
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                    </div>
+                    <h3>AI search</h3>
+                    <p>Ask questions in plain language and get answers pulled from verified local sources.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-location-dot" aria-hidden="true"></i>
+                    </div>
+                    <h3>Local listings</h3>
+                    <p>Browse schools, hospitals, offices, businesses and places organized for Yola.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+                    </div>
+                    <h3>Report issues</h3>
+                    <p>Spotted outdated information? Tell us and help keep the hub accurate for everyone.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-language" aria-hidden="true"></i>
+                    </div>
+                    <h3>Multilingual support</h3>
+                    <p>Access information in English and local languages, designed for real Yola conversations.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section split-section" aria-labelledby="why-heading">
+            <div class="split-content">
+                <span class="section-eyebrow">Local focus</span>
+                <h2 id="why-heading" class="section-title">Why Yola?</h2>
+                <p class="lead">
+                    Yola is a vibrant city with a rich history, growing institutions and a strong digital community. Yet finding reliable local information can still be a challenge.
+                </p>
+                <p>
+                    Yola AI Info Hub is designed specifically for Yola's unique landscape, languages and needs. We work with local data, local people and local context to make sure the information you receive is relevant, accurate and actionable.
+                </p>
+            </div>
+            <div class="split-visual">
+                <div class="map-card">
+                    <i class="fas fa-location-dot" aria-hidden="true"></i>
+                    <span class="map-label">Yola</span>
+                    <span class="map-sublabel">Adamawa State, Nigeria</span>
+                </div>
+                <div class="stat-row">
+                    <div class="stat">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">AI access</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Yola focus</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section cta-section" aria-labelledby="cta-heading">
+            <div class="cta-inner">
+                <h2 id="cta-heading" class="cta-title">Help us build a smarter Yola</h2>
+                <p class="cta-text">Have feedback, a suggestion, or something to report? We would love to hear from you.</p>
+                <div class="cta-actions">
+                    <a href="report.html" class="btn btn-primary">Report / comment</a>
+                    <a href="mailto:hello@yolaaiinfohub.com" class="btn btn-secondary">Contact us</a>
+                </div>
+            </div>
+        </section>
+        <section class="mobile-intro">
+            <div class="hero-actions">
+                <!--<a href="edu.html" class="btn btn-primary">Explore directory</a>-->
+                <a href="../index.html" class="btn btn-secondary">Explore the platform</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text">
+                            <span class="brand-name">Yola AI Info Hub</span>
+                        </div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="report.html">Report / comment</a></li>
+                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
+                        <li><a href="#">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy policy</a></li>
+                        <li><a href="#">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">© <span id="year">2026</span> AlkaliCodes. Built for Yola, Adamawa State.</p>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
+
+

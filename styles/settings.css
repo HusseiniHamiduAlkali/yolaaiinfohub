@@ -23,6 +23,7 @@
   margin: 0 auto;
   padding: 2rem 1.5rem;
   min-height: calc(100vh - 200px);
+  margin-top: 60px;
 }
 
 .settings-header {
@@ -396,7 +397,9 @@ body.dark-mode .feedback-textarea:focus {
   font-size: 0.95rem;
   font-weight: 500;
 }
-
+@media screen and (min-width: 700px) and (max-width: 1024px) {
+  .settings-container {margin-top: 85px !important}
+}
 /* Responsive Design */
 @media (max-width: 768px) {
 
@@ -453,6 +456,7 @@ body.dark-mode .feedback-textarea:focus {
   
   .settings-container {
     padding: 0.5rem;
+    margin-top: 0px !important;
   }
 
   .settings-item {

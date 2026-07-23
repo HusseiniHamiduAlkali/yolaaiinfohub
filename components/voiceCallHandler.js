@@ -1,7 +1,3 @@
-// Voice Call Handler for AI Chat
-// Enables live voice calls between user and AI across all sections
-// NOTE: API keys must not be embedded into frontend code for security.
-// Use a backend proxy or Netlify function that holds the API key.
 
 // API Key placeholder - set via environment variable or backend proxy
 window.VOICE_API_KEY = window.VOICE_API_KEY || null;

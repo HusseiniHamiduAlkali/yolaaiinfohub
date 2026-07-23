@@ -650,6 +650,7 @@ nav.navbar {
     width: auto;
     gap: 10px;
     margin-top: 0;
+    align-self: stretch;
   }
   
   .hamburger {
@@ -709,7 +710,8 @@ nav.navbar {
     margin-right: auto;
     font-weight: bold;
     margin-left: 1px !important;
-    width: 50vw;
+    margin-right: 10px;
+    width: 60vw;
     height: 57px;
   }
 
