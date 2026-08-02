@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/1111.png"/>
+    <link rel="apple-touch-icon" href="/1111.png"/>
     <title>About — Yola AI Info Hub</title>
     <meta name="description" content="Yola AI Info Hub is an AI-powered information platform helping people discover accurate, timely and local information about Yola, Adamawa State, Nigeria.">
     <meta property="og:title" content="About — Yola AI Info Hub">
@@ -15,48 +17,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="about.css">
-    <link rel="stylesheet" href="pages.css">
+    <link rel="stylesheet" href="styles/pages.css">
     <style>
         @media screen and (max-width: 599px) {
             .footer-links {align-items: flex-start !important;}
         }
         .footer-links {align-items: flex-start !important;}
+        .navbar-appname-desktop {
+        width: 225px;
+        height: 225px;
+        background-image: url(../Data/images/222.png);
+        background-size: 222%;
+        background-position: center;
+        background-repeat: no-repeat;}
     </style>
 </head>
 <body>
-
-    <!-- Mobile-only header: brand lives here on small screens -->
-    <!--<header class="mobile-header" aria-label="Mobile app header">
-        <div class="brand-lockup">
-            <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                <defs>
-                    <linearGradient id="iconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stop-color="#064e3b"/>
-                        <stop offset="100%" stop-color="#17997a"/>
-                    </linearGradient>
-                </defs>
-                <rect width="48" height="48" rx="12" fill="url(#iconGrad)"/>
-                <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
-                <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
-                <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
-            </svg>
-            <div class="brand-text">
-                <span class="brand-name">Yola AI Info Hub</span>
-                <span class="brand-tagline">AI-powered local info</span>
-            </div>
-        </div>
-    </header>-->
-
     
     <div class="minimal-nav">
         <div class="minimal-nav-content">
             <div href="../index.html" class="nav-logo">
                 <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
                 <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
-                <span class="navbar-appname"><img src="../Data/images/app-name.png" style="width:93%; height:58px;" ></img></span>
+                <span class="navbar-appname"><img src="../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
             </div>
-            <a href="../index.html" class="return-home">
+            <a href="../index.html" style="color: #fff;" class="return home">
                 <i class="fas fa-home" style="font-size: x-large;"></i>
             </a>
         </div>
@@ -66,32 +51,20 @@
     <header class="hero" aria-label="About Yola AI Info Hub">
         <div class="hero-glow" aria-hidden="true"></div>
         <div class="hero-inner">
-            <span class="eyebrow">Yola, Adamawa State · Nigeria</span>
+           
             <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
-
-                <!--<svg class="hero-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                    <defs>
-                        <linearGradient id="heroIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#064e3b"/>
-                            <stop offset="100%" stop-color="#17997a"/>
-                        </linearGradient>
-                    </defs>
-                    <rect width="48" height="48" rx="12" fill="url(#heroIconGrad)"/>
-                    <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
-                    <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
-                    <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
-                </svg>
-                <h1 class="hero-title">Yola AI Info Hub</h1>-->
+                <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
                 <div href="../index.html" class="nav-logo">
-                    <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
-                    <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
-                    <span class="navbar-appname"><img src="../Data/images/app-name-2.png" style="width:93%; height:58px;" ></img></span>
+                    <span class="navbar-appname-desktop"></span>
                 </div>
             </div>
-            <p class="hero-subtitle">AI-powered information platform for Yola, Adamawa State, Nigeria. Discover accurate, timely and local knowledge — from education and health to government services and everyday life.</p>
-            <div class="hero-actions">
-                <a href="../index.html" class="btn btn-primary">Explore the platform</a>
-                <!--<a href="report.html" class="btn btn-secondary">Report / comment</a>-->
+            <div>    
+                <span class="eyebrow">Yola, Adamawa State · Nigeria</span>
+                <p class="hero-subtitle">AI-powered information platform for Yola, Adamawa State, Nigeria. Discover accurate, timely and local knowledge — from education and health to government services and everyday life.</p>
+                <div class="hero-actions">
+                    <a href="../index.html" class="btn btn-primary">Explore the platform</a>
+                    <!--<a href="report.html" class="btn btn-secondary">Report / comment</a>-->
+                </div>
             </div>
         </div>
     </header>
@@ -254,7 +227,7 @@
                 <div class="footer-group">
                     <h3 class="footer-heading">Info Hub</h3>
                     <ul class="footer-links">
-                        <li><a href="/">Home</a></li>
+                        <li><a href="../index.html">Home</a></li>
                         <li><a href="about.html">About</a></li>
                         <li><a href="#">Sitemap/directories</a></li>
                     </ul>
@@ -265,14 +238,14 @@
                     <ul class="footer-links">
                         <li><a href="report.html">Report / comment</a></li>
                         <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
-                        <li><a href="#">Help center</a></li>
+                        <li><a href="pages/help.html">Help center</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-group">
                     <h3 class="footer-heading">Legal</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Privacy policy</a></li>
+                        <li><a href="privacy.html">Privacy policy</a></li>
                         <li><a href="#">Terms of use</a></li>
                     </ul>
                 </div>
@@ -287,7 +260,7 @@
             </div>
 
             <div class="footer-bottom">
-                <p class="copyright">© <span id="year">2026</span> AlkaliCodes. Built for Yola, Adamawa State.</p>
+                <p class="copyright">© <span id="year">2026</span> AlkaliCodes. All rights reserved.</p>
             </div>
         </div>
     </footer>

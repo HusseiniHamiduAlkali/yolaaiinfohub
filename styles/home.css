@@ -75,7 +75,7 @@
 }
 .section4-home-img-container {
  display: grid;
- grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));   
+ grid-template-columns: repeat(auto-fit, minmax(224px, 1fr));   
  
 }
 .section4-home-img-placeholder {
@@ -113,19 +113,28 @@
     /*display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;*/
     display: block;
+    height: 200px;
     
   }
-  .history-of-yola {padding: 0px 30px 0px 30px !important;}
+  .history-of-yola {padding: 0px 12px 0px 12px !important; font-size: 12px;}
   .section4-home-img-container h4 {
     font-size: inherit !important;
   }
-  .section2-home-img1 {
+  .section2-home-img1, .section2-home-img2 {
     width :100%;
+    height: 100%;
   }
   .section2-home-img2 { display: none;}
+
   .section4-home-a {
     margin-bottom: 10px;
     margin-right: 10px;
     margin-left: 10px;
+    font-size: 13px;
   }
+  .section4-home-img-container {display: block !important;}
+  .section4-home-img-placeholder {padding: 5px;}
+  .section4-home-container { margin: 40px 12px;}
+  .section4-home-p-container p {line-height: 18px !important; font-size: 12px;}
+  .section4-home-p-container h4 {margin: 0 !important;}
 }

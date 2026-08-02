@@ -114,6 +114,17 @@ window.SettingsPage = {
     
     // Load settings based on authentication status
     const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
+    window.API_BASE_CANDIDATES = window.API_BASE_CANDIDATES || [
+      API_BASE,
+      'http://localhost:4000',
+      'http://127.0.0.1:4000',
+      'http://localhost:4001',
+      'http://127.0.0.1:4001',
+      'http://localhost:4002',
+      'http://127.0.0.1:4002',
+      'http://localhost:3000',
+      'http://127.0.0.1:3000'
+    ].filter((value, index, arr) => value && arr.indexOf(value) === index);
 
     let isUserLoggedIn = false;
     try {

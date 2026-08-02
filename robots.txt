@@ -28,8 +28,7 @@ Disallow: */internal
 Allow: /styles/
 Allow: /Data/
 Allow: /templates/
-Allow: /pages/signin.html
-Allow: /pages/signup.html
+Allow: /pages/auth.html
 Allow: /pages/profile.html
 Allow: /pages/reset-password.html
 Allow: /pages/forgot-password.html

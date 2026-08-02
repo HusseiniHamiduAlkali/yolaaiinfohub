@@ -13,12 +13,24 @@ const API_BASE = window.API_BASE || (function() {
     if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.startsWith('192.') || host.startsWith('10.')) {
       return `http://${host}:4000`;
     }
-    // otherwise use the Render backend in production
-    return 'https://yolaaiinfohub-backend.onrender.com';
+    // otherwise use the configured production backend in production
+    return window.__API_BASE__ || window.API_BASE_PROD_URL || '';
   } catch (e) {
     return 'http://localhost:4000';
   }
 })();
+
+window.API_BASE_CANDIDATES = window.API_BASE_CANDIDATES || [
+  API_BASE,
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
+  'http://localhost:4001',
+  'http://127.0.0.1:4001',
+  'http://localhost:4002',
+  'http://127.0.0.1:4002',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
+].filter((value, index, arr) => value && arr.indexOf(value) === index);
 
 // Function to toggle password visibility
 window.togglePasswordVisibility = function(inputId) {
@@ -169,6 +181,9 @@ window.showSignupModal = function() {
   showAuthModal('signup');
 };
 window.logoutUser = async function() {
+  const confirmed = window.confirm('Are you sure you want to sign out?');
+  if (!confirmed) return;
+
   try {
     const response = await fetch(`${API_BASE}/api/logout`, {
       method: 'POST',
@@ -329,6 +344,14 @@ function showAuthModal(type) {
           <input type="email" id="auth-email" placeholder="Email" required autocomplete="email" />
           <input type="text" id="auth-name" placeholder="Full Name" required autocomplete="name" />
           <input type="text" id="auth-nin" placeholder="NIN (11 digits)" required pattern="\\d{11}" maxlength="11" />
+          <input type="tel" id="auth-phone" placeholder="Phone number" required autocomplete="tel" />
+          <textarea id="auth-address" placeholder="Address" required rows="2"></textarea>
+          <label class="auth-checkbox-row">
+            <input type="checkbox" id="auth-terms" required />
+            <span>I agree to the Terms of Use and Privacy Policy.</span>
+          </label>
+          <input type="hidden" id="auth-state" value="N/A" />
+          <input type="hidden" id="auth-lga" value="N/A" />
           <div class="password-field">
             <input type="password" id="auth-password" placeholder="Password" required autocomplete="new-password" />
             <button type="button" class="password-toggle" onclick="togglePasswordVisibility('auth-password')">
@@ -372,12 +395,57 @@ function showAuthModal(type) {
       const email = document.getElementById('auth-email').value.trim();
       const name = document.getElementById('auth-name').value.trim();
       const nin = document.getElementById('auth-nin').value.trim();
+      const phone = document.getElementById('auth-phone').value.trim();
+      const address = document.getElementById('auth-address').value.trim();
+      const state = document.getElementById('auth-state').value;
+      const lga = document.getElementById('auth-lga').value;
+      const termsAccepted = document.getElementById('auth-terms').checked;
       const password = document.getElementById('auth-password').value;
+      const errors = [];
+      const errorEl = document.getElementById('auth-error');
+
+      if (!username) errors.push('Enter a username.');
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push('Enter a valid email address.');
+      if (!name) errors.push('Enter your full name.');
+      if (!/^[0-9]{11}$/.test(nin)) errors.push('NIN must be exactly 11 digits.');
+      if (!phone) errors.push('Enter your phone number.');
+      else if (!/^[+\d][\d\s\-()]{7,}$/.test(phone)) errors.push('Enter a valid phone number.');
+      if (!address) errors.push('Enter your address.');
+      if (!password) errors.push('Enter a password.');
+      else if (password.length < 8) errors.push('Password must be at least 8 characters.');
+      else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/.test(password)) errors.push('Password must include uppercase, lowercase, a number, and a special character.');
+      if (!termsAccepted) errors.push('You must agree to the terms of use.');
+
+      if (errors.length) {
+        if (errorEl) {
+          errorEl.style.color = '#e53e3e';
+          errorEl.innerHTML = errors.map(function(msg) { return '<div>' + msg + '</div>'; }).join('');
+        }
+        submitBtn.disabled = false;
+        return;
+      }
+
       url = `${API_BASE}/api/signup`;
-      body = { username, email, name, nin, password };
+      body = { username, email, name, nin, phone, address, state, lga, termsAccepted, password };
     } else {
       const usernameOrEmail = document.getElementById('auth-username').value.trim();
       const password = document.getElementById('auth-password').value;
+      const errors = [];
+      const errorEl = document.getElementById('auth-error');
+
+      if (!usernameOrEmail) errors.push('Enter your username or email.');
+      if (!password) errors.push('Enter your password.');
+      if (password && password.length < 8) errors.push('Password must be at least 8 characters.');
+
+      if (errors.length) {
+        if (errorEl) {
+          errorEl.style.color = '#e53e3e';
+          errorEl.innerHTML = errors.map(function(msg) { return '<div>' + msg + '</div>'; }).join('');
+        }
+        submitBtn.disabled = false;
+        return;
+      }
+
       url = `${API_BASE}/api/login`;
       // If input looks like email, send as email
       if (/^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(usernameOrEmail)) {
@@ -425,16 +493,22 @@ function showAuthModal(type) {
       // The session is being set by the server. If needed, checkLoginStatus will run on next page load.
       modal.remove();
     } else {
-      console.error('❌ Login failed:', data.error);
-      let errorMessage = 'Error';
-      if (res.status === 400 && data.error === 'password mismatch') {
-        errorMessage = 'Incorrect password. Please try again.';
-      } else if (res.status === 400) {
-        errorMessage = 'Invalid login credentials. Please check your username or email and try again.';
+      console.error('❌ Login failed:', data.error || data.message);
+      const errorEl = document.getElementById('auth-error');
+      let errorMessage = 'An error occurred. Please check your details and try again.';
+      if (res.status === 400) {
+        if (type === 'signup') {
+          errorMessage = data.error || data.message || 'Unable to create your account. Please verify the signup fields.';
+        } else {
+          errorMessage = data.error || data.message || 'Invalid login credentials. Please check your username or email and try again.';
+        }
       } else if (res.status === 500) {
-        errorMessage = 'Server error. Please try again later.';
+        errorMessage = data.error || data.message || 'Server error. Please try again later.';
       }
-      document.getElementById('auth-error').textContent = errorMessage;
+      if (errorEl) {
+        errorEl.style.color = '#e53e3e';
+        errorEl.innerHTML = '<div>' + errorMessage + '</div>';
+      }
       // Re-enable button on error
       submitBtn.disabled = false;
     }

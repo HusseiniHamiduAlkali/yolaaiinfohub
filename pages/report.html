@@ -1,191 +1,443 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="sign_up">Feedback</title>
-<!--  <link rel="stylesheet" href="../styles/global.css"> -->
-  <link rel="stylesheet" href="../styles/auth.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous">
-  <link rel="stylesheet" href="pages.css">
-  <link rel="stylesheet" href="../styles/dark-mode.css">
-  <script src="../components/theme-switcher.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/1111.png"/>
+    <link rel="apple-touch-icon" href="/1111.png"/>
+    <title>Feedback — Yola AI Info Hub</title>
+    <meta name="description" content="Report inaccurate information, suggest a listing or share feedback with Yola AI Info Hub — help us keep local information accurate for everyone in Yola.">
+    <meta property="og:title" content="Report / Comment — Yola AI Info Hub">
+    <meta property="og:description" content="Report issues, suggest listings, or share feedback with Yola AI Info Hub.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles/pages.css">
+    <style>
+        @media screen and (max-width: 599px) {
+            .footer-links {align-items: flex-start !important;}
+        }
+        .footer-links {align-items: flex-start !important;}
+        .navbar-appname-desktop {
+        width: 275px;
+        height: 225px;
+        background-image: url(../Data/images/222.png);
+        background-size: 222%;
+        background-position: center;
+        background-repeat: no-repeat;}
+    </style>
 </head>
 <body>
-  <div class="minimal-nav">
-    <div class="minimal-nav-content">
-      <div href="../index.html" class="nav-logo">
-        <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
-        <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
-        <span class="navbar-appname"><img src="../Data/images/app-name.png" style="width:93%; height:58px;" ></img></span>
-      </div>
-
-      <a href="../index.html" class="return-home">
-        <i class="fas fa-home" style="font-size: x-large;"></i>
-        <!-- <span data-i18n="return_home">Return Home</span>  -->
-      </a>
-
-    </div>
-  </div>
-
-  <main class="auth-container">
-    <div class="main-container">
-
-        <aside class="hero-section">
-          
-          <nav class="aside-minimal-nav">
-            <div class="minimal-nav-content">
-              <div href="../index.html" class="nav-logo">
+        
+    <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
                 <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
-                <span data-i18n="app_title">Yola AI Info Hub</span>
-              </div>
-              <a href="../index.html" class="return-home">
-                <span class="icon-home" style="font-size: x-large;"></span>
-              </a>
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
             </div>
-            
-          </nav>
-          
-          <h2>Your satisfaction is our priority!</h2>
-          <p>We value your feedback! <br> Please share your thoughts, suggestions, or report any issues with our application. <br>Help us know what you like the best or detest the most...</p>
+            <a href="../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
 
-        </aside>
 
-        <main class="form-section">
-
+    <!-- Desktop hero -->
+    <header class="hero" aria-label="Report or comment">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner">
+            <span class="navbar-appname-desktop"></span>
             <div>
-              <h2 class="welcome-back">Report and comment</h2>
+                <span class="eyebrow">Report an issue · Share feedback</span>
+                <!--<h1 class="hero-title">Report or Comment</h1>-->
+                <p class="hero-subtitle">Spotted outdated information, a missing listing, or have an idea to make Yola AI Info Hub better? Tell us — every report helps us keep local information accurate.</p>
+                <div class="hero-actions">
+                    <a href="#report-form" class="btn btn-primary">Submit a report</a>
+                    <a href="mailto:hello@yolaaiinfohub.com" class="btn btn-secondary">Contact us</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <!-- Mobile intro -->
+        <section class="mobile-intro" aria-label="Introduction">
+            <h1 class="mobile-title">Report or Comment</h1>
+            <p class="lead">Help us keep Yola AI Info Hub accurate. Share feedback, report issues, or suggest new listings.</p>
+            <div class="hero-actions">
+                <a href="#report-form" class="btn btn-primary">Submit a report</a>
+                <a href="mailto:hello@yolaaiinfohub.com" class="btn btn-secondary">Contact us</a>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="intro-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Why report</span>
+                <h2 id="intro-heading" class="section-title">Help us keep Yola accurate</h2>
+            </div>
+            <p class="lead">
+                Yola AI Info Hub is powered by the community. If something looks wrong, out of date, or missing entirely, your report helps us fix it fast — for you and for everyone else searching for the same answer.
+            </p>
+            <p>
+                Reports are reviewed by our local team. You do not need an account, and personal details are optional unless you want a reply.
+            </p>
+        </section>
+
+        <section class="section" aria-labelledby="how-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">The process</span>
+                <h2 id="how-heading" class="section-title">How it works</h2>
+            </div>
+            <div class="mission-cards">
+                <article class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-pen-to-square" aria-hidden="true"></i>
+                    </div>
+                    <h3>1. Submit</h3>
+                    <p>Fill in the form below with as much detail as you can — the more we know, the faster we can act.</p>
+                </article>
+                <article class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                    </div>
+                    <h3>2. Review</h3>
+                    <p>Our local team reviews every report and cross-checks it with trusted sources here in Yola.</p>
+                </article>
+                <article class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-circle-check" aria-hidden="true"></i>
+                    </div>
+                    <h3>3. Update</h3>
+                    <p>We update the hub, and if you left your email, we let you know what changed.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section" id="report-form" aria-labelledby="form-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">The form</span>
+                <h2 id="form-heading" class="section-title">Send us your report</h2>
             </div>
 
-            <div class="form-wrapper">
-                    
-                <header>
-                    <h2 data-i18n="create_account">User feedback</h2>
-                </header>
-
-                <form id="signup-form" class="auth-form">
-                    
-                    
-                    <div class="section-header">
-                        <i class="fas fa-user"></i></i>YOUR BASIC INFO
-                    </div>
-                    <div class="form-group">
-                        <label for="name" data-i18n="full_name">Full Name (Optional)</label>
-                        <input id="feedback-name" class="feedback-input" type="text" name="name" data-i18n-placeholder="full_name" placeholder="input your full name">
-                    </div>
-                    <div class="form-group">
-                        <label for="username" data-i18n="username">E-mail (Optional)</label>
-                        <input id="feedback-email" class="feedback-input" type="email"  name="username" data-i18n-placeholder="username" placeholder="input username">
+            <form class="form-card" id="reportForm" novalidate>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label class="form-label" for="reportType">Report type <span class="required">*</span></label>
+                        <select class="form-select" id="reportType" name="reportType" required>
+                            <option value="">Choose one…</option>
+                            <option value="inaccurate">Inaccurate information</option>
+                            <option value="missing">Missing listing</option>
+                            <option value="broken">Broken link</option>
+                            <option value="suggestion">Suggestion / idea</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
 
-
-                    <!-- User Feedback Section -->
-                    <div class="settings-section-box">
-                        
-                        <div class="section-header">
-                            <i class="fas fa-comment"></i>SAY SOMETHING
-                        </div>
-                        <div class="settings-item">
-                        <!-- <label class="settings-label" data-i18n="feedback_message">Your Feedback</label> -->
-                        <textarea style="width: 100%; max-width: 100%; " id="feedback-message" class="feedback-textarea" placeholder="Please share your feedback..." rows="6"></textarea>
-                        </div>
-                        <div class="settings-item">
-                        <button class="auth-submit settings-button-primary" onclick="window.submitUserFeedback()" data-i18n="submit_feedback">Submit Feedback</button>
-                        <span id="feedback-status" class="feedback-status"></span>
-                        </div>
+                    <div class="form-field">
+                        <label class="form-label" for="category">Category <span class="required">*</span></label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Choose one…</option>
+                            <option value="education">Education</option>
+                            <option value="health">Health</option>
+                            <option value="government">Government</option>
+                            <option value="business">Business</option>
+                            <option value="events">Events</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
 
-                    <button class="auth-submit" href="../index.html">Return Home</button>
-                </form>
-            
+                    <div class="form-field form-field-full">
+                        <label class="form-label" for="subject">Subject <span class="required">*</span></label>
+                        <input class="form-input" id="subject" name="subject" type="text" maxlength="120" placeholder="Short summary of the issue" required>
+                    </div>
 
-                  <footer class="form-footer">
-                      <span>© 2026 AlkaliCodes. All rights reserved.</span>
-                      <div class="footer-links">
-                          <a href="../pages/report.html">Report an issue</a>
-                          <a href="#">Terms and conditions</a>
-                          <a href="#">Privacy policy</a>
-                          <a href="../pages/about.html">About</a>
-                      </div>
-                  </footer>
+                    <div class="form-field form-field-full">
+                        <label class="form-label" for="pageUrl">Related page or URL <span class="form-hint">(optional)</span></label>
+                        <input class="form-input" id="pageUrl" name="pageUrl" type="text" maxlength="300" placeholder="e.g. https://yolaaiinfohub.com/edu">
+                    </div>
 
+                    <div class="form-field form-field-full">
+                        <label class="form-label" for="message">Your message <span class="required">*</span></label>
+                        <textarea class="form-textarea" id="message" name="message" rows="6" maxlength="1500" placeholder="Tell us what's wrong or what you'd like to see. Include details like names, addresses or dates if you can." required></textarea>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label" for="name">Your name <span class="form-hint">(optional)</span></label>
+                        <input class="form-input" id="name" name="name" type="text" maxlength="100" placeholder="How should we address you?">
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label" for="email">Email <span class="form-hint">(optional, for a reply)</span></label>
+                        <input class="form-input" id="email" name="email" type="email" maxlength="255" placeholder="you@example.com">
+                    </div>
+
+                    <div class="form-field form-field-full">
+                        <label class="form-checkbox-row">
+                            <input type="checkbox" id="consent" name="consent" required>
+                            <span>I confirm the information I have shared is accurate to the best of my knowledge, and I agree to Yola AI Info Hub reviewing and using it to improve the platform.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-ghost">Clear</button>
+                    <button type="submit" class="btn btn-primary btn-submit">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                        <span>Submit report</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="section" aria-labelledby="reach-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Other channels</span>
+                <h2 id="reach-heading" class="section-title">Other ways to reach us</h2>
             </div>
-    
-        </main>   
-    </div>    
-  </main>
-<script>
-    
-// Submit user feedback
-window.submitUserFeedback = async function() {
-  const name = document.getElementById('feedback-name').value.trim();
-  const email = document.getElementById('feedback-email').value.trim();
-  const message = document.getElementById('feedback-message').value.trim();
-  const statusSpan = document.getElementById('feedback-status');
-  
-  // Validate that at least the message is provided
-  if (!message) {
-    statusSpan.textContent = 'Please enter your feedback message';
-    statusSpan.style.color = 'red';
-    return;
-  }
-  
-  const API_BASE = window.API_BASE || (function(){ 
-    try { 
-      const h = window.location.hostname; 
-      if(!h || h==='localhost' || h==='127.0.0.1' || h.startsWith('192.') || h.startsWith('10.') || h==='::1') 
-        return 'http://localhost:4000'; 
-      return ''; 
-    } catch(e) { 
-      return 'http://localhost:4000' 
-    } 
-  })();
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-envelope" aria-hidden="true"></i></div>
+                    <h3>Email</h3>
+                    <p><a class="inline-link" href="mailto:hello@yolaaiinfohub.com">hello@yolaaiinfohub.com</a> — best for detailed reports.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="fab fa-whatsapp" aria-hidden="true"></i></div>
+                    <h3>WhatsApp</h3>
+                    <p>Message us for quick questions and community tips.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-share-nodes" aria-hidden="true"></i></div>
+                    <h3>Social</h3>
+                    <p>Find us on Facebook, X, Instagram and LinkedIn — links below.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-clock" aria-hidden="true"></i></div>
+                    <h3>Response time</h3>
+                    <p>We aim to review every report within 48 hours, Monday to Saturday.</p>
+                </article>
+            </div>
+        </section>
 
-  try {
-    statusSpan.textContent = 'Sending feedback...';
-    statusSpan.style.color = 'blue';
-    
-    const response = await fetch(`${API_BASE}/api/send-feedback`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        name: name || 'Anonymous',
-        email: email || 'Not provided',
-        message: message,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent
-      })
-    });
-    
-    if (response.ok) {
-      statusSpan.textContent = 'Thank you! Your feedback has been sent successfully.';
-      statusSpan.style.color = 'green';
-      
-      // Clear the form
-      document.getElementById('feedback-name').value = '';
-      document.getElementById('feedback-email').value = '';
-      document.getElementById('feedback-message').value = '';
-      
-      // Clear status after 5 seconds
-      setTimeout(() => {
-        statusSpan.textContent = '';
-      }, 5000);
-    } else {
-      const errorData = await response.json();
-      statusSpan.textContent = `Error: ${errorData.message || 'Failed to send feedback'}`;
-      statusSpan.style.color = 'red';
-    }
-  } catch (error) {
-    console.error('Error submitting feedback:', error);
-    statusSpan.textContent = 'Error sending feedback. Please try again later.';
-    statusSpan.style.color = 'red';
-  }
-};
+        <section class="section cta-section" aria-labelledby="cta-heading">
+            <div class="cta-inner">
+                <h2 id="cta-heading" class="cta-title">Prefer to just say hello?</h2>
+                <p class="cta-text">Not reporting anything specific? We still love to hear from Yola residents, students, visitors and partners.</p>
+                <div class="cta-actions">
+                    <a href="mailto:hello@yolaaiinfohub.com" class="btn btn-primary">Email us</a>
+                    <a href="edu.html" class="btn btn-secondary">Explore directory</a>
+                </div>
+            </div>
+        </section>
+    </main>
 
-</script>
-  
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text">
+                            <span class="brand-name">Yola AI Info Hub</span>
+                        </div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="report.html">Report / comment</a></li>
+                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
+                        <li><a href="help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">Privacy policy</a></li>
+                        <li><a href="terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">© <span id="year">2026</span> AlkaliCodes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/report.js"></script>
+    <script>
+
+    /* Yola AI Info Hub — Report page interactions */
+    (function () {
+        "use strict";
+
+        // Footer year
+        var yearEl = document.getElementById("year");
+        if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+        var form = document.getElementById("reportForm");
+        if (!form) return;
+
+        var statusEl = document.getElementById("formStatus");
+        var submitBtn = form.querySelector(".btn-submit");
+
+        var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function setStatus(kind, message) {
+            if (!statusEl) return;
+            statusEl.classList.remove("is-success", "is-error", "is-visible");
+            if (!kind) {
+                statusEl.textContent = "";
+                return;
+            }
+            statusEl.classList.add("is-visible", kind === "success" ? "is-success" : "is-error");
+            var icon = kind === "success" ? "fa-circle-check" : "fa-triangle-exclamation";
+            statusEl.innerHTML =
+                '<i class="fas ' + icon + '" aria-hidden="true"></i>' +
+                escapeHtml(message);
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+            });
+        }
+
+        function clearInvalid() {
+            form.querySelectorAll(".is-invalid").forEach(function (el) {
+                el.classList.remove("is-invalid");
+            });
+        }
+
+        function markInvalid(el) {
+            if (!el) return;
+            if (el.type === "checkbox") {
+                var wrap = el.closest(".form-checkbox-row");
+                if (wrap) wrap.classList.add("is-invalid");
+            } else {
+                el.classList.add("is-invalid");
+            }
+        }
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            clearInvalid();
+            setStatus(null);
+
+            var data = {
+                reportType: form.reportType.value.trim(),
+                category: form.category.value.trim(),
+                subject: form.subject.value.trim(),
+                pageUrl: form.pageUrl.value.trim(),
+                message: form.message.value.trim(),
+                name: form.name.value.trim(),
+                email: form.email.value.trim(),
+                consent: form.consent.checked
+            };
+
+            var errors = [];
+            var firstInvalid = null;
+
+            function fail(el, msg) {
+                errors.push(msg);
+                markInvalid(el);
+                if (!firstInvalid) firstInvalid = el;
+            }
+
+            if (!data.reportType) fail(form.reportType, "Choose a report type.");
+            if (!data.category) fail(form.category, "Choose a category.");
+            if (!data.subject) fail(form.subject, "Enter a short subject.");
+            else if (data.subject.length > 120) fail(form.subject, "Subject is too long.");
+            if (!data.message) fail(form.message, "Please write a message.");
+            else if (data.message.length > 1500) fail(form.message, "Message is too long.");
+            if (data.email && !EMAIL_RE.test(data.email)) fail(form.email, "Enter a valid email address.");
+            if (!data.consent) fail(form.consent, "Please confirm the consent checkbox.");
+
+            if (errors.length) {
+                setStatus("error", errors[0] + (errors.length > 1 ? " (" + errors.length + " fields need attention.)" : ""));
+                if (firstInvalid && typeof firstInvalid.focus === "function") firstInvalid.focus();
+                statusEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                return;
+            }
+
+            // TODO: wire to backend / email service.
+            // For now this is a pure client-side confirmation.
+            if (submitBtn) {
+                submitBtn.setAttribute("aria-busy", "true");
+                submitBtn.disabled = true;
+            }
+
+            setTimeout(function () {
+                setStatus(
+                    "success",
+                    "Thanks" + (data.name ? ", " + data.name : "") +
+                    " — your report has been received. We'll review it shortly" +
+                    (data.email ? " and reply by email." : ".")
+                );
+                form.reset();
+                if (submitBtn) {
+                    submitBtn.removeAttribute("aria-busy");
+                    submitBtn.disabled = false;
+                }
+                statusEl.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 400);
+        });
+
+        // Clear invalid state as the user edits
+        form.addEventListener("input", function (e) {
+            var t = e.target;
+            if (t && t.classList) t.classList.remove("is-invalid");
+            var row = t && t.closest ? t.closest(".form-checkbox-row") : null;
+            if (row) row.classList.remove("is-invalid");
+        });
+
+        form.addEventListener("reset", function () {
+            clearInvalid();
+            setStatus(null);
+        });
+    })();
+
+    </script>
 </body>
 </html>
+
+

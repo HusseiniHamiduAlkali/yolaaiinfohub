@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#1a1c4b" />
   <title>My Yola AI Chat</title>
   <meta name="description" content="Warm, multi-thread AI chat about Yola and beyond — voice, vision, live calls." />
-  <link rel="icon" href="../Data/Images/yolarflogo.jpg" type="image/jpeg" />
+  <link rel="icon" href="../Data/Images/jippujam.jpg" type="image/jpeg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -44,7 +44,7 @@ html[data-theme="dark"] {
   --surface: #191b3a;
   --bubble-user-bg: #eab308;
   --bubble-user-fg: #1a1c4b;
-  --bubble-ai-fg: #f4f1ea;
+  --bubble-ai-fg: #1a1c4b;
   --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.35);
   --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
@@ -183,6 +183,7 @@ html[data-theme="dark"] .theme-icon-light { display: none; }
   background: var(--earth-wash);
   position: relative;
   z-index: 5;
+  justify-content: space-between;
 }
 .chat-header::before {
   content: "";
@@ -252,10 +253,18 @@ html[data-theme="dark"] .icon-btn:hover { background: rgba(255,255,255,0.06); }
 .options-list li:hover { background: rgba(26,28,75,0.06); }
 html[data-theme="dark"] .options-list li:hover { background: rgba(255,255,255,0.06); }
 .options-list li[data-action="delete-all"] { color: var(--danger); }
+.attach-menu .options-list {
+  top: auto;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  min-width: 200px;
+}
 
 /* Messages */
 .messages {
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 24px 20px 8px;
   display: flex; flex-direction: column; gap: 18px;
   min-height: 0;
@@ -264,18 +273,19 @@ html[data-theme="dark"] .options-list li:hover { background: rgba(255,255,255,0.
 .msg { display: flex; gap: 12px; max-width: 820px; width: 100%; margin: 0 auto; }
 .msg.user { flex-direction: row-reverse; }
 .msg-avatar {
-  width: 34px; height: 34px; border-radius: 10px;
+  width: 20px; height: 25px; border-radius: 50%;
   background: var(--indigo-dye);
   color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 0.85rem; flex: 0 0 34px;
+  font-weight: 700; font-size: 10px; flex: 0 0 30px;
   overflow: hidden;
 }
-.msg.user .msg-avatar { background: var(--saffron); color: var(--indigo-dye); }
+.msg-body {min-width: 50px; overflow-wrap: break-word;}
+.msg.user .msg-avatar { background: var(--adire); /*color: var(--indigo-dye);*/ color: #fff; }
 .msg-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 .bubble {
-  padding: 12px 16px;
+  /*padding: 12px 16px;*/
   border-radius: 16px;
   max-width: min(100%, 680px);
   font-size: 0.95rem;
@@ -285,7 +295,7 @@ html[data-theme="dark"] .options-list li:hover { background: rgba(255,255,255,0.
   transition: box-shadow .15s ease;
 }
 .msg.user .bubble {
-  background: var(--bubble-user-bg);
+  /*background: var(--bubble-user-bg);*/
   color: var(--bubble-user-fg);
   border-bottom-right-radius: 6px;
 }
@@ -294,11 +304,31 @@ html[data-theme="dark"] .options-list li:hover { background: rgba(255,255,255,0.
   border-bottom-left-radius: 6px;
   background: transparent;
 }
+.msg.assistant  .msg-body {
+    background: #dce6e4;
+    border-radius: 0 15px 15px 15px ;
+    padding: 15px;
+    margin-right: 10px;
+  }
+.msg.user .msg-body {
+    background: #b8e7df;
+    border-radius: 15px 0 15px 15px;
+    padding: 15px;
+    margin-left: 10px;
+}
+
+/*.msg-body, .msg.ai {
+  background: #b8e7df;
+  border-radius: 0 15px 15px;
+  padding: 10px;
+}
+  */
 .msg-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0px;
-  margin-top: 12px;
+  margin-top: 8px;
+  margin-left: 10px;
 }
 .msg-action-btn {
   border: none;
@@ -339,8 +369,9 @@ html[data-theme="dark"] .bubble pre { background: rgba(255,255,255,0.06); }
 html[data-theme="dark"] .bubble a { color: var(--saffron); }
 .bubble ul, .bubble ol { margin: 6px 0 8px; padding-left: 20px; }
 
-.msg-time { font-size: 0.68rem; color: var(--muted); margin-top: 4px; text-align: right; }
-.msg.assistant .msg-time { text-align: left; }
+.msg-time { font-size: 9px; color: var(--muted); margin-top: 1px; text-align: left;  margin-right: 25px; }
+.msg.assistant .msg-time { text-align: right; margin-right: 25px; position: relative; top: -45px; }
+.msg.user .msg-time {margin-left: 25px}
 .typing {
   display: inline-flex; gap: 4px; align-items: center; padding: 4px 0;
 }
@@ -483,19 +514,20 @@ html[data-theme="dark"] .compose-btn:hover { color: var(--saffron); }
   .app.sidebar-open .sidebar-backdrop { display: block; }
   .sidebar-close { display: inline-flex !important; }
   .menu-btn { display: inline-flex !important; }
-  .chat-header { padding: 10px 1px; gap: 5px; min-width: 385px !important; justify-content: space-around;}
+  .chat-header { padding: 10px 1px; gap: 5px; min-width: 100vw !important; justify-content: space-between;}
   .header-title { gap: 8px; max-width: fit-content;}
   .header-avatar { width: 34px; height: 34px; }
   .header-name { font-size: 14px; width: 112px; }
   .header-status { font-size: 0.7rem; }
   .model-switch .model-label { display: none; }
   .model-select { padding: 6px 2px; font-size: 0.8rem; max-width: 120px; }
-  .header-actions { gap: 3px; }
-  .composer-wrap { padding: 10px 10px 12px; }
+  .header-actions { gap: 3px; margin-right: 15px;}
+  .msg {gap: 6px !important}
+  .composer-wrap { padding: 10px 10px 12px; width: 100vw; }
   .composer { padding: 6px; gap: 2px; border-radius: 16px; }
-  .compose-btn { width: 36px; height: 36px; flex-basis: 35px; }
+  .compose-btn { width: 36px; height: 36px; flex-basis: 28px; }
   .send-btn { flex: 0 0 40px; height: 40px; }
-  .input { font-size: 0.9rem; padding: 8px 6px; }
+  .input { font-size: 0.9rem; padding: 8px 6px; max-height: 130px;}
   .icon-btn {padding-inline: 0; width: 21px;}
   .messages { padding: 16px 12px 4px; }
   .empty-state { padding: 24px 12px; }
@@ -522,10 +554,10 @@ html[data-theme="dark"] .thread-list::-webkit-scrollbar-thumb { background: rgba
     <aside class="sidebar" id="sidebar" aria-label="Conversations">
       <div class="sidebar-head">
         <div class="brand">
-          <img src="../Data/Images/yolarflogo.jpg" alt="" class="brand-logo" />
+          <img src="../Data/Images/jippujam.jpg" alt="" class="brand-logo" />
           <div>
-            <div class="brand-name">Yola AI</div>
-            <div class="brand-sub">Chat companion</div>
+            <div class="brand-name">My Yola AI Chat</div>
+            <div class="brand-sub">Your local chat companion</div>
           </div>
         </div>
         <button class="icon-btn sidebar-close" id="sidebar-close" title="Close sidebar" aria-label="Close sidebar">✕</button>
@@ -548,25 +580,30 @@ html[data-theme="dark"] .thread-list::-webkit-scrollbar-thumb { background: rgba
     <!-- Main -->
     <main class="main">
       <header class="chat-header">
+        <div style="display: flex; flex-direction: row; gap: 10px; margin-left: 10px;">
         <button class="icon-btn menu-btn" id="menu-btn" title="Menu" aria-label="Open menu">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
         </button>
 
         <div class="header-title">
-          <img src="../Data/Images/yolarflogo.jpg" alt="" class="header-avatar" />
+          <!--<img src="../Data/Images/jippujam.jpg" alt="" class="header-avatar" />-->
           <div>
-            <div class="header-name">My Yola AI Chat</div>
+            <div class="header-name">My Yola AI</div>
             <div class="header-status"><span class="pulse"></span> Online</div>
           </div>
+        </div>
         </div>
 
         <div class="header-actions">
           <div class="model-switch">
             <label for="model-select" class="model-label">Model</label>
             <select id="model-select" class="model-select">
-              <option value="openai/gpt-5.5">GPT-5.5</option>
-              <option value="openai/gpt-5-mini">GPT-5 Mini</option>
+              <option value="openai/gpt-4o">GPT-4o</option>
+              <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+              <option value="openai/gpt-4.1">GPT-4.1</option>
               <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+              <option value="google/gemini-2.0-flash">Gemini 2.0 Flash</option>
+              <option value="google/gemini-1.5-flash">Gemini 1.5 Flash</option>
               <option value="google/gemini-2.5-pro">Gemini 2.5 Pro</option>
             </select>
           </div>
@@ -611,7 +648,7 @@ html[data-theme="dark"] .thread-list::-webkit-scrollbar-thumb { background: rgba
       <!-- Empty state (shown when no messages) -->
       <template id="empty-state-tpl">
         <div class="empty-state">
-          <img src="../Data/Images/yolarflogo.jpg" alt="" class="empty-logo" />
+          <img src="../Data/Images/jippujam.jpg" alt="" class="empty-logo" />
           <h1>Sannu! I'm your Yola AI companion.</h1>
           <p>Ask me anything about Yola, Adamawa State — or anything else on your mind.</p>
           <div class="faq-grid">
@@ -630,34 +667,42 @@ html[data-theme="dark"] .thread-list::-webkit-scrollbar-thumb { background: rgba
         <div class="attachments-preview" id="attachments-preview"></div>
         <div class="live-call-bar" id="live-call-bar" hidden>
           <span class="pulse pulse-lg"></span>
-          <span class="live-status" id="live-status">Listening…</span>
+          <span class="live-status" id="live-status">On call…</span>
           <span class="call-duration" id="call-duration">00:00</span>
           <button class="ghost-btn danger" id="live-mute-btn" title="Mute">Mute</button>
-          <button class="ghost-btn danger" id="live-end-btn" title="End call">End call</button>
+          <button class="ghost-btn danger" id="live-end-btn" title="End call">End</button>
         </div>
         <form class="composer" id="composer" autocomplete="off">
           <button type="button" class="icon-btn compose-btn" id="record-btn" title="Record voice">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+            <svg viewBox="0 0 24 24" width="19" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
           </button>
 
-          <label class="icon-btn compose-btn" title="Upload image, audio, video, or file">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <input type="file" id="file-input" accept="image/*,audio/*,video/*,application/pdf" multiple hidden />
-          </label>
+          <div class="options-menu attach-menu">
+            <button type="button" class="icon-btn compose-btn" id="attach-trigger" title="Attach" aria-haspopup="menu" aria-expanded="false">
+              <svg viewBox="0 0 24 24" width="17" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            <ul class="options-list" id="attach-list" role="menu">
+              <li role="menuitem" data-action="upload-file">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Upload file</span>
+              </li>
+              <li role="menuitem" data-action="capture-image">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span>Capture image</span>
+              </li>
+            </ul>
+          </div>
+          <input type="file" id="file-input" accept="image/*,audio/*,video/*,application/pdf" multiple hidden />
+          <input type="file" id="camera-input" accept="image/*" capture="environment" hidden />
 
-          <label class="icon-btn compose-btn" title="Capture image">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            <input type="file" id="camera-input" accept="image/*" capture="environment" hidden />
-          </label>
-
-          <textarea id="input" class="input" rows="1" placeholder="Ask anything about Yola…" required></textarea>
+          <textarea id="input" class="input" rows="1" placeholder="Ask about Yola…" required></textarea>
 
           <button type="button" class="icon-btn compose-btn" id="live-call-btn" title="Start live voice call">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.11 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.89.32 1.76.59 2.59a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.49-1.49a2 2 0 0 1 2.11-.45c.83.27 1.7.47 2.59.59A2 2 0 0 1 22 16.92z"/></svg>
+            <svg viewBox="0 0 24 24" width="19" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.11 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.89.32 1.76.59 2.59a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.49-1.49a2 2 0 0 1 2.11-.45c.83.27 1.7.47 2.59.59A2 2 0 0 1 22 16.92z"/></svg>
           </button>
 
           <button type="submit" class="send-btn" id="send-btn" title="Send">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M3.4 20.4l17.45-8.47a1 1 0 0 0 0-1.8L3.4 3.66a1 1 0 0 0-1.4 1.14L4.5 11 2 17.26a1 1 0 0 0 1.4 1.14z"/></svg>
+            <svg viewBox="0 0 24 24" width="19" height="22" fill="currentColor"><path d="M3.4 20.4l17.45-8.47a1 1 0 0 0 0-1.8L3.4 3.66a1 1 0 0 0-1.4 1.14L4.5 11 2 17.26a1 1 0 0 0 1.4 1.14z"/></svg>
           </button>
         </form>
         <div class="composer-hint">Enter to send · Shift+Enter for newline</div>

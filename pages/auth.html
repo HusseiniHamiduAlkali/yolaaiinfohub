@@ -1,0 +1,549 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/1111.png"/>
+    <link rel="apple-touch-icon" href="/1111.png"/>
+    <title>Sign in, sign up or reset your password — Yola AI Info Hub</title>
+    <meta name="description" content="Sign in, create your account, or reset your password on Yola AI Info Hub — AI-powered local information about Yola, Adamawa State, Nigeria.">
+    <meta property="og:title" content="Sign in — Yola AI Info Hub">
+    <meta property="og:description" content="Access your Yola AI Info Hub account or reset your password.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles/pages.css">
+    <style>
+        .integrity-card {
+            background: radial-gradient(1200px 500px at 90% -10%, rgb(130 118 85 / 35%), transparent 60%), radial-gradient(900px 500px at -10% 110%, rgb(211 225 222 / 55%), transparent 60%), linear-gradient(135deg, var(--emerald-900) 0%, var(--emerald-800) 60%, var(--emerald-700) 100%) !important;
+            color: #d7cdcd !important;
+            max-width: 100%;
+            min-width: 260px;
+            
+        }
+        
+        @media screen and (min-width: 700px) {
+            .form-card {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around; 
+                gap: 30px;}
+            .flip-card {max-width: 700px !important;}
+            .integrity-card-mobile {display: none;}
+            .integrity-card-desktop {margin-top: 0 !important; }
+            .right-column {display: flex; flex-direction: column; justify-content: space-around;}
+            .form-card-signin {flex-direction: column !important;}
+            .signin-columns {display: flex; flex-direction: row; gap: 20px; justify-content: space-around;}
+        }
+        @media screen and (max-width: 700px) {
+            .integrity-card-desktop {display: none ;}
+            .integrity-card-mobile {margin-top: 30px !important;}
+            .site-footer {margin-top: 215px;}
+            .flip-card {min-height: 1024px;}
+        }
+
+        @media screen and (max-width: 599px) {
+            .footer-links {align-items: flex-start !important;}
+        }
+        .footer-links {align-items: flex-start !important;}
+        .navbar-appname-desktop {
+        width: 258px;
+        height: 225px;
+        background-image: url(../Data/images/222.png);
+        background-size: 222%;
+        background-position: center;
+        background-repeat: no-repeat;}
+        .form-head h5 {font-family: "Fraunces", fantasy; font-weight: 600; font-size: 22px; color: #307563; margin-top: 12px;}
+    </style>
+</head>
+<body>
+
+     <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Desktop hero: brand lives here on larger screens -->
+    <header class="hero" aria-label="About Yola AI Info Hub">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner">
+           
+            <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+                <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+                <div href="../index.html" class="nav-logo">
+                    <span class="navbar-appname-desktop"></span>
+                </div>
+            </div>
+            <div>    
+                <span class="eyebrow">Yola, Adamawa State · Nigeria</span>
+                <p class="hero-subtitle">Sign in to your Yola AI Info Hub account, or create one in seconds to start exploring accurate, local, AI-powered information.</p>
+                <div class="hero-actions">
+                    <a href="../index.html" class="btn btn-primary">Explore the platform</a>
+                    <!--<a href="report.html" class="btn btn-secondary">Report / comment</a>-->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <!-- Mobile intro -->
+        <section class="mobile-intro" aria-label="Introduction">
+            <h1 class="mobile-title">Welcome</h1>
+            <p class="lead">Sign in or create your Yola AI Info Hub account.</p>
+        </section>
+
+        <section class="auth-stage" aria-label="Authentication">
+            <div class="flip-card" id="flipCard">
+                <div class="flip-card-inner">
+
+                    <!-- ============ SIGN IN ============ -->
+                    <div class="flip-face flip-front" aria-hidden="false">
+                        <div class="form-card form-card-signin">
+                            
+                        <div class="form-head">
+                            <span class="section-eyebrow">Welcome back</span>
+                            <h2 class="form-title">Sign in</h2>
+                            <p class="form-sub">Sign in and access your Yola AI Info Hub account,</br> for a seamless user experience!</p>
+                        </div>                            
+
+                        <div class="signin-columns">
+
+                            <div class="right-column">
+                                <div class="divider"><span>Continue with</span></div>
+                                <div class="sso-row">
+                                    <button type="button" class="sso-btn sso-google" data-sso="Google">
+                                        <i class="fab fa-google" style="color: #e64c4c82;" aria-hidden="true"></i><span>Continue with Google</span>
+                                    </button>
+                                    <button type="button" class="sso-btn sso-facebook" data-sso="Facebook">
+                                        <i class="fab fa-facebook-f" style="color: #2e2edca3;" aria-hidden="true"></i><span>Continue with Facebook</span>
+                                    </button>
+                                    <button type="button" class="sso-btn sso-apple" data-sso="Apple">
+                                        <i class="fab fa-apple" style="color: #222;" aria-hidden="true"></i><span>Continue with Apple</span>
+                                    </button>
+                                </div>
+                            
+                                <div class="integrity-card integrity-card-desktop">
+                                    <div class="card-header">
+                                        <div class="user-icon">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="status-info">
+                                            <h3>System Integrity</h3>
+                                            <p>Verified Professional Node</p>
+                                        </div>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar"></div>
+                                    </div>
+                                    <span class="protocol-text">Security Protocols Active</span>
+
+                                </div>
+
+                            </div>
+
+                            <div>
+                                <div class="divider"><span>or use phone/email</span></div>
+                                <form class="auth-form" id="signinForm" novalidate>
+                                    <div class="form-field form-field-full">
+                                        <label class="form-label" for="si-email">Email or username <span class="required">*</span></label>
+                                        <input class="form-input" type="text" id="si-email" name="identifier" autocomplete="username" placeholder="you@example.com or yourusername" required>
+                                    </div>
+
+                                    <div class="form-field form-field-full">
+                                        <label class="form-label" for="si-password">Password <span class="required">*</span></label>
+                                        <div class="password-wrap">
+                                            <input class="form-input" type="password" id="si-password" name="password" autocomplete="current-password" placeholder="Your password" required minlength="8">
+                                            <button type="button" class="password-toggle" aria-label="Show password" data-target="si-password">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row-inline">
+                                        <label class="form-check-inline">
+                                            <input type="checkbox" name="remember"> <span>Remember me</span>
+                                        </label>
+                                        <a href="#" class="inline-link small switch-link" data-flip="forgot">Forgot password?</a>
+                                    </div>
+
+                                    <div class="form-status" id="signinStatus" role="status" aria-live="polite"></div>
+
+                                    <button type="submit" class="btn btn-primary btn-submit">
+                                        <i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i>
+                                        <span>Sign in</span>
+                                    </button>
+
+                                    <p class="switch-line">
+                                        New to Yola AI Info Hub?
+                                        <a href="#" class="switch-link" data-flip="signup">Create an account</a>
+                                    </p>
+                                </form>
+                                <div class="integrity-card integrity-card-mobile">
+                                    <div class="card-header">
+                                        <div class="user-icon">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="status-info">
+                                            <h3>System Integrity</h3>
+                                            <p>Verified Professional Node</p>
+                                        </div>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar"></div>
+                                    </div>
+                                    <span class="protocol-text">Security Protocols Active</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ============ BACK FACE (sign up / reset / sent) ============ -->
+                    <div class="flip-face flip-back" aria-hidden="true">
+
+                        <!-- ---- SIGN UP ---- -->
+                        <div class="flip-back-panel is-active" id="panel-signup" data-panel="signup">
+                            <div class="form-card">
+                                <div class="right-column">
+                                    <div class="form-head">
+                                        <span class="section-eyebrow">Get started</span>
+                                        <h2 class="form-title">Create your account</h2>
+                                        <h5>Welcome to the digital hub!</h5>
+                                        <p class="form-sub">Where local information gets global recognition...</p>
+                                    </div>
+
+                                    <div class="divider"><span>Continue with</span></div>
+                                    <div class="sso-row">
+                                        <button type="button" class="sso-btn sso-google" data-sso="Google">
+                                            <i class="fab fa-google" style="color: #e64c4c82;" aria-hidden="true"></i><span>Sign up with Google</span>
+                                        </button>
+                                        <button type="button" class="sso-btn sso-facebook" data-sso="Facebook">
+                                            <i class="fab fa-facebook-f" style="color: #2e2edca3;" aria-hidden="true"></i><span>Sign up with Facebook</span>
+                                        </button>
+                                        <button type="button" class="sso-btn sso-apple" data-sso="Apple">
+                                            <i class="fab fa-apple" style="color: #222;" aria-hidden="true"></i><span>Sign up with Apple</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="integrity-card integrity-card-desktop">
+                                        <div class="card-header">
+                                            <div class="user-icon">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="status-info">
+                                                <h3>System Integrity</h3>
+                                                <p>Verified Professional Node</p>
+                                            </div>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar"></div>
+                                        </div>
+                                        <span class="protocol-text">Security Protocols Active</span>
+                                    </div>
+
+                                </div>
+                                <div>
+                                    <div class="divider"><span>or signup using phone/email</span></div>
+
+                                    <form class="auth-form" id="signupForm" novalidate>
+                                        <div class="form-field form-field-full">
+                                            <label class="form-label" for="su-name">Full name <span class="required">*</span></label>
+                                            <input class="form-input" type="text" id="su-name" name="name" autocomplete="name" placeholder="Amina Bello" required>
+                                        </div>
+
+                                        <div class="form-field form-field-full">
+                                            <label class="form-label" for="su-email">Email <span class="required">*</span></label>
+                                            <input class="form-input" type="email" id="su-email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                                        </div>
+
+                                        <div class="form-field form-field-full">
+                                            <label class="form-label" for="su-username">Username <span class="required">*</span></label>
+                                            <input class="form-input" type="text" id="su-username" name="username" autocomplete="username" placeholder="yourusername" required>
+                                        </div>
+
+                                        <div class="form-field form-field-full">
+                                            <label class="form-label" for="su-nin">NIN <span class="required">*</span></label>
+                                            <input class="form-input" type="text" id="su-nin" name="nin" autocomplete="off" placeholder="Enter your NIN" required>
+                                        </div>
+
+                                        <div class="form-field form-field-full">
+                                            <label class="form-label" for="su-phone">Phone number <span class="required">*</span></label>
+                                            <input class="form-input" type="tel" id="su-phone" name="phone" autocomplete="tel" placeholder="+234 800 000 0000" required>
+                                        </div>
+
+                                        <div class="form-field form-field-full">
+                                            <label class="form-label" for="su-address">Address <span class="required">*</span></label>
+                                            <textarea class="form-input" id="su-address" name="address" rows="3" placeholder="Your address or nearest landmark" required></textarea>
+                                        </div>
+
+                                        <div class="form-field form-field-full">
+                                            <label class="form-label" for="su-password">Password <span class="required">*</span> <span class="form-hint">min 8 characters</span></label>
+                                            <div class="password-wrap">
+                                                <input class="form-input" type="password" id="su-password" name="password" autocomplete="new-password" placeholder="Create a strong password" required minlength="8">
+                                                <button type="button" class="password-toggle" aria-label="Show password" data-target="su-password">
+                                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-field form-field-full">
+                                            <label class="form-label" for="su-confirm">Confirm password <span class="required">*</span></label>
+                                            <div class="password-wrap">
+                                                <input class="form-input" type="password" id="su-confirm" name="confirm" autocomplete="new-password" placeholder="Repeat your password" required minlength="8">
+                                                <button type="button" class="password-toggle" aria-label="Show password" data-target="su-confirm">
+                                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <label class="form-checkbox-row" id="su-nigerian-row">
+                                            <input type="checkbox" id="su-nigerian" name="isNigerian">
+                                            <span>I am a Nigerian</span>
+                                        </label>
+
+                                        <div class="form-field form-field-full residence-field" id="country-of-residence-field">
+                                            <label class="form-label" for="su-country">Country of residence <span class="required">*</span></label>
+                                            <select class="form-input" id="su-country" name="country">
+                                                <option value="">Select country</option>
+                                                <option value="Nigeria">Nigeria</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+
+                                        <label class="form-checkbox-row" id="su-yola-row">
+                                            <input type="checkbox" id="su-yola-resident" name="isYolaResident">
+                                            <span>I am a Yola resident</span>
+                                        </label>
+
+                                        <div class="form-field form-field-full residence-field" id="state-of-residence-field">
+                                            <label class="form-label" for="su-state">State of residence <span class="required">*</span></label>
+                                            <select class="form-input" id="su-state" name="state">
+                                                <option value="">Select state</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-field form-field-full residence-field" id="lga-of-residence-field">
+                                            <label class="form-label" for="su-lga">Local government area of residence <span class="required">*</span></label>
+                                            <select class="form-input" id="su-lga" name="lga">
+                                                <option value="">Select LGA</option>
+                                            </select>
+                                        </div>
+
+                                        <label class="form-checkbox-row" id="su-terms-row">
+                                            <input type="checkbox" id="su-terms" name="terms" required>
+                                            <span>I agree to the <a href="#" class="inline-link">Terms of use</a> and <a href="#" class="inline-link">Privacy policy</a>.</span>
+                                        </label>
+
+                                        <div class="form-status" id="signupStatus" role="status" aria-live="polite"></div>
+
+                                        <button type="submit" class="btn btn-primary btn-submit">
+                                            <i class="fas fa-user-plus" aria-hidden="true"></i>
+                                            <span>Create account</span>
+                                        </button>
+
+                                        <p class="switch-line">
+                                            Already have an account?
+                                            <a href="#" class="switch-link" data-flip="signin">Sign in</a>
+                                        </p>
+                                    </form>
+
+                                    <div class="integrity-card integrity-card-mobile">
+                                        <div class="card-header">
+                                            <div class="user-icon">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="status-info">
+                                                <h3>System Integrity</h3>
+                                                <p>Verified Professional Node</p>
+                                            </div>
+                                        </div>
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar"></div>
+                                        </div>
+                                        <span class="protocol-text">Security Protocols Active</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ---- FORGOT PASSWORD ---- -->
+                        <div class="flip-back-panel" id="panel-forgot" data-panel="forgot">
+                            <div class="form-card" style="flex-direction: column;">
+                                <div class="form-head">
+                                    <span class="section-eyebrow">Account recovery</span>
+                                    <h2 class="form-title">Reset your password</h2>
+                                    <p class="form-sub">We'll send you a secure reset link or token.</p>
+                                </div>
+
+                                <form class="auth-form" id="forgotForm" novalidate>
+                                    <div class="reset-toggle" role="group" aria-label="Choose recovery method">
+                                        <button type="button" class="reset-toggle-btn is-active" data-method="email" aria-pressed="true">
+                                            <i class="fas fa-envelope" aria-hidden="true"></i><span>Email</span>
+                                        </button>
+                                        <button type="button" class="reset-toggle-btn" data-method="phone" aria-pressed="false">
+                                            <i class="fas fa-mobile-screen" aria-hidden="true"></i><span>Phone</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="form-field form-field-full">
+                                        <label class="form-label" for="fp-identifier" id="fp-label">Email address <span class="required">*</span></label>
+                                        <input class="form-input" type="email" id="fp-identifier" name="identifier" autocomplete="email" placeholder="you@example.com" required>
+                                    </div>
+
+                                    <p class="reset-note">
+                                        <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                                        <span id="fp-note">If an account matches this email, a password reset link will arrive within a few minutes. The link expires in 30 minutes.</span>
+                                    </p>
+
+                                    <div class="form-status" id="forgotStatus" role="status" aria-live="polite"></div>
+
+                                    <button type="submit" class="btn btn-primary btn-submit">
+                                        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                        <span>Send reset link</span>
+                                    </button>
+
+                                    <p class="switch-line">
+                                        Remembered it?
+                                        <a href="#" class="switch-link" data-flip="signin">Back to sign in</a>
+                                    </p>
+                                    <p class="switch-line">
+                                        No account yet?
+                                        <a href="#" class="switch-link" data-flip="signup">Create an account</a>
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- ---- RESET LINK SENT ---- -->
+                        <div class="flip-back-panel" id="panel-sent" data-panel="reset-sent">
+                            <div class="form-card" style="flex-direction: column;">
+                                <div class="form-head">
+                                    <span class="section-eyebrow">Check your inbox</span>
+                                    <h2 class="form-title">Reset link sent</h2>
+                                    <p class="form-sub">Follow the link to choose a new password.</p>
+                                </div>
+
+                                <div class="reset-sent-body">
+                                    <div class="reset-sent-icon" aria-hidden="true">
+                                        <i class="fas fa-envelope-circle-check"></i>
+                                    </div>
+                                    <span class="masked-dest" id="sentDest">you@example.com</span>
+                                    <p class="reset-sent-text">
+                                        We've sent a password reset token to the address above. It expires in 30 minutes.
+                                        Didn't get it? Check your spam folder before resending.
+                                    </p>
+
+                                    <div class="form-status" id="sentStatus" role="status" aria-live="polite"></div>
+
+                                    <div class="reset-actions">
+                                        <button type="button" class="btn btn-ghost" id="resendBtn">
+                                            <i class="fas fa-rotate-right" aria-hidden="true"></i>
+                                            <span id="resendLabel">Resend link</span>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-submit switch-link" data-flip="signin" style="margin-left:0;border-bottom:none;">
+                                            <i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i>
+                                            <span>Back to sign in</span>
+                                        </button>
+                                    </div>
+
+                                    <p class="switch-line">
+                                        Wrong address?
+                                        <a href="#" class="switch-link" data-flip="forgot">Try another one</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="report.html">Report / comment</a></li>
+                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
+                        <li><a href="help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">Privacy policy</a></li>
+                        <li><a href="terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">© <span id="year">2026</span> Yola AI Info Hub. Built for Yola, Adamawa State.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="../components/states-lgas.js"></script>
+    <script src="scripts/auth.js"></script>
+</body>
+</html>
+
+

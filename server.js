@@ -1,5 +1,18 @@
 // Simple Express backend for login/signup/logout with MongoDB (Mongoose)
 
+
+const { OAuth2Client } = require('google-auth-library');
+
+function getGoogleOAuthConfig() {
+  return {
+    clientId: process.env.SSO_GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.SSO_GOOGLE_CLIENT_SECRET || ''
+  };
+}
+
+const googleClient = new OAuth2Client(getGoogleOAuthConfig().clientId);
+
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -8,6 +21,7 @@ const session = require('express-session');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
+const fs = require('fs');
 const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
 const validator = require('express-validator');
@@ -45,6 +59,37 @@ const configuredOrigins = (process.env.CORS_ORIGINS || process.env.ALLOWED_ORIGI
 const allowedOrigins = new Set([...DEFAULT_ALLOWED_ORIGINS, ...configuredOrigins]);
 
 app.set('trust proxy', true);
+const isProduction = process.env.NODE_ENV === 'production';
+
+function buildGoogleUsername(email) {
+  const base = String(email || '').split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '').toLowerCase();
+  const safeBase = base || 'googleuser';
+  return `${safeBase}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function buildGoogleUserData(googleUser) {
+  const email = String(googleUser?.email || '').trim().toLowerCase();
+  const username = buildGoogleUsername(email);
+  const displayName = String(googleUser?.name || googleUser?.given_name || googleUser?.family_name || username).trim();
+  return {
+    username,
+    email,
+    name: displayName || username,
+    nin: `GOOGLE-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+    phone: googleUser?.phone_number || 'Not provided',
+    address: 'Not provided',
+    state: 'Not provided',
+    lga: 'Not provided',
+    password: crypto.randomBytes(24).toString('hex'),
+    termsAccepted: true,
+    termsAcceptedDate: new Date(),
+    emailVerified: googleUser?.email_verified !== false,
+    googleId: googleUser?.sub,
+    authProvider: 'google',
+    profilePicture: googleUser?.picture || '',
+    lastLogin: new Date()
+  };
+}
 
 // Increase payload size limit for large AI requests (default is 100KB, increasing to 50MB)
 app.use(express.json({ limit: '50mb' }));
@@ -78,6 +123,21 @@ const corsOptions = {
 
 // Apply CORS first
 app.use(cors(corsOptions));
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'yola-info-hub-secret',
+  resave: false,
+  saveUninitialized: false,
+  proxy: true,
+  cookie: {
+    secure: isProduction,
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24,
+    sameSite: isProduction ? 'none' : false,
+    path: '/',
+    domain: undefined
+  }
+}));
 
 // Enable gzip compression for responses
 app.use(require('compression')());
@@ -223,6 +283,95 @@ app.post('/api/transcribe', async (req, res) => {
   }
 });
 
+app.get('/api/auth/google-config', (req, res) => {
+  const { clientId } = getGoogleOAuthConfig();
+  res.json({ clientId });
+});
+
+app.options('/api/auth/google', cors(corsOptions));
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    const { credential } = req.body || {};
+    if (!credential) {
+      return res.status(400).json({ success: false, error: 'Google credential is required' });
+    }
+
+    const { clientId } = getGoogleOAuthConfig();
+    if (!clientId) {
+      return res.status(500).json({ success: false, error: 'Google OAuth client ID is not configured' });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: clientId
+    });
+    const payload = ticket.getPayload();
+
+    if (!payload?.email) {
+      return res.status(400).json({ success: false, error: 'Google account email is required' });
+    }
+
+    const normalizedEmail = String(payload.email).trim().toLowerCase();
+    let user = await User.findOne({ $or: [{ email: normalizedEmail }, { googleId: payload.sub }] });
+
+    if (!user) {
+      let username = buildGoogleUsername(normalizedEmail);
+      let existingUsername = await User.findOne({ username });
+      while (existingUsername) {
+        username = buildGoogleUsername(normalizedEmail);
+        existingUsername = await User.findOne({ username });
+      }
+
+      const userData = buildGoogleUserData({
+        ...payload,
+        email: normalizedEmail,
+        name: payload.name || payload.given_name || payload.family_name || username
+      });
+      userData.username = username;
+      userData.email = normalizedEmail;
+      user = await User.create(userData);
+    } else {
+      const updates = {};
+      if (!user.googleId) updates.googleId = payload.sub;
+      if (!user.authProvider) updates.authProvider = 'google';
+      if (!user.emailVerified) updates.emailVerified = payload.email_verified !== false;
+      if (!user.name && payload.name) updates.name = payload.name;
+      if (!user.profilePicture && payload.picture) updates.profilePicture = payload.picture;
+      if (!user.lastLogin) updates.lastLogin = new Date();
+      if (Object.keys(updates).length) {
+        await User.updateOne({ _id: user._id }, { $set: updates });
+        user = await User.findById(user._id);
+      }
+    }
+
+    req.session.userId = user._id;
+    req.session.save((err) => {
+      if (err) {
+        console.error('Google SSO session save error:', err);
+        return res.status(500).json({ success: false, error: 'Unable to start a session' });
+      }
+
+      const avatar = user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
+      res.json({
+        success: true,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || '',
+        state: user.state || '',
+        lga: user.lga || '',
+        address: user.address || '',
+        profilePicture: user.profilePicture || '',
+        avatar,
+        authProvider: 'google'
+      });
+    });
+  } catch (error) {
+    console.error('Google SSO error:', error);
+    return res.status(401).json({ success: false, error: 'Google sign-in failed' });
+  }
+});
+
 app.post('/api/tts', (req, res) => {
   try {
     const text = String(req.body?.text || '').trim();
@@ -240,14 +389,59 @@ app.post('/api/tts', (req, res) => {
   }
 });
 
+app.post('/api/translate', async (req, res) => {
+  try {
+    const { text, sourceLanguage = 'en', targetLanguage = 'ar' } = req.body || {};
+    const inputText = String(text || '').trim();
+
+    if (!inputText) {
+      return res.status(400).json({ error: 'Missing text' });
+    }
+
+    const API_KEY = process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
+    if (!API_KEY) {
+      return res.status(500).json({ error: 'Translation API key not configured' });
+    }
+
+    const targetLabel = targetLanguage === 'ar' ? 'Arabic' :
+      targetLanguage === 'fr' ? 'French' :
+      targetLanguage === 'ha' ? 'Hausa' :
+      targetLanguage === 'ff' ? 'Fulfulde' :
+      targetLanguage === 'yo' ? 'Yoruba' :
+      targetLanguage === 'ig' ? 'Igbo' :
+      targetLanguage === 'pcm' ? 'Nigerian Pidgin' : 'English';
+
+    const prompt = `Translate the following text from ${sourceLanguage || 'English'} to ${targetLabel}. Return only the translated text and preserve the meaning. Do not add any explanation or notes.\n\n${inputText}`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }]
+      })
+    });
+
+    const rawText = await response.text();
+    let data = null;
+    try { data = rawText ? JSON.parse(rawText) : null; } catch (error) { data = { raw: rawText }; }
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: 'Translation failed', details: data });
+    }
+
+    const translatedText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+    return res.json({ translatedText: translatedText || inputText });
+  } catch (error) {
+    console.error('Translation route error:', error);
+    return res.status(500).json({ error: error.message || 'Translation failed' });
+  }
+});
+
 // Security middleware with appropriate settings for CORS
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
-
-// Environment-specific configuration
-const isProduction = process.env.NODE_ENV === 'production';
 
 // Mount /api/gemini endpoint
 app.post('/api/gemini', async (req, res) => {
@@ -432,6 +626,298 @@ app.post('/api/gemini', async (req, res) => {
   }
 });
 
+// ============ CHAT HELPERS ============
+const OPENAI_MODEL_MAP = {
+  'openai/gpt-4o': 'gpt-4o',
+  'openai/gpt-4o-mini': 'gpt-4o-mini',
+  'openai/gpt-4.1': 'gpt-4.1',
+  'openai/gpt-4.1-mini': 'gpt-4.1-mini',
+  'openai/gpt-5.5': 'gpt-4o',
+  'openai/gpt-5-mini': 'gpt-4o-mini',
+};
+
+const GEMINI_MODEL_MAP = {
+  'google/gemini-2.5-flash': 'gemini-2.5-flash',
+  'google/gemini-2.5-pro': 'gemini-2.5-pro',
+  'google/gemini-2.0-flash': 'gemini-2.0-flash',
+  'google/gemini-1.5-flash': 'gemini-1.5-flash',
+  'google/gemini-1.5-pro': 'gemini-1.5-pro',
+};
+
+const GEMINI_FALLBACK_MODELS = {
+  'gemini-2.5-flash': 'gemini-2.0-flash',
+  'gemini-2.5-pro': 'gemini-2.0-flash',
+  'gemini-2.0-flash': 'gemini-1.5-flash',
+  'gemini-1.5-pro': 'gemini-1.5-flash',
+  'gemini-1.5-flash': 'gemini-2.0-flash',
+};
+
+function parseDataUrl(dataUrl) {
+  const match = String(dataUrl || '').match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) return null;
+  return { mimeType: match[1], data: match[2] };
+}
+
+function geminiPartsFromMessageParts(parts) {
+  if (!Array.isArray(parts) || !parts.length) return [{ text: '' }];
+  return parts.map((part) => {
+    if (part.type === 'text') return { text: part.text || '' };
+    if (part.type === 'file') {
+      const parsed = parseDataUrl(part.url);
+      const mimeType = part.mediaType || parsed?.mimeType || '';
+      if (parsed && mimeType.startsWith('image/')) {
+        return { inline_data: { mime_type: mimeType, data: parsed.data } };
+      }
+      return { text: `[File: ${part.filename || 'attachment'}]` };
+    }
+    return { text: '' };
+  }).filter((part) => part.text || part.inline_data);
+}
+
+function openaiContentFromParts(parts) {
+  if (!Array.isArray(parts) || !parts.length) return '';
+  const hasImage = parts.some(
+    (part) => part.type === 'file' && (part.mediaType || '').startsWith('image/')
+  );
+  if (!hasImage) {
+    return parts
+      .map((part) => {
+        if (part.type === 'text') return part.text || '';
+        if (part.type === 'file') return `[File: ${part.filename || 'attachment'}]`;
+        return '';
+      })
+      .filter(Boolean)
+      .join('\n');
+  }
+  return parts
+    .map((part) => {
+      if (part.type === 'text') return { type: 'text', text: part.text || '' };
+      if (part.type === 'file' && (part.mediaType || '').startsWith('image/')) {
+        return { type: 'image_url', image_url: { url: part.url } };
+      }
+      if (part.type === 'file') {
+        return { type: 'text', text: `[File: ${part.filename || 'attachment'}]` };
+      }
+      return null;
+    })
+    .filter(Boolean);
+}
+
+const LOCAL_KNOWLEDGE_ROOT = path.resolve(__dirname, 'details', 'En');
+const LOCAL_KNOWLEDGE_CACHE = { data: null, loadedAt: 0 };
+const MAX_LOCAL_KNOWLEDGE_CHARS = 18000;
+
+function stripHtmlToText(raw) {
+  if (!raw) return '';
+  return String(raw)
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&#39;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function readLocalKnowledgeBase() {
+  const now = Date.now();
+  if (LOCAL_KNOWLEDGE_CACHE.data && now - LOCAL_KNOWLEDGE_CACHE.loadedAt < 60000) {
+    return LOCAL_KNOWLEDGE_CACHE.data;
+  }
+
+  const documents = [];
+
+  function walk(dir) {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+        continue;
+      }
+      const ext = path.extname(entry.name).toLowerCase();
+      if (!['.html', '.htm', '.txt', '.md', '.json', '.csv', '.xml', '.yaml', '.yml'].includes(ext)) {
+        continue;
+      }
+      try {
+        const raw = fs.readFileSync(fullPath, 'utf8');
+        let text = raw;
+        if (ext === '.html' || ext === '.htm') {
+          text = stripHtmlToText(raw);
+        } else if (ext === '.json') {
+          text = JSON.stringify(JSON.parse(raw), null, 2);
+        }
+        text = text.replace(/\s+/g, ' ').trim();
+        if (!text) continue;
+        documents.push({
+          path: path.relative(__dirname, fullPath).replace(/\\/g, '/'),
+          content: text.slice(0, 5000),
+        });
+      } catch (error) {
+        console.warn('Skipping local knowledge file:', fullPath, error.message);
+      }
+    }
+  }
+
+  walk(LOCAL_KNOWLEDGE_ROOT);
+
+  const sortedDocs = documents.sort((a, b) => a.path.localeCompare(b.path));
+  let combinedText = sortedDocs.map((doc) => `[File: ${doc.path}] ${doc.content}`).join('\n\n');
+  if (combinedText.length > MAX_LOCAL_KNOWLEDGE_CHARS) {
+    combinedText = combinedText.slice(0, MAX_LOCAL_KNOWLEDGE_CHARS) + '\n...';
+  }
+
+  const result = { docs: sortedDocs, text: combinedText };
+  LOCAL_KNOWLEDGE_CACHE.data = result;
+  LOCAL_KNOWLEDGE_CACHE.loadedAt = now;
+  return result;
+}
+
+function extractUserQuery(messages) {
+  if (!Array.isArray(messages)) return '';
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+    if (message?.role !== 'user') continue;
+    const text = (message.parts || [])
+      .filter((part) => part?.type === 'text')
+      .map((part) => part.text || '')
+      .join(' ')
+      .trim();
+    if (text) return text;
+  }
+  return '';
+}
+
+function getRelevantKnowledgeSnippet(query, knowledge) {
+  const normalizedQuery = String(query || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!normalizedQuery) return '';
+
+  const terms = normalizedQuery.split(' ').filter((term) => term.length > 2);
+  if (!terms.length) return '';
+
+  const exactTerms = Array.from(new Set([normalizedQuery, ...terms]));
+  const scoredDocs = knowledge.docs
+    .map((doc) => {
+      const haystack = `${doc.path} ${doc.content}`.toLowerCase();
+      const exactMatches = exactTerms.filter((term) => haystack.includes(term));
+      const tokenMatches = terms.filter((term) => haystack.includes(term));
+      const pathMatches = exactTerms.filter((term) => doc.path.toLowerCase().includes(term));
+      const score = exactMatches.length * 4 + tokenMatches.length * 2 + pathMatches.length * 3;
+      return { ...doc, score };
+    })
+    .filter((doc) => doc.score > 0)
+    .sort((a, b) => b.score - a.score || a.path.localeCompare(b.path))
+    .slice(0, 2);
+
+  if (!scoredDocs.length) return '';
+
+  return scoredDocs
+    .map((doc) => doc.content.slice(0, 1600).trim())
+    .join('\n\n---\n\n');
+}
+
+function buildLocalKnowledgePrompt(messages) {
+  const knowledge = readLocalKnowledgeBase();
+  if (!knowledge.text) return messages;
+
+  const userQuery = extractUserQuery(messages);
+  const relevantKnowledge = getRelevantKnowledgeSnippet(userQuery, knowledge);
+  const needsClinicHint = /clinic|clinic yola|meddy|specialist|healthcare/i.test(userQuery || '');
+  const clinicHint = needsClinicHint
+    ? '\n\nIMPORTANT: If the user asks about a clinic, healthcare facility, pharmacy, hospital, specialist, or medical service, search the local knowledge base for that exact or similar name before answering.'
+    : '';
+
+  const knowledgeSection = relevantKnowledge
+    ? `LOCAL KNOWLEDGE BASE (relevant excerpt):\n${relevantKnowledge}`
+    : 'LOCAL KNOWLEDGE BASE: No directly relevant local excerpt was found for this request. Answer using your general knowledge and leverage local data only when clearly useful.';
+
+  const promptText = `You are Yola AI assistant. Use the local English knowledge base from the project as a helpful reference, but do not let it override your general reasoning ability. Combine both sources:
+  1. For named places, businesses, people, clinics, services, and events, first search the local knowledge base for that exact or similar name.
+  2. If the local files contain relevant information, answer from those files first and say that the answer is based on the local project data.
+  3. If the local files do not contain enough information, use your general knowledge and say that you are supplementing with general knowledge.
+  4. Do not claim that the local data is empty unless you have checked it and found no relevant match.
+  5. If you see a relevant local excerpt, use it directly rather than listing file names or file paths.${clinicHint}
+
+USER QUESTION:
+${userQuery || 'No specific question provided.'}
+
+${knowledgeSection}`;
+
+  return [{ role: 'user', parts: [{ type: 'text', text: promptText }] }].concat(messages || []);
+}
+
+function extractGeminiText(data) {
+  const parts = data?.candidates?.[0]?.content?.parts;
+  if (!Array.isArray(parts)) return '';
+  return parts.map((part) => part.text || '').join('').trim();
+}
+
+function sendPlainTextChatResponse(res, content) {
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.write(content || '_(no response)_');
+  res.end();
+}
+
+function buildLocalFallbackReply(messages) {
+  const userMessage = Array.isArray(messages)
+    ? messages
+        .slice()
+        .reverse()
+        .find((message) => message?.role === 'user')
+    : null;
+  const query = (userMessage?.parts || [])
+    .filter((part) => part?.type === 'text')
+    .map((part) => part.text || '')
+    .join(' ')
+    .trim();
+
+  const knowledge = readLocalKnowledgeBase();
+  const relevantKnowledge = getRelevantKnowledgeSnippet(query, knowledge);
+
+  if (!query) {
+    return 'I am currently unable to reach the external AI service. I am using the local project files as the backup knowledge source and will provide a concise answer based on what is available.';
+  }
+
+  if (!relevantKnowledge) {
+    return `I could not reach the external AI service. I found no directly relevant local project excerpt for "${query}". Please see below for a concise answer from available local context and general knowledge.`;
+  }
+
+  return `I was unable to reach the external AI service, so I am answering using the local project data for your request: "${query}". Here is the most relevant local excerpt:\n\n${relevantKnowledge}`;
+}
+
+async function callGeminiGenerate(apiKey, model, geminiMessages) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: geminiMessages,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 2000,
+      },
+    }),
+  });
+
+  const rawText = await response.text();
+  let data = null;
+  try {
+    data = rawText ? JSON.parse(rawText) : null;
+  } catch {
+    data = { raw: rawText };
+  }
+
+  return { response, data };
+}
+
 // ============ UNIFIED CHAT ENDPOINT ============
 // Routes to different AI providers based on model selection
 // Supports: OpenAI (GPT-5.5, GPT-5-mini) and Google (Gemini 2.5 Flash, Gemini 2.5 Pro)
@@ -443,17 +929,69 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Missing model or messages' });
     }
 
-    // Route based on model provider
+    const contextualMessages = buildLocalKnowledgePrompt(messages);
+
     if (model.startsWith('openai/')) {
-      return handleOpenAIChat(req, res, model, messages);
-    } else if (model.startsWith('google/')) {
-      return handleGeminiChat(req, res, model, messages);
-    } else {
-      return res.status(400).json({ error: `Unknown model provider: ${model}` });
+      return handleOpenAIChat(req, res, model, contextualMessages);
     }
+    if (model.startsWith('google/')) {
+      return handleGeminiChat(req, res, model, contextualMessages);
+    }
+
+    return res.status(400).json({ error: `Unknown model provider: ${model}` });
   } catch (error) {
     console.error('Chat API error:', error);
     res.status(500).json({ error: error.message || 'Error processing chat request' });
+  }
+});
+
+app.get('/api/local-knowledge-files', (req, res) => {
+  try {
+    const files = [];
+    const ignored = [];
+    const allowedExt = ['.html', '.htm', '.txt', '.md', '.json', '.csv', '.xml', '.yaml', '.yml'];
+
+    function walk(dir) {
+      if (!fs.existsSync(dir)) return;
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          walk(fullPath);
+          continue;
+        }
+        const ext = path.extname(entry.name).toLowerCase();
+        if (allowedExt.includes(ext)) {
+          files.push(path.relative(__dirname, fullPath).replace(/\\/g, '/'));
+        } else {
+          ignored.push(path.relative(__dirname, fullPath).replace(/\\/g, '/'));
+        }
+      }
+    }
+
+    walk(LOCAL_KNOWLEDGE_ROOT);
+    files.sort();
+    ignored.sort();
+
+    const localKnowledge = readLocalKnowledgeBase();
+    const includedFiles = Array.isArray(localKnowledge.docs)
+      ? localKnowledge.docs.map((doc) => doc.path)
+      : [];
+
+    res.json({
+      root: LOCAL_KNOWLEDGE_ROOT,
+      allowedExtensions: allowedExt,
+      maxCharsIncluded: MAX_LOCAL_KNOWLEDGE_CHARS,
+      discoveredFilesCount: files.length,
+      discoveredFiles: files,
+      includedFilesCount: includedFiles.length,
+      includedFiles,
+      ignoredFilesCount: ignored.length,
+      ignoredFiles: ignored,
+    });
+  } catch (error) {
+    console.error('Local knowledge files check error:', error);
+    res.status(500).json({ error: error.message || 'Error listing local knowledge files' });
   }
 });
 
@@ -467,73 +1005,56 @@ async function handleOpenAIChat(req, res, model, messages) {
   }
 
   try {
-    // Map model names to actual OpenAI models
-    const modelMap = {
-      'openai/gpt-5.5': 'gpt-4o',
-      'openai/gpt-5-mini': 'gpt-4o-mini'
-    };
-
-    const actualModel = modelMap[model] || 'gpt-4o';
-
+    const actualModel = OPENAI_MODEL_MAP[model] || 'gpt-4o';
+    const openaiBaseUrl = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
     console.log(`Calling OpenAI API with model: ${actualModel} (requested: ${model})`);
 
-    // Convert message format from chat.html to OpenAI format
-    const openaiMessages = messages.map(msg => ({
+    const openaiMessages = messages.map((msg) => ({
       role: msg.role === 'user' ? 'user' : 'assistant',
-      content: msg.parts
-        ? msg.parts
-            .map(part => {
-              if (part.type === 'text') {
-                return part.text;
-              } else if (part.type === 'file') {
-                return `[File: ${part.filename || 'attachment'}]`;
-              }
-              return '';
-            })
-            .join('\n')
-        : ''
+      content: openaiContentFromParts(msg.parts),
     }));
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`${openaiBaseUrl.replace(/\/$/, '')}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: actualModel,
         messages: openaiMessages,
         temperature: 0.7,
         max_tokens: 2000,
-        stream: false
-      })
+        stream: false,
+      }),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
-      return res.status(response.status).json({
-        error: errorData.error?.message || 'OpenAI API error',
-        details: errorData
-      });
+    const rawText = await response.text();
+    let data = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : null;
+    } catch {
+      data = { raw: rawText };
     }
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || '';
+    if (!response.ok) {
+      console.error('OpenAI API error:', data);
+      const fallback = buildLocalFallbackReply(messages);
+      return sendPlainTextChatResponse(res, fallback);
+    }
 
-    // Return in format compatible with frontend streaming expectations
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.write(content);
-    res.end();
+    const content = data?.choices?.[0]?.message?.content || '';
+    sendPlainTextChatResponse(res, typeof content === 'string' ? content : JSON.stringify(content));
   } catch (error) {
     console.error('OpenAI handler error:', error);
-    res.status(500).json({ error: error.message || 'Error processing OpenAI request' });
+    const fallback = buildLocalFallbackReply(messages);
+    return sendPlainTextChatResponse(res, fallback);
   }
 }
 
 // ============ GEMINI HANDLER ============
 async function handleGeminiChat(req, res, model, messages) {
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
 
   if (!GEMINI_API_KEY) {
     console.error('GEMINI_API_KEY not set in environment');
@@ -541,89 +1062,38 @@ async function handleGeminiChat(req, res, model, messages) {
   }
 
   try {
-    // Map model names
-    const modelMap = {
-      'google/gemini-2.5-flash': 'gemini-2.5-flash',
-      'google/gemini-2.5-pro': 'gemini-2.5-pro'
-    };
-
-    let actualModel = modelMap[model] || 'gemini-2.5-flash';
-
+    const configuredGeminiDefault = process.env.GEMINI_DEFAULT_MODEL || process.env.DEFAULT_CHAT_MODEL || 'gemini-2.5-flash';
+    let actualModel = GEMINI_MODEL_MAP[model] || GEMINI_MODEL_MAP[process.env.DEFAULT_CHAT_MODEL] || configuredGeminiDefault;
     console.log(`Calling Gemini API with model: ${actualModel} (requested: ${model})`);
 
-    // Convert message format to Gemini format
-    const geminiMessages = messages.map(msg => ({
+    const geminiMessages = messages.map((msg) => ({
       role: msg.role === 'user' ? 'user' : 'model',
-      parts: msg.parts
-        ? msg.parts.map(part => {
-            if (part.type === 'text') {
-              return { text: part.text };
-            } else if (part.type === 'file') {
-              return { text: `[File: ${part.filename || 'attachment'}]` };
-            }
-            return { text: '' };
-          })
-        : [{ text: '' }]
+      parts: geminiPartsFromMessageParts(msg.parts),
     }));
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${actualModel}:generateContent?key=${GEMINI_API_KEY}`;
+    let { response, data } = await callGeminiGenerate(GEMINI_API_KEY, actualModel, geminiMessages);
 
-    const response = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: geminiMessages,
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2000
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const data = await response.json();
-      console.error('Gemini API error:', data);
-      
-      // Fallback for older model versions
-      if (data.error?.code === 404 && actualModel === 'gemini-2.5-flash') {
-        console.log('Falling back to gemini-1.5-flash');
-        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-        const fallbackResponse = await fetch(fallbackUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: geminiMessages,
-            generationConfig: { temperature: 0.7, maxOutputTokens: 2000 }
-          })
-        });
-
-        if (fallbackResponse.ok) {
-          const content = await fallbackResponse.text();
-          res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-          res.write(content);
-          res.end();
-          return;
-        }
-      }
-
-      return res.status(response.status).json({
-        error: data.error?.message || 'Gemini API error',
-        details: data
-      });
+    let fallbackAttempts = 0;
+    while (!response.ok && data?.error?.code === 404 && fallbackAttempts < 3) {
+      const fallbackModel = GEMINI_FALLBACK_MODELS[actualModel];
+      if (!fallbackModel) break;
+      console.log(`Model ${actualModel} not available, falling back to ${fallbackModel}`);
+      actualModel = fallbackModel;
+      fallbackAttempts += 1;
+      ({ response, data } = await callGeminiGenerate(GEMINI_API_KEY, actualModel, geminiMessages));
     }
 
-    const data = await response.json();
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!response.ok) {
+      console.error('Gemini API error:', data);
+      const fallback = buildLocalFallbackReply(messages);
+      return sendPlainTextChatResponse(res, fallback);
+    }
 
-    // Return as streaming text
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.write(content);
-    res.end();
+    sendPlainTextChatResponse(res, extractGeminiText(data));
   } catch (error) {
     console.error('Gemini handler error:', error);
-    res.status(500).json({ error: error.message || 'Error processing Gemini request' });
+    const fallback = buildLocalFallbackReply(messages);
+    return sendPlainTextChatResponse(res, fallback);
   }
 }
 
@@ -654,32 +1124,44 @@ const forgotPasswordLimiter = rateLimit({
 const { body, validationResult } = validator;
 
 const validateSignup = [
-  body('username').trim().isLength({ min: 3 }).escape(),
-  body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 8 })
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
-  body('phone').matches(/^[0-9]+$/),
-  body('nin').matches(/^\d{11}$/),
-  body('state').notEmpty(),
-  body('lga').notEmpty(),
-  body('address').trim().notEmpty(),
-  body('termsAccepted').equals('true')
+  body('username')
+    .trim()
+    .isLength({ min: 3 })
+    .withMessage('Username must be at least 3 characters long')
+    .escape(),
+  body('email')
+    .isEmail()
+    .withMessage('Enter a valid email address')
+    .normalizeEmail(),
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+    .withMessage('Password must include uppercase, lowercase, a number, and a special character'),
+  body('phone')
+    .trim()
+    .matches(/^[+\d][\d\s-]{7,}$/)
+    .withMessage('Enter a valid phone number'),
+  body('nin')
+    .trim()
+    .matches(/^\d{11}$/)
+    .withMessage('NIN must be exactly 11 digits'),
+  body('state')
+    .trim()
+    .notEmpty()
+    .withMessage('State is required'),
+  body('lga')
+    .trim()
+    .notEmpty()
+    .withMessage('Local government area is required'),
+  body('address')
+    .trim()
+    .notEmpty()
+    .withMessage('Address is required'),
+  body('termsAccepted')
+    .custom((value) => value === true || value === 'true')
+    .withMessage('You must accept the terms of use')
 ];
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'yola-info-hub-secret',
-  resave: false,
-  saveUninitialized: false,
-  proxy: true, // Required for secure cookies behind a proxy/load balancer
-  cookie: { 
-    secure: isProduction, // HTTPS in production, HTTP in dev
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24,
-    sameSite: isProduction ? 'none' : false, // false allows same-site + cross-origin on localhost, 'none' for cross-site in prod
-    path: '/',
-    domain: undefined // Let browser set domain automatically
-  }
-}));
-
 // Email transport configuration
 // Configure email transporter only if SMTP credentials are present
 let transporter = null;
@@ -717,7 +1199,14 @@ let lastResetLink = null;
 // Control whether reset links are returned in API responses (dev-only)
 const includeResetInResponse = !isProduction && process.env.DEBUG_RESET === 'true';
 
-// Helper function to send email notifications
+function generateOtpCode(length = 6) {
+  let code = '';
+  for (let i = 0; i < length; i += 1) {
+    code += String(Math.floor(Math.random() * 10));
+  }
+  return code;
+}
+
 async function sendEmailNotification(to, subject, htmlContent) {
   if (!transporter || !emailConfigured) {
     console.warn('Email not configured, skipping notification');
@@ -734,6 +1223,75 @@ async function sendEmailNotification(to, subject, htmlContent) {
     console.log(`Email sent to ${to}: ${subject}`);
   } catch (error) {
     console.error('Failed to send email:', error);
+  }
+}
+
+async function sendOtpEmail(to, code, purpose = 'verify your account') {
+  if (!transporter || !emailConfigured) {
+    console.warn('Email not configured, skipping OTP email');
+    return { sent: false };
+  }
+
+  const subject = purpose === 'reset' ? 'Your password reset code' : 'Your email verification code';
+  const html = `
+    <h2>${subject}</h2>
+    <p>Your one-time code is <strong>${code}</strong>.</p>
+    <p>This code expires in 10 minutes.</p>
+    <p>If you did not request this, you can safely ignore this message.</p>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"Yola AI Info Hub" <${emailUser}>`,
+      to,
+      subject,
+      html
+    });
+    return { sent: true };
+  } catch (error) {
+    console.error('Failed to send OTP email:', error);
+    return { sent: false, error };
+  }
+}
+
+async function sendSmsOtp(user, code) {
+  const provider = (process.env.SMS_PROVIDER || 'twilio').toLowerCase();
+  if (provider !== 'twilio') {
+    return { sent: false, reason: 'sms provider not configured' };
+  }
+
+  const accountSid = process.env.SMS_ACCOUNT_SID;
+  const authToken = process.env.SMS_AUTH_TOKEN;
+  const from = process.env.SMS_FROM;
+  if (!accountSid || !authToken || !from) {
+    return { sent: false, reason: 'sms credentials missing' };
+  }
+
+  try {
+    const authHeader = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
+    const response = await fetch('https://api.twilio.com/2010-04-01/Accounts/' + accountSid + '/Messages.json', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${authHeader}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        To: user.phone,
+        From: from,
+        Body: `Your Yola AI Info Hub verification code is ${code}`
+      })
+    });
+
+    const payload = await response.text();
+    if (!response.ok) {
+      console.error('Twilio SMS failed', payload);
+      return { sent: false, reason: payload };
+    }
+
+    return { sent: true };
+  } catch (error) {
+    console.error('Failed to send SMS OTP:', error);
+    return { sent: false, error };
   }
 }
 
@@ -768,16 +1326,25 @@ const userSchema = new mongoose.Schema({
   state: { type: String, required: true },
   lga: { type: String, required: true },
   password: { type: String, required: true },
+  googleId: { type: String, default: null },
+  authProvider: { type: String, enum: ['local', 'google'], default: 'local' },
   createdAt: { type: Date, default: Date.now },
   lastLogin: { type: Date },
   resetToken: String,
   resetTokenExpires: Date,
   emailVerified: { type: Boolean, default: false },
   emailVerificationToken: String,
+  emailOtpCode: String,
+  emailOtpExpires: Date,
+  phoneOtpCode: String,
+  phoneOtpExpires: Date,
+  phoneVerified: { type: Boolean, default: false },
   loginAttempts: { type: Number, default: 0 },
   lockUntil: Date,
   accountStatus: { type: String, enum: ['active', 'suspended', 'pending'], default: 'pending' },
   profilePicture: String,
+  dateOfBirth: String,
+  bio: String,
   termsAccepted: { type: Boolean, required: true },
   termsAcceptedDate: { type: Date },
   role: { type: String, enum: ['user', 'admin', 'moderator'], default: 'user' },
@@ -859,6 +1426,38 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
       termsAcceptedDate: new Date()
     });
 
+    const verificationUrl = `${(process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app').replace(/\/$/, '')}/pages/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+    const emailOtpCode = generateOtpCode();
+    const phoneOtpCode = generateOtpCode();
+
+    await User.updateOne({ _id: user._id }, {
+      $set: {
+        emailOtpCode,
+        emailOtpExpires: Date.now() + 10 * 60 * 1000,
+        phoneOtpCode,
+        phoneOtpExpires: Date.now() + 10 * 60 * 1000
+      }
+    });
+
+    await sendEmailNotification(email, 'Welcome to Yola AI Info Hub', `
+      <h2>Welcome to Yola AI Info Hub!</h2>
+      <p>Dear ${name},</p>
+      <p>Thank you for signing up for Yola AI Info Hub. Your account has been created successfully.</p>
+      <p><strong>Username:</strong> ${username}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p>You can now access all features of our platform including AI chat, maps, and community resources.</p>
+      <p>Please verify your email by visiting <a href="${verificationUrl}">this secure verification link</a>.</p>
+      <p>If you prefer to verify with a code, use <strong>${emailOtpCode}</strong> on the verification page.</p>
+      <p>If you have any questions, feel free to contact our support team.</p>
+      <br>
+      <p>Best regards,<br>Yola AI Info Hub Team</p>
+      <p>For more information, contact the developer: <br> Husseini Hamidu Alkali <br> +234 7012244240 / +234 9069530196 <br> husseinihamidualkali@gmail.com</p>
+    `);
+
+    if (phone && process.env.SMS_VERIFY_REQUIRED === 'true') {
+      await sendSmsOtp({ phone }, phoneOtpCode);
+    }
+
     // Send welcome email notification
     const welcomeHtml = `
       <h2>Welcome to Yola AI Info Hub!</h2>
@@ -877,7 +1476,16 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
     req.session.userId = user._id;
     req.session.save((err) => {
       if (err) console.error('Session save error on signup:', err);
-      res.json({ success: true, username: user.username, name: user.name });
+      res.json({
+        success: true,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        requiresEmailVerification: true,
+        verificationCode: emailOtpCode,
+        message: 'Account created successfully. Check your inbox for verification instructions.'
+      });
     });
   } catch (error) {
     console.error('Signup error:', error);
@@ -894,12 +1502,12 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
 // Password reset request
 app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
   try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: 'Email required' });
+    const { email, phone } = req.body;
+    if (!email && !phone) {
+      return res.status(400).json({ error: 'Email or phone required' });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne(email ? { email } : { phone });
     if (!user) {
       return res.status(404).json({ error: 'No account with that email exists' });
     }
@@ -915,15 +1523,17 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
     // Never use request origin for email links - it may be localhost/127.0.0.1
     // Always use the live frontend URL for reset links
     const origin = (process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app').replace(/\/$/, '');
+    const resetEmail = email || user.email;
     // User's site uses pages/reset-password.html as the reset page; build link accordingly
-  const resetUrl = `${origin}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(email)}`;
+  const resetUrl = `${origin}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(resetEmail)}`;
   // store for debugging
   lastResetLink = resetUrl;
 
     // Prepare mail options with proper HTML formatting
+    const destination = email || user.email;
     const mailOptions = {
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-      to: email,
+      to: destination,
       subject: 'Password Reset - Yola AI Info Hub',
       html: `<html>
               <body style="font-family:Arial,sans-serif;">
@@ -951,7 +1561,7 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
     if (transporter) {
       try {
         await transporter.sendMail(mailOptions);
-        console.log(`Password reset email sent to ${email}`);
+        console.log(`Password reset email sent to ${destination}`);
       } catch (sendErr) {
         console.error('Failed to send password reset email:', sendErr && sendErr.message ? sendErr.message : sendErr);
         if (process.env.SUPPRESS_RESET_LOG !== 'true') {
@@ -972,7 +1582,7 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
   return res.json(respNoEmail);
     }
 
-    const respOk = { success: true, message: 'Password reset email sent' };
+    const respOk = { success: true, message: email ? 'Password reset email sent' : 'Password reset request recorded' };
     if (includeResetInResponse && lastResetLink) respOk.resetLink = lastResetLink;
     res.json(respOk);
   } catch (error) {
@@ -1014,15 +1624,24 @@ app.post('/api/reset-password', async (req, res) => {
 // Email verification on signup
 app.post('/api/verify-email', async (req, res) => {
   try {
-    const { token, email } = req.body;
+    const { token, email, code } = req.body;
     const user = await User.findOne({ email });
 
-    if (!user || user.emailVerificationToken !== token) {
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid verification request' });
+    }
+
+    const isValidToken = !!token && user.emailVerificationToken === token;
+    const isValidCode = !!code && user.emailOtpCode && user.emailOtpExpires && Date.now() < user.emailOtpExpires && user.emailOtpCode === code;
+
+    if (!isValidToken && !isValidCode) {
       return res.status(400).json({ error: 'Invalid verification token' });
     }
 
     user.emailVerified = true;
     user.emailVerificationToken = undefined;
+    user.emailOtpCode = undefined;
+    user.emailOtpExpires = undefined;
     await user.save();
 
     res.json({ success: true, message: 'Email verified successfully' });
@@ -1032,6 +1651,61 @@ app.post('/api/verify-email', async (req, res) => {
   }
 });
 
+app.post('/api/verify-email-otp', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Email and code are required' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user || !user.emailOtpCode || !user.emailOtpExpires || Date.now() > user.emailOtpExpires) {
+      return res.status(400).json({ error: 'Verification code expired or invalid' });
+    }
+
+    if (user.emailOtpCode !== code) {
+      return res.status(400).json({ error: 'Invalid verification code' });
+    }
+
+    user.emailVerified = true;
+    user.emailOtpCode = undefined;
+    user.emailOtpExpires = undefined;
+    await user.save();
+
+    res.json({ success: true, message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Email OTP verification error:', error);
+    res.status(500).json({ error: 'Error verifying email code' });
+  }
+});
+
+app.post('/api/verify-phone-otp', async (req, res) => {
+  try {
+    const { phone, code } = req.body;
+    if (!phone || !code) {
+      return res.status(400).json({ error: 'Phone and code are required' });
+    }
+
+    const user = await User.findOne({ phone });
+    if (!user || !user.phoneOtpCode || !user.phoneOtpExpires || Date.now() > user.phoneOtpExpires) {
+      return res.status(400).json({ error: 'Verification code expired or invalid' });
+    }
+
+    if (user.phoneOtpCode !== code) {
+      return res.status(400).json({ error: 'Invalid verification code' });
+    }
+
+    user.phoneVerified = true;
+    user.phoneOtpCode = undefined;
+    user.phoneOtpExpires = undefined;
+    await user.save();
+
+    res.json({ success: true, message: 'Phone verified successfully' });
+  } catch (error) {
+    console.error('Phone OTP verification error:', error);
+    res.status(500).json({ error: 'Error verifying phone code' });
+  }
+});
 
 // Login (by username or email)
 app.options('/api/login', cors(corsOptions)); // Handle preflight
@@ -1044,7 +1718,7 @@ app.post('/api/login', loginLimiter, async (req, res) => {
       console.error('❌ Login attempt with disconnected database. State:', mongoose.connection.readyState);
       console.error('   MONGO_URI:', process.env.MONGO_URI ? '***set***' : 'NOT SET');
       console.error('   Error details: Database is not connected. Make sure MongoDB is running and MONGO_URI is configured.');
-      return res.status(503).json({ error: 'Database connection unavailable. Please try again later.' });
+      return res.status(503).json({ error: 'Database connection unavailable. Please check your internet or try again later.' });
     }
     
     // Dev logging: record the login identifier (not the password) and timestamp
@@ -1071,6 +1745,7 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       if (!isProduction) console.log('Login result: password mismatch for', user.username);
+      return res.status(400).json({ error: 'Wrong password' });
       
       // Increment login attempts
       await User.updateOne({ _id: user._id }, { $inc: { loginAttempts: 1 } });
@@ -1221,11 +1896,19 @@ app.post('/api/update-profile', async (req, res) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const { name, email, phone, state, lga, address } = req.body;
+    const { username, name, email, phone, state, lga, address, dateOfBirth, bio } = req.body;
     const user = await User.findById(req.session.userId);
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Validate username if changed
+    if (username && username !== user.username) {
+      const existingUsername = await User.findOne({ username });
+      if (existingUsername) {
+        return res.status(400).json({ error: 'Username already in use' });
+      }
     }
 
     // Validate email if changed
@@ -1238,12 +1921,15 @@ app.post('/api/update-profile', async (req, res) => {
 
     // Build update object with only provided fields
     const updateData = {};
+    if (username !== undefined) updateData.username = username;
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
     if (phone !== undefined) updateData.phone = phone;
     if (state !== undefined) updateData.state = state;
     if (lga !== undefined) updateData.lga = lga;
     if (address !== undefined) updateData.address = address;
+    if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth;
+    if (bio !== undefined) updateData.bio = bio;
 
     // Handle profile picture upload
     if (req.files && req.files.profilePicture) {
@@ -1261,7 +1947,7 @@ app.post('/api/update-profile', async (req, res) => {
     // Return updated user data
     const avatar = updatedUser.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(updatedUser.name || updatedUser.username)}&background=3182ce&color=fff`;
     res.json({ 
-      success: true, 
+      success: true,
       username: updatedUser.username, 
       name: updatedUser.name, 
       email: updatedUser.email, 
@@ -1269,6 +1955,8 @@ app.post('/api/update-profile', async (req, res) => {
       state: updatedUser.state, 
       lga: updatedUser.lga, 
       address: updatedUser.address,
+      dateOfBirth: updatedUser.dateOfBirth,
+      bio: updatedUser.bio,
       profilePicture: updatedUser.profilePicture,
       avatar 
     });
@@ -1520,7 +2208,6 @@ app.get('/', (req, res) => {
 });
 
 // Serve local TomTom SDK from node_modules if available to avoid external CDN issues
-const fs = require('fs');
 const tomtomDist = path.join(__dirname, 'node_modules', '@tomtom-international', 'web-sdk-maps', 'dist');
 if (fs.existsSync(tomtomDist)) {
   app.use('/vendor/tomtom', express.static(tomtomDist));
@@ -1529,7 +2216,25 @@ if (fs.existsSync(tomtomDist)) {
   console.warn('TomTom SDK not found in node_modules. To enable a local copy, run: npm install @tomtom-international/web-sdk-maps');
 }
 
-app.listen(PORT, HOST, () => console.log(`Server running on http://${HOST}:${PORT}`));
+function startServer(portToUse = PORT) {
+  const server = app.listen(portToUse, HOST, () => {
+    console.log(`Server running on http://${HOST}:${portToUse}`);
+  });
+
+  server.on('error', (error) => {
+    if (error && error.code === 'EADDRINUSE') {
+      const nextPort = portToUse + 1;
+      console.warn(`Port ${portToUse} is already in use. Retrying on ${nextPort}...`);
+      startServer(nextPort);
+      return;
+    }
+
+    console.error('Server startup error:', error);
+    process.exit(1);
+  });
+}
+
+startServer(PORT);
 
 // Expose debug endpoint only in non-production to retrieve last generated reset link
 if (!isProduction) {

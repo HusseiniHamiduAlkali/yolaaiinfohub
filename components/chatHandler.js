@@ -248,7 +248,8 @@ function renderMessage(m) {
   const avatar = document.createElement('div');
   avatar.className = 'msg-avatar';
   if (m.role === 'assistant') {
-    avatar.innerHTML = `<img src="Data/Images/yolarflogo.jpg" alt="AI" />`;
+    //avatar.innerHTML = `<img src="Data/Images/yolarflogo.jpg" alt="AI" />`;
+    avatar.innerHTML = `<div>AI</div>`;
   } else {
     avatar.textContent = 'You';
   }
@@ -321,7 +322,7 @@ function renderMessage(m) {
   time.textContent = formatTime(m.createdAt);
 
   const col = document.createElement('div');
-  col.style.cssText = 'display:flex;flex-direction:column;min-width:0;max-width:100%;';
+  col.style.cssText = 'display:flex;flex-direction:column;min-width:0;max-width:100%; margin-top: 6px';
   col.appendChild(bubble);
   col.appendChild(time);
 
@@ -467,6 +468,35 @@ async function sendMessage() {
       return { id: m.id, role: m.role, parts };
     });
 
+  const latestUserText = (payloadMessages.findLast?.((m) => m.role === 'user')?.parts || [])
+    .filter((part) => part?.type === 'text')
+    .map((part) => part.text || '')
+    .join(' ')
+    .trim();
+
+  const debugHint = latestUserText
+    ? `\n\n[System hint] The user is asking about: "${latestUserText}". When answering, search the local project files for this exact name or closely related terms before saying the local data is empty.`
+    : '';
+
+  const requestBody = {
+    model: t.model || DEFAULT_MODEL,
+    messages: payloadMessages.map((message) => ({
+      ...message,
+      parts: message.parts.map((part) => ({ ...part }))
+    }))
+  };
+
+  if (latestUserText) {
+    requestBody.messages = [
+      {
+        id: 'system-local-context',
+        role: 'user',
+        parts: [{ type: 'text', text: debugHint }],
+      },
+      ...requestBody.messages,
+    ];
+  }
+
   const controller = new AbortController();
   state.currentAbort = controller;
 
@@ -474,7 +504,7 @@ async function sendMessage() {
     const res = await fetch(buildApiUrl('/api/chat'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: t.model || DEFAULT_MODEL, messages: payloadMessages }),
+      body: JSON.stringify(requestBody),
       signal: controller.signal,
     });
 
@@ -568,12 +598,28 @@ function speakAIResponse(messageId, bubbleEl) {
 }
 
 function deleteAIResponse(messageId) {
-  if (!confirm('Delete this message? This action cannot be undone.')) return;
+  if (!confirm('Delete this prompt and its reply? This action cannot be undone.')) return;
   const t = activeThread();
   if (!t) return;
+
   const index = t.messages.findIndex((item) => item.id === messageId);
   if (index === -1) return;
-  t.messages.splice(index, 1);
+
+  const removeIndexes = [index];
+  const previousIndex = index > 0 ? index - 1 : -1;
+  if (previousIndex >= 0 && t.messages[previousIndex].role === 'user') {
+    removeIndexes.push(previousIndex);
+  }
+
+  const sortedIndexes = [...new Set(removeIndexes)].sort((a, b) => b - a);
+  for (const removeIndex of sortedIndexes) {
+    t.messages.splice(removeIndex, 1);
+  }
+
+  if (!t.messages.length) {
+    t.title = 'New chat';
+  }
+
   t.updatedAt = Date.now();
   saveThreads();
   renderThreads();
@@ -812,6 +858,25 @@ function toggleOptions(open) {
   const isOpen = open ?? !list?.classList.contains('open');
   list?.classList.toggle('open', isOpen);
   trigger?.setAttribute('aria-expanded', String(isOpen));
+  if (isOpen) toggleAttachMenu(false);
+}
+
+function toggleAttachMenu(open) {
+  const list = $('#attach-list');
+  const trigger = $('#attach-trigger');
+  const isOpen = open ?? !list?.classList.contains('open');
+  list?.classList.toggle('open', isOpen);
+  trigger?.setAttribute('aria-expanded', String(isOpen));
+  if (isOpen) toggleOptions(false);
+}
+
+function doAttachAction(action) {
+  toggleAttachMenu(false);
+  if (action === 'upload-file') {
+    $('#file-input')?.click();
+  } else if (action === 'capture-image') {
+    $('#camera-input')?.click();
+  }
 }
 
 function doOptionAction(action) {
@@ -936,8 +1001,18 @@ function wireEvents() {
   $$('#options-list li').forEach((li) => {
     li.addEventListener('click', () => doOptionAction(li.dataset.action));
   });
+  $('#attach-trigger')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleAttachMenu();
+  });
+  $$('#attach-list li').forEach((li) => {
+    li.addEventListener('click', () => doAttachAction(li.dataset.action));
+  });
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.options-menu')) toggleOptions(false);
+    if (!e.target.closest('.options-menu')) {
+      toggleOptions(false);
+      toggleAttachMenu(false);
+    }
   });
 
   $('#hide-chat-btn')?.addEventListener('click', (e) => {

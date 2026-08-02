@@ -42,7 +42,7 @@ function updateNavbarAuthSection() {
   } else {
     console.log('%c❌ updateNavbarAuthSection: Updating for logged-out user', 'color: #ef4444;');
     authButtonsHTML = `
-      <span data-i18n="login_suggestion" class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
+  <!--<span data-i18n="login_suggestion" class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span>-->
       <button id="signin-btn" class="auth-btn" type="button" data-i18n="sign_in">Sign in</button>
       <button id="signup-btn" class="auth-btn" type="button" data-i18n="sign_up">Sign up</button>
     `;
@@ -56,8 +56,8 @@ function updateNavbarAuthSection() {
   // Wire up auth button events if they exist
   const signinBtn = navbarAuth.querySelector('#signin-btn');
   const signupBtn = navbarAuth.querySelector('#signup-btn');
-  if (signinBtn) signinBtn.onclick = () => window.location.href = '/pages/signin.html';
-  if (signupBtn) signupBtn.onclick = () => window.location.href = '/pages/signup.html';
+  if (signinBtn) signinBtn.onclick = () => window.location.href = '/pages/auth.html';
+  if (signupBtn) signupBtn.onclick = () => window.location.href = '/pages/auth.html';
 
   // Apply translations
   if (window.applyTranslations) {
@@ -159,7 +159,7 @@ function renderNavbar(isLoading = false) {
     console.log('%c❌ renderNavbar: User NOT logged in, rendering login buttons', 'color: #ef4444;');
     authButtonsHTML = `
       <div class="navbar-auth" id="navbar-auth">
-        <span data-i18n="login_suggestion" class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span> 
+    <!--<span data-i18n="login_suggestion" class="login-suggestion" style="align-content: center; margin-right: 30px;">Please login for a more personalised experience!</span>-->
         <button id="signin-btn" class="auth-btn" type="button" data-i18n="sign_in">Sign in</button>
         <button id="signup-btn" class="auth-btn" type="button" data-i18n="sign_up">Sign up</button>
       </div>
@@ -175,7 +175,7 @@ function renderNavbar(isLoading = false) {
       </div>
     </div>
     <!--<span class="navbar-appname">Yola AI Info Hub</span>-->
-    <span class="navbar-appname"><img src="Data/images/app-name.png" style="width:100%; height:100%;" ></img></span>
+    <span class="navbar-appname"><img src="Data/images/app-name-small.png" style="width:100%; height:100%;" ></img></span>
   `;
 
   // mark navbar element when user is logged in so we can target it with CSS
@@ -225,7 +225,7 @@ function renderNavbar(isLoading = false) {
   setTimeout(() => {
     const signinBtn = document.getElementById('signin-btn');
     const signupBtn = document.getElementById('signup-btn');
-    if (signinBtn) signinBtn.onclick = () => window.location.href = '/pages/signin.html';
+    if (signinBtn) signinBtn.onclick = () => window.location.href = '/pages/auth.html';
     if (signupBtn) signupBtn.onclick = () => window.location.href = '/pages/signup.html';
   }, 0);
 
@@ -427,7 +427,13 @@ function renderNavbar(isLoading = false) {
       rightContainer.style.flexDirection = 'column';
       rightContainer.style.alignItems = 'flex-end';
       rightContainer.style.marginRight = '10px';
-      rightContainer.appendChild(newNavbarAuth); // Add auth buttons
+      // On mobile we hide the inline auth area (it will appear inside the mobile menu)
+      if (newNavbarAuth) {
+        try {
+          newNavbarAuth.style.display = 'none';
+        } catch (e) { /* ignore */ }
+      }
+      // Only add the hamburger here; profile/auth will be rendered inside the mobile menu
       rightContainer.appendChild(newHamburger); // Add hamburger spans
       newNavbarContainer.appendChild(rightContainer);
     }
@@ -462,75 +468,45 @@ function renderNavbar(isLoading = false) {
         };
         mobileMenu.appendChild(closeBtn);
         
-        // Add username container to mobile menu if user is logged in
+        // Add username/profile container to mobile menu when screen is small (<=700px)
         if (window.currentUser && window.currentUser.username) {
-          // Clone the existing navbar-username-container for mobile menu
-          const existingUsernameContainer = document.getElementById('navbar-username-container');
-          if (existingUsernameContainer) {
-            const userMenuSection = existingUsernameContainer.cloneNode(true);
-            // Remove any profile-link inside the cloned username container to avoid duplicates
-            userMenuSection.querySelectorAll('.navbar-profile-link').forEach(n => n.remove());
-            userMenuSection.style.cssText = `
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              padding: 1rem;
-              border-bottom: 1px solid #555;
-              gap: 0.7rem;
-              background: #1a202c;
-              margin-bottom: 1rem;
-            `;
-            // Ensure avatar styling for mobile
-            const avatarSpan = userMenuSection.querySelector('.navbar-avatar');
+          // Prefer the detached profile node if it exists (moved earlier for mobile)
+          if (window.__navbarProfileNode) {
+            const profileWrapper = document.createElement('div');
+            //profileWrapper.style.padding = '0.6rem 1rem';
+            profileWrapper.style.padding = '0';
+            profileWrapper.style.borderBottom = '1px solid #444';
+            const node = window.__navbarProfileNode.cloneNode(true);
+            // Ensure classes/styles are appropriate for mobile
+            const avatarSpan = node.querySelector('.navbar-avatar');
             if (avatarSpan) {
-              avatarSpan.style.cssText = `
-                display: inline-flex;
-                width: 45px;
-                height: 45px;
-                border-radius: 50%;
-                overflow: hidden;
-                background: #fff;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-                border: 2px solid #cbd5e1;
-              `;
+              avatarSpan.style.cssText = `display:inline-flex;width:45px;height:45px;border-radius:50%;overflow:hidden;background:#fff;align-items:center;justify-content:center;flex-shrink:0;border:2px solid #cbd5e1;`;
               const avatarImg = avatarSpan.querySelector('img');
-              if (avatarImg) {
-                avatarImg.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
-              }
+              if (avatarImg) avatarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
             }
-            // Ensure names styling for mobile
-            const namesSpan = userMenuSection.querySelector('.navbar-names');
+            const namesSpan = node.querySelector('.navbar-names');
             if (namesSpan) {
-              namesSpan.style.cssText = `
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.2rem;
-                flex: 1;
-              `;
+              namesSpan.style.cssText = 'display:flex;flex-direction:column;align-items:flex-start;gap:0.2rem;flex:1;';
               const fullnameSpan = namesSpan.querySelector('.navbar-fullname');
-              if (fullnameSpan) {
-                fullnameSpan.style.cssText = 'font-weight: 600; color: #e6eef9; font-size: 0.95rem; line-height: 1.2;';
-              }
+              if (fullnameSpan) fullnameSpan.style.cssText = 'font-weight:600;color:#e6eef9;font-size:0.95rem;line-height:1.2;';
               const usernameSpan = namesSpan.querySelector('.navbar-username-text');
-              if (usernameSpan) {
-                usernameSpan.style.cssText = 'font-weight: 700; color: #cbd5e1; font-size: 0.95rem; letter-spacing: 0.5px;';
-              }
+              if (usernameSpan) usernameSpan.style.cssText = 'font-weight:700;color:#cbd5e1;font-size:0.95rem;letter-spacing:0.5px;';
             }
-            mobileMenu.appendChild(userMenuSection);
+            profileWrapper.appendChild(node);
+            mobileMenu.appendChild(profileWrapper);
+          } else {
+            // Fallback: clone username container if detached node isn't available
+            const existingUsernameContainer = document.getElementById('navbar-username-container');
+            if (existingUsernameContainer) {
+              const userMenuSection = existingUsernameContainer.cloneNode(true);
+              userMenuSection.querySelectorAll('.navbar-profile-link').forEach(n => n.remove());
+              userMenuSection.style.cssText = 'display:flex;flex-direction:row;align-items:center;padding:1rem;border-bottom:1px solid #555;gap:0.7rem;background:#1a202c;margin-bottom:1rem;';
+              mobileMenu.appendChild(userMenuSection);
+            }
           }
         }
         
-        // If we have a stored profile node (moved from desktop), append it to the mobile menu
-        if (window.__navbarProfileNode) {
-          const profileWrapper = document.createElement('div');
-          profileWrapper.style.padding = '0.6rem 1rem';
-          profileWrapper.style.borderBottom = '1px solid #444';
-          profileWrapper.appendChild(window.__navbarProfileNode.cloneNode(true));
-          mobileMenu.appendChild(profileWrapper);
-        }
+        // Note: profile node already appended above when available; avoid duplicate insertion here.
         // Menu links
         const linksList = document.createElement('ul');
         linksList.className = 'mobile-links';

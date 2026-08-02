@@ -1,10 +1,13 @@
 // --- API CONFIGURATION ---
 // Detect if running on live URL or localhost and set API base accordingly
 window.getAPIBase = function() {
-  // Check if running on production/live URL
+  // Check if running on production/live URL and use configured backend URL if available
+  const configuredProdBase = window.__API_BASE__ || window.API_BASE_PROD_URL || '';
+  if (configuredProdBase) {
+    return configuredProdBase;
+  }
   if (window.location.hostname.includes('netlify.app') || window.location.hostname.includes('yolaaiinfohub')) {
-    // Production: use Render backend
-    return 'https://yolaaiinfohub-backend.onrender.com';
+    return '';
   }
   // Development: use the current hostname so we don't mix 'localhost' and '127.0.0.1'
   // which cause separate cookie domains and inconsistent session state.
@@ -13,6 +16,17 @@ window.getAPIBase = function() {
 };
 
 window.API_BASE = window.API_BASE || window.getAPIBase();
+window.API_BASE_CANDIDATES = window.API_BASE_CANDIDATES || [
+  window.API_BASE,
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
+  'http://localhost:4001',
+  'http://127.0.0.1:4001',
+  'http://localhost:4002',
+  'http://127.0.0.1:4002',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
+].filter((value, index, arr) => value && arr.indexOf(value) === index);
 
 // --- MULTILINGUAL LANGUAGE DETECTION & SUPPORT ---
 /**

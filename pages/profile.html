@@ -1,846 +1,272 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile | Yola AI Info Hub</title>
-  <!--<link rel="stylesheet" href="../styles/global.css">
-  <link rel="stylesheet" href="../styles/navbar.css">-->
-  <link rel="stylesheet" href="../details/details.css">
-  <link rel="stylesheet" href="pages.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
-  <script src="../components/theme-switcher.js"></script>
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/1111.png"/>
+    <link rel="apple-touch-icon" href="/1111.png"/>
+    <title>Your profile — Yola AI Info Hub</title>
+    <meta name="description" content="Manage your Yola AI Info Hub profile — update your photo, contact details, home address and account preferences.">
+    <meta property="og:title" content="Your profile — Yola AI Info Hub">
+    <meta property="og:description" content="Manage your Yola AI Info Hub profile and preferences.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles/pages.css">
+    <style>
+        @media screen and (max-width: 599px) {
+            .footer-links {align-items: flex-start !important;}
+        }
+        .footer-links {align-items: flex-start !important;}
+        .navbar-appname-desktop {
+        width: 258px;
+        height: 225px;
+        background-image: url(../Data/images/222.png);
+        background-size: 222%;
+        background-position: center;
+        background-repeat: no-repeat;}
+    </style>
 </head>
 <body>
-  
-  
-  <nav class="minimal-nav">
-    <div class="minimal-nav-content">
-      <div href="../index.html" class="nav-logo">
-        <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
-        <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
-        <span class="navbar-appname"><img src="../Data/images/app-name.png" style="width:93%; height:58px;" ></img></span>
-      </div>
-      <a href="../index.html" class="return-home">
-        <i class="fas fa-home" style="font-size: x-large;"></i>
-        <!-- <span>Return Home</span> -->
-      </a>
+
+    <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
     </div>
-  </nav>
 
-  <main>
-    <div class="profile-container">
-      <div class="success-message" id="success-message">
-        <i class="fas fa-check-circle"></i> Profile updated successfully!
-      </div>
-      
-      <div class="profile-header">
-        <div class="profile-avatar-wrapper">
-          <div class="profile-avatar" id="profile-avatar"></div>
-          <div class="profile-avatar-upload-hint" id="avatar-upload-hint" title="Click to change profile picture">
-            <i class="fas fa-camera"></i>
-          </div>
-          <input type="file" id="profile-picture-input" accept="image/*">
-          <input type="file" id="edit-profile-picture-input" accept="image/*" style="display:none">
+
+
+
+    <!-- Desktop hero: brand lives here on larger screens -->
+    <header class="hero" aria-label="Your profile">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner">
+            <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+                <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+                <div href="../index.html" class="nav-logo">
+                    <span class="navbar-appname-desktop"></span>
+                </div>
+            </div>
+            <div>    
+                <span class="eyebrow"><i class="fas fa-user-shield"></i>· Your account ·</span>
+                <h1 class="hero-title">Your profile</h1>
+                <p class="hero-subtitle">Keep your details up to date so we can personalize your Yola experience — from local recommendations to account security.</p>
+                <div class="hero-actions">
+                    <a href="/" class="btn btn-secondary return-home"><i class="fas fa-arrow-left"></i> Back to home</a>
+                </div>
+            </div>
         </div>
-        
-        <div class="profile-meta">
-          <h2 id="profile-name">Profile</h2>
-          <div class="profile-username-display">
-            <span id="profile-username" style="color:#718096">@username</span>
-          </div>
-          <div class="profile-actions" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-            <button id="btn-logout" class="auth-btn" style="background:#ef4444;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:600" onclick="window.logoutUser()" title="Logout from your account">
-              Logout
-            </button>
-            <button id="btn-delete-account" title="Delete account" style="display:none;background:#dc2626;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:600">
-              <i class="fas fa-trash-alt" style="margin-right:6px;"></i> Delete account
-            </button>
-          </div>
-          
+    </header>
 
-          
+
+    <main class="page-content">
+        <section class="mobile-intro" aria-label="Introduction">
+            <h1 class="mobile-title">Your profile</h1>
+            <p class="lead">Keep your details up to date. Tap the pencil to edit any field.</p>
+        </section>
+
+        <section class="section" aria-labelledby="profile-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Overview</span>
+                <h2 id="profile-heading" class="section-title">Personal information</h2>
+            </div>
+
+            <article class="profile-card">
+                <div class="profile-banner" aria-hidden="true"></div>
+                <div class="profile-head">
+                    <div class="profile-avatar">
+                        <img id="avatarImg" src="https://api.dicebear.com/7.x/initials/svg?seed=Aisha%20Bello&backgroundColor=064e3b&textColor=f0d78c" alt="Profile picture">
+                        <button type="button" class="avatar-edit-btn" aria-label="Change profile picture" onclick="document.getElementById('avatarInput').click()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <input id="avatarInput" type="file" accept="image/*" hidden>
+                    </div>
+                    <div class="profile-identity">
+                        <h3 class="profile-name">Umar Musa</h3>
+                        <p class="profile-role">Community contributor · Yola South</p>
+                        <span class="profile-badge"><i class="fas fa-circle-check"></i> Verified user</span>
+                    </div>
+                    <div class="profile-actions">
+                        <button type="button" class="btn btn-secondary" id="profile-signout-btn"><i class="fas fa-arrow-right-from-bracket"></i> Sign out</button>
+                    </div>
+                </div>
+
+                <ul class="info-list">
+                    <li class="info-row" data-editable data-name="Full name" data-type="text">
+                        <span class="info-label"><i class="fas fa-user"></i> Full name</span>
+                        <span class="info-value">Aisha Bello</span>
+                        <button type="button" class="edit-btn" aria-label="Edit full name"><i class="fas fa-pen"></i></button>
+                    </li>
+                    <li class="info-row" data-editable data-name="Username" data-type="text">
+                        <span class="info-label"><i class="fas fa-at"></i> Username</span>
+                        <span class="info-value">user.name</span>
+                        <button type="button" class="edit-btn" aria-label="Edit username"><i class="fas fa-pen"></i></button>
+                    </li>
+                    <li class="info-row" data-editable data-name="Email" data-type="email">
+                        <span class="info-label"><i class="fas fa-envelope"></i> Email</span>
+                        <span class="info-value">email.address@example.com</span>
+                        <button type="button" class="edit-btn" aria-label="Edit email"><i class="fas fa-pen"></i></button>
+                    </li>
+                    <li class="info-row" data-editable data-name="Phone" data-type="tel">
+                        <span class="info-label"><i class="fas fa-phone"></i> Phone</span>
+                        <span class="info-value">+234 801 2345 678</span>
+                        <button type="button" class="edit-btn" aria-label="Edit phone"><i class="fas fa-pen"></i></button>
+                    </li>
+                    <li class="info-row" data-editable data-name="Home address" data-type="textarea">
+                        <span class="info-label"><i class="fas fa-house"></i> Home address</span>
+                        <span class="info-value">14 Galadima Aminu Way, Jimeta, Yola</span>
+                        <button type="button" class="edit-btn" aria-label="Edit home address"><i class="fas fa-pen"></i></button>
+                    </li>
+                    <li class="info-row" data-editable data-name="City / State" data-type="text">
+                        <span class="info-label"><i class="fas fa-location-dot"></i> City / State</span>
+                        <span class="info-value">Yola, Adamawa State</span>
+                        <button type="button" class="edit-btn" aria-label="Edit city and state"><i class="fas fa-pen"></i></button>
+                    </li>
+                    <li class="info-row" data-editable data-name="Date of birth" data-type="date">
+                        <span class="info-label"><i class="fas fa-cake-candles"></i> Date of birth</span>
+                        <span class="info-value">1996-08-14</span>
+                        <button type="button" class="edit-btn" aria-label="Edit date of birth"><i class="fas fa-pen"></i></button>
+                    </li>
+                    <li class="info-row" data-editable data-name="Bio" data-type="textarea">
+                        <span class="info-label"><i class="fas fa-quote-left"></i> Bio</span>
+                        <span class="info-value">Passionate about local education and community-driven data. I share reliable info about schools and clinics in Yola.</span>
+                        <button type="button" class="edit-btn" aria-label="Edit bio"><i class="fas fa-pen"></i></button>
+                    </li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="section" aria-labelledby="prefs-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Preferences</span>
+                <h2 id="prefs-heading" class="section-title">Account preferences</h2>
+            </div>
+
+            <article class="surface-card">
+                <ul class="info-list" style="padding:0">
+                    <li class="info-row" data-editable data-name="Language" data-type="select" data-options="English|Hausa|Fulfulde|French">
+                        <span class="info-label"><i class="fas fa-language"></i> Preferred language</span>
+                        <span class="info-value">English</span>
+                        <button type="button" class="edit-btn" aria-label="Edit language"><i class="fas fa-pen"></i></button>
+                    </li>
+                    <li class="info-row">
+                        <span class="info-label"><i class="fas fa-bell"></i> Email notifications</span>
+                        <span class="info-value">Weekly digest and important updates</span>
+                        <label class="toggle" aria-label="Toggle email notifications">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </li>
+                    <li class="info-row">
+                        <span class="info-label"><i class="fas fa-mobile-screen"></i> SMS alerts</span>
+                        <span class="info-value">Urgent local alerts only</span>
+                        <label class="toggle" aria-label="Toggle SMS alerts">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </li>
+                </ul>
+
+                <a href="password-reset.html" class="link-row">
+                    <span class="link-row-icon"><i class="fas fa-lock"></i></span>
+                    <span class="link-row-body">
+                        <span class="link-row-title">Reset password</span>
+                        <span class="link-row-desc">Change your account password securely</span>
+                    </span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="terms.html" class="link-row">
+                    <span class="link-row-icon"><i class="fas fa-scale-balanced"></i></span>
+                    <span class="link-row-body">
+                        <span class="link-row-title">Terms of use</span>
+                        <span class="link-row-desc">Review the rules that govern your account</span>
+                    </span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </article>
+        </section>
+
+        <section class="section cta-section" aria-labelledby="cta-heading">
+            <div class="cta-inner">
+                <h2 id="cta-heading" class="cta-title">Need help with your account?</h2>
+                <p class="cta-text">Our team is here to help you manage your Yola AI Info Hub account and answer any questions.</p>
+                <div class="cta-actions">
+                    <a href="report.html" class="btn btn-primary">Contact support</a>
+                    <a href="mailto:hello@yolaaiinfohub.com" class="btn btn-secondary">Email us</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs><linearGradient id="fIcon" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#064e3b"/><stop offset="100%" stop-color="#17997a"/></linearGradient></defs>
+                            <rect width="48" height="48" rx="12" fill="url(#fIcon)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="edu.html">Education directory</a></li>
+                    </ul>
+                </div>
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="report.html">Report / comment</a></li>
+                        <li><a href="help.html">Help center</a></li>
+                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">Privacy policy</a></li>
+                        <li><a href="terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">© <span id="year">2026</span> Yola AI Info Hub. Built for Yola, Adamawa State.</p>
+            </div>
         </div>
-      </div>
-      
-      <!-- View Mode -->
-      <div id="profile-view-mode">
-        <div class="profile-details" id="profile-details">
-          <div class="profile-field" id="pf-email">
-            <div class="profile-field-header">
-              <strong>Email</strong>
-              <button class="edit-icon-btn" data-field="email" title="Edit email">
-                <i class="fas fa-edit"></i>
-              </button>
-            </div>
-            <div class="profile-field-value">-</div>
-          </div>
-          <div class="profile-field" id="pf-phone">
-            <div class="profile-field-header">
-              <strong>Phone</strong>
-              <button class="edit-icon-btn" data-field="phone" title="Edit phone">
-                <i class="fas fa-edit"></i>
-              </button>
-            </div>
-            <div class="profile-field-value">-</div>
-          </div>
-          <div class="profile-field" id="pf-state">
-            <div class="profile-field-header">
-              <strong>State</strong>
-              <button class="edit-icon-btn" data-field="state" title="Edit state">
-                <i class="fas fa-edit"></i>
-              </button>
-            </div>
-            <div class="profile-field-value">-</div>
-          </div>
-          <div class="profile-field" id="pf-lga">
-            <div class="profile-field-header">
-              <strong>LGA</strong>
-              <button class="edit-icon-btn" data-field="lga" title="Edit LGA">
-                <i class="fas fa-edit"></i>
-              </button>
-            </div>
-            <div class="profile-field-value">-</div>
-          </div>
-          <div class="profile-field" id="pf-address" style="grid-column:1 / -1">
-            <div class="profile-field-header">
-              <strong>Address</strong>
-              <button class="edit-icon-btn" data-field="address" title="Edit address">
-                <i class="fas fa-edit"></i>
-              </button>
-            </div>
-            <div class="profile-field-value">-</div>
-          </div>
-        </div>
-      </div>
+    </footer>
 
-
-      <footer class="form-footer">
-          <span>© 2026 AlkaliCodes. All rights reserved.</span>
-          <div class="footer-links">
-              <a href="../pages/report.html">Report an issue</a>
-              <a href="#">Terms and conditions</a>
-              <a href="#">Privacy policy</a>
-              <a href="../pages/about.html">About</a>
-          </div>
-      </footer>
-
-
-    
-  </main>
-  <script>
-    // Render navbar if available
-    window.Navbar && window.Navbar.render && window.Navbar.render();
-    
-    const params = new URLSearchParams(window.location.search);
-    const u = params.get('u');
-    const API_BASE = window.API_BASE || (function(){ 
-      try{ 
-        const h = window.location.hostname; 
-        if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; 
-        return 'https://yolaaiinfohub-backend.onrender.com'; 
-      } catch(e) { 
-        return 'http://localhost:4000' 
-      } 
-    })();
-    
-    let currentUserData = null;
-    let isEditMode = false;
-    let isOwnProfile = false;  // Track if viewing own profile
-    
-    // Elements (guarded - some elements may not exist in this template)
-    const btnEditProfile = null;  // This profile uses inline editing, not a separate edit mode
-    const btnCancelEdit = null;
-    const btnCancelForm = null;
-    const profileForm = null;
-    const profileViewMode = document.getElementById('profile-view-mode');
-    const successMessage = document.getElementById('success-message');
-    const avatarUploadHint = document.getElementById('avatar-upload-hint');
-    const profilePictureInput = document.getElementById('profile-picture-input');
-    const editProfilePictureInput = document.getElementById('edit-profile-picture-input');
-    const btnDeleteAccount = document.getElementById('btn-delete-account');
-    const btnLogout = document.getElementById('btn-logout');
-
-    // Event listeners (only attach if element exists)
-    if (btnEditProfile) btnEditProfile.addEventListener('click', enterEditMode);
-    if (btnCancelEdit) btnCancelEdit.addEventListener('click', exitEditMode);
-    if (btnCancelForm) btnCancelForm.addEventListener('click', exitEditMode);
-    if (profileForm) profileForm.addEventListener('submit', saveProfile);
-    if (avatarUploadHint && profilePictureInput) avatarUploadHint.addEventListener('click', () => profilePictureInput.click());
-    if (profilePictureInput) profilePictureInput.addEventListener('change', handleAvatarUpload);
-    if (editProfilePictureInput) editProfilePictureInput.addEventListener('change', handleEditAvatarUpload);
-    if (btnDeleteAccount) btnDeleteAccount.addEventListener('click', handleDeleteAccountClick);
-    if (btnLogout) btnLogout.addEventListener('click', () => window.logoutUser());
-    
-    async function loadProfile() {
-      // Try to restore user from localStorage first
-      let restoredUser = null;
-      try {
-        const stored = localStorage.getItem('currentUser');
-        if (stored) {
-          restoredUser = JSON.parse(stored);
-        }
-      } catch (e) { /* ignore */ }
-      
-      // If user is logged in, load their own profile (ignore u parameter)
-      if (restoredUser && restoredUser.username) {
-        currentUserData = restoredUser;
-        isOwnProfile = true;
-        
-        // Warn if user tried to access a different profile
-        if (u && u !== restoredUser.username) {
-          console.log('%c⚠️ User tried to access another profile while logged in: ' + u + ' → showing ' + restoredUser.username, 'color: #f59e0b; font-weight: bold;');
-        }
-        
-        console.log('%c✅ User found in localStorage, setting isOwnProfile = true', 'color: #10b981; font-weight: bold;', restoredUser.username);
-        fillProfile(restoredUser);
-        if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
-        // Show logout and delete buttons only on own profile
-        if (btnLogout) btnLogout.style.display = 'inline-flex';
-        if (btnDeleteAccount) btnDeleteAccount.style.display = 'inline-flex';
-        // Optionally, check backend for fresher data
-        try {
-          const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
-          const data = await res.json();
-          console.log('API response:', data);
-          if (data.username === restoredUser.username) {
-            currentUserData = data;
-            fillProfile(data);
-          }
-        } catch (err) {
-          console.error('Profile backend check error', err);
-        }
-        return;
-      }
-      
-      // Load profile by u parameter or logged-in user
-      // Always allow editing - backend will validate ownership
-      let profileUsername = u;
-      
-      // If no u parameter, try to get logged-in user
-      if (!u) {
-        try {
-          console.log('No u parameter, checking /api/me for logged-in user');
-          const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
-          const data = await res.json();
-          console.log('API /me response:', data);
-          if (data.username) {
-            profileUsername = data.username;
-            currentUserData = data;
-            isOwnProfile = true;
-            fillProfile(data);
-            if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
-            return;
-          }
-        } catch (err) {
-          console.error('Profile backend check error', err);
-        }
-        
-        // Fallback: Check localStorage for currentUser
-        const localStorageUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-        if (localStorageUser && localStorageUser.username) {
-          console.log('%c✅ Using localStorage user:', 'color: #10b981; font-weight: bold;', localStorageUser.username);
-          profileUsername = localStorageUser.username;
-          currentUserData = localStorageUser;
-          isOwnProfile = true;
-          fillProfile(localStorageUser);
-          if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
-          return;
-        }
-      }
-      
-      // Load profile by username (either from u parameter or determined above)
-      if (profileUsername) {
-        try {
-          console.log('Loading profile for username:', profileUsername);
-          const res = await fetch(`${API_BASE}/api/user/${profileUsername}`, { credentials: 'include' });
-          const data = await res.json();
-          console.log('Profile data loaded:', data);
-          // Check if this is the logged-in user's profile by server
-          let serverUser = null;
-          try {
-            const meRes = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
-            serverUser = await meRes.json();
-          } catch (e) { serverUser = null; }
-          if (serverUser && serverUser.username && data.username && serverUser.username === data.username) {
-            isOwnProfile = true;
-            currentUserData = data;
-            console.log('%c✅ isOwnProfile set based on server /api/me match', 'color: #10b981; font-weight: bold;', data.username);
-          } else {
-            // fallback to localStorage check
-            let localUser = null;
-            try {
-              localUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            } catch (e) { localUser = null; }
-            if (localUser && localUser.username && data.username && localUser.username === data.username) {
-              isOwnProfile = true;
-              currentUserData = data;
-              console.log('%c✅ isOwnProfile set based on localStorage match', 'color: #10b981; font-weight: bold;', data.username);
-            } else {
-              isOwnProfile = false;
-              currentUserData = data;
-              console.log('%c❌ isOwnProfile set to false', 'color: #ef4444; font-weight: bold;', data.username);
-            }
-          }
-          fillProfile(data);
-          if (btnEditProfile) btnEditProfile.style.display = isOwnProfile ? 'inline-flex' : 'none';
-          if (btnLogout) btnLogout.style.display = 'inline-flex';
-          if (btnDeleteAccount) btnDeleteAccount.style.display = isOwnProfile ? 'inline-flex' : 'none';
-        } catch (err) {
-          console.error('Profile load error:', err);
-          document.getElementById('profile-name').textContent = 'Error loading profile';
-          if (btnEditProfile) btnEditProfile.style.display = 'none';
-        }
-        return;
-      }
-      
-      // No logged-in user and no u parameter
-      document.getElementById('profile-name').textContent = 'Not signed in';
-      document.getElementById('profile-username').textContent = '';
-      if (btnEditProfile) btnEditProfile.style.display = 'none';
-    }
-    
-    function fillProfile(data) {
-      console.log('fillProfile called with data:', data);
-      document.getElementById('profile-name').textContent = data.name || data.username || 'User';
-      document.getElementById('profile-username').textContent = '@' + (data.username || '');
-      
-      const avatarWrap = document.getElementById('profile-avatar');
-      const avatarUrl = data.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || data.username)}&background=3182ce&color=fff`;
-      avatarWrap.innerHTML = `<img src="${avatarUrl}" alt="avatar"/>`;
-      
-      // Fill view mode
-      fillField('pf-email', 'Email', data.email);
-      fillField('pf-phone', 'Phone', data.phone);
-      fillField('pf-state', 'State', data.state);
-      fillField('pf-lga', 'LGA', data.lga);
-      fillField('pf-address', 'Address', data.address);
-      
-      // Fill form mode (guarded - the page may not include the edit form)
-      const elEditName = document.getElementById('edit-name'); if (elEditName) elEditName.value = data.name || '';
-      const elEditEmail = document.getElementById('edit-email'); if (elEditEmail) elEditEmail.value = data.email || '';
-      const elEditPhone = document.getElementById('edit-phone'); if (elEditPhone) elEditPhone.value = data.phone || '';
-      const elEditState = document.getElementById('edit-state'); if (elEditState) elEditState.value = data.state || '';
-      const elEditLga = document.getElementById('edit-lga'); if (elEditLga) elEditLga.value = data.lga || '';
-      const elEditAddress = document.getElementById('edit-address'); if (elEditAddress) elEditAddress.value = data.address || '';
-    }
-    
-    function fillField(elementId, label, value) {
-      const element = document.getElementById(elementId);
-      if (!element) return;
-      
-      // Convert value to string and check if it has content
-      const strValue = value ? String(value).trim() : '';
-      const hasValue = strValue && strValue !== '' && strValue !== 'undefined' && strValue !== 'null';
-      
-      element.className = hasValue ? 'profile-field' : 'profile-field empty';
-      
-      // Always show edit buttons
-      const showEditButton = true;
-      
-      console.log(`%c📝 fillField: ${elementId}, showEditButton=${showEditButton}, isOwnProfile=${isOwnProfile}`, 'color: #8b5cf6;');
-      
-      element.innerHTML = `
-        <div class="profile-field-header">
-          <strong>${label}</strong>
-          ${showEditButton ? `<button class="edit-icon-btn" data-field="${elementId.replace('pf-', '')}" title="Edit ${label.toLowerCase()}">
-            <i class="fas fa-edit"></i>
-          </button>` : ''}
-        </div>
-        <div class="profile-field-value">${hasValue ? strValue : '-'}</div>
-      `;
-      
-      // Add event listener to the edit button only if viewing own profile
-      if (showEditButton) {
-        const editBtn = element.querySelector('.edit-icon-btn');
-        if (editBtn) {
-          editBtn.addEventListener('click', function (ev) {
-            ev.preventDefault();
-            makeFieldEditable(element, elementId.replace('pf-', ''));
-          });
-        }
-      }
-    }
-
-    function makeFieldEditable(fieldElement, fieldKey) {
-      // Prevent multiple inline editors
-      if (fieldElement.classList.contains('editing')) return;
-      fieldElement.classList.add('editing');
-
-      const valueDiv = fieldElement.querySelector('.profile-field-value');
-      const header = fieldElement.querySelector('.profile-field-header');
-      const headerBtn = header ? header.querySelector('.edit-icon-btn') : null;
-      const currentText = valueDiv ? valueDiv.textContent.trim() : '';
-
-      // Create input or textarea for address
-      let inputEl;
-      if (fieldKey === 'address') {
-        inputEl = document.createElement('textarea');
-        inputEl.rows = 3;
-      } else {
-        inputEl = document.createElement('input');
-        inputEl.type = 'text';
-      }
-      inputEl.className = 'inline-edit-input';
-      inputEl.value = (currentText === '-' ? '' : currentText);
-
-      // Replace value with input
-      if (valueDiv) valueDiv.innerHTML = '';
-      valueDiv.appendChild(inputEl);
-      inputEl.focus();
-
-      // Replace edit button with save button
-      const saveBtn = document.createElement('button');
-      saveBtn.className = 'save-icon-btn';
-      saveBtn.title = 'Save';
-      saveBtn.dataset.field = fieldKey;
-      saveBtn.innerHTML = '<i class="fas fa-check"></i>';
-
-      // Optional cancel button (small X)
-      const cancelBtn = document.createElement('button');
-      cancelBtn.className = 'cancel-icon-btn';
-      cancelBtn.title = 'Cancel';
-      cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
-
-      if (header && headerBtn) {
-        try {
-          header.replaceChild(saveBtn, headerBtn);
-          header.insertBefore(cancelBtn, saveBtn.nextSibling);
-        } catch (e) {
-          // fallback: append buttons
-          header.appendChild(saveBtn);
-          header.appendChild(cancelBtn);
-        }
-      } else if (header) {
-        header.appendChild(saveBtn);
-        header.appendChild(cancelBtn);
-      }
-
-      // Handlers
-      saveBtn.addEventListener('click', function () { saveFieldInline(fieldElement, fieldKey, inputEl, saveBtn, cancelBtn); });
-      cancelBtn.addEventListener('click', function () { cancelInlineEdit(fieldElement, fieldKey); });
-
-      // Save on Enter for single-line inputs
-      inputEl.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' && inputEl.tagName.toLowerCase() === 'input') {
-          e.preventDefault();
-          saveBtn.click();
-        } else if (e.key === 'Escape') {
-          cancelBtn.click();
-        }
-      });
-    }
-
-    async function saveFieldInline(fieldElement, fieldKey, inputEl, saveBtn, cancelBtn) {
-      const newValue = inputEl.value.trim();
-
-      // small optimistic UI change: disable buttons
-      saveBtn.disabled = true;
-      cancelBtn.disabled = true;
-
-      // Build minimal payload with just the field being edited
-      const payload = {};
-      payload[fieldKey] = newValue;
-
-      // Include any existing data from currentUserData to preserve other fields
-      if (currentUserData) {
-        ['name', 'email', 'phone', 'state', 'lga', 'address'].forEach(k => {
-          if (k !== fieldKey && currentUserData[k]) {
-            payload[k] = currentUserData[k];
-          }
-        });
-      }
-
-      // Post the payload
-      postProfileData(fieldElement, payload, fieldKey, saveBtn, cancelBtn);
-    }
-
-    function renderInlineMissingFields(fieldElement, missingKeys, payload, fieldKey, inputEl, saveBtn, cancelBtn) {
-      // For each missing key, enable inline editing on its own profile field (pf-<key>)
-      const enabled = [];
-      missingKeys.forEach(k => {
-        const pf = document.getElementById('pf-' + k);
-        if (pf) {
-          // if not already editing, make it editable
-          if (!pf.classList.contains('editing')) {
-            makeFieldEditable(pf, k);
-            enabled.push(k);
-          } else {
-            // focus existing input
-            const inp = pf.querySelector('.inline-edit-input');
-            if (inp) inp.focus();
-            enabled.push(k);
-          }
-        }
-      });
-
-      if (enabled.length === 0) {
-        // no corresponding fields on page; fallback to alert and open full edit mode
-        alert('Please complete missing profile fields in the full edit form.');
-        enterEditMode();
-      } else {
-        alert('Please fill the highlighted fields inline and save each one.');
-      }
-    }
-
-    async function postProfileData(fieldElement, payload, fieldKey, saveBtn, cancelBtn, container) {
-      try {
-        console.log('%c🔄 Posting profile data:', 'color: #06b6d4; font-weight: bold;', payload);
-        const fd = new FormData();
-        Object.keys(payload).forEach(k => {
-          if (payload[k] !== undefined && payload[k] !== null) fd.append(k, payload[k]);
-        });
-        const res = await fetch(`${API_BASE}/api/update-profile`, {
-          method: 'POST',
-          credentials: 'include',
-          body: fd
-        });
-        
-        // Safely parse JSON response, handling non-JSON responses
-        let data = {};
-        try {
-          const contentType = res.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            data = await res.json();
-          } else {
-            console.warn('Non-JSON response received:', res.status);
-          }
-        } catch (parseErr) {
-          console.error('Error parsing response:', parseErr);
-          // Response is not JSON (e.g., HTML error page)
-        }
-        
-        console.log('%c📡 Profile update response status:', 'color: #06b6d4;', res.status, 'response:', data);
-        if (res.ok) {
-          console.log('%c✅ Profile updated successfully!', 'color: #10b981; font-weight: bold;');
-          // update local cache
-          currentUserData = { ...(currentUserData || {}), ...data };
-          // update displayed value for the edited field
-          const valueDiv = fieldElement.querySelector('.profile-field-value');
-          valueDiv.textContent = payload[fieldKey] || '-';
-          restoreEditButton(fieldElement, fieldKey);
-          fieldElement.classList.remove('editing');
-          if (window.updateAuthUI && typeof window.updateAuthUI === 'function') window.updateAuthUI(currentUserData);
-          showInlineSavedIndicator(fieldElement);
-          // nothing to clean up for inline editors (they are rendered on their own fields)
-        } else if (res.status === 401) {
-          // Not authenticated - show error and let user handle it
-          console.log('%c❌ 401 Unauthorized - Backend rejected update', 'color: #ef4444; font-weight: bold;');
-          alert((data && data.error) || 'Failed to save profile. Please log in first.');
-          if (saveBtn) saveBtn.disabled = false;
-          if (cancelBtn) cancelBtn.disabled = false;
-        } else if (res.status === 404) {
-          console.error('%c❌ 404 Not Found - Backend endpoint not accessible', 'color: #ef4444; font-weight: bold;');
-          alert('Unable to reach the save endpoint. Please check your connection and try again. Error: ' + (data.error || 'Backend not responding'));
-          if (saveBtn) saveBtn.disabled = false;
-          if (cancelBtn) cancelBtn.disabled = false;
-        } else {
-          alert((data && data.error) || 'Failed to save profile.');
-          if (saveBtn) saveBtn.disabled = false;
-          if (cancelBtn) cancelBtn.disabled = false;
-        }
-      } catch (err) {
-        console.error('postProfileData error', err);
-        alert('Error saving profile. Please try again.');
-        if (saveBtn) saveBtn.disabled = false;
-        if (cancelBtn) cancelBtn.disabled = false;
-      }
-    }
-
-    function showInlineSavedIndicator(fieldElement) {
-      try {
-        const header = fieldElement.querySelector('.profile-field-header');
-        if (!header) return;
-        // create indicator
-        const indicator = document.createElement('span');
-        indicator.className = 'inline-save-indicator';
-        indicator.style.marginLeft = '8px';
-        indicator.style.color = '#16a34a';
-        indicator.style.display = 'inline-flex';
-        indicator.style.alignItems = 'center';
-        indicator.style.gap = '6px';
-        indicator.innerHTML = '<i class="fas fa-check-circle"></i><span style="font-size:0.85em">Saved</span>';
-        header.appendChild(indicator);
-        setTimeout(() => { indicator.remove(); }, 2200);
-      } catch (e) {
-        // ignore
-      }
-    }
-
-    function cancelInlineEdit(fieldElement, fieldKey) {
-      // restore original display
-      const valueDiv = fieldElement.querySelector('.profile-field-value');
-      const inputEl = valueDiv ? valueDiv.querySelector('.inline-edit-input') : null;
-      const originalText = inputEl ? (inputEl.defaultValue || inputEl.value) : '-';
-      if (valueDiv) valueDiv.textContent = originalText || '-';
-      restoreEditButton(fieldElement, fieldKey);
-      fieldElement.classList.remove('editing');
-    }
-
-    function restoreEditButton(fieldElement, fieldKey) {
-      const header = fieldElement.querySelector('.profile-field-header');
-      if (!header) return;
-      // remove any save/cancel buttons
-      const existingSave = header.querySelector('.save-icon-btn');
-      const existingCancel = header.querySelector('.cancel-icon-btn');
-      if (existingSave) existingSave.remove();
-      if (existingCancel) existingCancel.remove();
-
-      // create and insert edit button
-      const editBtn = document.createElement('button');
-      editBtn.className = 'edit-icon-btn';
-      editBtn.title = 'Edit';
-      editBtn.dataset.field = fieldKey;
-      editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-      header.appendChild(editBtn);
-      editBtn.addEventListener('click', function (ev) {
-        ev.preventDefault();
-        makeFieldEditable(fieldElement, fieldKey);
-      });
-    }
-    
-    // Delete account flow
-    function handleDeleteAccountClick(e) {
-      e.preventDefault();
-      deleteAccount();
-    }
-
-    async function deleteAccount() {
-      // require typing DELETE to confirm
-      const confirmation = prompt('Type DELETE to confirm account deletion. This action cannot be undone.');
-      if (!confirmation || confirmation.trim() !== 'DELETE') {
-        alert('Account deletion cancelled.');
-        return;
-      }
-
-      if (!confirm('Are you absolutely sure? This will permanently delete your account.')) return;
-
-      try {
-        const res = await fetch(`${API_BASE}/api/delete-account`, {
-          method: 'POST',
-          credentials: 'include'
-        });
-        const data = await res.json();
-        if (res.ok) {
-          // redirect to home or signout
-          alert('Account deleted. Redirecting to home.');
-          window.location.href = '../index.html';
-        } else {
-          alert((data && data.error) || 'Failed to delete account.');
-        }
-      } catch (err) {
-        console.error('Delete account error', err);
-        alert('Error deleting account. Please try again.');
-      }
-    }
-    
-    function handleFieldEditClick(e) {
-      e.preventDefault();
-      const fieldName = e.currentTarget.dataset.field;
-      
-      // Focus the corresponding input in edit form and enter edit mode
-      enterEditMode();
-      
-      // Scroll to and focus the field
-      const inputSelector = `#edit-${fieldName === 'lga' ? 'lga' : fieldName === 'phone' ? 'phone' : fieldName === 'state' ? 'state' : fieldName === 'address' ? 'address' : fieldName === 'email' ? 'email' : fieldName}`;
-      const inputElement = document.querySelector(inputSelector);
-      if (inputElement) {
-        setTimeout(() => {
-          inputElement.focus();
-          inputElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 100);
-      }
-    }
-    
-    function enterEditMode() {
-      isEditMode = true;
-      if (profileViewMode) profileViewMode.style.display = 'none';
-      if (profileForm && profileForm.classList) profileForm.classList.add('active');
-      if (btnEditProfile) btnEditProfile.style.display = 'none';
-      if (btnCancelEdit) btnCancelEdit.style.display = 'inline-flex';
-      if (avatarUploadHint) avatarUploadHint.style.display = 'flex';
-      const avatarWrap = document.querySelector('.profile-avatar-wrapper');
-      if (avatarWrap) avatarWrap.style.cursor = 'pointer';
-      if (btnDeleteAccount) btnDeleteAccount.style.display = 'inline-flex';
-      if (btnLogout) btnLogout.style.display = 'inline-flex';
-    }
-    
-    function exitEditMode() {
-      isEditMode = false;
-      if (profileForm && profileForm.classList) profileForm.classList.remove('active');
-      if (profileViewMode) profileViewMode.style.display = 'block';
-      if (btnEditProfile) btnEditProfile.style.display = 'inline-flex';
-      if (btnCancelEdit) btnCancelEdit.style.display = 'none';
-      if (avatarUploadHint) avatarUploadHint.style.display = 'none';
-      const avatarWrap2 = document.querySelector('.profile-avatar-wrapper');
-      if (avatarWrap2) avatarWrap2.style.cursor = 'default';
-      if (successMessage && successMessage.classList) successMessage.classList.remove('show');
-      if (btnDeleteAccount) btnDeleteAccount.style.display = 'none';
-      if (btnLogout) btnLogout.style.display = 'none';
-    }
-    
-    function handleAvatarUpload(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          document.getElementById('profile-avatar').innerHTML = `<img src="${event.target.result}" alt="avatar"/>`;
-          try { const editInput = document.getElementById('edit-profile-picture-input'); if (editInput) { /* cannot reliably set FileList across browsers */ } } catch(e) {}
-          enterEditMode();
-        };
-        reader.readAsDataURL(file);
-        // upload immediately
-        uploadProfilePicture(file);
-      }
-    }
-    
-    function handleEditAvatarUpload(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          document.getElementById('profile-avatar').innerHTML = `<img src="${event.target.result}" alt="avatar"/>`;
-        };
-        reader.readAsDataURL(file);
-        // upload immediately when user selects via edit input
-        uploadProfilePicture(file);
-      }
-    }
-
-    async function uploadProfilePicture(file) {
-      if (!file) return;
-      try {
-        const fd = new FormData();
-        fd.append('profilePicture', file);
-        if (currentUserData && currentUserData.username) fd.append('username', currentUserData.username);
-        const res = await fetch(`${API_BASE}/api/update-profile`, {
-          method: 'POST',
-          credentials: 'include',
-          body: fd
-        });
-        let data = {};
-        try { const ct = res.headers.get('content-type'); if (ct && ct.includes('application/json')) data = await res.json(); } catch (err) { }
-        if (res.ok) {
-          currentUserData = { ...(currentUserData || {}), ...data };
-          if (window.updateAuthUI && typeof window.updateAuthUI === 'function') window.updateAuthUI(currentUserData);
-          // small saved indicator near avatar
-          try {
-            const wrap = document.querySelector('.profile-avatar-wrapper');
-            if (wrap) {
-              const ind = document.createElement('span');
-              ind.className = 'avatar-save-indicator';
-              ind.style.marginLeft = '8px';
-              ind.style.color = '#16a34a';
-              ind.style.fontSize = '0.9em';
-              ind.textContent = 'Saved';
-              wrap.appendChild(ind);
-              setTimeout(() => ind.remove(), 2000);
-            }
-          } catch (e) {}
-        } else {
-          alert((data && data.error) || 'Failed to upload profile picture.');
-        }
-      } catch (err) {
-        console.error('Profile picture upload error', err);
-        alert('Error uploading profile picture. Please try again.');
-      }
-    }
-    
-    async function saveProfile(e) {
-      e.preventDefault();
-      
-      const formData = new FormData();
-      formData.append('name', document.getElementById('edit-name').value);
-      formData.append('email', document.getElementById('edit-email').value);
-      formData.append('phone', document.getElementById('edit-phone').value);
-      formData.append('state', document.getElementById('edit-state').value);
-      formData.append('lga', document.getElementById('edit-lga').value);
-      formData.append('address', document.getElementById('edit-address').value);
-      
-      const fileInput = document.getElementById('edit-profile-picture-input');
-      if (fileInput.files.length > 0) {
-        formData.append('profilePicture', fileInput.files[0]);
-      }
-      
-      try {
-        const response = await fetch(`${API_BASE}/api/update-profile`, {
-          method: 'POST',
-          credentials: 'include',
-          body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-          currentUserData = { ...currentUserData, ...data };
-          fillProfile(currentUserData);
-          
-          // Update navbar if available
-          if (window.updateAuthUI && typeof window.updateAuthUI === 'function') {
-            window.updateAuthUI(currentUserData);
-          }
-          
-          // Show success message
-          successMessage.classList.add('show');
-          setTimeout(() => {
-            successMessage.classList.remove('show');
-          }, 3000);
-          
-          exitEditMode();
-        } else {
-          const errorMsg = data.error || 'Failed to update profile';
-          alert('Error: ' + errorMsg);
-        }
-      } catch (err) {
-        console.error('Save profile error', err);
-        alert('Error saving profile. Please try again.');
-      }
-    }
-    
-    // Logout function
-    window.logoutUser = function() {
-      if (confirm('Are you sure you want to logout?')) {
-        try {
-          // Clear localStorage
-          localStorage.removeItem('currentUser');
-          localStorage.removeItem('authToken');
-          
-          // Update navbar UI to reflect logged-out state
-          if (window.updateAuthUI && typeof window.updateAuthUI === 'function') {
-            window.updateAuthUI(null);
-          }
-          
-          // Call backend logout if available
-          fetch(`${API_BASE}/api/logout`, {
-            method: 'POST',
-            credentials: 'include'
-          }).catch(err => console.log('Logout request completed'));
-          
-          // Redirect to home
-          window.location.href = '../index.html';
-        } catch (err) {
-          console.error('Logout error:', err);
-          alert('Error logging out. Please try again.');
-        }
-      }
-    };
-    
-    // Make profile editable and savable when logged in
-    document.addEventListener('DOMContentLoaded', function() {
-      const userLoggedIn = true; // Replace with actual login check
-      const profileForm = document.getElementById('profile-form');
-      if (userLoggedIn && profileForm) {
-        profileForm.querySelectorAll('input, textarea').forEach(input => {
-          input.removeAttribute('readonly');
-        });
-        const saveButton = document.getElementById('save-profile');
-        if (saveButton) saveButton.style.display = 'block'; // Show save button
-      }
-    });
-    
-    loadProfile();
-  </script>
-
+    <script src="scripts/pages.js"></script>
+    <script src="scripts/profile.js"></script>
 </body>
 </html>
+

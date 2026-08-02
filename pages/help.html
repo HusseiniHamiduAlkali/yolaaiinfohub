@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/1111.png"/>
+    <link rel="apple-touch-icon" href="/1111.png"/>
+    <title>Help Center — Yola AI Info Hub</title>
+    <meta name="description" content="Answers to common questions about using Yola AI Info Hub — accounts, reporting, directory listings, privacy and more.">
+    <meta property="og:title" content="Help Center — Yola AI Info Hub">
+    <meta property="og:description" content="FAQs and answers for Yola AI Info Hub users.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles/pages.css">
+    <style>
+        .page-content {margin-top: 65px !important;}
+        .navbar-appname-desktop {
+        width: 258px;
+        height: 225px;
+        background-image: url(../Data/images/222.png);
+        background-size: 222%;
+        background-position: center;
+        background-repeat: no-repeat;}
+    </style>
+</head>
+<body>
+
+    <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+
+    <!-- Desktop hero: brand lives here on larger screens -->
+    <header class="hero" aria-label="About Yola AI Info Hub">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner">
+            <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+                <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+                <div href="../index.html" class="nav-logo">
+                    <span class="navbar-appname-desktop"></span>
+                </div>
+            </div>
+            <div>    
+                <span class="eyebrow"><i class="fas fa-circle-question"></i>Yola AI Info Hub · Help center</span>
+                <h1 class="hero-title">How can we help?</h1>
+                <p class="hero-subtitle">Browse frequently asked questions or search for the answer you need.</p>    
+                <div class="help-search-wrap">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input id="faqSearch" class="help-search" type="search" placeholder="Search help articles…" aria-label="Search help articles">
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <main class="page-content">
+        <section class="mobile-intro" aria-label="Introduction">
+            <h1 class="mobile-title">Help center</h1>
+            <p class="lead">Search or browse FAQs by category.</p>
+            <div class="help-search-wrap" style="margin-top:16px;">
+                <i class="fas fa-magnifying-glass"></i>
+                <input class="help-search" type="search" placeholder="Search help articles…" aria-label="Search help articles" oninput="document.getElementById('faqSearch').value = this.value; document.getElementById('faqSearch').dispatchEvent(new Event('input'));">
+            </div>
+        </section>
+
+        <div class="chip-row" aria-label="FAQ categories">
+            <button class="chip" data-target="cat-getting-started" type="button"><i class="fas fa-rocket"></i> Getting started</button>
+            <button class="chip" data-target="cat-account" type="button"><i class="fas fa-user"></i> Account</button>
+            <button class="chip" data-target="cat-reporting" type="button"><i class="fas fa-flag"></i> Reporting</button>
+            <button class="chip" data-target="cat-directory" type="button"><i class="fas fa-map-location-dot"></i> Directory</button>
+            <button class="chip" data-target="cat-privacy" type="button"><i class="fas fa-shield-halved"></i> Privacy &amp; security</button>
+            <button class="chip" data-target="cat-contact" type="button"><i class="fas fa-envelope"></i> Contact</button>
+        </div>
+
+        <section class="faq-group" id="cat-getting-started">
+            <h2 class="faq-group-title"><i class="fas fa-rocket"></i> Getting started</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">What is Yola AI Info Hub?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Yola AI Info Hub is an AI-powered platform that helps you discover accurate, timely and local information about Yola, Adamawa State, Nigeria — from schools and hospitals to government offices and community services.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Do I need an account to use it?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>No. You can browse the directory and use AI search without an account. Creating an account lets you save favorites, submit reports and receive updates.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Is Yola AI Info Hub free?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Yes. Core features — search, browsing and reporting — are free for everyone.</p></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-group" id="cat-account">
+            <h2 class="faq-group-title"><i class="fas fa-user"></i> Account</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">How do I create an account?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Visit the <a href="auth.html?mode=signup">sign up page</a> and register with your email or use Google, Facebook or Apple sign-in.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">I forgot my password. What do I do?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>On the <a href="auth.html">sign in page</a>, click "Forgot password?" and follow the instructions we email to you.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">How can I delete my account?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Email <a href="mailto:privacy@yolaaiinfohub.com">privacy@yolaaiinfohub.com</a> from your account address and we'll delete your account and associated data within 30 days.</p></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-group" id="cat-reporting">
+            <h2 class="faq-group-title"><i class="fas fa-flag"></i> Reporting</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">How do I report inaccurate information?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Go to the <a href="report.html">Report / Comment</a> page, choose the reason and describe the issue. Our team reviews reports within a few working days.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Can I suggest a new listing?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Yes. Use the "Suggest a listing" option on the <a href="report.html">Report / Comment</a> page and include the name, address and contact details.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Will I hear back after submitting a report?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>We reply to reports that need clarification. If your report is straightforward, we simply update the information and thank you silently — you can check the listing later to confirm.</p></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-group" id="cat-directory">
+            <h2 class="faq-group-title"><i class="fas fa-map-location-dot"></i> Directory</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Where does the data come from?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Our data comes from verified local sources, public records and community submissions — reviewed by our team before publishing.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">How often is information updated?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>We refresh core directories regularly and address user reports as they come in. High-traffic listings are prioritized.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Which languages do you support?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>English is fully supported and we are expanding to Hausa, Fulfulde and other local languages spoken in Adamawa State.</p></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-group" id="cat-privacy">
+            <h2 class="faq-group-title"><i class="fas fa-shield-halved"></i> Privacy &amp; security</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Do you sell my data?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>No. We never sell personal information. Read the full <a href="privacy.html">Privacy Policy</a> for details.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">How is my data protected?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>We use encryption in transit, secure hosting and access controls. See our <a href="privacy.html#security">security section</a> for more.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Can I request a copy of my data?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Yes. Email <a href="mailto:privacy@yolaaiinfohub.com">privacy@yolaaiinfohub.com</a> and we will respond within 30 days.</p></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-group" id="cat-contact">
+            <h2 class="faq-group-title"><i class="fas fa-envelope"></i> Contact</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">How do I get in touch with the team?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Email <a href="mailto:hello@yolaaiinfohub.com">hello@yolaaiinfohub.com</a> or use the <a href="report.html">contact page</a>.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Do you have social media?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Yes — find our social links in the footer of every page.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">Are you hiring or looking for partners?<i class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer"><div class="faq-answer-inner"><p>Always open to collaboration. Send an introduction to <a href="mailto:hello@yolaaiinfohub.com">hello@yolaaiinfohub.com</a>.</p></div></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="faq-empty" id="faqEmpty">
+            <i class="fas fa-magnifying-glass"></i>
+            <p>No results found. Try different keywords or <a href="report.html" style="color:var(--emerald-700);font-weight:700;text-decoration:underline;">contact us</a>.</p>
+        </div>
+
+        <section class="cta-section">
+            <div class="cta-inner">
+                <h2 class="cta-title">Still need help?</h2>
+                <p class="cta-text">Can't find what you're looking for? Send us a message and we'll get back to you.</p>
+                <div class="cta-actions">
+                    <a href="report.html" class="btn btn-primary">Contact us</a>
+                    <a href="mailto:hello@yolaaiinfohub.com" class="btn btn-secondary">Email support</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs><linearGradient id="fIcon" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#064e3b"/><stop offset="100%" stop-color="#17997a"/></linearGradient></defs>
+                            <rect width="48" height="48" rx="12" fill="url(#fIcon)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="report.html">Report / comment</a></li>
+                        <li><a href="pages/help.html">Help center</a></li>
+                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">Privacy policy</a></li>
+                        <li><a href="terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <div class="footer-bottom">
+                <p class="copyright">© <span id="year">2026</span> Yola AI Info Hub. Built for Yola, Adamawa State.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/pages.js"></script>
+</body>
+</html>
+
+

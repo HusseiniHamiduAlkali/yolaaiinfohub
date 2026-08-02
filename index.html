@@ -12,11 +12,12 @@
   <meta http-equiv="Expires" content="0">
   <link rel="manifest" href="manifest.json">
   <!--<link rel="icon" type="image/jpg" href="Data/Images/jippujam.jpg" style="overflow: hidden;object-fit: fill;width: 100%;height: 100%; border-radius:15px;"/>-->
-  <link rel="icon" type="image/jpg" href="Data/Images/jippujam.jpg"/>
-  <link rel="apple-touch-icon" href="Data/Images/jippujam.jpg">
+  <!--<link rel="icon" type="image/jpg" href="Data/Images/jippujam.jpg"/>
+  <link rel="apple-touch-icon" href="Data/Images/jippujam.jpg">-->
+  <link rel="icon" type="image/png" href="1111.png"/>
+  <link rel="apple-touch-icon" href="1111.png"/>
   <title>Yola AI Info Hub</title>
   <link rel="stylesheet" href="styles/global.css" crossorigin="anonymous">
-  <link rel="stylesheet" href="styles/new-global.css">
   <link rel="stylesheet" href="styles/navbar.css">
   <link rel="stylesheet" href="styles/home.css">
   <link rel="stylesheet" href="styles/dark-mode.css">
@@ -26,15 +27,14 @@
   <link rel="stylesheet" href="styles/mediinfo.css">
   <link rel="stylesheet" href="styles/naviinfo.css">
   <link rel="stylesheet" href="styles/ecoinfo.css">
-  <link rel="stylesheet" href="styles/aetherflow.css">
   <link rel="stylesheet" href="styles/serviinfo.css">
   <link rel="stylesheet" href="styles/communityinfo.css">
   <link rel="stylesheet" href="styles/aboutinfo.css">
   <link rel="stylesheet" href="styles/auth.css">
-  <link rel="stylesheet" href="styles/voice-call.css">
+  <link rel="stylesheet" href="Other_features/styles/ecoAI.css">
+  <link rel="stylesheet" href="Other_features/styles/aetherflow.css">
+  <link rel="stylesheet" href="Other_features/styles/yola-maps.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="styles/ecoAI.css">
-  <link rel="stylesheet" href="styles/tomtom-controls-fallback.css">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous">
   <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
@@ -136,8 +136,8 @@
       return window.tomtomSDKLoading;
     };
   </script>
-  <script src="components/aetherflow.js"></script>
-  <script src="components/tomtomMap.js?t=20260308" defer></script>
+  <script src="Other_features/scripts/aetherflow.js"></script>
+  <script src="Other_features/scripts/tomtomMap.js" defer></script>
   <script src="components/i18n.js?t=20260308" defer></script>
   <script src="components/learnmore-links.js?t=20260308" defer></script>
   <script src="components/dark-mode.js?t=20260308" defer></script>
@@ -156,8 +156,8 @@
   <script src="components/ecoinfo.js?t=20260308" defer></script>
   <script src="components/serviinfo.js?t=20260308" defer></script>
   <script src="components/communityinfo.js?t=20260308" defer></script>
-  <script src="components/ecoClassifier.js?t=20260308" defer></script>
-  <script src="components/ecoAI.js?t=20260308" defer></script>
+  <script src="Other_features/scripts/ecoClassifier.js?t=20260308" defer></script>
+  <script src="Other_features/scripts/ecoAI.js" defer></script>
   <script src="components/details-navigation.js?t=20260308" defer></script>
   <script src="app.js?t=20260308" defer></script>
   <!-- About route now uses the Settings page; removed legacy about script -->

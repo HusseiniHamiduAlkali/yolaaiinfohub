@@ -80,19 +80,6 @@ max-width: 100%;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ============================================================
    EduInfo — Emerald Prestige
    ============================================================ */
@@ -397,7 +384,7 @@ a { color: inherit; text-decoration: none; }
 }
 .img-placeholder img {
     width: 100%; height: 100%;
-    object-fit: cover;
+    object-fit: fill;
     transition: transform .5s ease;
     position: relative;
     z-index: 1;
@@ -484,64 +471,93 @@ a { color: inherit; text-decoration: none; }
    Footer
    ============================================================ */
 .site-footer {
-    margin-top: 60px;
+    margin-top: 0;
     background: linear-gradient(160deg, var(--emerald-900), var(--emerald-800));
     color: var(--cream);
-    padding: 48px clamp(20px, 5vw, 60px) 32px;
+    padding: 56px clamp(20px, 5vw, 60px) 32px;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
-    display: flex;
-    flex-direction: column;
+}
+.footer-inner {
+    max-width: 1140px; margin: unset;
+    display: flex; flex-direction: column; gap: 36px;
+}
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr repeat(2, 1fr);
     gap: 32px;
 }
+.footer-brand .brand-lockup { margin-bottom: 14px; }
+.footer-brand .brand-name { color: var(--cream); }
+.footer-tagline {
+    font-size: 14px; color: rgba(245, 240, 224, 0.75);
+    max-width: 280px; margin: 0; line-height: 1.55;
+}
+.footer-heading {
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--gold-200); margin: 0 0 16px; padding: 0;
+}
+.footer-links {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.footer-links a {
+    color: rgba(245, 240, 224, 0.8); font-size: 14px;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+}
+.footer-links a:hover { color: var(--gold-400); transform: translateX(3px); }
 
-.footer-bottom-container { text-align: center; }
-.follow-label {
-    margin: 0 0 16px;
-    color: rgba(245, 240, 224, 0.75);
-    font-size: 14px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+.brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.social-row {
+.brand-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.brand-text {
     display: flex;
-    justify-content: center;
-    gap: 14px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.brand-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--emerald-800);
+}
+
+.brand-tagline {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+}
+.footer-separator {display: flex; flex-direction: row; gap :30px; justify-content: space-around;}
+.social-row {
+    display: flex; justify-content: center; gap: 14px;
+    flex-wrap: wrap; padding-top: 16px;
+    border-top: 1px solid rgba(245, 240, 224, 0.12);
 }
 .social-row a {
-    width: 44px; height: 44px;
-    border-radius: 999px;
+    width: 44px; height: 44px; border-radius: 999px;
     display: grid; place-items: center;
     background: rgba(245, 240, 224, 0.08);
     border: 1px solid rgba(245, 240, 224, 0.18);
-    color: var(--cream);
-    font-size: 18px;
-    transition: all .2s ease;
+    color: var(--cream); font-size: 18px;
+    transition: all 0.2s ease;
 }
 .social-row a:hover {
-    background: var(--gold-500);
-    color: var(--emerald-900);
-    transform: translateY(-2px);
-    border-color: transparent;
+    background: var(--gold-500); color: var(--emerald-900);
+    transform: translateY(-2px); border-color: transparent;
 }
-
-.footer-legal { text-align: center !important; }
-.legal-links {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px 22px;
-    margin-bottom: 14px;
-}
-.footer-link {
-    color: rgba(245, 240, 224, 0.8);
-    font-size: 14px;
-    transition: color .2s ease;
-}
-.footer-link:hover { color: var(--gold-400); }
-.copyright p { margin: 0; font-size: 13px; color: rgba(245, 240, 224, 0.6); }
+.footer-bottom { text-align: center; }
+.copyright { margin: 0; font-size: 13px; color: rgba(245, 240, 224, 0.6); }
 
 
 /* ============================================================
@@ -574,11 +590,12 @@ a { color: inherit; text-decoration: none; }
    ============================================================ */
 @media (max-width: 599px) {
     .hero {
-        padding: 40px 20px 72px;
+        padding: 40px 15px 60px;
         border-bottom-left-radius: 24px;
         border-bottom-right-radius: 24px;
     }
-
+    .hero h1 {font-size: 25px;}
+    .hero p {font-size: clamp(14px, 1.6vw, 20px) ;}
     .info-section { padding: 0 14px 40px; }
 
     .controls {
@@ -587,8 +604,8 @@ a { color: inherit; text-decoration: none; }
         border-radius: 0px 0px 15px 15px;*/
     }
 
-    .search-bar { padding: 10px 14px; }
-    .search-bar input { font-size: 15px; }
+    .search-bar { padding: 6px 6px; }
+    .search-bar input { font-size: 12px; }
 
     .section2 { gap: 36px; margin-top: 22px; }
 
@@ -602,17 +619,18 @@ a { color: inherit; text-decoration: none; }
 
     .section4 {
         display: grid;
-        grid-template-columns: 96px minmax(0, 1fr);
+        grid-template-columns: 135px minmax(0, 1fr);
         border-radius: var(--radius-md);
         overflow: hidden;
         transform: none;
         opacity: 1;
+        height: 160px;
     }
     .section4:hover { transform: none; }
 
     .img-placeholder {
         aspect-ratio: auto;
-        width: 96px;
+        width: 100%;
         height: 100%;
         min-height: 96px;
     }
@@ -629,15 +647,16 @@ a { color: inherit; text-decoration: none; }
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        padding: 0 !important;
     }
     .card-body p {
-        font-size: 13px;
+        font-size: 11px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    .card-body a { font-size: 13px; margin-top: 4px; }
+    .card-body a { font-size: 10px; margin-top: 4px; }
 
     .site-footer {
         margin-top: 40px;
@@ -645,7 +664,7 @@ a { color: inherit; text-decoration: none; }
         border-top-left-radius: 24px;
         border-top-right-radius: 24px;
     }
-    
+    .eyebrow {margin-top: 55px !important; font-size: 9px;}
 }
 
 
@@ -665,7 +684,13 @@ a { color: inherit; text-decoration: none; }
     right: 1.5rem;
     font-size: 1.5rem;
   }
-    
+  .chip {padding: 8px 12px !important; font-size: 9px;}
+  .follow-label {font-size: 9px;}
+  .footer-separator {flex-direction: column;}
+  .footer-heading {font-size: 11px;}
+  .social-row a {width: 36px; height: 36px;}
+  .footer-links a {font-size: 10px;}
+  .copyright p {font-size: 10px;}
 }
 
 @media screen and (min-width: 700px) and (max-width: 900px) {

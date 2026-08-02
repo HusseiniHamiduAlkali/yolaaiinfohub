@@ -237,225 +237,314 @@ window.addEventListener('load', () => {
 
 // SPA router logic is now unified in index.html. No section loader here.
 
-// Intercept "Learn more" detail links and translate pages on demand using Gemini
+function normalizeDetailsHref(href) {
+  if (!href) return href;
+
+  const clean = href.split('?')[0].split('#')[0];
+  if (!clean.includes('/details/')) return href;
+
+  const withoutPrefix = clean.replace(/^(\/|\.\/|\.\.\/)+/, '');
+  const parts = withoutPrefix.split('/').filter(Boolean);
+  const idx = parts.indexOf('details');
+
+  if (idx === -1 || parts.length <= idx + 1) return href;
+
+  const afterDetails = parts.slice(idx + 1);
+  const languageFolders = ['En', 'Ar', 'Fr', 'Ha', 'Fu', 'Yo', 'Ig', 'Pi'];
+
+  if (afterDetails[0] && languageFolders.includes(afterDetails[0])) {
+    return `/${withoutPrefix}`;
+  }
+
+  if (afterDetails.length >= 2) {
+    const section = afterDetails[0];
+    const file = afterDetails[afterDetails.length - 1];
+    return `/details/En/${section}/${file}`;
+  }
+
+  return href;
+}
+
+function getDetailRouteParts(href) {
+  const normalizedHref = normalizeDetailsHref(href);
+  const clean = normalizedHref.split('?')[0].split('#')[0];
+  const withoutPrefix = clean.replace(/^(\/|\.\/|\.\.\/)+/, '');
+  const parts = withoutPrefix.split('/').filter(Boolean);
+  const idx = parts.indexOf('details');
+
+  if (idx === -1 || parts.length <= idx + 2) return { section: '', file: '' };
+
+  const afterDetails = parts.slice(idx + 1);
+  const languageFolders = ['En', 'Ar', 'Fr', 'Ha', 'Fu', 'Yo', 'Ig', 'Pi'];
+  const section = (afterDetails[0] && languageFolders.includes(afterDetails[0])) ? afterDetails[1] : afterDetails[0];
+  const file = afterDetails[afterDetails.length - 1];
+
+  return { section, file, normalizedHref };
+}
+
+// Intercept "Learn more" detail links and translate the detail page in place
 (function(){
-  async function translateDetailsAndReplacePage(e, anchor) {
+  function getCurrentAppCode() {
     try {
-      e.preventDefault();
-      const href = anchor.getAttribute('href');
-      if (!href || !href.startsWith('details/')) return window.location.href = href;
-
-      // Determine section and file
-      const parts = href.split('/').filter(Boolean);
-      const section = parts[1] || '';
-      const file = parts[parts.length - 1];
-
-      // Determine target language from app settings (prefer i18n API)
       const appLang = (window.getAppLanguage && window.getAppLanguage()) || (window.getCurrentAppLanguage && window.getCurrentAppLanguage && window.getCurrentAppLanguage()) || localStorage.getItem('appLanguage') || 'en';
-      const code = (appLang || 'en').toString().substring(0,2).toLowerCase();
-      const langMap = { en: 'En', ar: 'Ar', fr: 'Fr', ha: 'Ha', ff: 'Fu', fu: 'Fu', yo: 'Yo', ig: 'Ig', pcm: 'Pi', pi: 'Pi' };
-      const targetFolder = langMap[code] || 'En';
-
-      // Prefer English source to translate from
-      const sourcePath = `details/${section}/En/${file}`;
-
-      // Check session cache first
-      const cacheKey = `yola_translated::${sourcePath}::${targetFolder}`;
-      const cached = sessionStorage.getItem(cacheKey);
-      if (cached) {
-        try {
-          history.pushState({}, '', href);
-          document.open();
-          document.write(cached);
-          document.close();
-          return;
-        } catch (err) {
-          console.warn('Failed to write cached translated page:', err);
-        }
-      }
-
-      // Fetch source HTML (fallback to requested href if English not found)
-      let htmlText = '';
-      try {
-        let r = await fetch(sourcePath);
-        if (r.ok) htmlText = await r.text();
-        else {
-          r = await fetch(href);
-          if (r.ok) htmlText = await r.text();
-          else return window.location.href = href; // can't fetch, navigate normally
-        }
-      } catch (err) {
-        return window.location.href = href;
-      }
-
-      // show minimal full-screen loader while translating
-      const loader = document.createElement('div');
-      loader.id = 'yola-translation-loading';
-      loader.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;z-index:2147483647;font-size:18px;color:#222';
-      loader.textContent = 'Translating page—please wait…';
-      document.documentElement.appendChild(loader);
-
-      // helper to safely remove the loader later
-      const removeLoaderLater = (delay = 6000) => setTimeout(() => { try { loader.remove(); } catch (e) {} }, delay);
-
-      const languageName = (window.SUPPORTED_LANGUAGES && window.SUPPORTED_LANGUAGES[code]) || (code === 'en' ? 'English' : code);
-
-      // Client-side translation: parse the fetched HTML, find visible text nodes,
-      // translate them in batches using public translate endpoints (LibreTranslate -> Google fallback),
-      // replace only text nodes (do not touch attributes or links), then serialize and write.
-      try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-
-        // Collect visible text nodes
-        function isVisibleNode(node) {
-          if (!node || node.nodeType !== Node.TEXT_NODE) return false;
-          const text = node.textContent.trim();
-          if (!text) return false;
-          const parent = node.parentElement;
-          if (!parent) return false;
-          const tag = parent.tagName.toLowerCase();
-          if (['script', 'style', 'noscript', 'code', 'pre'].includes(tag)) return false;
-          // ignore ARIA-hidden or hidden elements
-          try { if (parent.closest && parent.closest('[aria-hidden="true"]')) return false; } catch (e) {}
-          try { if (parent.hasAttribute && parent.hasAttribute('hidden')) return false; } catch (e) {}
-          return true;
-        }
-
-        const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
-        const textNodes = [];
-        let node;
-        while (node = walker.nextNode()) {
-          try { if (isVisibleNode(node)) textNodes.push(node); } catch (e) { /* ignore */ }
-        }
-
-        // If nothing to translate, write original HTML
-        if (!textNodes.length) {
-          try { loader.remove(); } catch (e) {}
-          history.pushState({}, '', href);
-          document.open(); document.write(htmlText); document.close();
-          return;
-        }
-
-        const texts = textNodes.map(n => n.textContent.trim());
-
-        function chunkBySize(items, maxChars = 2500) {
-          const chunks = [];
-          let cur = [];
-          let curLen = 0;
-          for (const it of items) {
-            const len = (it || '').length + 1;
-            if (curLen + len > maxChars && cur.length) {
-              chunks.push(cur);
-              cur = [it];
-              curLen = len;
-            } else {
-              cur.push(it);
-              curLen += len;
-            }
-          }
-          if (cur.length) chunks.push(cur);
-          return chunks;
-        }
-
-        const chunks = chunkBySize(texts, 2500);
-
-        async function translateChunk(chunkArray, source = 'en', target = code) {
-          const DELIM = '\n---yola-delim---\n';
-          const joined = chunkArray.join(DELIM);
-
-          // Try LibreTranslate
-          try {
-            const resp = await fetch('https://libretranslate.de/translate', {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ q: joined, source, target, format: 'text' })
-            });
-            if (resp.ok) {
-              const body = await resp.json();
-              if (body && body.translatedText) {
-                return body.translatedText.split(DELIM);
-              }
-            }
-          } catch (e) { console.warn('LibreTranslate attempt failed', e && e.message); }
-
-          // Fallback: Google Translate undocumented endpoint
-          try {
-            const url = new URL('https://translate.googleapis.com/translate_a/single');
-            url.searchParams.set('client', 'gtx');
-            url.searchParams.set('sl', 'en');
-            url.searchParams.set('tl', code);
-            url.searchParams.set('dt', 't');
-            for (const part of chunkArray) url.searchParams.append('q', part);
-            const resp = await fetch(url.toString());
-            if (resp.ok) {
-              const body = await resp.json();
-              const results = [];
-              if (Array.isArray(body) && Array.isArray(body[0])) {
-                for (let i = 0; i < body[0].length; i++) {
-                  const seg = body[0][i];
-                  results.push((seg && seg[0]) ? seg[0] : '');
-                }
-                return results;
-              }
-            }
-          } catch (e) { console.warn('Google translate fallback failed', e && e.message); }
-
-          return chunkArray.map(x => x);
-        }
-
-        const translatedSegments = [];
-        for (const c of chunks) {
-          const t = await translateChunk(c);
-          translatedSegments.push(...t);
-        }
-
-        for (let i = 0; i < textNodes.length; i++) {
-          const newText = translatedSegments[i] || textNodes[i].textContent;
-          const original = textNodes[i].textContent;
-          const leading = (original.match(/^\s*/ ) || [''])[0];
-          const trailing = (original.match(/\s*$/ ) || [''])[0];
-          textNodes[i].textContent = leading + newText + trailing;
-        }
-
-        const serialized = '<!doctype html>\n' + doc.documentElement.outerHTML;
-        try { sessionStorage.setItem(cacheKey, serialized); } catch (e) { /* ignore */ }
-        try { loader.remove(); } catch (e) {}
-        history.pushState({}, '', href);
-        document.open(); document.write(serialized); document.close();
-        return;
-      } catch (err) {
-        console.error('Client-side translation error', err);
-        if (loader && loader.parentNode) loader.innerHTML = `<div style="padding:20px;color:#900">Translation error. Check console for details.</div>`;
-        removeLoaderLater();
-        return;
-      }
-    } catch (outerErr) {
-      console.error('translateDetailsAndReplacePage error', outerErr);
+      return (appLang || 'en').toString().substring(0, 2).toLowerCase();
+    } catch (err) {
+      return 'en';
     }
   }
 
-  // Intercept clicks on details links that are "Learn more" anchors
+  function getTargetLangCode(code) {
+    const map = { en: 'en', ar: 'ar', fr: 'fr', ha: 'ha', ff: 'ff', yo: 'yo', ig: 'ig', pcm: 'en' };
+    return map[code] || 'en';
+  }
+
+  function escapeRegExp(str) {
+    return String(str || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function translateTextLocally(text, targetCode) {
+    if (!text || targetCode === 'en') return text;
+
+    const replacements = {
+      ar: {
+        'about': 'حول',
+        'academic programs': 'البرامج الأكاديمية',
+        'world-class facilities': 'مرافق عالمية المستوى',
+        'unique features': 'الميزات الفريدة',
+        'admission process': 'عملية القبول',
+        'contact information': 'معلومات الاتصال',
+        'back to education info page': 'العودة إلى صفحة معلومات التعليم',
+        'development university for africa': 'جامعة تنموية لأفريقيا',
+        'details': 'التفاصيل',
+        'address:': 'العنوان:',
+        'website:': 'الموقع الإلكتروني:',
+        'email:': 'البريد الإلكتروني:',
+        'phone:': 'الهاتف:'
+      },
+      fr: {
+        'about': 'À propos',
+        'academic programs': 'Programmes académiques',
+        'world-class facilities': 'Installations de classe mondiale',
+        'unique features': 'Fonctionnalités uniques',
+        'admission process': 'Processus d\'admission',
+        'contact information': 'Coordonnées',
+        'back to education info page': 'Retour à la page d\'informations sur l\'éducation',
+        'development university for africa': 'Université de développement pour l\'Afrique',
+        'details': 'Détails',
+        'address:': 'Adresse :',
+        'website:': 'Site Web :',
+        'email:': 'E-mail :',
+        'phone:': 'Téléphone :'
+      },
+      ha: {
+        'about': 'Game da',
+        'academic programs': 'Shirye-shiryen ilimi',
+        'world-class facilities': 'Kayan aiki na duniya',
+        'unique features': 'Abubuwan da suka bambanta',
+        'admission process': 'Tsarin karbar dalibi',
+        'contact information': 'Bayanan tuntuɓa',
+        'back to education info page': 'Komawa shafin bayanan ilimi',
+        'development university for africa': 'Jami\'ar ci gaba ga Afirka',
+        'details': 'Bayani',
+        'address:': 'Adireshi:',
+        'website:': 'Shafin yanar gizo:',
+        'email:': 'Imel:',
+        'phone:': 'Wayar hannu:'
+      },
+      ff: {
+        'about': 'Baɗol',
+        'academic programs': 'Programmii akademii',
+        'world-class facilities': 'Mawɗe kelas nguurndam',
+        'unique features': 'Toppiti keewal',
+        'admission process': 'Dawngol jamaan',
+        'contact information': 'Humpito kontak',
+        'back to education info page': 'Woppu e hello cimmoo',
+        'details': 'Carii',
+        'address:': 'Ñawru:',
+        'website:': 'Huutere:',
+        'email:': 'Iimeel:',
+        'phone:': 'Telefoon:'
+      },
+      yo: {
+        'about': 'Nipa',
+        'academic programs': 'Awọn eto eto ẹkọ',
+        'world-class facilities': 'Awọn ohun elo ti agbaye',
+        'unique features': 'Àwọn ẹya alailẹgbẹ',
+        'admission process': 'Ilana gbigba',
+        'contact information': 'Àlàyé lórí àbájọ',
+        'back to education info page': 'Padà sí ojú ewé ìwòye ẹ̀kọ́',
+        'details': 'Àlàyé',
+        'address:': 'Adirẹsi:',
+        'website:': 'Oju opo wẹẹbu:',
+        'email:': 'Imeeli:',
+        'phone:': 'Foonu:'
+      },
+      ig: {
+        'about': 'Nhọrọ',
+        'academic programs': 'Usoro agụmakwụkwọ',
+        'world-class facilities': 'Ụdị ụlọ ọrụ zuru ụwa ọnụ',
+        'unique features': 'Atụmatụ pụrụ iche',
+        'admission process': 'Usoro ebumnuche',
+        'contact information': 'Ozi nkwukọrịta',
+        'back to education info page': 'Laghachi na ibe nkuzi',
+        'details': 'Nkọwa',
+        'address:': 'Adres:',
+        'website:': 'Weebụsaịtị:',
+        'email:': 'Email:',
+        'phone:': 'Ekwenti:'
+      },
+      pcm: {
+        'about': 'Bout',
+        'academic programs': 'Academic programs',
+        'world-class facilities': 'World-class facilities',
+        'unique features': 'Unique features',
+        'admission process': 'Admission process',
+        'contact information': 'Contact information',
+        'back to education info page': 'Back to education info page',
+        'details': 'Details',
+        'address:': 'Address:',
+        'website:': 'Website:',
+        'email:': 'Email:',
+        'phone:': 'Phone:'
+      }
+    };
+
+    const entries = Object.entries(replacements[targetCode] || {});
+    let translated = text;
+    entries.sort((a, b) => b[0].length - a[0].length).forEach(([phrase, replacement]) => {
+      const regex = new RegExp(`\\b${escapeRegExp(phrase)}\\b`, 'gi');
+      translated = translated.replace(regex, replacement);
+    });
+    return translated;
+  }
+
+  async function translateTextWithServer(text, targetCode) {
+    if (!text || targetCode === 'en') return text;
+
+    try {
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, sourceLanguage: 'en', targetLanguage: targetCode })
+      });
+
+      if (!response.ok) throw new Error(`Translation request failed with ${response.status}`);
+      const data = await response.json();
+      if (data && data.translatedText) {
+        return data.translatedText;
+      }
+    } catch (err) {
+      console.warn('Server translation failed, falling back to local dictionary:', err);
+    }
+
+    return translateTextLocally(text, targetCode);
+  }
+
+  async function translateDetailPage(href, targetCode) {
+    try {
+      const absoluteHref = new URL(href, window.location.href).toString();
+      const response = await fetch(absoluteHref);
+      if (!response.ok) throw new Error('Failed to fetch detail page');
+      const htmlText = await response.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, 'text/html');
+
+      const rewriteAssetPaths = (root) => {
+        try {
+          const updateAttr = (element, attr) => {
+            const value = element.getAttribute(attr);
+            if (!value || value.startsWith('http://') || value.startsWith('https://') || value.startsWith('data:') || value.startsWith('mailto:')) return;
+            if (value.startsWith('./') || value.startsWith('../')) {
+              try {
+                const resolved = new URL(value, absoluteHref);
+                element.setAttribute(attr, resolved.pathname + resolved.search + resolved.hash);
+              } catch (err) {
+                element.setAttribute(attr, value.replace(/^\.\.?\//, '/'));
+              }
+            }
+          };
+          root.querySelectorAll('link[rel="stylesheet"]').forEach(link => updateAttr(link, 'href'));
+          root.querySelectorAll('img').forEach(img => updateAttr(img, 'src'));
+          root.querySelectorAll('script[src]').forEach(script => updateAttr(script, 'src'));
+        } catch (err) {
+          console.warn('Failed to rewrite asset paths:', err);
+        }
+      };
+      rewriteAssetPaths(doc);
+      doc.documentElement.lang = targetCode === 'en' ? 'en' : targetCode;
+      doc.documentElement.setAttribute('translate', 'yes');
+      const meta = doc.querySelector('meta[http-equiv="content-language"]');
+      if (meta) meta.setAttribute('content', targetCode === 'en' ? 'en' : targetCode);
+
+      const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
+      const textNodes = [];
+      let node;
+      while (node = walker.nextNode()) {
+        const parent = node.parentElement;
+        const text = node.textContent && node.textContent.trim();
+        if (!text) continue;
+        const tag = parent && parent.tagName ? parent.tagName.toLowerCase() : '';
+        if (['script', 'style', 'noscript', 'code', 'pre'].includes(tag)) continue;
+        if (parent && parent.closest && parent.closest('[aria-hidden="true"]')) continue;
+        if (parent && parent.hasAttribute && parent.hasAttribute('hidden')) continue;
+        textNodes.push(node);
+      }
+
+      if (!textNodes.length) {
+        const serialized = '<!doctype html>\n' + doc.documentElement.outerHTML;
+        document.open(); document.write(serialized); document.close();
+        return;
+      }
+
+      for (let i = 0; i < textNodes.length; i++) {
+        const original = textNodes[i].textContent;
+        const translatedText = await translateTextWithServer(original, targetCode);
+        const leading = (original.match(/^\s*/) || [''])[0];
+        const trailing = (original.match(/\s*$/) || [''])[0];
+        textNodes[i].textContent = leading + translatedText + trailing;
+      }
+
+      const serialized = '<!doctype html>\n' + doc.documentElement.outerHTML;
+      history.pushState({}, '', absoluteHref);
+      document.open(); document.write(serialized); document.close();
+    } catch (err) {
+      console.warn('Detail-page translation failed:', err);
+      window.location.assign(href);
+    }
+  }
+
+  function openDetailPage(e, anchor) {
+    try {
+      e.preventDefault();
+      const href = anchor.getAttribute('href') || '';
+      const normalizedHref = normalizeDetailsHref(href);
+      if (!normalizedHref) return;
+
+      if (normalizedHref !== href) {
+        anchor.setAttribute('href', normalizedHref);
+      }
+
+      const code = getCurrentAppCode();
+      const targetCode = getTargetLangCode(code);
+      if (targetCode === 'en') {
+        window.location.assign(normalizedHref);
+        return;
+      }
+
+      translateDetailPage(normalizedHref, targetCode);
+    } catch (err) {
+      console.warn('Failed to open detail page:', err);
+    }
+  }
+
   document.addEventListener('click', function(e) {
     try {
       const a = e.target.closest && e.target.closest('a[href*="details/"]');
       if (!a) return;
-      const isLearnMore = (a.dataset && a.dataset.i18n === 'learn_more') || /learn\s*more/i.test((a.textContent||''));
+      const isLearnMore = (a.dataset && a.dataset.i18n === 'learn_more') || /learn\s*more/i.test((a.textContent || ''));
       if (!isLearnMore) return;
-      // Normalize href to use English source before translating
-      try {
-        const href = a.getAttribute('href') || '';
-        const clean = href.split('?')[0].split('#')[0];
-        const parts = clean.split('/').filter(Boolean);
-        const idx = parts.indexOf('details');
-        if (idx !== -1 && parts.length >= idx + 3) {
-          const section = parts[idx+1];
-          const file = parts[parts.length - 1];
-          const newHref = `details/${section}/En/${file}`;
-          a.setAttribute('href', newHref);
-        }
-      } catch (normalizeErr) { /* ignore */ }
-
-      translateDetailsAndReplacePage(e, a);
+      openDetailPage(e, a);
     } catch (err) { /* ignore */ }
   }, true);
 })();
@@ -466,14 +555,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('a[href*="details/"]').forEach(a => {
       try {
         const href = a.getAttribute('href') || '';
-        const clean = href.split('?')[0].split('#')[0];
-        const parts = clean.split('/').filter(Boolean);
-        const idx = parts.indexOf('details');
-        if (idx !== -1 && parts.length >= idx + 3) {
-          const section = parts[idx+1];
-          const file = parts[parts.length - 1];
-          const newHref = `details/${section}/En/${file}`;
-          a.setAttribute('href', newHref);
+        const normalizedHref = normalizeDetailsHref(href);
+        if (normalizedHref !== href) {
+          a.setAttribute('href', normalizedHref);
         }
       } catch (inner) { /* ignore */ }
     });

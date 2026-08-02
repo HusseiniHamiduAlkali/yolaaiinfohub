@@ -24,6 +24,7 @@
   padding: 2rem 1.5rem;
   min-height: calc(100vh - 200px);
   margin-top: 60px;
+  height: 100%;
 }
 
 .settings-header {
@@ -50,6 +51,7 @@ body.dark-mode .settings-header h1 {
   flex-direction: column;
   gap: 2rem;
   width: 91%;
+  justify-self: center;
 }
 
 /* Settings Section */
@@ -223,7 +225,7 @@ body.dark-mode .dark-mode-toggle-settings:hover {
 }
 
 /* Language Selector */
-#language-select {
+#language-select, #theme-select {
   padding: 0.6rem 1rem;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
@@ -232,31 +234,33 @@ body.dark-mode .dark-mode-toggle-settings:hover {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 95px;
 }
 
-#language-select:hover {
+#language-select, #theme-select:hover {
   border-color: #a0aec0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#language-select:focus {
+#language-select, #theme-select:focus {
   outline: none;
   border-color: #3182ce;
   box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
 }
 
+/*body.dark-mode #language-select, #theme-select {*/
 body.dark-mode #language-select {
   background: #2d2d2d;
   color: #e0e0e0;
   border-color: #555;
 }
 
-body.dark-mode #language-select:hover {
+body.dark-mode #language-select, #theme-select:hover {
   border-color: #777;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-body.dark-mode #language-select:focus {
+body.dark-mode #language-select, #theme-select:focus {
   border-color: #64b5f6;
   box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.1);
 }
