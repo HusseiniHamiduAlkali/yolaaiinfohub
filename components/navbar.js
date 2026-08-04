@@ -13,7 +13,7 @@ function getSectionFromUrl() {
   let path = window.location.pathname.replace(/^\/+/, '').toLowerCase();
   if (!path || path === '' || path === 'index.html') return 'home';
   path = path.split('/').pop().split('?')[0].split('#')[0];
-  const valid = ['home','eduinfo','agroinfo','mediinfo','naviinfo','ecoinfo','serviinfo','communityinfo','settings'];
+  const valid = ['home','eduinfo','agroinfo','mediinfo','naviinfo','','serviinfo','communityinfo','settings'];
   return valid.includes(path) ? path : 'home';
 }
 
@@ -99,7 +99,7 @@ window.highlightActiveNav = function(section) {
     let btnSection = '';
     if (i18nKey === 'home') btnSection = 'home';
     else if (i18nKey === 'eduinfo') btnSection = 'eduinfo';
-    else if (i18nKey === 'ecoinfo') btnSection = 'ecoinfo';
+    //else if (i18nKey === 'ecoinfo') btnSection = 'ecoinfo';
     else if (i18nKey === 'agroinfo') btnSection = 'agroinfo';
     else if (i18nKey === 'mediinfo') btnSection = 'mediinfo';
     else if (i18nKey === 'naviinfo') btnSection = 'naviinfo';
@@ -202,7 +202,7 @@ function renderNavbar(isLoading = false) {
           <ul class="navbar-links">
             <li><button onclick="window.loadSection('home')" data-i18n="home">Home</button></li>
             <li><button onclick="window.loadSection('eduinfo')" data-i18n="eduinfo">EduInfo</button></li>
-            <li><button onclick="window.loadSection('ecoinfo')" data-i18n="ecoinfo">EcoInfo</button></li>
+            
             <li><button onclick="window.loadSection('agroinfo')" data-i18n="agroinfo">AgroInfo</button></li>
             <li><button onclick="window.loadSection('mediinfo')" data-i18n="mediinfo">MediInfo</button></li>
             <li><button onclick="window.loadSection('naviinfo')" data-i18n="naviinfo">NaviInfo</button></li>
@@ -427,11 +427,20 @@ function renderNavbar(isLoading = false) {
       rightContainer.style.flexDirection = 'column';
       rightContainer.style.alignItems = 'flex-end';
       rightContainer.style.marginRight = '10px';
+      rightContainer.style.gap = '0.45rem';
       // On mobile we hide the inline auth area (it will appear inside the mobile menu)
       if (newNavbarAuth) {
         try {
           newNavbarAuth.style.display = 'none';
         } catch (e) { /* ignore */ }
+      }
+      if (!(window.currentUser && window.currentUser.username)) {
+        const mobileSignInBtn = document.createElement('button');
+        mobileSignInBtn.className = 'auth-btn mobile-signin-btn';
+        mobileSignInBtn.type = 'button';
+        mobileSignInBtn.textContent = 'Sign in';
+        mobileSignInBtn.onclick = () => window.location.href = '/pages/auth.html';
+        rightContainer.appendChild(mobileSignInBtn);
       }
       // Only add the hamburger here; profile/auth will be rendered inside the mobile menu
       rightContainer.appendChild(newHamburger); // Add hamburger spans
@@ -513,7 +522,7 @@ function renderNavbar(isLoading = false) {
         [
           { name: 'Home', section: 'home', i18n: 'home' },
           { name: 'EduInfo', section: 'eduinfo', i18n: 'eduinfo' },
-          { name: 'EcoInfo', section: 'ecoinfo', i18n: 'ecoinfo' },
+          
           { name: 'AgroInfo', section: 'agroinfo', i18n: 'agroinfo' },
           { name: 'MediInfo', section: 'mediinfo', i18n: 'mediinfo' },
           { name: 'NaviInfo', section: 'naviinfo', i18n: 'naviinfo' },
@@ -556,23 +565,44 @@ function renderNavbar(isLoading = false) {
   window.addEventListener('resize', handleResponsiveLayout);
 }
 
+function getStoredNavbarUser() {
+  try {
+    const storedUser = localStorage.getItem('currentUser');
+    if (!storedUser) return null;
+    const parsed = JSON.parse(storedUser);
+    return parsed && parsed.username ? parsed : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 // Export as Navbar global for compatibility
 window.Navbar = {
   render: async (force = false) => {
     console.log('%c🎬 window.Navbar.render() called', 'color: #06b6d4; font-weight: bold;', { force });
+
+    let initialUser = window.currentUser || window.__lastUser || getStoredNavbarUser();
+    if (initialUser && initialUser.username) {
+      window.currentUser = initialUser;
+      window.__lastUser = initialUser;
+      window.__navbarAuthResolved = true;
+    }
     
-    // Check if navbar already exists in DOM (unless forced)
     const existingNavbar = document.querySelector('nav.navbar');
+    const knownUser = !!(window.currentUser && window.currentUser.username) || !!(window.__lastUser && window.__lastUser.username) || !!getStoredNavbarUser();
+
     if (existingNavbar && !force) {
-      console.log('%c⏭️ Navbar.render(): Navbar already in DOM - updating auth section in background', 'color: #94a3b8;');
-      // Still fetch and update auth section in background
-      window.Navbar._fetchAndUpdateAuth();
+      console.log('%c⏭️ Navbar.render(): Navbar already in DOM - updating auth section in place', 'color: #94a3b8;');
+      if (knownUser || window.__navbarAuthResolved) {
+        updateNavbarAuthSection();
+      } else {
+        window.Navbar._fetchAndUpdateAuth();
+      }
       return;
     }
     
     // Render navbar immediately with loading state (NO WAIT)
     console.log('%c🚀 Navbar.render(): Rendering navbar immediately with loading state', 'color: #10b981; font-weight: bold;');
-    window.currentUser = null;
     renderNavbar(true); // true = isLoading
     
     // Verify navbar was actually added to DOM
@@ -582,8 +612,11 @@ window.Navbar = {
       console.warn('%c⚠️ Navbar not found in DOM after rendering!', 'color: #f59e0b;');
     }
     
-    // Fetch auth in background and update only the auth section
-    window.Navbar._fetchAndUpdateAuth();
+    if (knownUser || window.__navbarAuthResolved) {
+      updateNavbarAuthSection();
+    } else {
+      window.Navbar._fetchAndUpdateAuth();
+    }
   },
   
   // Background auth fetch that only updates navbar-auth section
@@ -607,6 +640,14 @@ window.Navbar = {
         }
       })();
       
+      const fallbackUser = window.currentUser || window.__lastUser || (() => {
+        try {
+          return JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch (e) {
+          return null;
+        }
+      })();
+
       const response = await fetch(apiBase + '/api/me', {
         method: 'GET',
         credentials: 'include',
@@ -631,11 +672,19 @@ window.Navbar = {
           };
           window.__lastUser = window.currentUser;
           console.log('%c✅ Navbar._fetchAndUpdateAuth(): User logged in as', 'color: #10b981;', window.currentUser.username);
+        } else if (fallbackUser && fallbackUser.username) {
+          window.currentUser = fallbackUser;
+          window.__lastUser = fallbackUser;
+          console.log('%cℹ️ Navbar._fetchAndUpdateAuth(): Preserving cached user while server says logged out', 'color: #f59e0b;', fallbackUser.username);
         } else {
           window.currentUser = null;
           window.__lastUser = null;
           console.log('%c❌ Navbar._fetchAndUpdateAuth(): User not logged in', 'color: #ef4444;');
         }
+      } else if (fallbackUser && fallbackUser.username) {
+        window.currentUser = fallbackUser;
+        window.__lastUser = fallbackUser;
+        console.log('%cℹ️ Navbar._fetchAndUpdateAuth(): Preserving cached user after failed auth fetch', 'color: #f59e0b;', fallbackUser.username);
       } else {
         window.currentUser = null;
         window.__lastUser = null;
@@ -643,8 +692,20 @@ window.Navbar = {
       }
     } catch (error) {
       console.error('%c❌ Navbar._fetchAndUpdateAuth(): Error checking server:', 'color: #ef4444;', error);
-      window.currentUser = null;
-      window.__lastUser = null;
+      const fallbackUser = window.currentUser || window.__lastUser || (() => {
+        try {
+          return JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch (e) {
+          return null;
+        }
+      })();
+      if (fallbackUser && fallbackUser.username) {
+        window.currentUser = fallbackUser;
+        window.__lastUser = fallbackUser;
+      } else {
+        window.currentUser = null;
+        window.__lastUser = null;
+      }
     }
     
     // Update only the navbar-auth section with fetched data

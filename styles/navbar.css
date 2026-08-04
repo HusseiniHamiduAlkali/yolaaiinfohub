@@ -80,7 +80,7 @@ nav.navbar {
 .navbar-username-text {
   font-weight: 700;
   color: #cbd5e1;
-  margin-left: 0.4rem;
+  margin-left: 0rem;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
 }
@@ -236,6 +236,17 @@ nav.navbar {
   color: var(--emerald-900, #04322a);
 }
 
+.mobile-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.8rem;
+  min-height: 34px;
+  height: auto;
+  font-size: 0.92rem;
+  line-height: 1;
+  white-space: nowrap;
+}
 
 .user-avatar {
   display: inline-flex;
@@ -525,10 +536,11 @@ nav.navbar {
 
 .mobile-menu.show {
   display: flex;
+  gap: 15px;
 }
 
 .navbar-username-container { display: flex !important; }
-.navbar-username-text { color: #e4e4e4; font-size: 1.05rem; margin-right: 1rem; }
+.navbar-username-text { color: #e4e4e4; font-size: 12px; margin-right: 0rem; }
 .navbar-appname {margin-left: 10px; width: 29vw; height: 90px;}
 
 /* PC Screens (>=1151px) */
@@ -769,6 +781,10 @@ nav.navbar {
   .login-suggestion {
     display: none;
   }
+
+  .navbar-avatar {margin-right: 5px;}
+  .navbar-fullname {font-size: 12px !important;}
+  .navbar-username-text {font-size: 10px !important;}
   /*
   .model-switch {
     flex-direction: column;

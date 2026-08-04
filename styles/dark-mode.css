@@ -250,7 +250,8 @@ body.dark-mode * {
 }
 
 body.dark-mode .info-section {
-    background-color: #484343 !important;
+   /* background-color: #484343 !important;*/
+   background-color: transparent;
 }
 body.dark-mode .chat-messages {
     background-color: #484343;
@@ -276,7 +277,8 @@ body.dark-mode .faq-link {
 }
 
 body.dark-mode .section2 {
-    background-color: #333;
+    /*background-color: #333;*/
+    background-color: transparent;
 }
 
 body.dark-mode .history-of-yola {
@@ -361,3 +363,15 @@ body.dark-mode .exchange-amount {
 .dark-mode .hero-section {background: #101216;}
 .dark-mode .form-section {background: #2d2d2d;}
 .dark-mode svg {color: #fff;}
+
+.dark-mode .hero { background: #0f1419;}
+.dark-mode .section4-home-a {background: #4a5568;}
+.dark-mode .site-footer {background: #0f1419;}
+.dark-mode .section4-with-padding {background: #fff;}
+.dark-mode .info-section h2 {color: #bfc9c7 !important;}
+.dark-mode .search-bar {background: #e1dbdb;}
+.dark-mode .controls {background: linear-gradient(180deg, rgb(104 102 98 / 92%) 60%, rgba(250, 246, 234, 0));}
+.dark-mode .chip {background: #e9e1e1;}
+.dark-mode .chip.active {background: #1c3148;}
+.dark-mode .card-body {background: #2d3f4f;}
+.dark-mode .floating-chat-btn {background: #2b2c04;}

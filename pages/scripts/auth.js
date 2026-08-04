@@ -133,7 +133,7 @@
         var ready = await initializeGoogleAuth();
 
         if (!ready || !window.google || !window.google.accounts || !window.google.accounts.id) {
-            showStatus(status, "error", '<i class="fas fa-triangle-exclamation"></i>Google sign-in is not available right now. Add your Google client ID to the server environment variables.');
+            showStatus(status, "error", '<i class="fas fa-triangle-exclamation"></i>Google sign-in is not available right now. Check your internet, if the issue persist try again later!');
             return;
         }
 
@@ -405,7 +405,9 @@
 
                 if (!response.ok || !data.success) {
                     var errorMessage = data.error || data.message || "Unable to sign in right now.";
-                    if (response.status === 400) {
+                    if (response.status === 403 && data.requiresEmailVerification) {
+                        errorMessage = 'Please verify your email before signing in. Check your inbox for the verification link or code.';
+                    } else if (response.status === 400) {
                         if (errorMessage.toLowerCase().includes('password')) {
                             errorMessage = 'Incorrect password. Please try again.';
                         }
@@ -414,7 +416,10 @@
                     return;
                 }
 
-                storeUserSession(data, raw);
+                var userData = storeUserSession(data, raw);
+                if (window.updateAuthUI && typeof window.updateAuthUI === "function") {
+                    window.updateAuthUI(userData);
+                }
 
                 showStatus(status, "success", '<i class="fas fa-circle-check"></i>Signed in successfully.');
                 window.setTimeout(function () {
@@ -544,9 +549,9 @@
                 window.__lastUser = userData;
                 localStorage.setItem("currentUser", JSON.stringify(userData));
 
-                showStatus(status, "success", '<i class="fas fa-circle-check"></i>Account created successfully. Check your email for the verification link if email delivery is enabled.');
+                showStatus(status, "success", '<i class="fas fa-circle-check"></i>Account created successfully. Please verify your email before signing in.');
                 window.setTimeout(function () {
-                    window.location.assign("../index.html");
+                    window.location.assign("../pages/verify-email.html?email=" + encodeURIComponent(payload.email));
                 }, 600);
             } catch (error) {
                 showStatus(status, "error", '<i class="fas fa-triangle-exclamation"></i>' + (error && error.message ? error.message : "Unable to create your account right now."));

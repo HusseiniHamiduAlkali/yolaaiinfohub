@@ -1,18 +1,42 @@
-Add other fields in the auth.html 
 
-
-
-
-404 page set up
-
-add about the developer
-
-install passport
-
-
-- Ensure everything regarding the chat and AI response is working with all the models, insert the placeholders for all the variables and keys requiredin my .env
 
 - details pages in other languages
+
+ADD OTHER MODELS LIKE GEMINI
+
+
+
+
+integrate the 404.html page to be shown when the user clciked a broken link
+
+
+add something similar to the .integrity-card-desktop or something else, just above it, in the auth.html (for the signup mode) so it will occupy the other space above it on desktop screens
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -33,3 +57,16 @@ add phone input also and setup the sms otp during signup. -**
 To the signup page, 
 1. Add select for country of residence for the user to choose, but whose presence depends on the tick of a check box for if the user is a Nigerian, if the box is ticked then that option should be invisible.
 2. Add another checkbox if the user is a Yola resident, if ticked then dropdown selects for State of residence and Localgovernment area  of residence should be invisible.
+
+
+- Ensure everything regarding the chat and AI response is working with all the models, insert the placeholders for all the variables and keys requiredin my .env
+add about the developer
+
+Add other fields in the auth.html 
+
+install passport
+
+
+
+i want my ai to have a grounding google search to include the result when required in the response to the user
+sign in button hidden on mobile devices, but it should be visible when the user is not logged in

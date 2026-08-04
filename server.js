@@ -28,6 +28,7 @@ const validator = require('express-validator');
 const helmet = require('helmet');
 const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
+const { getEmailVerificationError } = require('./server/authVerification');
 require('dotenv').config({
   path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
 });
@@ -824,7 +825,52 @@ function getRelevantKnowledgeSnippet(query, knowledge) {
     .join('\n\n---\n\n');
 }
 
-function buildLocalKnowledgePrompt(messages) {
+function shouldUseWebGrounding(query) {
+  const normalized = String(query || '').toLowerCase();
+  if (!normalized) return false;
+
+  const patterns = [
+    /\b(latest|recent|today|current|now|news|update|updated|what happened|who is|when did|where is|weather|price|cost|salary|schedule|event|upcoming|travel|traffic|election|exchange rate|phone number|contact|near me|best|top|review|rating)\b/,
+    /\b(news|latest|current|today|yesterday|this week|this month)\b/i,
+  ];
+
+  return patterns.some((pattern) => pattern.test(normalized));
+}
+
+async function fetchGoogleSearchGrounding(query) {
+  const apiKey = process.env.GOOGLE_SEARCH_API_KEY || process.env.GOOGLE_API_KEY;
+  const engineId = process.env.GOOGLE_SEARCH_ENGINE_ID || process.env.GOOGLE_CSE_ID;
+
+  if (!apiKey || !engineId) {
+    return null;
+  }
+
+  try {
+    const endpoint = 'https://www.googleapis.com/customsearch/v1';
+    const url = `${endpoint}?key=${encodeURIComponent(apiKey)}&cx=${encodeURIComponent(engineId)}&q=${encodeURIComponent(query)}&num=5`;
+    const response = await fetch(url, { method: 'GET' });
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      console.warn('Google search grounding failed:', response.status, text);
+      return null;
+    }
+
+    const data = await response.json();
+    const items = Array.isArray(data?.items) ? data.items.slice(0, 5) : [];
+    if (!items.length) return null;
+
+    return items.map((item) => ({
+      title: item.title || 'Untitled result',
+      link: item.link || '',
+      snippet: item.snippet || '',
+    }));
+  } catch (error) {
+    console.warn('Google search grounding error:', error.message || error);
+    return null;
+  }
+}
+
+async function buildLocalKnowledgePrompt(messages) {
   const knowledge = readLocalKnowledgeBase();
   if (!knowledge.text) return messages;
 
@@ -839,17 +885,31 @@ function buildLocalKnowledgePrompt(messages) {
     ? `LOCAL KNOWLEDGE BASE (relevant excerpt):\n${relevantKnowledge}`
     : 'LOCAL KNOWLEDGE BASE: No directly relevant local excerpt was found for this request. Answer using your general knowledge and leverage local data only when clearly useful.';
 
+  let webGroundingSection = '';
+  if (shouldUseWebGrounding(userQuery)) {
+    const webResults = await fetchGoogleSearchGrounding(userQuery);
+    if (webResults && webResults.length) {
+      const formattedResults = webResults
+        .map((item) => `- ${item.title}\n  ${item.snippet}\n  Source: ${item.link}`)
+        .join('\n\n');
+      webGroundingSection = `\n\nWEB GROUNDING RESULTS (use these as supporting evidence when relevant):\n${formattedResults}`;
+    } else {
+      webGroundingSection = '\n\nWEB GROUNDING: No live web results were available for this request. Do not invent facts beyond the available context.';
+    }
+  }
+
   const promptText = `You are Yola AI assistant. Use the local English knowledge base from the project as a helpful reference, but do not let it override your general reasoning ability. Combine both sources:
   1. For named places, businesses, people, clinics, services, and events, first search the local knowledge base for that exact or similar name.
   2. If the local files contain relevant information, answer from those files first and say that the answer is based on the local project data.
   3. If the local files do not contain enough information, use your general knowledge and say that you are supplementing with general knowledge.
-  4. Do not claim that the local data is empty unless you have checked it and found no relevant match.
-  5. If you see a relevant local excerpt, use it directly rather than listing file names or file paths.${clinicHint}
+  4. If web grounding results are available, use them to support current or factual answers and mention the relevant source briefly when helpful.
+  5. Do not claim that the local data is empty unless you have checked it and found no relevant match.
+  6. If you see a relevant local excerpt, use it directly rather than listing file names or file paths.${clinicHint}
 
 USER QUESTION:
 ${userQuery || 'No specific question provided.'}
 
-${knowledgeSection}`;
+${knowledgeSection}${webGroundingSection}`;
 
   return [{ role: 'user', parts: [{ type: 'text', text: promptText }] }].concat(messages || []);
 }
@@ -929,7 +989,7 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Missing model or messages' });
     }
 
-    const contextualMessages = buildLocalKnowledgePrompt(messages);
+    const contextualMessages = await buildLocalKnowledgePrompt(messages);
 
     if (model.startsWith('openai/')) {
       return handleOpenAIChat(req, res, model, contextualMessages);
@@ -1741,6 +1801,15 @@ app.post('/api/login', loginLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
+    const verificationError = getEmailVerificationError(user);
+    if (verificationError) {
+      return res.status(verificationError.status).json({
+        success: false,
+        error: verificationError.message,
+        requiresEmailVerification: true
+      });
+    }
+
     // Check password
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
@@ -2205,6 +2274,18 @@ app.post('/api/send-feedback', async (req, res) => {
 app.use(express.static(__dirname));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.use((req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
+  if (req.method !== 'GET') {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
+  res.status(404).sendFile(path.join(__dirname, 'pages', '404.html'));
 });
 
 // Serve local TomTom SDK from node_modules if available to avoid external CDN issues

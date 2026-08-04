@@ -153,7 +153,7 @@
   <script src="components/agroinfo.js?t=20260308" defer></script>
   <script src="components/mediinfo.js?t=20260308" defer></script>
   <script src="components/naviinfo.js?t=20260308" defer></script>
-  <script src="components/ecoinfo.js?t=20260308" defer></script>
+  <!--<script src="components/ecoinfo.js?t=20260308" defer></script>-->
   <script src="components/serviinfo.js?t=20260308" defer></script>
   <script src="components/communityinfo.js?t=20260308" defer></script>
   <script src="Other_features/scripts/ecoClassifier.js?t=20260308" defer></script>
@@ -289,7 +289,6 @@
     // This ensures navbar displays correct logged-in state on initial page load
     // Also purge any old storage keys previously used by the navbar
     try { localStorage.removeItem('currentSection'); } catch(e){}
-    try { localStorage.removeItem('currentUser'); } catch(e){}
 
     (async function initNavbarWithAuth() {
       // Determine API base
@@ -305,8 +304,23 @@
         }
       })();
       
-      // Try to get current user from backend
+      // Try to get current user from backend, but preserve a recently signed-in user from storage
       let userFromBackend = null;
+      let storedUser = null;
+      try {
+        const storedUserRaw = localStorage.getItem('currentUser');
+        if (storedUserRaw) {
+          storedUser = JSON.parse(storedUserRaw);
+          if (storedUser && storedUser.username) {
+            window.currentUser = storedUser;
+            window.__lastUser = storedUser;
+            userFromBackend = storedUser;
+          }
+        }
+      } catch (e) {
+        console.warn('Could not restore stored user for navbar bootstrap:', e);
+      }
+
       try {
         const response = await fetch(`${API_BASE}/api/me`, {
           credentials: 'include',
@@ -335,10 +349,19 @@
           } catch (parseError) {
             console.error('Failed to parse /api/me response:', parseError);
           }
+        } else if (storedUser && storedUser.username) {
+          window.currentUser = storedUser;
+          window.__lastUser = storedUser;
+          userFromBackend = storedUser;
         }
       } catch (fetchError) {
-        // Network error - continue with null user
+        // Network error - continue with the locally stored user if present
         console.warn('Auth check via /api/me failed:', fetchError);
+        if (storedUser && storedUser.username) {
+          window.currentUser = storedUser;
+          window.__lastUser = storedUser;
+          userFromBackend = storedUser;
+        }
       }
       
       // NOW render navbar with the correct auth state

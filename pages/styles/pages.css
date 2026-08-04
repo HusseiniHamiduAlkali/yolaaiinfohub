@@ -239,7 +239,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* Form */
-.auth-form { display: flex; flex-direction: column; gap: 14px; }
+.auth-form { display: flex; flex-direction: column; gap: 9px; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
 .form-field-full { width: 100%; }
 
@@ -520,7 +520,8 @@ a { color: inherit; text-decoration: none; }
 /* ---- Segmented Email / Phone toggle ---- */
 .reset-toggle {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /*grid-template-columns: 1fr 1fr;*/
+    grid-template-columns: 1fr;
     gap: 4px;
     padding: 4px;
     background: var(--cream-soft);

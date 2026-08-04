@@ -2,25 +2,34 @@
 .mauthgate, .mauthlogo {
     object-fit: fill;
     
-    border-radius: 10px;
+    border-radius: 0px;
 }
 .mauthgate {
     width: 70%;
 }
+.math-placeholder {margin-bottom: 20px ;}
 .mauthlogo {
     width: 30%;
+    padding: 30px;
 }
+.section4-mauth {
+    width: 100%; height: 450px; }
+
 @media screen and (min-width: 701px) and (max-width: 1150px) {
 .section4-mau-container {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
     width: 100%;
 }
 }
+
 @media screen and (max-width: 700px) {
     .mauthgate {
         display: none;
     }
     .mauthlogo {
         width: 100%;
+        padding: 20px !important;
     }
+    .math-placeholder {margin-bottom: 0 !important;}
+    .section4-mauth {height: 150px;}
 }

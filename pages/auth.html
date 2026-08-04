@@ -23,8 +23,58 @@
             background: radial-gradient(1200px 500px at 90% -10%, rgb(130 118 85 / 35%), transparent 60%), radial-gradient(900px 500px at -10% 110%, rgb(211 225 222 / 55%), transparent 60%), linear-gradient(135deg, var(--emerald-900) 0%, var(--emerald-800) 60%, var(--emerald-700) 100%) !important;
             color: #d7cdcd !important;
             max-width: 100%;
-            min-width: 260px;
+            min-width: 220px;
             
+        }
+
+        .signup-spotlight-card {
+            display: none;
+            background: linear-gradient(225deg, rgb(248 179 157 / 25%), rgb(255 255 255 / 10%));
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 18px 40px rgb(180 160 160 / 15%);
+            backdrop-filter: blur(12px);
+            color: #f7efe7;
+            margin-bottom: 12px;
+        }
+
+        .signup-spotlight-card .card-header {
+            margin-bottom: 10px;
+        }
+
+        .signup-spotlight-card h3 {
+            margin: 0 0 4px;
+            font-size: 1rem;
+            color: #86724a;
+        }
+
+        .signup-spotlight-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #b9b3a9;
+        }
+
+        .signup-spotlight-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 20px;
+        }
+
+        .signup-spotlight-list li {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            font-size: 0.92rem;
+            color: #b17810;
+        }
+
+        .signup-spotlight-list i {
+            color: #f2d59f;
+            margin-top: 2px;
+            flex-shrink: 0;
         }
         
         @media screen and (min-width: 700px) {
@@ -39,11 +89,12 @@
             .right-column {display: flex; flex-direction: column; justify-content: space-around;}
             .form-card-signin {flex-direction: column !important;}
             .signin-columns {display: flex; flex-direction: row; gap: 20px; justify-content: space-around;}
+            .signup-spotlight-card {display: block;}
         }
         @media screen and (max-width: 700px) {
             .integrity-card-desktop {display: none ;}
             .integrity-card-mobile {margin-top: 30px !important;}
-            .site-footer {margin-top: 215px;}
+            .site-footer {margin-top: 650px !important;}
             .flip-card {min-height: 1024px;}
         }
 
@@ -59,6 +110,8 @@
         background-position: center;
         background-repeat: no-repeat;}
         .form-head h5 {font-family: "Fraunces", fantasy; font-weight: 600; font-size: 22px; color: #307563; margin-top: 12px;}
+        .site-footer {margin-top: 580px;}
+
     </style>
 </head>
 <body>
@@ -88,7 +141,7 @@
                 </div>
             </div>
             <div>    
-                <span class="eyebrow">Yola, Adamawa State · Nigeria</span>
+                <span class="eyebrow">Yola AI Info Hub · Yola, Nigeria</span>
                 <p class="hero-subtitle">Sign in to your Yola AI Info Hub account, or create one in seconds to start exploring accurate, local, AI-powered information.</p>
                 <div class="hero-actions">
                     <a href="../index.html" class="btn btn-primary">Explore the platform</a>
@@ -130,7 +183,7 @@
                                     <button type="button" class="sso-btn sso-facebook" data-sso="Facebook">
                                         <i class="fab fa-facebook-f" style="color: #2e2edca3;" aria-hidden="true"></i><span>Continue with Facebook</span>
                                     </button>
-                                    <button type="button" class="sso-btn sso-apple" data-sso="Apple">
+                                    <button onclick="alert('This feature is not yet configured, check back soon inshaAllah!')" type="button" class="sso-btn sso-apple" data-sso="Apple">
                                         <i class="fab fa-apple" style="color: #222;" aria-hidden="true"></i><span>Continue with Apple</span>
                                     </button>
                                 </div>
@@ -235,9 +288,26 @@
                                         <button type="button" class="sso-btn sso-facebook" data-sso="Facebook">
                                             <i class="fab fa-facebook-f" style="color: #2e2edca3;" aria-hidden="true"></i><span>Sign up with Facebook</span>
                                         </button>
-                                        <button type="button" class="sso-btn sso-apple" data-sso="Apple">
+                                        <button onclick="alert('This feature is not yet configured, check back soon inshaAllah!')" type="button" class="sso-btn sso-apple" data-sso="Apple">
                                             <i class="fab fa-apple" style="color: #222;" aria-hidden="true"></i><span>Sign up with Apple</span>
                                         </button>
+                                    </div>
+
+                                    <div class="signup-spotlight-card" aria-label="Why join Yola AI Info Hub">
+                                        <div class="card-header">
+                                            <div class="user-icon">
+                                                <i class="fas fa-shield-heart"></i>
+                                            </div>
+                                            <div class="status-info">
+                                                <h3>Why join?</h3>
+                                                <p>Trusted local insights</p>
+                                            </div>
+                                        </div>
+                                        <ul class="signup-spotlight-list">
+                                            <li><i class="fas fa-check-circle"></i><span>Get smart updates for Yola and Adamawa.</span></li>
+                                            <li><i class="fas fa-check-circle"></i><span>Keep your preferences and profile secure.</span></li>
+                                            <li><i class="fas fa-check-circle"></i><span>Access AI-powered help built for the community.</span></li>
+                                        </ul>
                                     </div>
 
                                     <div class="integrity-card integrity-card-desktop">
@@ -362,7 +432,7 @@
                                         </p>
                                     </form>
 
-                                    <div class="integrity-card integrity-card-mobile">
+                                    <!--<div class="integrity-card integrity-card-mobile">
                                         <div class="card-header">
                                             <div class="user-icon">
                                                 <i class="fas fa-user"></i>
@@ -376,7 +446,7 @@
                                             <div class="progress-bar"></div>
                                         </div>
                                         <span class="protocol-text">Security Protocols Active</span>
-                                    </div>
+                                    </div>-->
 
                                 </div>
                             </div>
@@ -396,9 +466,9 @@
                                         <button type="button" class="reset-toggle-btn is-active" data-method="email" aria-pressed="true">
                                             <i class="fas fa-envelope" aria-hidden="true"></i><span>Email</span>
                                         </button>
-                                        <button type="button" class="reset-toggle-btn" data-method="phone" aria-pressed="false">
+                                        <!--<button type="button" class="reset-toggle-btn" data-method="phone" aria-pressed="false">
                                             <i class="fas fa-mobile-screen" aria-hidden="true"></i><span>Phone</span>
-                                        </button>
+                                        </button>-->
                                     </div>
 
                                     <div class="form-field form-field-full">
@@ -512,7 +582,7 @@
                     <h3 class="footer-heading">Support</h3>
                     <ul class="footer-links">
                         <li><a href="report.html">Report / comment</a></li>
-                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
                         <li><a href="help.html">Help center</a></li>
                     </ul>
                 </div>

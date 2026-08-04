@@ -39,56 +39,55 @@ self.addEventListener('activate', event => {
 // Fetch event - network first, then cache
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  
+  const accept = event.request.headers.get('accept') || '';
+  const isHtmlRequest = event.request.mode === 'navigate' || event.request.destination === 'document' || accept.includes('text/html');
+
   // Only handle navigation/HTML requests in the service worker during development.
   // Let stylesheet, script, image, font and other asset requests go directly to network
   // to avoid the service worker returning malformed fallbacks for binary/text assets.
-  try {
-    const accept = event.request.headers.get('accept') || '';
-    if (event.request.mode !== 'navigate' && !accept.includes('text/html')) {
-      return; // bypass SW for non-navigation requests
-    }
-  } catch (e) {
-    // If headers are inaccessible for some reason, fall back to not intercepting.
+  if (!isHtmlRequest) {
     return;
   }
 
   // Skip ServiceWorker interception for external vendor resources (TomTom, etc.)
-  if (url.hostname !== 'localhost' && url.hostname !== '127.0.0.1' && 
+  if (url.hostname !== 'localhost' && url.hostname !== '127.0.0.1' &&
       !url.hostname.endsWith(new URL(self.location).hostname.split('.').pop()) &&
       (url.pathname.includes('/vendor/') || url.pathname.includes('/maps/'))) {
-    // Let external vendor resources bypass the service worker to avoid interception errors
     return;
   }
-  
-  // Development mode: attempt network fetch, but never let respondWith reject.
-  // If network fails, return cached response (if any) or a 503 fallback.
+
+  const fallback404Response = async () => {
+    try {
+      const cached404 = await caches.match('/pages/404.html');
+      if (cached404) return cached404;
+    } catch (e) {
+      console.warn('Error checking cache for 404 fallback:', e);
+    }
+
+    try {
+      const network404 = await fetch('/pages/404.html');
+      if (network404.ok) return network404;
+    } catch (e) {
+      console.warn('Could not fetch 404 page fallback:', e);
+    }
+
+    return new Response('<h1>Page not found</h1>', {
+      status: 404,
+      statusText: 'Not Found',
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
+    });
+  };
+
   event.respondWith((async () => {
     try {
-      return await fetch(event.request);
+      const response = await fetch(event.request);
+      if (response.status === 404 && isHtmlRequest) {
+        return fallback404Response();
+      }
+      return response;
     } catch (err) {
       console.warn('Fetch failed (service worker):', err, event.request.url);
-      // If navigation request (HTML), try cached index.html fallback first
-      try {
-        if (event.request.headers.get('accept')?.includes('text/html')) {
-          const cachedIndex = await caches.match('/index.html');
-          if (cachedIndex) return cachedIndex;
-          return new Response('Offline', { status: 503, statusText: 'Offline' });
-        }
-      } catch (e) {
-        console.warn('Error checking cache for HTML fallback:', e);
-      }
-
-      // Try to serve from cache for other requests (fonts, scripts, images)
-      try {
-        const cached = await caches.match(event.request);
-        if (cached) return cached;
-      } catch (e) {
-        console.warn('Error checking cache for request fallback:', e);
-      }
-
-      // Final fallback: return a generic 503 response so respondWith never rejects
-      return new Response('', { status: 503, statusText: 'Service Unavailable' });
+      return fallback404Response();
     }
   })());
 });

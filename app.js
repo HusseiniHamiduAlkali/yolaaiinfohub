@@ -127,8 +127,6 @@ async function initializeApp() {
       try {
         const data = await response.json();
         if (data && data.loggedIn) {
-          // Only call updateAuthUI if current user state differs from what we have
-          // This prevents unnecessary navbar rerenders
           const currentUser = window.currentUser;
           if (!currentUser || currentUser.username !== data.username) {
             window.updateAuthUI({
@@ -137,26 +135,22 @@ async function initializeApp() {
               email: data.email
             });
           }
-        } else {
-          // Not logged in
-          if (window.currentUser) {
-            window.updateAuthUI(null);
-          }
+        } else if (!window.currentUser && !window.__lastUser) {
+          // Only clear auth if there is no known user state at all
+          window.updateAuthUI(null);
         }
       } catch (jsonError) {
         console.error('Failed to parse auth response:', jsonError);
         window.updateAuthUI(null);
       }
-    } else {
-      // API not available or not authenticated - treat as not logged in
-      if (window.currentUser) {
-        window.updateAuthUI(null);
-      }
+    } else if (!window.currentUser && !window.__lastUser) {
+      // API not available or not authenticated - only clear if we have no known user state
+      window.updateAuthUI(null);
     }
   } catch (e) {
-    // Network error or API unavailable - treat as not logged in
+    // Network error or API unavailable - keep the restored user if one exists
     console.warn('Auth check failed:', e);
-    if (window.currentUser) {
+    if (!window.currentUser && !window.__lastUser) {
       window.updateAuthUI(null);
     }
   }
@@ -175,7 +169,9 @@ async function initializeApp() {
     }
   } catch (error) {
     console.error('Error initializing app:', error);
-    window.updateAuthUI(null);
+    if (!window.currentUser && !window.__lastUser) {
+      window.updateAuthUI(null);
+    }
   }
 }
 
@@ -187,14 +183,18 @@ window.addEventListener('load', () => {
     // Still initialize app (auth/UI), but do not perform any section routing here
     initializeApp().catch(error => {
       console.error('Error during app initialization:', error);
-      window.updateAuthUI(null);
+      if (!window.currentUser && !window.__lastUser) {
+        window.updateAuthUI(null);
+      }
     });
     return;
   }
 
   initializeApp().catch(error => {
     console.error('Error during app initialization:', error);
-    window.updateAuthUI(null);
+    if (!window.currentUser && !window.__lastUser) {
+      window.updateAuthUI(null);
+    }
   });
 
   // Register section initializers

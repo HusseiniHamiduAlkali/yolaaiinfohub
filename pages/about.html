@@ -30,6 +30,132 @@
         background-size: 222%;
         background-position: center;
         background-repeat: no-repeat;}
+
+        .developer-section {
+            margin-top: 1.5rem;
+        }
+
+        .developer-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.4rem;
+            padding: 1.5rem;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.08), rgba(23, 153, 122, 0.12));
+            border: 1px solid rgba(6, 78, 59, 0.12);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .developer-photo {
+            flex-shrink: 0;
+            width: 110px;
+            height: 110px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 2px solid rgba(6, 78, 59, 0.15);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+        }
+
+        .developer-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .developer-content {
+            flex: 1;
+            width: 100%;
+        }
+
+        .developer-name {
+            margin: 0 5px 0.25rem;
+            font-size: 1.25rem;
+            color: #0f172a;
+        }
+
+        .developer-role {
+            display: inline-block;
+            margin-bottom: 0.7rem;
+            margin-left: 5px;
+            color: #0f766e;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .developer-content p {
+            margin: 0 5px 0.85rem;
+            line-height: 1.7;
+            color: #334155;
+        }
+
+        .developer-contact {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-top: 0.7rem;
+        }
+
+        .developer-contact a {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0.6rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #0f766e;
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid rgba(6, 78, 59, 0.12);
+        }
+
+        .developer-highlights {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin-top: 0.9rem;
+        }
+
+        .developer-highlights span {
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(6, 78, 59, 0.1);
+            color: #0f766e;
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        @media screen and (max-width: 768px) {
+            .developer-card {
+                flex-direction: column;
+                padding: 0.5rem;
+            }
+
+            .developer-photo {
+                width: 92px;
+                height: 92px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .developer-section {
+                margin-top: 1.1rem;
+            }
+
+            .developer-contact,
+            .developer-highlights {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .developer-contact a,
+            .developer-highlights span {
+                text-align: center;
+                justify-content: center;
+                font-size: small;
+            }
+        }
     </style>
 </head>
 <body>
@@ -188,14 +314,41 @@
                 <p class="cta-text">Have feedback, a suggestion, or something to report? We would love to hear from you.</p>
                 <div class="cta-actions">
                     <a href="report.html" class="btn btn-primary">Report / comment</a>
-                    <a href="mailto:hello@yolaaiinfohub.com" class="btn btn-secondary">Contact us</a>
+                    <a href="mailto:info.yolaaiinfohub@gmail.com" class="btn btn-secondary">Contact us</a>
                 </div>
             </div>
         </section>
+
+        <section class="section developer-section" aria-labelledby="developer-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Meet the icon behind</span>
+                <h2 id="developer-heading" class="section-title">About the developer</h2>
+            </div>
+            <div class="developer-card">
+                <div class="developer-photo" aria-hidden="true">
+                    <img src="../Data/Images/jippujam.jpg" alt="Developer profile photo">
+                </div>
+                <div class="developer-content">
+                    <h3 class="developer-name">Husseini Hamidu Alkali <br>~ AlkaliCodes</h3>
+                    <span class="developer-role">Founder • Builder • Product Designer</span>
+                    <p>I created this platform to make local information easier to find, more reliable, and more useful for people in Yola. The goal is to blend practical technology with community needs and everyday accessibility.</p>
+                    <div class="developer-contact">
+                        <a href="mailto:husseinihamidualkali@gmail.com"><i class="fas fa-envelope"></i> husseinihamidualkali@gmail.com</a>
+                        <a href="https://wa.me/2347012244240" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    </div>
+                    <!--<div class="developer-highlights">
+                        <span>Local-first design</span>
+                        <span>Accessible UI</span>
+                        <span>AI-powered assistance</span>
+                    </div>-->
+                </div>
+            </div>
+        </section>
+
         <section class="mobile-intro">
             <div class="hero-actions">
                 <!--<a href="edu.html" class="btn btn-primary">Explore directory</a>-->
-                <a href="../index.html" class="btn btn-secondary">Explore the platform</a>
+                <a href="../index.html" class="btn btn-primary">Explore the platform</a>
             </div>
         </section>
     </main>
@@ -227,7 +380,7 @@
                 <div class="footer-group">
                     <h3 class="footer-heading">Info Hub</h3>
                     <ul class="footer-links">
-                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="/">Home</a></li>
                         <li><a href="about.html">About</a></li>
                         <li><a href="#">Sitemap/directories</a></li>
                     </ul>
@@ -237,8 +390,8 @@
                     <h3 class="footer-heading">Support</h3>
                     <ul class="footer-links">
                         <li><a href="report.html">Report / comment</a></li>
-                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
-                        <li><a href="pages/help.html">Help center</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="help.html">Help center</a></li>
                     </ul>
                 </div>
 
@@ -246,7 +399,7 @@
                     <h3 class="footer-heading">Legal</h3>
                     <ul class="footer-links">
                         <li><a href="privacy.html">Privacy policy</a></li>
-                        <li><a href="#">Terms of use</a></li>
+                        <li><a href="terms.html">Terms of use</a></li>
                     </ul>
                 </div>
             </div>

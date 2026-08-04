@@ -81,11 +81,18 @@ window.triggerOfflineLogout = function() {
 };
 
 window.updateAuthUI = function(user) {
+  const nextAuthStateKey = user && user.username
+    ? `logged-in:${user.username}`
+    : 'logged-out';
+  const authStateChanged = window.__lastAuthStateKey !== nextAuthStateKey;
+  window.__lastAuthStateKey = nextAuthStateKey;
+
   // Keep a global reference to the current user for other components (navbar)
   window.currentUser = user || null;
   // Keep a short-lived copy so navbar scripts that load later can pick up
   // the most recent auth state even if they were not present when updateAuthUI ran.
   window.__lastUser = window.currentUser;
+  window.__navbarAuthResolved = true;
   
   // Cache user in localStorage for offline/mobile support
   if (user) {
@@ -144,10 +151,14 @@ window.updateAuthUI = function(user) {
       console.warn('Could not adjust navbar display:', e);
     }
     // If navbar exists, re-render to pick up username on PC views
-    if (window.Navbar && typeof window.Navbar.render === 'function') {
+    if (authStateChanged && window.Navbar && typeof window.Navbar.render === 'function') {
       console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-in user:', 'color: #3182ce; font-weight: bold;', user.username);
       // Force re-render to ensure navbar is updated with new user state
       try { window.Navbar.render(true); } catch(e) { console.error('Navbar render error:', e); }
+    } else if (!authStateChanged) {
+      if (window.Navbar && typeof window.Navbar.render === 'function') {
+        try { window.Navbar.render(false); } catch(e) { console.error('Navbar render error:', e); }
+      }
     } else {
       console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
     }
@@ -164,10 +175,14 @@ window.updateAuthUI = function(user) {
       const usernameContainer = document.getElementById('navbar-username-container') || document.querySelector('.navbar-username-container');
       if (usernameContainer) usernameContainer.style.display = 'none';
     } catch (e) { /* ignore */ }
-    if (window.Navbar && typeof window.Navbar.render === 'function') {
+    if (authStateChanged && window.Navbar && typeof window.Navbar.render === 'function') {
       console.log('%c🔄 updateAuthUI: Calling Navbar.render() for logged-out user', 'color: #e53e3e; font-weight: bold;');
       // Force re-render to ensure navbar is updated with new user state
       try { window.Navbar.render(true); } catch(e) { console.error('Navbar render error:', e); }
+    } else if (!authStateChanged) {
+      if (window.Navbar && typeof window.Navbar.render === 'function') {
+        try { window.Navbar.render(false); } catch(e) { console.error('Navbar render error:', e); }
+      }
     } else {
       console.warn('%c⚠️ updateAuthUI: Navbar not available yet', 'color: #f39c12;', { hasNavbar: !!window.Navbar, isFunction: window.Navbar && typeof window.Navbar.render });
     }
@@ -467,6 +482,17 @@ function showAuthModal(type) {
     const data = await res.json();
     console.log('%cLogin Response:', 'color: blue; font-weight: bold;', { status: res.status, data: data, type: type });
     if (data.success) {
+      if (type === 'signup') {
+        const successEl = document.getElementById('auth-error');
+        if (successEl) {
+          successEl.style.color = '#3182ce';
+          successEl.innerHTML = '<div>Account created successfully. Please verify your email before signing in.</div>';
+        }
+        submitBtn.disabled = false;
+        window.location.assign(`/pages/verify-email.html?email=${encodeURIComponent(body.email || '')}`);
+        return;
+      }
+
       console.log('✅ Login successful:', { username: data.username, name: data.name });
       const userData = {
         username: data.username,
@@ -486,9 +512,6 @@ function showAuthModal(type) {
       // Mark that we just successfully logged in (prevents checkLoginStatus from downgrading within 5 seconds)
       window.__justLoggedIn = true;
       setTimeout(() => { window.__justLoggedIn = false; }, 5000);
-      if (type === 'signup') {
-        console.log('🎉 New user registered:', data.username);
-      }
       // Do NOT call checkLoginStatus immediately after login - we already have confirmed user data.
       // The session is being set by the server. If needed, checkLoginStatus will run on next page load.
       modal.remove();
@@ -496,7 +519,9 @@ function showAuthModal(type) {
       console.error('❌ Login failed:', data.error || data.message);
       const errorEl = document.getElementById('auth-error');
       let errorMessage = 'An error occurred. Please check your details and try again.';
-      if (res.status === 400) {
+      if (res.status === 403 && data.requiresEmailVerification) {
+        errorMessage = 'Please verify your email before signing in. Check your inbox for the verification link or code.';
+      } else if (res.status === 400) {
         if (type === 'signup') {
           errorMessage = data.error || data.message || 'Unable to create your account. Please verify the signup fields.';
         } else {
@@ -574,9 +599,21 @@ window.checkLoginStatus = async function() {
       });
     } else {
       console.log('%cℹ️ Server says user not logged in', 'color: #95a5a6;');
-      // Clear localStorage and UI since server says not logged in
-      localStorage.removeItem('currentUser');
-      window.updateAuthUI(null);
+      const cachedUser = window.currentUser || (function() {
+        try {
+          return JSON.parse(localStorage.getItem('currentUser') || 'null');
+        } catch (e) {
+          return null;
+        }
+      })();
+
+      if (cachedUser && cachedUser.username) {
+        console.log('%cℹ️ Preserving cached signed-in user instead of logging out', 'color: #f39c12;');
+        window.updateAuthUI(cachedUser);
+      } else {
+        localStorage.removeItem('currentUser');
+        window.updateAuthUI(null);
+      }
     }
   } catch (err) {
     console.warn('%c⚠️ Could not verify login status with server (network issue?): %c' + err.message, 'color: #e74c3c; font-weight: bold;', 'color: #c0392b;');
