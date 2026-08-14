@@ -3,7 +3,7 @@
 const STORAGE_KEY_BASE = 'yola-threads-v1';
 const ACTIVE_KEY_BASE = 'yola-active-thread';
 const THEME_KEY = 'yola-theme';
-const DEFAULT_MODEL = 'google/gemini-2.5-flash';
+const DEFAULT_MODEL = 'google/gemini-3.6-flash';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));

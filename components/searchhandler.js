@@ -17,6 +17,28 @@ function initializeSearchHandlers() {
   initFilterChips();
   addDataAttributesToItems();
 
+  // Ensure the UI reflects the current filter on initialization.
+  try {
+    // mark the matching chip active (if present)
+    const allChips = document.querySelectorAll('.filter-chips .chip');
+    allChips.forEach(c => {
+      const rawFilter = c.dataset.filter || c.textContent || '';
+      if (String(rawFilter).trim().toLowerCase() === String(currentFilter).trim().toLowerCase()) {
+        c.classList.add('active');
+        c.setAttribute('aria-selected', 'true');
+      } else {
+        c.classList.remove('active');
+        c.setAttribute('aria-selected', 'false');
+      }
+    });
+
+    // apply filter so sections (including Maps) are shown/hidden appropriately
+    performSearch('', currentFilter);
+  } catch (err) {
+    // ignore initialization errors
+    console.warn('searchhandler init: ', err);
+  }
+
   // Reset flag after a delay to allow reinitialization on page changes
   initTimeout = setTimeout(() => {
     isInitialized = false;
@@ -77,15 +99,25 @@ function initFilterChips() {
     const newChip = chip.cloneNode(true);
     chip.parentNode.replaceChild(newChip, chip);
 
+    // ensure ARIA state is present for accessibility and consistency
+    if (!newChip.hasAttribute('role')) newChip.setAttribute('role', 'tab');
+    if (!newChip.hasAttribute('aria-selected')) newChip.setAttribute('aria-selected', 'false');
+
     newChip.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
 
       const allChips = document.querySelectorAll('.filter-chips .chip');
-      allChips.forEach(c => c.classList.remove('active'));
+      allChips.forEach(c => {
+        c.classList.remove('active');
+        c.setAttribute('aria-selected', 'false');
+      });
       this.classList.add('active');
+      this.setAttribute('aria-selected', 'true');
 
-      const filterText = this.dataset.filter || this.textContent.trim();
+      // Normalize filter text for matching (trim and case-insensitive)
+      const rawFilter = this.dataset.filter || this.textContent || '';
+      const filterText = String(rawFilter).trim();
       currentFilter = filterText;
 
       const searchInput = document.querySelector('.search-bar input');
@@ -103,8 +135,19 @@ function performSearch(searchTerm, filterCategory) {
   let totalVisibleCount = 0;
 
   section3s.forEach(section3 => {
-    const sectionCategory = section3.dataset.category || '';
-    const sectionMatchesFilter = filterCategory === 'All' || sectionCategory === filterCategory;
+
+    const sectionCategory = (section3.dataset.category || '').toString().trim();
+    const sectionCategoryNorm = sectionCategory.toLowerCase();
+    const filterNorm = (filterCategory || 'All').toString().trim().toLowerCase();
+
+    // Special-case: hide the interactive Maps section when the global "All" filter is selected.
+    // Only show the Maps section when the 'Maps' chip is explicitly chosen.
+    let sectionMatchesFilter = false;
+    if (filterNorm === 'all') {
+      sectionMatchesFilter = sectionCategoryNorm !== 'maps';
+    } else {
+      sectionMatchesFilter = sectionCategoryNorm === filterNorm;
+    }
 
     if (!sectionMatchesFilter) {
       section3.style.display = 'none';
@@ -132,7 +175,14 @@ function performSearch(searchTerm, filterCategory) {
       }
     });
 
-    section3.style.display = sectionVisibleCount > 0 ? 'block' : 'none';
+    // If the section has no .section4 items (common for an interactive map section),
+    // show the section when its category matches the filter so the map remains visible.
+    if (items.length === 0) {
+      section3.style.display = 'block';
+      totalVisibleCount++;
+    } else {
+      section3.style.display = sectionVisibleCount > 0 ? 'block' : 'none';
+    }
   });
 
   if (totalVisibleCount === 0 && (term !== '' || (filterCategory && filterCategory !== 'All'))) {

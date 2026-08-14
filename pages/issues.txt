@@ -2,15 +2,12 @@
 
 - details pages in other languages
 
-ADD OTHER MODELS LIKE GEMINI
 
 
 
 
-integrate the 404.html page to be shown when the user clciked a broken link
-
-
-add something similar to the .integrity-card-desktop or something else, just above it, in the auth.html (for the signup mode) so it will occupy the other space above it on desktop screens
+currently, when the app is verifying to check for a present signed in user, the auth button placeholders hows a spinning animation, i don't want that.
+let it just be invisible during the check.
 
 
 
@@ -70,3 +67,23 @@ install passport
 
 i want my ai to have a grounding google search to include the result when required in the response to the user
 sign in button hidden on mobile devices, but it should be visible when the user is not logged in
+
+
+
+
+ADD OTHER MODELS LIKE GEMINI
+
+
+
+
+integrate the 404.html page to be shown when the user clciked a broken link
+
+
+add something similar to the .integrity-card-desktop or something else, just above it, in the auth.html (for the signup mode) so it will occupy the other space above it on desktop screens
+
+
+
+
+
+
+

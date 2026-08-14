@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore the map — Yola AI Info Hub</title>
+    <meta name="description" content="Search places around Yola, view details, plan routes and get turn-by-turn directions on an interactive map.">
+    <meta property="og:title" content="Explore the map — Yola AI Info Hub">
+    <meta property="og:description" content="Search places around Yola, view details, plan routes and get turn-by-turn directions on an interactive map.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/eduinfo.css">
+    <link rel="stylesheet" href="styles/maps.css">
+    <link rel="stylesheet" href="../pages/styles/pages.css">
+</head>
+<body>
+    <!-- Mobile-only header -->
+    <header class="mobile-header" aria-label="Mobile app header">
+        <div class="brand-lockup">
+            <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <defs>
+                    <linearGradient id="iconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#064e3b"/>
+                        <stop offset="100%" stop-color="#17997a"/>
+                    </linearGradient>
+                </defs>
+                <rect width="48" height="48" rx="12" fill="url(#iconGrad)"/>
+                <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+            </svg>
+            <div class="brand-text">
+                <span class="brand-name">Yola AI Info Hub</span>
+                <span class="brand-tagline">AI-powered local info</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Desktop hero -->
+    <header class="hero hero-compact" aria-label="Map explorer">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner">
+            <span class="eyebrow">Map explorer</span>
+            <h1 class="hero-title">Find places. Plan routes.</h1>
+            <p class="hero-subtitle">
+                Search anywhere in Yola and beyond, explore nearby categories, and get step-by-step directions
+                for driving, walking, cycling or transit.
+            </p>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <!-- Mobile intro -->
+        <section class="mobile-intro" aria-label="Introduction">
+            <h1 class="mobile-title">Find places. Plan routes.</h1>
+            <p class="lead">Search anywhere, explore nearby categories, and get step-by-step directions.</p>
+        </section>
+
+        <section class="section map-section" aria-labelledby="map-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Interactive map</span>
+                <h2 id="map-heading" class="section-title">Explore Yola</h2>
+            </div>
+
+            <div class="map-shell">
+                <!-- Side / bottom-sheet panel -->
+                <aside class="map-panel" id="mapPanel" aria-label="Map tools">
+                    <button class="sheet-handle" id="sheetHandle" type="button" aria-expanded="false" aria-controls="panelBody">
+                        <span class="sheet-grip" aria-hidden="true"></span>
+                        <span class="sheet-label">Search &amp; directions</span>
+                    </button>
+
+                    <div class="panel-body" id="panelBody">
+                        <div class="panel-tabs" role="tablist" aria-label="Map tools">
+                            <button class="panel-tab is-active" id="tabSearch" role="tab" aria-selected="true" aria-controls="paneSearch" type="button">
+                                <i class="fas fa-magnifying-glass" aria-hidden="true"></i> Search
+                            </button>
+                            <button class="panel-tab" id="tabRoute" role="tab" aria-selected="false" aria-controls="paneRoute" type="button">
+                                <i class="fas fa-route" aria-hidden="true"></i> Directions
+                            </button>
+                        </div>
+
+                        <!-- Search pane -->
+                        <div class="panel-pane is-active" id="paneSearch" role="tabpanel" aria-labelledby="tabSearch">
+                            <div class="field-group">
+                                <label class="field-label" for="searchInput">Search a place</label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-magnifying-glass input-icon" aria-hidden="true"></i>
+                                    <input type="text" id="searchInput" class="map-input" placeholder="Hotels, schools, an address…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="searchSuggestions" aria-autocomplete="list">
+                                    <button class="input-action" id="searchClear" type="button" aria-label="Clear search" hidden><i class="fas fa-xmark" aria-hidden="true"></i></button>
+                                </div>
+                                <ul class="suggestions" id="searchSuggestions" role="listbox" hidden></ul>
+                            </div>
+
+                            <div class="chip-row" id="categoryChips" aria-label="Nearby categories">
+                                <button class="map-chip" type="button" data-query="restaurant"><i class="fas fa-utensils" aria-hidden="true"></i> Restaurants</button>
+                                <button class="map-chip" type="button" data-query="hotel"><i class="fas fa-bed" aria-hidden="true"></i> Hotels</button>
+                                <button class="map-chip" type="button" data-query="gas_station"><i class="fas fa-gas-pump" aria-hidden="true"></i> Fuel</button>
+                                <button class="map-chip" type="button" data-query="pharmacy"><i class="fas fa-prescription-bottle-medical" aria-hidden="true"></i> Pharmacy</button>
+                                <button class="map-chip" type="button" data-query="atm"><i class="fas fa-money-bill" aria-hidden="true"></i> ATM</button>
+                                <button class="map-chip" type="button" data-query="hospital"><i class="fas fa-hospital" aria-hidden="true"></i> Hospitals</button>
+                                <button class="map-chip" type="button" data-query="school"><i class="fas fa-graduation-cap" aria-hidden="true"></i> Schools</button>
+                            </div>
+
+                            <!-- Place details -->
+                            <div class="place-card" id="placeCard" hidden>
+                                <button class="place-close" id="placeClose" type="button" aria-label="Close place details"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+                                <div class="place-photo" id="placePhoto" hidden></div>
+                                <h3 class="place-name" id="placeName"></h3>
+                                <p class="place-address" id="placeAddress"></p>
+                                <div class="place-meta" id="placeMeta"></div>
+                                <div class="place-actions">
+                                    <button class="btn btn-primary btn-sm" id="placeDirections" type="button"><i class="fas fa-diamond-turn-right" aria-hidden="true"></i> Directions</button>
+                                    <a class="btn btn-ghost btn-sm" id="placeWebsite" href="#" target="_blank" rel="noopener" hidden><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Website</a>
+                                    <a class="btn btn-ghost btn-sm" id="placePhone" href="#" hidden><i class="fas fa-phone" aria-hidden="true"></i> Call</a>
+                                </div>
+                            </div>
+
+                            <!-- Results list -->
+                            <div class="results-block" id="resultsBlock" hidden>
+                                <div class="results-head">
+                                    <h3 class="results-title" id="resultsTitle">Results</h3>
+                                    <button class="link-btn" id="resultsClear" type="button">Clear</button>
+                                </div>
+                                <ul class="results-list" id="resultsList"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Route pane -->
+                        <div class="panel-pane" id="paneRoute" role="tabpanel" aria-labelledby="tabRoute" hidden>
+                            <div class="field-group">
+                                <label class="field-label" for="originInput">Starting point</label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-circle-dot input-icon" aria-hidden="true"></i>
+                                    <input type="text" id="originInput" class="map-input" placeholder="Choose a starting point" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="originSuggestions" aria-autocomplete="list">
+                                    <button class="input-action" id="useLocation" type="button" aria-label="Use my location" title="Use my location"><i class="fas fa-location-crosshairs" aria-hidden="true"></i></button>
+                                </div>
+                                <ul class="suggestions" id="originSuggestions" role="listbox" hidden></ul>
+                            </div>
+
+                            <button class="swap-btn" id="swapBtn" type="button" aria-label="Swap start and destination">
+                                <i class="fas fa-arrow-down-up-across-line" aria-hidden="true"></i>
+                            </button>
+
+                            <div class="field-group">
+                                <label class="field-label" for="destInput">Destination</label>
+                                <div class="input-wrap">
+                                    <i class="fas fa-location-dot input-icon" aria-hidden="true"></i>
+                                    <input type="text" id="destInput" class="map-input" placeholder="Choose a destination" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="destSuggestions" aria-autocomplete="list">
+                                </div>
+                                <ul class="suggestions" id="destSuggestions" role="listbox" hidden></ul>
+                            </div>
+
+                            <div class="mode-row" role="group" aria-label="Travel mode">
+                                <button class="mode-btn is-active" type="button" data-mode="DRIVING" aria-pressed="true" title="Drive"><i class="fas fa-car" aria-hidden="true"></i><span>Drive</span></button>
+                                <button class="mode-btn" type="button" data-mode="WALKING" aria-pressed="false" title="Walk"><i class="fas fa-person-walking" aria-hidden="true"></i><span>Walk</span></button>
+                                <button class="mode-btn" type="button" data-mode="BICYCLING" aria-pressed="false" title="Bike"><i class="fas fa-bicycle" aria-hidden="true"></i><span>Bike</span></button>
+                                <button class="mode-btn" type="button" data-mode="TRANSIT" aria-pressed="false" title="Transit"><i class="fas fa-bus" aria-hidden="true"></i><span>Transit</span></button>
+                            </div>
+
+                            <div class="route-actions">
+                                <button class="btn btn-primary btn-block" id="routeBtn" type="button"><i class="fas fa-diamond-turn-right" aria-hidden="true"></i> Get directions</button>
+                                <button class="link-btn" id="routeClear" type="button">Clear route</button>
+                            </div>
+
+                            <div class="route-summary" id="routeSummary" hidden>
+                                <div class="summary-pill"><i class="fas fa-clock" aria-hidden="true"></i> <span id="routeDuration">—</span></div>
+                                <div class="summary-pill"><i class="fas fa-road" aria-hidden="true"></i> <span id="routeDistance">—</span></div>
+                            </div>
+
+                            <ol class="steps-list" id="stepsList"></ol>
+                        </div>
+
+                        <p class="panel-hint"><i class="fas fa-hand-pointer" aria-hidden="true"></i> Tip: tap anywhere on the map to drop a pin and set it as your destination.</p>
+                    </div>
+                </aside>
+
+                <!-- Map canvas -->
+                <div class="map-stage">
+                    <div id="map" class="map-canvas" role="application" aria-label="Interactive map"></div>
+
+                    <div class="map-controls" aria-label="Map controls">
+                        <button class="map-ctrl" id="ctrlLocate" type="button" aria-label="Center on my location" title="My location"><i class="fas fa-location-crosshairs" aria-hidden="true"></i></button>
+                        <button class="map-ctrl" id="ctrlType" type="button" aria-label="Toggle satellite view" title="Satellite / map"><i class="fas fa-satellite" aria-hidden="true"></i></button>
+                        <button class="map-ctrl" id="ctrlZoomIn" type="button" aria-label="Zoom in" title="Zoom in"><i class="fas fa-plus" aria-hidden="true"></i></button>
+                        <button class="map-ctrl" id="ctrlZoomOut" type="button" aria-label="Zoom out" title="Zoom out"><i class="fas fa-minus" aria-hidden="true"></i></button>
+                        <button class="map-ctrl" id="ctrlFullscreen" type="button" aria-label="Toggle fullscreen" title="Fullscreen"><i class="fas fa-expand" aria-hidden="true"></i></button>
+                    </div>
+
+                    <div class="map-toast" id="mapToast" role="status" aria-live="polite" hidden></div>
+
+                    <div class="map-overlay" id="mapOverlay" hidden>
+                        <div class="overlay-card">
+                            <div class="overlay-icon"><i class="fas fa-key" aria-hidden="true"></i></div>
+                            <h3 id="overlayTitle">Google Maps key needed</h3>
+                            <p id="overlayText">
+                                Open <code>map.js</code> and set <code>GOOGLE_MAPS_API_KEY</code> to your own key.
+                                Enable the Maps JavaScript API, Places API (New), Geocoding API and Directions API,
+                                then restrict the key to your domain.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="map-loader" id="mapLoader"><span class="loader-ring" aria-hidden="true"></span> Loading map…</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="features-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">What you can do</span>
+                <h2 id="features-heading" class="section-title">Map features</h2>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-magnifying-glass-location" aria-hidden="true"></i></div>
+                    <h3>Smart search</h3>
+                    <p>Type-ahead suggestions for addresses, businesses and landmarks anywhere on the map.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-diamond-turn-right" aria-hidden="true"></i></div>
+                    <h3>Turn-by-turn routes</h3>
+                    <p>Drive, walk, cycle or ride transit with distance, duration and full step list.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-store" aria-hidden="true"></i></div>
+                    <h3>Nearby categories</h3>
+                    <p>One tap to reveal restaurants, fuel stations, pharmacies, hospitals and more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-circle-info" aria-hidden="true"></i></div>
+                    <h3>Place details</h3>
+                    <p>Ratings, opening status, phone and website for the place you selected.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section cta-section" aria-labelledby="cta-heading">
+            <div class="cta-inner">
+                <h2 id="cta-heading" class="cta-title">Spotted something wrong?</h2>
+                <p class="cta-text">If a place is missing, closed or listed incorrectly, let us know and we'll update it.</p>
+                <div class="cta-actions">
+                    <a href="report.html" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Report a place</a>
+                    <a href="help.html" class="btn btn-secondary"><i class="fas fa-life-ring"></i> Help center</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text">
+                            <span class="brand-name">Yola AI Info Hub</span>
+                        </div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="map.html">Map explorer</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="report.html">Report / comment</a></li>
+                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
+                        <li><a href="help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">Privacy policy</a></li>
+                        <li><a href="terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">© <span id="year">2026</span> Yola AI Info Hub. Built for Yola, Adamawa State.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="scripts/maps.js"></script>
+</body>
+</html>
+
+

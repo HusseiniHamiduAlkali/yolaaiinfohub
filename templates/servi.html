@@ -16,8 +16,34 @@
 -->
 
 
-    <!-- Search -->
     <div class="controls">
+        <form class="search-panel" id="searchForm" role="search">
+            <div class="field">
+                <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                <label class="sr-only" for="qInput"></label>
+                <input type="text" id="qInput" placeholder="Plumber, tailor, tutor, mechanic..." aria-label="Search professionals">
+            </div>
+            <div class="field">
+                <i class="fas fa-location-dot" aria-hidden="true"></i>
+                <select id="areaSelect" aria-label="Filter by area">
+                    <option value="All">All areas in Yola</option>
+                    <option value="Jimeta">Jimeta</option><option value="Yola South">Yola South</option><option value="Karewa">Karewa</option><option value="Doubeli">Doubeli</option><option value="Bekaji">Bekaji</option><option value="Rumde">Rumde</option><option value="Yolde Pate">Yolde Pate</option><option value="Damilu">Damilu</option>
+                </select>
+            </div>
+            <button class="search-submit" type="submit">Search</button>
+        </form>
+        <!--<div class="search-hints">
+            <span class="hint-label">Popular</span>
+            <button type="button" class="hint-tag" data-term="plumber">Plumber</button>
+            <button type="button" class="hint-tag" data-term="tailor">Tailor</button>
+            <button type="button" class="hint-tag" data-term="tutor">Tutor</button>
+            <button type="button" class="hint-tag" data-term="mechanic">Mechanic</button>
+            <button type="button" class="hint-tag" data-term="electrician">Electrician</button>
+        </div>-->
+    </div>
+    
+    <!-- Search -->
+    <!--<div class="controls">
         <div class="search-bar">
             <i class="fas fa-search" aria-hidden="true"></i>
             <input id="searchInput" placeholder="Search professionals, services, or agencies..." type="text" aria-label="Search professional services" />
@@ -34,9 +60,670 @@
             <button class="chip" data-filter="Carpenters" role="tab">Carpenters</button>
             <button class="chip" data-filter="Freelancers" role="tab">Freelancers</button>
             <button class="chip" data-filter="Agencies" role="tab">Agencies</button>
-            <button class="chip" data-filter="NGOs" role="tab">NGOs</button>
+            
         </div>
-    </div>
+    </div>-->
+
+
+    <main class="page-content">
+        <section class="mobile-intro" aria-label="Introduction">
+            <h1 class="mobile-title">Find trusted professionals in Yola</h1>
+            <p class="lead">Search verified artisans, health workers, tutors and technicians near you — ranked by experience and community ratings.</p>
+            <form class="search-panel" id="searchFormM" role="search">
+                <div class="field">
+                    <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                    <label class="sr-only" for="qInput"></label>
+                    <input type="text" id="qInputM" placeholder="Plumber, tailor, tutor, mechanic..." aria-label="Search professionals">
+                </div>
+                <div class="field">
+                    <i class="fas fa-location-dot" aria-hidden="true"></i>
+                    <select id="areaSelectM" aria-label="Filter by area">
+                        <option value="All">All areas in Yola</option>
+                        <option value="Jimeta">Jimeta</option><option value="Yola South">Yola South</option><option value="Karewa">Karewa</option><option value="Doubeli">Doubeli</option><option value="Bekaji">Bekaji</option><option value="Rumde">Rumde</option><option value="Yolde Pate">Yolde Pate</option><option value="Damilu">Damilu</option>
+                    </select>
+                </div>
+                <button class="search-submit" type="submit">Search</button>
+            </form>
+        </section>
+
+        <section class="section" aria-label="Platform statistics">
+            <div class="stats-band">
+                <div class="stat-item"><span class="stat-value">1,240+</span><span class="stat-name">Professionals</span></div>
+                <div class="stat-item"><span class="stat-value">890</span><span class="stat-name">Verified</span></div>
+                <div class="stat-item"><span class="stat-value">32</span><span class="stat-name">Categories</span></div>
+                <div class="stat-item"><span class="stat-value">6.7k</span><span class="stat-name">Reviews</span></div>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="spot-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Community picks</span>
+                <h2 id="spot-heading" class="section-title">Top rated this month</h2>
+            </div>
+            <div class="spotlight-strip">
+            <article class="spotlight-card">
+                <span class="spotlight-rank">#1</span>
+                <div class="avatar" data-initials="Dr. Musa Adamu">MA</div>
+                <div>
+                    <h3>Dr. Musa Adamu</h3>
+                    <p class="role">General Practitioner</p>
+                    <span class="stars" role="img" aria-label="5.0 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i></span>
+                    <span class="rating-value" style="color:#f0d78c">&nbsp;5.0</span>
+                </div>
+            </article>
+            <article class="spotlight-card">
+                <span class="spotlight-rank">#2</span>
+                <div class="avatar" data-initials="Abubakar Sanusi">AS</div>
+                <div>
+                    <h3>Abubakar Sanusi</h3>
+                    <p class="role">Master Plumber</p>
+                    <span class="stars" role="img" aria-label="4.9 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value" style="color:#f0d78c">&nbsp;4.9</span>
+                </div>
+            </article>
+            <article class="spotlight-card">
+                <span class="spotlight-rank">#3</span>
+                <div class="avatar" data-initials="Grace Yakubu">GY</div>
+                <div>
+                    <h3>Grace Yakubu</h3>
+                    <p class="role">Mathematics Tutor</p>
+                    <span class="stars" role="img" aria-label="4.9 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value" style="color:#f0d78c">&nbsp;4.9</span>
+                </div>
+            </article>
+            <article class="spotlight-card">
+                <span class="spotlight-rank">#4</span>
+                <div class="avatar" data-initials="Aisha Mohammed">AM</div>
+                <div>
+                    <h3>Aisha Mohammed</h3>
+                    <p class="role">Registered Nurse</p>
+                    <span class="stars" role="img" aria-label="4.9 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value" style="color:#f0d78c">&nbsp;4.9</span>
+                </div>
+            </article>
+            <article class="spotlight-card">
+                <span class="spotlight-rank">#5</span>
+                <div class="avatar" data-initials="Samuel Attah">SA</div>
+                <div>
+                    <h3>Samuel Attah</h3>
+                    <p class="role">Web Developer</p>
+                    <span class="stars" role="img" aria-label="4.9 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value" style="color:#f0d78c">&nbsp;4.9</span>
+                </div>
+            </article>
+            </div>
+        </section>
+
+        <section class="section" id="directory" aria-labelledby="dir-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Directory</span>
+                <h2 id="dir-heading" class="section-title">Browse professionals</h2>
+            </div>
+
+            <div class="chip-rail" role="tablist" aria-label="Filter by category">
+                <button type="button" class="chip" data-filter="All" role="tab" aria-selected="true">All professionals</button>
+                <button type="button" class="chip" data-filter="Artisans" role="tab" aria-selected="false">Artisans</button>
+                <button type="button" class="chip" data-filter="Health" role="tab" aria-selected="false">Health</button>
+                <button type="button" class="chip" data-filter="Home Services" role="tab" aria-selected="false">Home Services</button>
+                <button type="button" class="chip" data-filter="Tech & Digital" role="tab" aria-selected="false">Tech & Digital</button>
+                <button type="button" class="chip" data-filter="Auto" role="tab" aria-selected="false">Auto</button>
+                <button type="button" class="chip" data-filter="Education" role="tab" aria-selected="false">Education</button>
+                <button type="button" class="chip" data-filter="Events" role="tab" aria-selected="false">Events</button>
+                <button type="button" class="chip" data-filter="Legal & Finance" role="tab" aria-selected="false">Legal & Finance</button>
+                <button type="button" class="chip" data-filter="Beauty" role="tab" aria-selected="false">Beauty</button>
+                </div>
+
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="sortSelect">Sort</label>
+                    <select id="sortSelect">
+                        <option value="rating">Top rated</option>
+                        <option value="reviews">Most reviewed</option>
+                        <option value="experience">Most experienced</option>
+                        <option value="newest">Newest</option>
+                        <option value="name">Name A–Z</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="ratingSelect">Min rating</label>
+                    <select id="ratingSelect">
+                        <option value="0">Any</option>
+                        <option value="4">4.0+</option>
+                        <option value="4.5">4.5+</option>
+                        <option value="4.8">4.8+</option>
+                    </select>
+                </div>
+                <label class="toggle"><input type="checkbox" id="openOnly"> Available now</label>
+                <label class="toggle"><input type="checkbox" id="verifiedOnly"> Verified only</label>
+                <p class="result-count" id="resultCount" aria-live="polite"></p>
+            </div>
+
+            <div class="pro-grid" id="proGrid" style="margin-top:22px">
+            <article class="pro-card" data-name="Abubakar Sanusi" data-role="Master Plumber" data-category="Home Services" data-rating="4.9" data-reviews="214" data-exp="12" data-area="Jimeta" data-verified="true" data-open="true" data-tags="Pipe fitting, Leak repair, Water systems" data-added="9">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Abubakar Sanusi">AS</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Abubakar Sanusi <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Master Plumber</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.9 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.9</span>
+                    <span>(214 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 12 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Jimeta</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 5,000 - 25,000</span>
+                </div>
+                <div class="tag-row"><span class="tag">Pipe fitting</span><span class="tag">Leak repair</span><span class="tag">Water systems</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Hauwa Ibrahim" data-role="Fashion Designer & Tailor" data-category="Artisans" data-rating="4.8" data-reviews="186" data-exp="9" data-area="Karewa" data-verified="true" data-open="true" data-tags="Kaftan, Bridal, Alterations" data-added="8">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Hauwa Ibrahim">HI</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Hauwa Ibrahim <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Fashion Designer & Tailor</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.8 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.8</span>
+                    <span>(186 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 9 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Karewa</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 7,000 - 60,000</span>
+                </div>
+                <div class="tag-row"><span class="tag">Kaftan</span><span class="tag">Bridal</span><span class="tag">Alterations</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Dr. Musa Adamu" data-role="General Practitioner" data-category="Health" data-rating="5.0" data-reviews="143" data-exp="16" data-area="Yola South" data-verified="true" data-open="false" data-tags="Home visits, Consultation, Diabetes care" data-added="7">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Dr. Musa Adamu">MA</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Dr. Musa Adamu <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">General Practitioner</p>
+                    </div>
+                    <span class="badge badge-closed">Busy</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="5.0 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i></span>
+                    <span class="rating-value">5.0</span>
+                    <span>(143 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 16 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Yola South</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 10,000 / visit</span>
+                </div>
+                <div class="tag-row"><span class="tag">Home visits</span><span class="tag">Consultation</span><span class="tag">Diabetes care</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Grace Yakubu" data-role="Mathematics Tutor" data-category="Education" data-rating="4.9" data-reviews="132" data-exp="7" data-area="Jimeta" data-verified="true" data-open="true" data-tags="WAEC, JAMB, Further maths" data-added="6">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Grace Yakubu">GY</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Grace Yakubu <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Mathematics Tutor</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.9 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.9</span>
+                    <span>(132 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 7 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Jimeta</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 3,000 / hour</span>
+                </div>
+                <div class="tag-row"><span class="tag">WAEC</span><span class="tag">JAMB</span><span class="tag">Further maths</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Ibrahim Bello" data-role="Auto Mechanic" data-category="Auto" data-rating="4.7" data-reviews="178" data-exp="15" data-area="Doubeli" data-verified="true" data-open="true" data-tags="Engine repair, Diagnostics, Suspension" data-added="5">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Ibrahim Bello">IB</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Ibrahim Bello <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Auto Mechanic</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.7 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.7</span>
+                    <span>(178 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 15 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Doubeli</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 4,000 - 45,000</span>
+                </div>
+                <div class="tag-row"><span class="tag">Engine repair</span><span class="tag">Diagnostics</span><span class="tag">Suspension</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Fatima Umar" data-role="Makeup Artist" data-category="Beauty" data-rating="4.8" data-reviews="201" data-exp="6" data-area="Bekaji" data-verified="true" data-open="true" data-tags="Bridal, Gele, Studio sessions" data-added="10">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Fatima Umar">FU</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Fatima Umar <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Makeup Artist</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.8 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.8</span>
+                    <span>(201 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 6 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Bekaji</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 12,000 - 70,000</span>
+                </div>
+                <div class="tag-row"><span class="tag">Bridal</span><span class="tag">Gele</span><span class="tag">Studio sessions</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Samuel Attah" data-role="Web Developer" data-category="Tech & Digital" data-rating="4.9" data-reviews="96" data-exp="8" data-area="Jimeta" data-verified="true" data-open="true" data-tags="Websites, E-commerce, SEO" data-added="11">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Samuel Attah">SA</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Samuel Attah <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Web Developer</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.9 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.9</span>
+                    <span>(96 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 8 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Jimeta</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 80,000+</span>
+                </div>
+                <div class="tag-row"><span class="tag">Websites</span><span class="tag">E-commerce</span><span class="tag">SEO</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Zainab Lawal" data-role="Event Planner" data-category="Events" data-rating="4.6" data-reviews="121" data-exp="10" data-area="Karewa" data-verified="true" data-open="false" data-tags="Weddings, Decor, Catering liaison" data-added="4">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Zainab Lawal">ZL</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Zainab Lawal <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Event Planner</p>
+                    </div>
+                    <span class="badge badge-closed">Busy</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.6 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.6</span>
+                    <span>(121 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 10 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Karewa</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 50,000+</span>
+                </div>
+                <div class="tag-row"><span class="tag">Weddings</span><span class="tag">Decor</span><span class="tag">Catering liaison</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Barr. Yusuf Danladi" data-role="Legal Practitioner" data-category="Legal & Finance" data-rating="4.8" data-reviews="74" data-exp="14" data-area="Yola South" data-verified="true" data-open="false" data-tags="Land law, Contracts, Litigation" data-added="3">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Barr. Yusuf Danladi">YD</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Barr. Yusuf Danladi <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Legal Practitioner</p>
+                    </div>
+                    <span class="badge badge-closed">Busy</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.8 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.8</span>
+                    <span>(74 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 14 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Yola South</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 25,000 consult</span>
+                </div>
+                <div class="tag-row"><span class="tag">Land law</span><span class="tag">Contracts</span><span class="tag">Litigation</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Peter Ogbonna" data-role="Electrician" data-category="Home Services" data-rating="4.7" data-reviews="158" data-exp="11" data-area="Rumde" data-verified="true" data-open="true" data-tags="Wiring, Solar, Inverters" data-added="12">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Peter Ogbonna">PO</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Peter Ogbonna <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Electrician</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.7 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.7</span>
+                    <span>(158 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 11 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Rumde</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 6,000 - 90,000</span>
+                </div>
+                <div class="tag-row"><span class="tag">Wiring</span><span class="tag">Solar</span><span class="tag">Inverters</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Aisha Mohammed" data-role="Registered Nurse" data-category="Health" data-rating="4.9" data-reviews="110" data-exp="9" data-area="Jimeta" data-verified="true" data-open="true" data-tags="Home care, Wound care, Elderly care" data-added="13">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Aisha Mohammed">AM</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Aisha Mohammed <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Registered Nurse</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.9 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.9</span>
+                    <span>(110 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 9 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Jimeta</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 8,000 / visit</span>
+                </div>
+                <div class="tag-row"><span class="tag">Home care</span><span class="tag">Wound care</span><span class="tag">Elderly care</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Danjuma Kwaji" data-role="Carpenter & Furniture Maker" data-category="Artisans" data-rating="4.5" data-reviews="89" data-exp="18" data-area="Doubeli" data-verified="false" data-open="true" data-tags="Wardrobes, Doors, Custom beds" data-added="2">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Danjuma Kwaji">DK</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Danjuma Kwaji</h3>
+                        <p class="pro-role">Carpenter & Furniture Maker</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.5 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.5</span>
+                    <span>(89 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 18 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Doubeli</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 20,000+</span>
+                </div>
+                <div class="tag-row"><span class="tag">Wardrobes</span><span class="tag">Doors</span><span class="tag">Custom beds</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Blessing Eze" data-role="Graphic Designer" data-category="Tech & Digital" data-rating="4.7" data-reviews="84" data-exp="5" data-area="Bekaji" data-verified="true" data-open="true" data-tags="Branding, Flyers, Social media" data-added="14">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Blessing Eze">BE</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Blessing Eze <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Graphic Designer</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.7 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.7</span>
+                    <span>(84 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 5 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Bekaji</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 10,000+</span>
+                </div>
+                <div class="tag-row"><span class="tag">Branding</span><span class="tag">Flyers</span><span class="tag">Social media</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Sadiq Aliyu" data-role="AC & Refrigeration Technician" data-category="Home Services" data-rating="4.6" data-reviews="143" data-exp="13" data-area="Yolde Pate" data-verified="true" data-open="true" data-tags="Installation, Gassing, Servicing" data-added="1">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Sadiq Aliyu">SA</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Sadiq Aliyu <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">AC & Refrigeration Technician</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.6 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.6</span>
+                    <span>(143 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 13 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Yolde Pate</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 7,000 - 35,000</span>
+                </div>
+                <div class="tag-row"><span class="tag">Installation</span><span class="tag">Gassing</span><span class="tag">Servicing</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Rita Joseph" data-role="Photographer & Videographer" data-category="Events" data-rating="4.8" data-reviews="167" data-exp="8" data-area="Jimeta" data-verified="true" data-open="true" data-tags="Weddings, Portraits, Drone" data-added="15">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Rita Joseph">RJ</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Rita Joseph <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Photographer & Videographer</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.8 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.8</span>
+                    <span>(167 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 8 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Jimeta</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 45,000+</span>
+                </div>
+                <div class="tag-row"><span class="tag">Weddings</span><span class="tag">Portraits</span><span class="tag">Drone</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Umar Farouk" data-role="Accountant & Tax Consultant" data-category="Legal & Finance" data-rating="4.7" data-reviews="62" data-exp="12" data-area="Karewa" data-verified="true" data-open="false" data-tags="Bookkeeping, Tax filing, Audits" data-added="16">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Umar Farouk">UF</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Umar Farouk <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Accountant & Tax Consultant</p>
+                    </div>
+                    <span class="badge badge-closed">Busy</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.7 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.7</span>
+                    <span>(62 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 12 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Karewa</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 30,000+</span>
+                </div>
+                <div class="tag-row"><span class="tag">Bookkeeping</span><span class="tag">Tax filing</span><span class="tag">Audits</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Halima Yakubu" data-role="Hair Stylist" data-category="Beauty" data-rating="4.5" data-reviews="138" data-exp="7" data-area="Damilu" data-verified="false" data-open="true" data-tags="Braids, Weaves, Treatment" data-added="17">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Halima Yakubu">HY</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Halima Yakubu</h3>
+                        <p class="pro-role">Hair Stylist</p>
+                    </div>
+                    <span class="badge badge-open">Available</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.5 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.5</span>
+                    <span>(138 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 7 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Damilu</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 4,000 - 25,000</span>
+                </div>
+                <div class="tag-row"><span class="tag">Braids</span><span class="tag">Weaves</span><span class="tag">Treatment</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            <article class="pro-card" data-name="Emmanuel Ade" data-role="Driving Instructor" data-category="Auto" data-rating="4.6" data-reviews="58" data-exp="20" data-area="Rumde" data-verified="true" data-open="false" data-tags="Learner classes, Licence guidance" data-added="18">
+                <div class="pro-head">
+                    <div class="avatar" data-initials="Emmanuel Ade">EA</div>
+                    <div class="pro-id">
+                        <h3 class="pro-name">Emmanuel Ade <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i></h3>
+                        <p class="pro-role">Driving Instructor</p>
+                    </div>
+                    <span class="badge badge-closed">Busy</span>
+                </div>
+                <div class="rating-line">
+                    <span class="stars" role="img" aria-label="4.6 out of 5 stars"><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star-half-stroke" aria-hidden="true"></i></span>
+                    <span class="rating-value">4.6</span>
+                    <span>(58 reviews)</span>
+                </div>
+                <div class="pro-meta">
+                    <span><i class="fas fa-briefcase" aria-hidden="true"></i> 20 yrs experience</span>
+                    <span><i class="fas fa-location-dot" aria-hidden="true"></i> Rumde</span>
+                    <span><i class="fas fa-naira-sign" aria-hidden="true"></i> 35,000 / course</span>
+                </div>
+                <div class="tag-row"><span class="tag">Learner classes</span><span class="tag">Licence guidance</span></div>
+                <div class="pro-actions">
+                    <a class="btn btn-primary" href="servi-profile.html">View profile</a>
+                    <a class="btn btn-secondary" href="tel:+2348000000000">Contact</a>
+                </div>
+            </article>
+            </div>
+
+            <div class="no-results" id="noResults" hidden>
+                <i class="fas fa-user-slash" aria-hidden="true"></i>
+                <h3>No professionals match your search</h3>
+                <p>Try a different keyword, area or loosen the filters.</p>
+            </div>
+        </section>
+
+        <section class="section" id="how" aria-labelledby="how-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Simple process</span>
+                <h2 id="how-heading" class="section-title">How ServiInfo works</h2>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <h3>Search</h3>
+                    <p>Tell us the service you need and the part of Yola you are in.</p>
+                </div>
+                <div class="step">
+                    <h3>Compare</h3>
+                    <p>Check ratings, years of experience, price ranges and verified badges.</p>
+                </div>
+                <div class="step">
+                    <h3>Connect</h3>
+                    <p>Call or message the professional directly — no middleman, no commission.</p>
+                </div>
+                <div class="step">
+                    <h3>Rate</h3>
+                    <p>Leave an honest review so the next person in Yola hires with confidence.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="trust-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Why ServiInfo</span>
+                <h2 id="trust-heading" class="section-title">Built for trust</h2>
+            </div>
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-shield-halved" aria-hidden="true"></i></div>
+                    <h3>Verified identities</h3>
+                    <p>Verified professionals have confirmed ID, phone number and workshop address.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-star" aria-hidden="true"></i></div>
+                    <h3>Real reviews</h3>
+                    <p>Ratings come from residents who actually hired, not anonymous accounts.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-naira-sign" aria-hidden="true"></i></div>
+                    <h3>Transparent pricing</h3>
+                    <p>See indicative price ranges before you call, so there are no surprises.</p>
+                </article>
+                <article class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-robot" aria-hidden="true"></i></div>
+                    <h3>AI matching</h3>
+                    <p>Describe your problem in plain language and the hub suggests the right trade.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section cta-section" aria-labelledby="join-heading">
+            <div class="cta-inner">
+                <h2 id="join-heading" class="cta-title" style="color: #dde1e4 !important;">Are you a professional in Yola?</h2>
+                <p class="cta-text">List your skills for free, get discovered by thousands of residents and build a public reputation.</p>
+                <div class="cta-actions">
+                    <a href="Other_features/servi-join.html" class="btn btn-primary">Join ServiInfo</a>
+                    <a href="pages/report.html" class="btn btn-secondary">Report a listing</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
 
     <div class="section2">
     <!--<h2 data-i18n="servi_section2_h2">Professionals in Yola</h2>-->

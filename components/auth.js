@@ -359,7 +359,7 @@ function showAuthModal(type) {
           <input type="email" id="auth-email" placeholder="Email" required autocomplete="email" />
           <input type="text" id="auth-name" placeholder="Full Name" required autocomplete="name" />
           <input type="text" id="auth-nin" placeholder="NIN (11 digits)" required pattern="\\d{11}" maxlength="11" />
-          <input type="tel" id="auth-phone" placeholder="Phone number" required autocomplete="tel" />
+          <input type="tel" id="auth-phone" placeholder="Phone number (optional)" autocomplete="tel" />
           <textarea id="auth-address" placeholder="Address" required rows="2"></textarea>
           <label class="auth-checkbox-row">
             <input type="checkbox" id="auth-terms" required />
@@ -423,8 +423,7 @@ function showAuthModal(type) {
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push('Enter a valid email address.');
       if (!name) errors.push('Enter your full name.');
       if (!/^[0-9]{11}$/.test(nin)) errors.push('NIN must be exactly 11 digits.');
-      if (!phone) errors.push('Enter your phone number.');
-      else if (!/^[+\d][\d\s\-()]{7,}$/.test(phone)) errors.push('Enter a valid phone number.');
+      // Phone is optional - no validation needed
       if (!address) errors.push('Enter your address.');
       if (!password) errors.push('Enter a password.');
       else if (password.length < 8) errors.push('Password must be at least 8 characters.');

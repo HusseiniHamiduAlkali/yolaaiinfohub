@@ -26,15 +26,38 @@
   <main class="verify-card">
     <h1>Verify your email</h1>
     <p>Use the secure link from your inbox or enter the 6-digit code below to confirm your account.</p>
+    
+    <div id="verifyMethodTabs" style="display: flex; gap: 0.5rem; margin: 1.5rem 0; border-bottom: 2px solid #cfdad4;">
+      <button type="button" class="verify-tab-btn is-active" data-method="token" style="flex: 1; padding: 0.75rem; border: none; background: none; cursor: pointer; font-weight: 500; color: #0f766e; border-bottom: 3px solid #0f766e; position: relative; bottom: -2px;">
+        <i class="fas fa-link"></i> Link Verification
+      </button>
+      <button type="button" class="verify-tab-btn" data-method="otp" style="flex: 1; padding: 0.75rem; border: none; background: none; cursor: pointer; font-weight: 500; color: #999; border-bottom: 3px solid transparent; position: relative; bottom: -2px;">
+        <i class="fas fa-shield-halved"></i> Code Verification
+      </button>
+    </div>
+    
     <form id="verifyForm">
-      <div class="field">
-        <label for="verifyEmail">Email</label>
-        <input id="verifyEmail" name="email" type="email" required />
+      <!-- Link/Token Method -->
+      <div class="verify-method" data-method="token" id="tokenMethod">
+        <div class="field">
+          <label for="verifyEmail">Email</label>
+          <input id="verifyEmail" name="email" type="email" placeholder="you@example.com" />
+        </div>
+        <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">If you have the verification link from your email, you can verify directly without entering a code.</p>
       </div>
-      <div class="field">
-        <label for="verifyCode">Verification code</label>
-        <input id="verifyCode" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" required />
+      
+      <!-- OTP Method -->
+      <div class="verify-method" data-method="otp" id="otpMethod" style="display: none;">
+        <div class="field">
+          <label for="verifyEmail2">Email</label>
+          <input id="verifyEmail2" name="email" type="email" placeholder="you@example.com" required />
+        </div>
+        <div class="field">
+          <label for="verifyCode">Verification code</label>
+          <input id="verifyCode" name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" required />
+        </div>
       </div>
+      
       <div class="actions">
         <button class="btn btn-primary" type="submit"><i class="fas fa-shield-halved"></i> Verify</button>
         <a class="btn btn-secondary" href="auth.html"><i class="fas fa-arrow-left"></i> Back to sign in</a>
@@ -44,39 +67,121 @@
   </main>
   <script>
     (function () {
-      const params = new URLSearchParams(window.location.search);
-      const emailInput = document.getElementById('verifyEmail');
-      const codeInput = document.getElementById('verifyCode');
-      const statusEl = document.getElementById('verifyStatus');
-      if (params.get('email')) emailInput.value = params.get('email');
-      if (params.get('token')) {
-        statusEl.className = 'status';
-        statusEl.innerHTML = '<i class="fas fa-info-circle"></i> You can use the token from your email or enter the code below.';
-      }
-      document.getElementById('verifyForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const email = emailInput.value.trim();
-        const code = codeInput.value.trim();
-        if (!email || !code) {
-          statusEl.className = 'status error';
-          statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> Enter both your email and the verification code.';
-          return;
+      function getApiBase() {
+        const configuredBase = (window.API_BASE || window.__API_BASE__ || '').replace(/\/$/, '');
+        if (configuredBase) return configuredBase;
+
+        const host = window.location && window.location.hostname ? window.location.hostname : '';
+        if (!host || host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.startsWith('192.') || host.startsWith('10.')) {
+          return 'http://localhost:4000';
         }
-        try {
-          const response = await fetch((window.API_BASE || window.__API_BASE__ || 'http://localhost:4000').replace(/\/$/, '') + '/api/verify-email-otp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ email, code })
+
+        return 'https://yolaaiinfohub-backend.onrender.com';
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const verifyForm = document.getElementById('verifyForm');
+      const statusEl = document.getElementById('verifyStatus');
+      const tabButtons = document.querySelectorAll('.verify-tab-btn');
+      const methodDivs = document.querySelectorAll('.verify-method');
+      const tokenToken = params.get('token');
+      const paramEmail = params.get('email');
+      let currentMethod = 'token';
+      
+      // If token is present, pre-fill and auto-verify if email is also present
+      if (tokenToken) {
+        document.getElementById('verifyEmail').value = paramEmail || '';
+        statusEl.className = 'status';
+        statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Verification link detected. Click Verify to complete your email verification.';
+      }
+      
+      // Tab switching
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const method = btn.getAttribute('data-method');
+          currentMethod = method;
+          
+          // Update active tab
+          tabButtons.forEach(b => b.classList.remove('is-active'));
+          btn.classList.add('is-active');
+          btn.style.color = '#0f766e';
+          btn.style.borderBottomColor = '#0f766e';
+          
+          // Update inactive tabs
+          tabButtons.forEach(b => {
+            if (b !== btn) {
+              b.style.color = '#999';
+              b.style.borderBottomColor = 'transparent';
+            }
           });
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok || !data.success) {
-            statusEl.className = 'status error';
-            statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + (data.error || 'Verification failed.');
-            return;
+          
+          // Show/hide methods
+          methodDivs.forEach(div => {
+            div.style.display = div.getAttribute('data-method') === method ? 'block' : 'none';
+          });
+          
+          statusEl.innerHTML = '';
+          statusEl.className = 'status';
+        });
+      });
+      
+      // Form submission
+      verifyForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const apiBase = getApiBase();
+        
+        try {
+          if (currentMethod === 'token') {
+            // Token-based verification
+            const email = document.getElementById('verifyEmail').value.trim();
+            if (!email && !tokenToken) {
+              statusEl.className = 'status error';
+              statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> Enter your email address.';
+              return;
+            }
+            
+            const response = await fetch(apiBase + '/api/verify-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ 
+                email: email || paramEmail, 
+                token: tokenToken 
+              })
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data.success) {
+              statusEl.className = 'status error';
+              statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + (data.error || 'Verification failed.');
+              return;
+            }
+            statusEl.className = 'status success';
+            statusEl.innerHTML = '<i class="fas fa-circle-check"></i> Your email is verified. You can now sign in.';
+          } else {
+            // OTP code-based verification
+            const email = document.getElementById('verifyEmail2').value.trim();
+            const code = document.getElementById('verifyCode').value.trim();
+            if (!email || !code) {
+              statusEl.className = 'status error';
+              statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> Enter both your email and the verification code.';
+              return;
+            }
+            
+            const response = await fetch(apiBase + '/api/verify-email-otp', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ email, code })
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data.success) {
+              statusEl.className = 'status error';
+              statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + (data.error || 'Verification failed.');
+              return;
+            }
+            statusEl.className = 'status success';
+            statusEl.innerHTML = '<i class="fas fa-circle-check"></i> Your email is verified. You can now sign in.';
           }
-          statusEl.className = 'status success';
-          statusEl.innerHTML = '<i class="fas fa-circle-check"></i> Your email is verified. You can now sign in.';
         } catch (error) {
           statusEl.className = 'status error';
           statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + (error && error.message ? error.message : 'Verification failed.');

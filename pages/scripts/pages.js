@@ -107,6 +107,18 @@
     }
 
     /* ========== Password reset ========== */
+    function getApiBase() {
+        const configuredBase = (window.API_BASE || window.__API_BASE__ || '').replace(/\/$/, '');
+        if (configuredBase) return configuredBase;
+
+        const host = window.location && window.location.hostname ? window.location.hostname : '';
+        if (!host || host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.startsWith('192.') || host.startsWith('10.')) {
+            return 'http://localhost:4000';
+        }
+
+        return 'https://yolaaiinfohub-backend.onrender.com';
+    }
+
     document.querySelectorAll('.field-suffix-btn[data-toggle-password]').forEach((btn) => {
         btn.addEventListener('click', () => {
             const target = document.getElementById(btn.dataset.togglePassword);
@@ -193,7 +205,8 @@
             }
 
             try {
-                const response = await fetch((window.API_BASE || window.__API_BASE__ || 'http://localhost:4000').replace(/\/$/, '') + '/api/reset-password', {
+                const apiBase = getApiBase();
+                const response = await fetch(`${apiBase}/api/reset-password`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },

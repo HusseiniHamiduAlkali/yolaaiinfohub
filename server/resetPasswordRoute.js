@@ -17,8 +17,9 @@ router.post('/reset-password', async (req, res) => {
     user.resetToken = token;
     user.resetTokenExpires = Date.now() + 1000 * 60 * 60; // 1 hour
     await user.save();
-    // Build reset link
-    const resetUrl = process.env.RESET_URL_BASE.replace(/\${.*?}/g, '') + `?token=${token}&email=${encodeURIComponent(email)}`;
+    // Build reset link using frontend URL from environment
+    const frontendUrl = (process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const resetUrl = `${frontendUrl}/pages/reset-password.html?token=${token}&email=${encodeURIComponent(email)}`;
     // Send email
     const transporter = nodemailer.createTransport({
       service: 'gmail',

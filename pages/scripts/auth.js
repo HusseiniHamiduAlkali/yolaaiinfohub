@@ -18,6 +18,14 @@
     var BACK_MODES = ["signup", "forgot", "reset-sent"];
     var COMPACT_MODES = ["forgot", "reset-sent"];
     var currentMode = "signin";
+
+    function updateFlipCardHeight() {
+        if (!flipCard) return;
+        var activeFace = flipCard.querySelector(".flip-face[aria-hidden='false']") || frontFace;
+        if (!activeFace) return;
+        flipCard.style.height = activeFace.scrollHeight + "px";
+    }
+
     var COUNTRIES = [
         "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria",
         "Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia",
@@ -250,6 +258,7 @@
             window.setTimeout(function () {
                 activatePanel(mode);
                 flipCard.classList.toggle("is-compact", COMPACT_MODES.indexOf(mode) !== -1);
+                updateFlipCardHeight();
             }, 250);
             window.setTimeout(function () {
                 flipCard.classList.remove("is-swapping");
@@ -258,6 +267,7 @@
         } else {
             if (flipped) activatePanel(mode);
             apply();
+            updateFlipCardHeight();
             if (updateUrl) {
                 window.setTimeout(function () { focusFirstField(mode); }, reduceMotion ? 0 : 500);
             }
@@ -275,6 +285,7 @@
     // Init from ?mode=
     var initialMode = new URLSearchParams(window.location.search).get("mode");
     setMode(BACK_MODES.indexOf(initialMode) !== -1 ? initialMode : "signin", false);
+    updateFlipCardHeight();
 
     populateCountrySelect();
     populateStatesSelect();
@@ -302,6 +313,8 @@
             }
         });
     }
+
+    window.addEventListener("resize", updateFlipCardHeight);
 
     // Switch links (delegated so every panel works)
     document.addEventListener("click", function (e) {
@@ -466,8 +479,7 @@
             if (!isEmail(email.value.trim())) { setInvalid(email, true); errors.push("Enter a valid email."); }
             if (!username.value.trim()) { setInvalid(username, true); errors.push("Choose a username."); }
             if (!/^[0-9]{11}$/.test(nin.value.trim())) { setInvalid(nin, true); errors.push("NIN must be exactly 11 digits."); }
-            if (!phone.value.trim()) { setInvalid(phone, true); errors.push("Enter your phone number."); }
-            else if (!isPhone(phone.value.trim())) { setInvalid(phone, true); errors.push("Enter a valid phone number."); }
+            // Phone is optional - no validation needed
             if (!address.value.trim()) { setInvalid(address, true); errors.push("Enter your address."); }
             if (pw.value.length < 8) { setInvalid(pw, true); errors.push("Password must be at least 8 characters."); }
             else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(pw.value)) {

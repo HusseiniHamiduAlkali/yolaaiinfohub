@@ -13,7 +13,7 @@ function getSectionFromUrl() {
   let path = window.location.pathname.replace(/^\/+/, '').toLowerCase();
   if (!path || path === '' || path === 'index.html') return 'home';
   path = path.split('/').pop().split('?')[0].split('#')[0];
-  const valid = ['home','eduinfo','agroinfo','mediinfo','naviinfo','','serviinfo','communityinfo','settings'];
+  const valid = ['home','eduinfo','dealzinfo','weatherinfo','naviinfo','','serviinfo','communityinfo','settings'];
   return valid.includes(path) ? path : 'home';
 }
 
@@ -95,13 +95,14 @@ window.highlightActiveNav = function(section) {
   // Helper to match and highlight buttons
   const highlightButton = (btn) => {
     btn.classList.remove('active');
-    const i18nKey = btn.getAttribute('data-i18n');
+    // Support `data-i18n` on the button or on an inner span (so SVGs are preserved)
+    const i18nKey = btn.getAttribute('data-i18n') || btn.querySelector('[data-i18n]')?.getAttribute('data-i18n');
     let btnSection = '';
     if (i18nKey === 'home') btnSection = 'home';
-    else if (i18nKey === 'eduinfo') btnSection = 'eduinfo';
-    //else if (i18nKey === 'ecoinfo') btnSection = 'ecoinfo';
-    else if (i18nKey === 'agroinfo') btnSection = 'agroinfo';
-    else if (i18nKey === 'mediinfo') btnSection = 'mediinfo';
+    //else if (i18nKey === 'eduinfo') btnSection = 'eduinfo';
+    else if (i18nKey === 'ecoinfo') btnSection = 'ecoinfo';
+    else if (i18nKey === 'dealzinfo') btnSection = 'dealzinfo';
+    else if (i18nKey === 'weatherinfo') btnSection = 'weatherinfo';
     else if (i18nKey === 'naviinfo') btnSection = 'naviinfo';
     else if (i18nKey === 'communityinfo') btnSection = 'communityinfo';
     else if (i18nKey === 'serviinfo') btnSection = 'serviinfo';
@@ -130,14 +131,11 @@ function renderNavbar(isLoading = false) {
   let authButtonsHTML;
   
   if (isLoading) {
-    // Show loading state in navbar-user-section
-    console.log('%c⏳ renderNavbar: Showing loading state', 'color: #f59e0b;');
+    // Keep the auth area hidden while the app verifies the user's signed-in state.
+    // Do not render a spinner or placeholder during the check.
+    console.log('%c⏳ renderNavbar: Auth check in progress, keeping auth area hidden', 'color: #f59e0b;');
     authButtonsHTML = `
-      <div class="navbar-auth" id="navbar-auth">
-        <div class="navbar-loading-placeholder">
-          <span class="loading-spinner"></span>
-          <span data-i18n="loading">Loading...</span>
-        </div>
+      <div class="navbar-auth" id="navbar-auth" aria-hidden="true" style="display:none !important; visibility:hidden; pointer-events:none;">
       </div>
     `;
   } else if (window.currentUser && window.currentUser.username) {
@@ -200,15 +198,84 @@ function renderNavbar(isLoading = false) {
         </div>
         <div class="navbar-links-container">
           <ul class="navbar-links">
-            <li><button onclick="window.loadSection('home')" data-i18n="home">Home</button></li>
-            <li><button onclick="window.loadSection('eduinfo')" data-i18n="eduinfo">EduInfo</button></li>
-            
-            <li><button onclick="window.loadSection('agroinfo')" data-i18n="agroinfo">AgroInfo</button></li>
-            <li><button onclick="window.loadSection('mediinfo')" data-i18n="mediinfo">MediInfo</button></li>
-            <li><button onclick="window.loadSection('naviinfo')" data-i18n="naviinfo">NaviInfo</button></li>
-            <li><button onclick="window.loadSection('communityinfo')" data-i18n="communityinfo">CommunityInfo</button></li>
-            <li><button onclick="window.loadSection('serviinfo')" data-i18n="serviinfo">ServiInfo</button></li>
-            <li><button onclick="window.loadSection('settings')" data-i18n="settings">Settings</button></li>
+            <li><button onclick="window.loadSection('home')"><span data-i18n="home">Home</span></button></li>
+            <!--<li><button onclick="window.loadSection('eduinfo')"><span data-i18n="eduinfo">EduInfo</span></button></li>-->
+            <li><button onclick="window.loadSection('naviinfo')">  
+              <svg viewBox="0 0 24 24" width="18" height="20" style="align-self:normal;" fill="currentColor">
+                <path d="M3.4 20.4 11.7 3.6a1.6 1.6 0 0 1 2.8 0l8.3 16.8a1.6 1.6 0 0 1-2.1 2.1L13 18.2l-7.7 4.3a1.6 1.6 0 0 1-1.9-2.1Z" transform="rotate(45 12 12)"/>
+              </svg>
+              <span data-i18n="naviinfo">NaviInfo</span></button></li>
+            <li><button onclick="window.loadSection('communityinfo')">
+              <!-- =========================================================
+                  1. THREE PEOPLE
+                  Simple and very clear community icon
+                  ========================================================= -->
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                <circle cx="12" cy="7" r="3" fill="currentColor"/>
+                <circle cx="5.5" cy="9" r="2.5" fill="currentColor" opacity=".75"/>
+                <circle cx="18.5" cy="9" r="2.5" fill="currentColor" opacity=".75"/>
+                <path d="M7 20c.3-3.7 2-5.8 5-5.8s4.7 2.1 5 5.8" fill="currentColor"/>
+                <path d="M2.5 18c.2-2.5 1.2-3.8 3-3.8 1.3 0 2.2.7 2.7 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <path d="M21.5 18c-.2-2.5-1.2-3.8-3-3.8 -1.3 0-2.2.7-2.7 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+              <span data-i18n="communityinfo">CommunityInfo</span></button></li>
+            <li><button onclick="window.loadSection('ecoinfo')">                
+              <!-- =========================================================
+                1. ECO / LEAF
+                Simple and excellent for an "Eco Info" button
+                ========================================================= -->
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                <path d="M20.5 3.5C12 3.8 6.2 6.4 5 12.2c-.8 3.8 1.8 7.3 5.5 7.3 6.2 0 9.2-7.1 10-16Z" fill="currentColor"/>
+                <path d="M4 21c2.5-5.5 7-8.5 13-11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+            <span data-i18n="ecoinfo">EcoInfo</span></button></li>
+            <li><button onclick="window.loadSection('serviinfo')">
+                <!-- =========================================================
+                    11. TOOLBOX
+                    Professional / technician services
+                    ========================================================= -->
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                  <rect x="3" y="8" width="18" height="11" rx="2" fill="currentColor"/>
+                  <path d="M8 8V5.5a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 1 16 5.5V8" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M3 12h18M10 12v2h4v-2" stroke="#298d29" stroke-width="1.3" fill="#fff"/>
+                </svg>
+                <span data-i18n="serviinfo">ServiInfo</span></button></li>
+            <li><button onclick="window.loadSection('weatherinfo')">                
+              <!-- =========================================================
+                  12. WEATHER / SUN + CLOUD
+                  GOOD GENERAL WEATHER BUTTON
+                  ========================================================= -->
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                <!-- Sun -->
+                <circle cx="9" cy="8" r="3.2" fill="currentColor"/>
+                <path d="M9 2v1.5M9 12.5V14M3 8h1.5M12.5 8H14 M4.8 3.8l1 1M11.2 11.2l1 1" stroke="currentColor" stroke-width="1.3"stroke-linecap="round"/>
+                <!-- Cloud -->
+                <path d="M7 19h10a4.2 4.2 0 0 0 .5-8.37 A5.7 5.7 0 0 0 7 11.2 A3.9 3.9 0 0 0 7 19Z" fill="currentColor"/>
+              </svg>
+              <span data-i18n="weatherinfo">WeatherInfo</span></button></li>
+            <li><button onclick="window.loadSection('dealzinfo')">  
+              <!-- =========================================================
+                  7. PRICE CHART — UPWARD
+                  Excellent for market prices
+                  ========================================================= -->
+              <svg viewBox="0 0 24 24" width="20" height="24" fill="none">
+                <path d="M4 19V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M4 19h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="m6 15 4-4 3 2 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="m16 6 3-1v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span data-i18n="dealzinfo">DealzInfo</span></button></li>
+            <li>
+              <button onclick="window.loadSection('settings')" aria-label="Settings">
+                <span class="nav-icon" aria-hidden="true" style="width: 100%; height: 100%;">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                    <path d="M9.7 3h4.6l.6 2.1c.5.2 1 .5 1.4.8l2-.7 2.3 4-1.7 1.4v1.8l1.7 1.4-2.3 4-2-.7c-.4.3-.9.6-1.4.8L14.3 21H9.7l-.6-2.1c-.5-.2-1-.5-1.4-.8l-2 .7-2.3-4 1.7-1.4v-1.8L3.4 10l2.3-4 2 .7c.4-.3.9-.6 1.4-.8L9.7 3Z" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="3.2" fill="#298d29"/>
+                  </svg>
+                </span>
+                <span class="sr-only" data-i18n="settings" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px;">Settings</span>
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -499,7 +566,7 @@ function renderNavbar(isLoading = false) {
               const fullnameSpan = namesSpan.querySelector('.navbar-fullname');
               if (fullnameSpan) fullnameSpan.style.cssText = 'font-weight:600;color:#e6eef9;font-size:0.95rem;line-height:1.2;';
               const usernameSpan = namesSpan.querySelector('.navbar-username-text');
-              if (usernameSpan) usernameSpan.style.cssText = 'font-weight:700;color:#cbd5e1;font-size:0.95rem;letter-spacing:0.5px;';
+              if (usernameSpan) usernameSpan.style.cssText = 'font-weight:700;color:#cbd5e1;font-size:0.95rem;letter-spacing:-0.5px;';
             }
             profileWrapper.appendChild(node);
             mobileMenu.appendChild(profileWrapper);
@@ -508,8 +575,11 @@ function renderNavbar(isLoading = false) {
             const existingUsernameContainer = document.getElementById('navbar-username-container');
             if (existingUsernameContainer) {
               const userMenuSection = existingUsernameContainer.cloneNode(true);
+  
+  
+  
               userMenuSection.querySelectorAll('.navbar-profile-link').forEach(n => n.remove());
-              userMenuSection.style.cssText = 'display:flex;flex-direction:row;align-items:center;padding:1rem;border-bottom:1px solid #555;gap:0.7rem;background:#1a202c;margin-bottom:1rem;';
+              userMenuSection.style.cssText = 'display:flex;flex-direction:row;align-items:center;padding:1rem;gap:0.7rem;background:#1a202c;margin-bottom:1rem;';
               mobileMenu.appendChild(userMenuSection);
             }
           }
@@ -519,21 +589,87 @@ function renderNavbar(isLoading = false) {
         // Menu links
         const linksList = document.createElement('ul');
         linksList.className = 'mobile-links';
+
+        const mobileMenuIcons = {
+          home: '',
+          naviinfo: `
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="20" fill="currentColor" aria-hidden="true">
+              <path d="M3.4 20.4 11.7 3.6a1.6 1.6 0 0 1 2.8 0l8.3 16.8a1.6 1.6 0 0 1-2.1 2.1L13 18.2l-7.7 4.3a1.6 1.6 0 0 1-1.9-2.1Z" transform="rotate(45 12 12)"/>
+            </svg>
+          `,
+          communityinfo: `
+            <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="7" r="3" fill="currentColor"/>
+              <circle cx="5.5" cy="9" r="2.5" fill="currentColor" opacity=".75"/>
+              <circle cx="18.5" cy="9" r="2.5" fill="currentColor" opacity=".75"/>
+              <path d="M7 20c.3-3.7 2-5.8 5-5.8s4.7 2.1 5 5.8" fill="currentColor"/>
+              <path d="M2.5 18c.2-2.5 1.2-3.8 3-3.8 1.3 0 2.2.7 2.7 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              <path d="M21.5 18c-.2-2.5-1.2-3.8-3-3.8 -1.3 0-2.2.7-2.7 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          `,
+          ecoinfo: `
+            <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+              <path d="M20.5 3.5C12 3.8 6.2 6.4 5 12.2c-.8 3.8 1.8 7.3 5.5 7.3 6.2 0 9.2-7.1 10-16Z" fill="currentColor"/>
+              <path d="M4 21c2.5-5.5 7-8.5 13-11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          `,
+          serviinfo: `
+            <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+              <rect x="3" y="8" width="18" height="11" rx="2" fill="currentColor"/>
+              <path d="M8 8V5.5a1.5 1.5 0 0 1 1.5-1.5h5A1.5 1.5 0 0 1 16 5.5V8" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M3 12h18M10 12v2h4v-2" stroke="#298d29" stroke-width="1.3" fill="#fff"/>
+            </svg>
+          `,
+          weatherinfo: `
+            <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+              <circle cx="9" cy="8" r="3.2" fill="currentColor"/>
+              <path d="M9 2v1.5M9 12.5V14M3 8h1.5M12.5 8H14 M4.8 3.8l1 1M11.2 11.2l1 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              <path d="M7 19h10a4.2 4.2 0 0 0 .5-8.37 A5.7 5.7 0 0 0 7 11.2 A3.9 3.9 0 0 0 7 19Z" fill="currentColor"/>
+            </svg>
+          `,
+          dealzinfo: `
+            <svg class="nav-icon" viewBox="0 0 24 24" width="20" height="24" fill="none" aria-hidden="true">
+              <path d="M4 19V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M4 19h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="m6 15 4-4 3 2 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="m16 6 3-1v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          `,
+          settings: `
+            <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+              <path d="M9.7 3h4.6l.6 2.1c.5.2 1 .5 1.4.8l2-.7 2.3 4-1.7 1.4v1.8l1.7 1.4-2.3 4-2-.7c-.4.3-.9.6-1.4.8L14.3 21H9.7l-.6-2.1c-.5-.2-1-.5-1.4-.8l-2 .7-2.3-4 1.7-1.4v-1.8L3.4 10l2.3-4 2 .7c.4-.3.9-.6 1.4-.8L9.7 3Z" fill="currentColor"/>
+              <circle cx="12" cy="12" r="3.2" fill="#298d29"/>
+            </svg>
+          `
+        };
+
         [
           { name: 'Home', section: 'home', i18n: 'home' },
-          { name: 'EduInfo', section: 'eduinfo', i18n: 'eduinfo' },
-          
-          { name: 'AgroInfo', section: 'agroinfo', i18n: 'agroinfo' },
-          { name: 'MediInfo', section: 'mediinfo', i18n: 'mediinfo' },
           { name: 'NaviInfo', section: 'naviinfo', i18n: 'naviinfo' },
           { name: 'CommunityInfo', section: 'communityinfo', i18n: 'communityinfo' },
+          { name: 'EcoInfo', section: 'ecoinfo', i18n: 'ecoinfo' },
           { name: 'ServiInfo', section: 'serviinfo', i18n: 'serviinfo' },
+          { name: 'WeatherInfo', section: 'weatherinfo', i18n: 'weatherinfo' },
+          { name: 'DealzInfo', section: 'dealzinfo', i18n: 'dealzinfo' },
           { name: 'Settings', section: 'settings', i18n: 'settings' }
         ].forEach(link => {
           const li = document.createElement('li');
           const btn = document.createElement('button');
-          btn.setAttribute('data-i18n', link.i18n);
-          btn.textContent = link.name;
+          btn.type = 'button';
+
+          const iconMarkup = mobileMenuIcons[link.section] || '';
+          if (iconMarkup) {
+            const iconContainer = document.createElement('span');
+            iconContainer.className = 'nav-icon-wrap';
+            iconContainer.innerHTML = iconMarkup;
+            btn.appendChild(iconContainer);
+          }
+
+          const textSpan = document.createElement('span');
+          textSpan.setAttribute('data-i18n', link.i18n);
+          textSpan.textContent = link.name;
+          btn.appendChild(textSpan);
+
           btn.onclick = () => {
             window.highlightActiveNav(link.section);
             window.loadSection(link.section);

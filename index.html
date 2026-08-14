@@ -31,6 +31,9 @@
   <link rel="stylesheet" href="styles/communityinfo.css">
   <link rel="stylesheet" href="styles/aboutinfo.css">
   <link rel="stylesheet" href="styles/auth.css">
+  <link rel="stylesheet" href="Other_features/styles/maps.css">
+  <link rel="stylesheet" href="Other_features/styles/servi.css">
+  <!--<link rel="stylesheet" href="pages/styles/pages.css">-->
   <link rel="stylesheet" href="Other_features/styles/ecoAI.css">
   <link rel="stylesheet" href="Other_features/styles/aetherflow.css">
   <link rel="stylesheet" href="Other_features/styles/yola-maps.css">
@@ -152,6 +155,9 @@
   <script src="components/eduinfo.js?t=20260308" defer></script>
   <script src="components/agroinfo.js?t=20260308" defer></script>
   <script src="components/mediinfo.js?t=20260308" defer></script>
+  <script src="components/weatherinfo.js"></script>
+  <script src="components/weatherinfo.js.js"></script>
+  <script src="components/dealzinfo.js"></script>
   <script src="components/naviinfo.js?t=20260308" defer></script>
   <!--<script src="components/ecoinfo.js?t=20260308" defer></script>-->
   <script src="components/serviinfo.js?t=20260308" defer></script>
@@ -159,6 +165,11 @@
   <script src="Other_features/scripts/ecoClassifier.js?t=20260308" defer></script>
   <script src="Other_features/scripts/ecoAI.js" defer></script>
   <script src="components/details-navigation.js?t=20260308" defer></script>
+  <script src="Other_features/scripts/maps.js"></script>
+  <script src="pages/scripts/pages.js"></script>
+  <script src="Other_features/scripts/servi.js"></script>
+  <script src=""></script>
+  <!--<link rel="stylesheet" href="pages/styles/pages.css">-->
   <script src="app.js?t=20260308" defer></script>
   <!-- About route now uses the Settings page; removed legacy about script -->
   <script>
@@ -171,7 +182,7 @@
       // shared UI handles used by both the loader and the TomTom preloader
       const navbarDiv = document.getElementById('navbar');
       const minimalAppbar = `<div class="minimal-appbar"><span class="appname">Yola AI Info Hub</span></div>`;
-      const sections = ['home', 'eduinfo', 'agroinfo', 'mediinfo', 'naviinfo', 'ecoinfo', 'serviinfo', 'communityinfo', 'about', 'settings'];
+      const sections = ['home', 'eduinfo', 'dealzinfo', 'weatherinfo', 'naviinfo', 'ecoinfo', 'serviinfo', 'communityinfo', 'about', 'settings'];
 
       // Handle auth sections first
       sections.forEach(s => {
@@ -206,8 +217,8 @@
       const routes = {
         home: 'components/home.js',
         eduinfo: 'components/eduinfo.js',
-        agroinfo: 'components/agroinfo.js',
-        mediinfo: 'components/mediinfo.js',
+        dealzinfo: 'components/dealzinfo.js',
+        weatherinfo: 'components/weatherinfo.js',
         naviinfo: 'components/naviinfo.js',
         communityinfo: 'components/communityinfo.js',
         ecoinfo: 'components/ecoinfo.js',

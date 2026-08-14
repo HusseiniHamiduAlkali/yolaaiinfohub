@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join ServiInfo — List Your Services in Yola</title>
+    <meta name="description" content="Register as a service professional on ServiInfo and get discovered by residents across Yola, Adamawa State. Free listing, verified badge, real reviews.">
+    <meta property="og:title" content="Join ServiInfo — List Your Services in Yola">
+    <meta property="og:description" content="Register as a service professional on ServiInfo and get discovered by residents across Yola, Adamawa State. Free listing, verified badge, real reviews.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="styles/servi.css">
+    <link rel="stylesheet" href="../pages/styles/pages.css">
+    <style>
+        @media screen and (max-width: 700px) {
+            .form-grid {display: flex ; flex-direction: column;}   
+        }
+    </style>
+</head>
+<body>
+
+    <!--<header class="mobile-header" aria-label="Mobile app header">
+        <div class="brand-lockup">
+            <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <defs>
+                    <linearGradient id="mIcon" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#064e3b"/>
+                        <stop offset="100%" stop-color="#17997a"/>
+                    </linearGradient>
+                </defs>
+                <rect width="48" height="48" rx="12" fill="url(#mIcon)"/>
+                <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+            </svg>
+            <div class="brand-text">
+                <span class="brand-name">Yola AI Info Hub</span>
+                <span class="brand-tagline">ServiInfo · Find professionals</span>
+            </div>
+        </div>
+    </header>-->
+
+
+    <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <a href="/" class="nav-logo">
+                <img src="/Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="/Data/Images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </a>
+            <a href="/" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+
+    <header class="hero" aria-label="Join ServiInfo">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner">
+
+            <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+                <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+                <a href="/" class="nav-logo">
+                    <span class="navbar-appname-desktop"></span>
+                </a>
+            </div>
+            <div>
+            <span class="eyebrow">ServiInfo · For professionals</span>
+            <h1 class="hero-title">Get found by people who need your skill</h1>
+            <p class="hero-subtitle">Listing on ServiInfo is free. Add your trade, areas you cover and your price range — residents across Yola can then find, compare and call you directly.</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <section class="mobile-intro" aria-label="Introduction">
+            <h1 class="mobile-title">Join ServiInfo</h1>
+            <p class="lead">Listing is free. Add your trade, coverage areas and price range so residents across Yola can find and call you directly.</p>
+        </section>
+
+        <section class="section" aria-labelledby="benefits-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Why list</span>
+                <h2 id="benefits-heading" class="section-title">What you get</h2>
+            </div>
+            <div class="steps">
+                <div class="step"><h3>Free profile</h3><p>A public page with your services, rates, hours and contact buttons.</p></div>
+                <div class="step"><h3>Verified badge</h3><p>Confirm your ID and address to earn the badge clients look for.</p></div>
+                <div class="step"><h3>Real reviews</h3><p>Build a reputation that keeps working for you long after each job.</p></div>
+                <div class="step"><h3>Direct calls</h3><p>Clients reach you directly — ServiInfo takes no commission.</p></div>
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="form-heading">
+            <div class="section-header">
+                <span class="section-eyebrow">Registration</span>
+                <h2 id="form-heading" class="section-title">Tell us about your work</h2>
+            </div>
+
+            <div class="form-card">
+                <form id="joinForm" novalidate>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="fullName">Full name</label>
+                            <input type="text" id="fullName" name="fullName" required placeholder="e.g. Abubakar Sanusi">
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="profession">Profession / trade</label>
+                            <input type="text" id="profession" name="profession" required placeholder="e.g. Master Plumber">
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="category">Category</label>
+                            <select id="category" name="category" required>
+                                <option value="">Select a category</option>
+                                <option>Artisans</option><option>Health</option><option>Home Services</option><option>Tech & Digital</option><option>Auto</option><option>Education</option><option>Events</option><option>Legal & Finance</option><option>Beauty</option><option>Other</option>
+                            </select>
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="area">Main area covered</label>
+                            <select id="area" name="area" required>
+                                <option value="">Select an area</option>
+                                <option>Jimeta</option><option>Yola South</option><option>Karewa</option><option>Doubeli</option><option>Bekaji</option><option>Rumde</option><option>Yolde Pate</option><option>Damilu</option><option>All of Yola</option>
+                            </select>
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="experience">Years of experience</label>
+                            <input type="number" id="experience" name="experience" min="0" max="60" required placeholder="e.g. 8">
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="phone">Phone / WhatsApp</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="e.g. 0803 000 0000">
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="email">Email <span class="form-hint">(optional)</span></label>
+                            <input type="email" id="email" name="email" placeholder="you@example.com">
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field">
+                            <label for="price">Typical price range</label>
+                            <input type="text" id="price" name="price" required placeholder="e.g. N5,000 - N25,000">
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field span-2">
+                            <label for="skills">Key services <span class="form-hint">(comma separated)</span></label>
+                            <input type="text" id="skills" name="skills" required placeholder="Leak repair, Pipe fitting, Tank installation">
+                            <span class="form-error"></span>
+                        </div>
+                        <div class="form-field span-2">
+                            <label for="bio">About your work</label>
+                            <textarea id="bio" name="bio" required placeholder="Describe your experience, the kind of jobs you handle and what makes your service reliable."></textarea>
+                            <span class="form-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Submit listing</button>
+                        <a href="servi.html" class="btn btn-secondary">Back to directory</a>
+                    </div>
+
+                    <p class="form-hint" style="margin-top:12px">By submitting you agree that the details above may be shown publicly on ServiInfo. We review every listing before it goes live.</p>
+                </form>
+
+                <div class="form-success" id="joinSuccess" hidden role="status">
+                    <i class="fas fa-circle-check" aria-hidden="true"></i>
+                    <div>
+                        <strong>Listing received.</strong>
+                        <div>Our team will review your details and reach out on the number you provided within 48 hours.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!--<footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <defs>
+                    <linearGradient id="fIcon" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#064e3b"/>
+                        <stop offset="100%" stop-color="#17997a"/>
+                    </linearGradient>
+                </defs>
+                <rect width="48" height="48" rx="12" fill="url(#fIcon)"/>
+                <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+            </svg>
+                        <div class="brand-text">
+                            <span class="brand-name">Yola AI Info Hub</span>
+                        </div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="edu.html">Education directory</a></li>
+                        <li><a href="servi.html">ServiInfo</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Professionals</h3>
+                    <ul class="footer-links">
+                        <li><a href="servi-join.html">Join as a professional</a></li>
+                        <li><a href="servi.html#how">How it works</a></li>
+                        <li><a href="report.html">Report a listing</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="report.html">Report / comment</a></li>
+                        <li><a href="mailto:hello@yolaaiinfohub.com">Contact us</a></li>
+                        <li><a href="#">Privacy policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">&copy; <span id="year">2026</span> Yola AI Info Hub. Built for Yola, Adamawa State.</p>
+            </div>
+        </div>
+    </footer>-->
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text">
+                            <span class="brand-name">Yola AI Info Hub</span>
+                        </div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/pages/about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/report.html">Report / comment</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="/pages/help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/privacy.html">Privacy policy</a></li>
+                        <li><a href="/pages/terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">© <span id="year">2026</span> Yola AI Info Hub. Built for Yola, Adamawa State.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="scripts/maps.js"></script>
+</body>
+</html>
+
+

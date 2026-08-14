@@ -1,0 +1,36 @@
+
+<!-- Dark 1 — Classic Crescent -->
+<svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4
+           A8.5 8.5 0 1 0 20 15.5Z"
+        fill="currentColor"/>
+</svg>
+
+
+
+<!-- Light 2 — Filled Sun -->
+<svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <circle cx="12" cy="12" r="5"
+          fill="currentColor"/>
+
+  <path d="M12 2v2M12 20v2M2 12h2M20 12h2
+           M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5
+           M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"/>
+</svg>
+
+
+
+<!-- Language 1 — Classic Globe -->
+<svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <circle cx="12" cy="12" r="9"
+          stroke="currentColor"
+          stroke-width="1.8"/>
+
+  <path d="M3.5 12h17M12 3c2.5 2.5 3.5 5.5 3.5 9S14.5 18.5 12 21
+           c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z"
+        stroke="currentColor"
+        stroke-width="1.5"/>
+</svg>

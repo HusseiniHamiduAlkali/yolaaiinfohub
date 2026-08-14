@@ -246,7 +246,7 @@ app.post('/api/transcribe', async (req, res) => {
 
     const mimeType = uploadedFile.mimetype || 'audio/webm';
     const audioBase64 = uploadedFile.data.toString('base64');
-    const modelCandidates = ['gemini-2.5-flash', 'gemini-1.5-flash'];
+    const modelCandidates = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
 
     for (const model of modelCandidates) {
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
@@ -413,8 +413,9 @@ app.post('/api/translate', async (req, res) => {
       targetLanguage === 'pcm' ? 'Nigerian Pidgin' : 'English';
 
     const prompt = `Translate the following text from ${sourceLanguage || 'English'} to ${targetLabel}. Return only the translated text and preserve the meaning. Do not add any explanation or notes.\n\n${inputText}`;
+    const translationModel = process.env.GEMINI_DEFAULT_MODEL || process.env.DEFAULT_CHAT_MODEL || 'gemini-3.6-flash';
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${translationModel}:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -459,20 +460,29 @@ app.post('/api/gemini', async (req, res) => {
       return res.status(400).json({ error: 'Missing model or contents' });
     }
     
-    // Normalize model names for v1 API compatibility
-    let normalizedModel = model;
-    
-    // Only map obviously invalid or friendly names (like old legacy names)
-    // new client code may request 'gemini-2.5-pro' when sending multimodal attachments
+    // Normalize model names for the Gemini API and support the new UI-friendly names.
+    let normalizedModel = String(model || '').trim();
     const modelMap = {
-      'gemini-pro-vision': 'gemini-2.5-flash',
-      'gemini-pro': 'gemini-2.5-flash',
-      'gemini-2.5-pro': 'gemini-2.5-pro'
+      'google/gemini-3.6-flash': 'gemini-3.6-flash',
+      'google/gemini-3.5-flash': 'gemini-3.5-flash',
+      'google/gemini-3.5-flash-lite': 'gemini-3.5-flash-lite',
+      'google/gemini-3.1-flash-lite': 'gemini-3.1-flash-lite',
+      'gemini-3.6-flash': 'gemini-3.6-flash',
+      'gemini-3.5-flash': 'gemini-3.5-flash',
+      'gemini-3.5-flash-lite': 'gemini-3.5-flash-lite',
+      'gemini-3.1-flash-lite': 'gemini-3.1-flash-lite',
+      'gemini-pro-vision': 'gemini-3.6-flash',
+      'gemini-pro': 'gemini-3.6-flash',
+      'google/gemini-2.0-flash': 'gemini-3.6-flash',
+      'google/gemini-1.5-flash': 'gemini-3.6-flash',
+      'google/gemini-2.5-flash': 'gemini-3.6-flash',
     };
-    
-    if (modelMap[model]) {
-      normalizedModel = modelMap[model];
+
+    if (modelMap[normalizedModel]) {
+      normalizedModel = modelMap[normalizedModel];
       console.log(`Mapped ${model} to ${normalizedModel}`);
+    } else if (normalizedModel.startsWith('google/')) {
+      normalizedModel = normalizedModel.replace(/^google\//, '');
     }
     
     // Use v1beta endpoint which accepts `contents: [{ text: '...' }]` payloads
@@ -593,22 +603,9 @@ app.post('/api/gemini', async (req, res) => {
       }
     }
     
-    // If primary model fails with 404 (model not found), fall back to gemini-1.5-flash
-    if (!response.ok && data.error?.code === 404 && normalizedModel === 'gemini-2.5-flash') {
-      console.log('Model gemini-2.5-flash not available, falling back to gemini-1.5-flash');
-      const fallbackModel = 'gemini-1.5-flash';
-      geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${fallbackModel}:generateContent?key=${API_KEY}`;
-      
-      console.log(`Retrying with fallback model: ${fallbackModel}`);
-      response = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ contents: normalizedContents })
-      });
-      
-      data = await response.json();
+    // If the primary model fails with 404, log the issue so the caller can retry with a supported model.
+    if (!response.ok && data?.error?.code === 404) {
+      console.warn(`Gemini model ${normalizedModel} returned 404; verify the model ID is supported by the configured API key.`);
     }
     
     if (!response.ok) {
@@ -638,19 +635,21 @@ const OPENAI_MODEL_MAP = {
 };
 
 const GEMINI_MODEL_MAP = {
-  'google/gemini-2.5-flash': 'gemini-2.5-flash',
-  'google/gemini-2.5-pro': 'gemini-2.5-pro',
-  'google/gemini-2.0-flash': 'gemini-2.0-flash',
-  'google/gemini-1.5-flash': 'gemini-1.5-flash',
-  'google/gemini-1.5-pro': 'gemini-1.5-pro',
+  'google/gemini-3.6-flash': 'gemini-3.6-flash',
+  'google/gemini-3.5-flash': 'gemini-3.5-flash',
+  'google/gemini-3.5-flash-lite': 'gemini-3.5-flash-lite',
+  'google/gemini-3.1-flash-lite': 'gemini-3.1-flash-lite',
+  'google/gemini-2.0-flash': 'gemini-3.6-flash',
+  'google/gemini-1.5-flash': 'gemini-3.6-flash',
+  'google/gemini-1.5-pro': 'gemini-3.6-flash',
+  'google/gemini-2.5-flash': 'gemini-3.6-flash',
 };
 
 const GEMINI_FALLBACK_MODELS = {
-  'gemini-2.5-flash': 'gemini-2.0-flash',
-  'gemini-2.5-pro': 'gemini-2.0-flash',
-  'gemini-2.0-flash': 'gemini-1.5-flash',
-  'gemini-1.5-pro': 'gemini-1.5-flash',
-  'gemini-1.5-flash': 'gemini-2.0-flash',
+  'gemini-3.6-flash': 'gemini-3.5-flash',
+  'gemini-3.5-flash': 'gemini-3.5-flash-lite',
+  'gemini-3.5-flash-lite': 'gemini-3.1-flash-lite',
+  'gemini-3.1-flash-lite': 'gemini-3.6-flash',
 };
 
 function parseDataUrl(dataUrl) {
@@ -1122,8 +1121,8 @@ async function handleGeminiChat(req, res, model, messages) {
   }
 
   try {
-    const configuredGeminiDefault = process.env.GEMINI_DEFAULT_MODEL || process.env.DEFAULT_CHAT_MODEL || 'gemini-2.5-flash';
-    let actualModel = GEMINI_MODEL_MAP[model] || GEMINI_MODEL_MAP[process.env.DEFAULT_CHAT_MODEL] || configuredGeminiDefault;
+    const configuredGeminiDefault = process.env.GEMINI_DEFAULT_MODEL || process.env.DEFAULT_CHAT_MODEL || 'gemini-3.6-flash';
+    let actualModel = GEMINI_MODEL_MAP[model] || GEMINI_MODEL_MAP[process.env.DEFAULT_CHAT_MODEL] || GEMINI_MODEL_MAP['google/' + configuredGeminiDefault] || configuredGeminiDefault;
     console.log(`Calling Gemini API with model: ${actualModel} (requested: ${model})`);
 
     const geminiMessages = messages.map((msg) => ({
@@ -1131,17 +1130,7 @@ async function handleGeminiChat(req, res, model, messages) {
       parts: geminiPartsFromMessageParts(msg.parts),
     }));
 
-    let { response, data } = await callGeminiGenerate(GEMINI_API_KEY, actualModel, geminiMessages);
-
-    let fallbackAttempts = 0;
-    while (!response.ok && data?.error?.code === 404 && fallbackAttempts < 3) {
-      const fallbackModel = GEMINI_FALLBACK_MODELS[actualModel];
-      if (!fallbackModel) break;
-      console.log(`Model ${actualModel} not available, falling back to ${fallbackModel}`);
-      actualModel = fallbackModel;
-      fallbackAttempts += 1;
-      ({ response, data } = await callGeminiGenerate(GEMINI_API_KEY, actualModel, geminiMessages));
-    }
+    const { response, data } = await callGeminiGenerate(GEMINI_API_KEY, actualModel, geminiMessages);
 
     if (!response.ok) {
       console.error('Gemini API error:', data);
@@ -1199,9 +1188,8 @@ const validateSignup = [
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
     .withMessage('Password must include uppercase, lowercase, a number, and a special character'),
   body('phone')
-    .trim()
-    .matches(/^[+\d][\d\s-]{7,}$/)
-    .withMessage('Enter a valid phone number'),
+    .optional({ checkFalsy: true })
+    .trim(),
   body('nin')
     .trim()
     .matches(/^\d{11}$/)
@@ -1579,10 +1567,17 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
   // Use a targeted update to avoid triggering full-document validators
   await User.updateOne({ _id: user._id }, { $set: { resetToken: hash, resetTokenExpires: Date.now() + 3600000 } });
 
-    // Build a safe reset URL: use FRONTEND_URL from env, or force production domain if in production
+    // Build a safe reset URL: ALWAYS use production domain for email links
     // Never use request origin for email links - it may be localhost/127.0.0.1
-    // Always use the live frontend URL for reset links
-    const origin = (process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app').replace(/\/$/, '');
+    // Extract production URL from environment (ignore localhost entries)
+    let frontendUrl = process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app';
+    // Handle case where multiple URLs are in the env variable (comma-separated)
+    frontendUrl = frontendUrl.split(',')[0].trim(); // Get first URL
+    // If it's localhost, fall back to production URL
+    if (frontendUrl.includes('localhost') || frontendUrl.includes('127.0.0.1')) {
+      frontendUrl = 'https://yolaaiinfohub.netlify.app';
+    }
+    const origin = frontendUrl.replace(/\/$/, '');
     const resetEmail = email || user.email;
     // User's site uses pages/reset-password.html as the reset page; build link accordingly
   const resetUrl = `${origin}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(resetEmail)}`;
@@ -1664,8 +1659,13 @@ app.post('/api/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'Invalid or expired reset token' });
     }
 
-    // Verify token
-    const isValid = await bcrypt.compare(token, user.resetToken);
+    // Verify token. Support both newly hashed tokens and legacy raw tokens
+    // so older reset links still continue to work until a new reset is requested.
+    const storedToken = user.resetToken;
+    const isValid = !!storedToken && (
+      storedToken === token ||
+      (typeof storedToken === 'string' && storedToken.startsWith('$2') && await bcrypt.compare(token, storedToken))
+    );
     if (!isValid) {
       return res.status(400).json({ error: 'Invalid reset token' });
     }
