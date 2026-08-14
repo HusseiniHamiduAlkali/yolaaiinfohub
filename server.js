@@ -1210,15 +1210,44 @@ const validateSignup = [
     .custom((value) => value === true || value === 'true')
     .withMessage('You must accept the terms of use')
 ];
+function normalizeEnvValue(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function isPlaceholderValue(value) {
+  const normalized = normalizeEnvValue(value).toLowerCase();
+  if (!normalized) return true;
+  return [
+    'your_',
+    'replace_with',
+    'example.com',
+    'your_email@gmail.com',
+    'your_app_password_here',
+    'apikey',
+    'changeme',
+    'placeholder'
+  ].some((token) => normalized.includes(token));
+}
+
 // Email transport configuration
 // Configure email transporter only if SMTP credentials are present
 let transporter = null;
-const emailHost = process.env.EMAIL_HOST;
-const emailPort = process.env.EMAIL_PORT ? Number(process.env.EMAIL_PORT) : undefined;
-const emailUser = process.env.EMAIL_USER;
-const emailPass = process.env.EMAIL_PASS;
+const emailHost = normalizeEnvValue(process.env.EMAIL_HOST);
+const emailPort = process.env.EMAIL_PORT ? Number(normalizeEnvValue(process.env.EMAIL_PORT)) : undefined;
+const emailUser = normalizeEnvValue(process.env.EMAIL_USER);
+const emailPass = normalizeEnvValue(process.env.EMAIL_PASS).replace(/\s+/g, '');
+const emailFrom = normalizeEnvValue(process.env.EMAIL_FROM) || `"Yola AI Info Hub" <${emailUser}>`;
 
-const emailConfigured = emailHost && emailPort && emailUser && emailPass;
+const emailConfigured = Boolean(
+  emailHost &&
+  Number.isFinite(emailPort) &&
+  emailUser &&
+  emailPass &&
+  !isPlaceholderValue(emailHost) &&
+  !isPlaceholderValue(emailUser) &&
+  !isPlaceholderValue(emailPass)
+);
+
 if (emailConfigured) {
   transporter = nodemailer.createTransport({
     host: emailHost,
@@ -1240,7 +1269,7 @@ if (emailConfigured) {
     console.error('Email transporter verification failed. Email may not be sent:', err && err.message ? err.message : err);
   });
 } else {
-  console.warn('Email not configured: set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in .env to enable email sending.');
+  console.warn('Email not configured: set valid EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in the active environment to enable email sending.');
 }
 // For development/testing: store last generated reset link in memory so it can be inspected
 let lastResetLink = null;
@@ -1263,7 +1292,7 @@ async function sendEmailNotification(to, subject, htmlContent) {
 
   try {
     await transporter.sendMail({
-      from: `"Yola AI Info Hub" <${emailUser}>`,
+      from: emailFrom,
       to,
       subject,
       html: htmlContent
@@ -1290,7 +1319,7 @@ async function sendOtpEmail(to, code, purpose = 'verify your account') {
 
   try {
     await transporter.sendMail({
-      from: `"Yola AI Info Hub" <${emailUser}>`,
+      from: emailFrom,
       to,
       subject,
       html
@@ -1613,7 +1642,7 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
     };
 
     // Send email if transporter is configured; otherwise log the reset URL for manual testing
-    if (transporter) {
+    if (transporter && emailConfigured) {
       try {
         await transporter.sendMail(mailOptions);
         console.log(`Password reset email sent to ${destination}`);
@@ -1622,19 +1651,25 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
         if (process.env.SUPPRESS_RESET_LOG !== 'true') {
           console.log('Fallback - reset URL (copy this to browser to test):', resetUrl);
         }
-  // Do not expose reset link to clients in production; only include in response when explicitly enabled for dev
-  const respFail = { success: true, message: 'Password reset link generated. If you do not receive an email, contact support or check server logs.' };
-  if (includeResetInResponse && lastResetLink) respFail.resetLink = lastResetLink;
-  return res.json(respFail);
+        const respFail = { success: true, message: 'Password reset link generated. If you do not receive an email, contact support or check server logs.' };
+        if (includeResetInResponse && lastResetLink) respFail.resetLink = lastResetLink;
+        return res.json(respFail);
       }
     } else {
+      if (isProduction) {
+        console.error('Password reset email failed: SMTP is not configured in production.');
+        return res.status(503).json({
+          success: false,
+          error: 'Password reset email is not configured on this server. Please contact support.'
+        });
+      }
+
       if (process.env.SUPPRESS_RESET_LOG !== 'true') {
         console.log('Email not configured; reset link:', resetUrl);
       }
-      // Still return success to the client to avoid exposing internal errors
-  const respNoEmail = { success: true, message: 'Password reset link generated. Email sending is not configured on the server; check server logs for the reset link.' };
-  if (includeResetInResponse && lastResetLink) respNoEmail.resetLink = lastResetLink;
-  return res.json(respNoEmail);
+      const respNoEmail = { success: true, message: 'Password reset link generated. Email sending is not configured on the server; check server logs for the reset link.' };
+      if (includeResetInResponse && lastResetLink) respNoEmail.resetLink = lastResetLink;
+      return res.json(respNoEmail);
     }
 
     const respOk = { success: true, message: email ? 'Password reset email sent' : 'Password reset request recorded' };
