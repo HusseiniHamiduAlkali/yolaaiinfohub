@@ -13,16 +13,12 @@ services:
         value: 0.0.0.0
       - key: MONGO_URI
         sync: false
-      - key: EMAIL_HOST
-        value: smtp.gmail.com
-      - key: EMAIL_PORT
-        value: 587
-      - key: EMAIL_USER
+      - key: BREVO_API_KEY
         sync: false
-      - key: EMAIL_PASS
+      - key: BREVO_SENDER_EMAIL
         sync: false
-      - key: EMAIL_FROM
-        value: "Yola AI Info Hub <auth.yolaaiinfohub@gmail.com>"
+      - key: BREVO_SENDER_NAME
+        value: "Yola AI Info Hub - Authentication"
       - key: FRONTEND_URL
         value: https://yolaaiinfohub.netlify.app
       - key: FRONT_END_URL

@@ -234,7 +234,7 @@ app.get('/api/health', (req, res) => {
   res.status(statusCode).json(status);
 });
 
-app.post('/api/send-smtp-email', async (req, res) => {
+app.post('/api/send-email', async (req, res) => {
   try {
     const { to, subject, html, text } = req.body || {};
 
@@ -250,15 +250,15 @@ app.post('/api/send-smtp-email', async (req, res) => {
     });
 
     if (result && result.success) {
-      return res.json({ success: true, message: 'Email sent successfully via Gmail SMTP.' });
+      return res.json({ success: true, message: 'Email sent successfully via Brevo.' });
     }
 
     return res.status(500).json({
       success: false,
-      error: 'Gmail SMTP is not configured or the email send failed.'
+      error: 'Brevo email is not configured or the email send failed.'
     });
   } catch (error) {
-    console.error('SMTP endpoint error:', error);
+    console.error('Email endpoint error:', error);
     return res.status(500).json({ success: false, error: 'Error sending email.' });
   }
 });
@@ -1260,47 +1260,17 @@ function isPlaceholderValue(value) {
   ].some((token) => normalized.includes(token));
 }
 
-// Email transport configuration
-// Configure email transporter only if SMTP credentials are present
+// Email configuration (note: we now use Brevo API, not SMTP)
 let transporter = null;
-const emailHost = normalizeEnvValue(process.env.EMAIL_HOST);
-const emailPort = process.env.EMAIL_PORT ? Number(normalizeEnvValue(process.env.EMAIL_PORT)) : undefined;
-const emailUser = normalizeEnvValue(process.env.EMAIL_USER);
-const emailPass = normalizeEnvValue(process.env.EMAIL_PASS).replace(/\s+/g, '');
-const emailFrom = normalizeEnvValue(process.env.EMAIL_FROM) || `"Yola AI Info Hub" <${emailUser}>`;
-
 const emailConfigured = Boolean(
-  emailHost &&
-  Number.isFinite(emailPort) &&
-  emailUser &&
-  emailPass &&
-  !isPlaceholderValue(emailHost) &&
-  !isPlaceholderValue(emailUser) &&
-  !isPlaceholderValue(emailPass)
+  process.env.BREVO_API_KEY &&
+  process.env.BREVO_SENDER_EMAIL
 );
 
 if (emailConfigured) {
-  transporter = nodemailer.createTransport({
-    host: emailHost,
-    port: emailPort,
-    secure: emailPort === 465,
-    auth: {
-      user: emailUser,
-      pass: emailPass
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
-
-  // Verify transporter configuration early so issues surface on startup
-  transporter.verify().then(() => {
-    console.log('Email transporter verified');
-  }).catch(err => {
-    console.error('Email transporter verification failed. Email may not be sent:', err && err.message ? err.message : err);
-  });
+  console.log('Brevo email service is configured and will be used for email sending.');
 } else {
-  console.warn('Email not configured: set valid EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS in the active environment to enable email sending.');
+  console.warn('Email not configured: set BREVO_API_KEY and BREVO_SENDER_EMAIL in the active environment to enable email sending.');
 }
 // For development/testing: store last generated reset link in memory so it can be inspected
 let lastResetLink = null;
@@ -1325,29 +1295,17 @@ async function sendEmailNotification(to, subject, htmlContent) {
         text: htmlContent.replace(/<[^>]*>/g, ' ')
       });
       if (result && result.success) {
-        console.log(`Email sent via SMTP to ${to}: ${subject}`);
+        console.log(`Email sent via Brevo to ${to}: ${subject}`);
         return result;
       }
     } catch (error) {
-      console.error('Failed to send email via SMTP:', error);
+      console.error('Failed to send email via Brevo:', error);
     }
   }
 
-  if (!transporter || !emailConfigured) {
+  if (!emailConfigured) {
     console.warn('Email not configured, skipping notification');
     return;
-  }
-
-  try {
-    await transporter.sendMail({
-      from: emailFrom,
-      to,
-      subject,
-      html: htmlContent
-    });
-    console.log(`Email sent to ${to}: ${subject}`);
-  } catch (error) {
-    console.error('Failed to send email:', error);
   }
 }
 
@@ -1371,26 +1329,15 @@ async function sendOtpEmail(to, code, purpose = 'verify your account') {
       return { sent: true };
     }
   } catch (error) {
-    console.error('Failed to send OTP email via SMTP:', error);
+    console.error('Failed to send OTP email via Brevo:', error);
   }
 
-  if (!transporter || !emailConfigured) {
+  if (!emailConfigured) {
     console.warn('Email not configured, skipping OTP email');
     return { sent: false };
   }
-
-  try {
-    await transporter.sendMail({
-      from: emailFrom,
-      to,
-      subject,
-      html
-    });
-    return { sent: true };
-  } catch (error) {
-    console.error('Failed to send OTP email:', error);
-    return { sent: false, error };
-  }
+  
+  return { sent: false, error: 'Email delivery failed' };
 }
 
 async function sendVerificationEmail(user) {
@@ -1428,34 +1375,24 @@ async function sendVerificationEmail(user) {
     <p>Best regards,<br>Yola AI Info Hub Team</p>
   `;
 
-  if (!transporter || !emailConfigured) {
+  if (!emailConfigured) {
     console.warn('Email not configured, verification email skipped for', user.email);
     return { sent: false, reason: 'email not configured' };
   }
 
   try {
-    const smtpResult = await sendEmailWithGmailSmtp({
+    const brevoResult = await sendEmailWithGmailSmtp({
       to: user.email,
       subject,
       html,
       text: `Verify your email for Yola AI Info Hub. Your one-time code is ${emailOtpCode}.`
     });
 
-    if (smtpResult && smtpResult.success) {
+    if (brevoResult && brevoResult.success) {
       return { sent: true, verificationUrl, emailOtpCode };
     }
 
-    if (transporter && emailConfigured) {
-      await transporter.sendMail({
-        from: emailFrom,
-        to: user.email,
-        subject,
-        html
-      });
-      return { sent: true, verificationUrl, emailOtpCode };
-    }
-
-    return { sent: false, reason: 'send failed', error: smtpResult };
+    return { sent: false, reason: 'send failed', error: brevoResult };
   } catch (error) {
     console.error('Failed to resend verification email:', error);
     return { sent: false, reason: 'send failed', error };
