@@ -30,6 +30,7 @@ const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
 const { getEmailVerificationError, getVerificationReminderMessage } = require('./server/authVerification');
 const { buildPasswordResetFallbackResponse } = require('./server/passwordResetUtils');
+const { sendEmailWithGmailSmtp } = require('./services/gmailMailer');
 require('dotenv').config({
   path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
 });
@@ -231,6 +232,35 @@ app.get('/api/health', (req, res) => {
   };
   const statusCode = dbConnected ? 200 : 503;
   res.status(statusCode).json(status);
+});
+
+app.post('/api/send-smtp-email', async (req, res) => {
+  try {
+    const { to, subject, html, text } = req.body || {};
+
+    if (!to || !subject) {
+      return res.status(400).json({ success: false, error: 'Recipient email and subject are required.' });
+    }
+
+    const result = await sendEmailWithGmailSmtp({
+      to,
+      subject,
+      html,
+      text
+    });
+
+    if (result && result.success) {
+      return res.json({ success: true, message: 'Email sent successfully via Gmail SMTP.' });
+    }
+
+    return res.status(500).json({
+      success: false,
+      error: 'Gmail SMTP is not configured or the email send failed.'
+    });
+  } catch (error) {
+    console.error('SMTP endpoint error:', error);
+    return res.status(500).json({ success: false, error: 'Error sending email.' });
+  }
 });
 
 app.post('/api/transcribe', async (req, res) => {
@@ -1286,6 +1316,23 @@ function generateOtpCode(length = 6) {
 }
 
 async function sendEmailNotification(to, subject, htmlContent) {
+  if (sendEmailWithGmailSmtp) {
+    try {
+      const result = await sendEmailWithGmailSmtp({
+        to,
+        subject,
+        html: htmlContent,
+        text: htmlContent.replace(/<[^>]*>/g, ' ')
+      });
+      if (result && result.success) {
+        console.log(`Email sent via SMTP to ${to}: ${subject}`);
+        return result;
+      }
+    } catch (error) {
+      console.error('Failed to send email via SMTP:', error);
+    }
+  }
+
   if (!transporter || !emailConfigured) {
     console.warn('Email not configured, skipping notification');
     return;
@@ -1305,11 +1352,6 @@ async function sendEmailNotification(to, subject, htmlContent) {
 }
 
 async function sendOtpEmail(to, code, purpose = 'verify your account') {
-  if (!transporter || !emailConfigured) {
-    console.warn('Email not configured, skipping OTP email');
-    return { sent: false };
-  }
-
   const subject = purpose === 'reset' ? 'Your password reset code' : 'Your email verification code';
   const html = `
     <h2>${subject}</h2>
@@ -1317,6 +1359,25 @@ async function sendOtpEmail(to, code, purpose = 'verify your account') {
     <p>This code expires in 10 minutes.</p>
     <p>If you did not request this, you can safely ignore this message.</p>
   `;
+
+  try {
+    const result = await sendEmailWithGmailSmtp({
+      to,
+      subject,
+      html,
+      text: `Your one-time code is ${code}. This code expires in 10 minutes.`
+    });
+    if (result && result.success) {
+      return { sent: true };
+    }
+  } catch (error) {
+    console.error('Failed to send OTP email via SMTP:', error);
+  }
+
+  if (!transporter || !emailConfigured) {
+    console.warn('Email not configured, skipping OTP email');
+    return { sent: false };
+  }
 
   try {
     await transporter.sendMail({
@@ -1373,13 +1434,28 @@ async function sendVerificationEmail(user) {
   }
 
   try {
-    await transporter.sendMail({
-      from: emailFrom,
+    const smtpResult = await sendEmailWithGmailSmtp({
       to: user.email,
       subject,
-      html
+      html,
+      text: `Verify your email for Yola AI Info Hub. Your one-time code is ${emailOtpCode}.`
     });
-    return { sent: true, verificationUrl, emailOtpCode };
+
+    if (smtpResult && smtpResult.success) {
+      return { sent: true, verificationUrl, emailOtpCode };
+    }
+
+    if (transporter && emailConfigured) {
+      await transporter.sendMail({
+        from: emailFrom,
+        to: user.email,
+        subject,
+        html
+      });
+      return { sent: true, verificationUrl, emailOtpCode };
+    }
+
+    return { sent: false, reason: 'send failed', error: smtpResult };
   } catch (error) {
     console.error('Failed to resend verification email:', error);
     return { sent: false, reason: 'send failed', error };
