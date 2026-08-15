@@ -1801,7 +1801,8 @@ app.post('/api/reset-password', async (req, res) => {
 app.post('/api/verify-email', async (req, res) => {
   try {
     const { token, email, code } = req.body;
-    const user = await User.findOne({ email });
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
       return res.status(400).json({ error: 'Invalid verification request' });
@@ -1830,11 +1831,12 @@ app.post('/api/verify-email', async (req, res) => {
 app.post('/api/verify-email-otp', async (req, res) => {
   try {
     const { email, code } = req.body;
-    if (!email || !code) {
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    if (!normalizedEmail || !code) {
       return res.status(400).json({ error: 'Email and code are required' });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user || !user.emailOtpCode || !user.emailOtpExpires || Date.now() > user.emailOtpExpires) {
       return res.status(400).json({ error: 'Verification code expired or invalid' });
     }
