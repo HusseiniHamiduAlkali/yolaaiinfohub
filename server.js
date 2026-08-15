@@ -1,5 +1,8 @@
 // Simple Express backend for login/signup/logout with MongoDB (Mongoose)
 
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
+});
 
 const { OAuth2Client } = require('google-auth-library');
 
@@ -31,9 +34,6 @@ const fileUpload = require('express-fileupload');
 const { getEmailVerificationError, getVerificationReminderMessage } = require('./server/authVerification');
 const { buildPasswordResetFallbackResponse } = require('./server/passwordResetUtils');
 const { sendEmailWithGmailSmtp } = require('./services/gmailMailer');
-require('dotenv').config({
-  path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
-});
 
 
 const app = express();
@@ -61,8 +61,20 @@ const configuredOrigins = (process.env.CORS_ORIGINS || process.env.ALLOWED_ORIGI
   .filter(Boolean);
 const allowedOrigins = new Set([...DEFAULT_ALLOWED_ORIGINS, ...configuredOrigins]);
 
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 const isProduction = process.env.NODE_ENV === 'production';
+
+function getPrimaryFrontendUrl() {
+  const rawValue = process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app';
+  const candidates = rawValue
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  const nonLocalCandidate = candidates.find((value) => !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(value));
+  const selected = nonLocalCandidate || candidates[0] || 'https://yolaaiinfohub.netlify.app';
+  return selected.replace(/\/$/, '');
+}
 
 function buildGoogleUsername(email) {
   const base = String(email || '').split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '').toLowerCase();
@@ -1346,7 +1358,7 @@ async function sendVerificationEmail(user) {
   }
 
   const verificationToken = crypto.randomBytes(32).toString('hex');
-  const verificationUrl = `${(process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app').replace(/\/$/, '')}/pages/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(user.email)}`;
+  const verificationUrl = `${getPrimaryFrontendUrl()}/pages/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(user.email)}`;
   const emailOtpCode = generateOtpCode();
 
   const updatedUser = await User.updateOne({ _id: user._id }, {
@@ -1571,7 +1583,7 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
       termsAcceptedDate: new Date()
     });
 
-    const verificationUrl = `${(process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app').replace(/\/$/, '')}/pages/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+    const verificationUrl = `${getPrimaryFrontendUrl()}/pages/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(email)}`;
     const emailOtpCode = generateOtpCode();
     const phoneOtpCode = generateOtpCode();
 
@@ -1667,13 +1679,7 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
     // Build a safe reset URL: ALWAYS use production domain for email links
     // Never use request origin for email links - it may be localhost/127.0.0.1
     // Extract production URL from environment (ignore localhost entries)
-    let frontendUrl = process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app';
-    // Handle case where multiple URLs are in the env variable (comma-separated)
-    frontendUrl = frontendUrl.split(',')[0].trim(); // Get first URL
-    // If it's localhost, fall back to production URL
-    if (frontendUrl.includes('localhost') || frontendUrl.includes('127.0.0.1')) {
-      frontendUrl = 'https://yolaaiinfohub.netlify.app';
-    }
+    const frontendUrl = getPrimaryFrontendUrl();
     const origin = frontendUrl.replace(/\/$/, '');
     const resetEmail = email || user.email;
     // User's site uses pages/reset-password.html as the reset page; build link accordingly

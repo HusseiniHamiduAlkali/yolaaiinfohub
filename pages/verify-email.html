@@ -36,7 +36,7 @@
       </button>
     </div>
     
-    <form id="verifyForm">
+    <form id="verifyForm" novalidate>
       <!-- Link/Token Method -->
       <div class="verify-method" data-method="token" id="tokenMethod">
         <div class="field">
@@ -67,7 +67,7 @@
   </main>
   <script>
     (function () {
-      function getApiBase() {
+      const getApiBase = function () {
         const configuredBase = (window.API_BASE || window.__API_BASE__ || '').replace(/\/$/, '');
         if (configuredBase) return configuredBase;
 
@@ -77,7 +77,7 @@
         }
 
         return 'https://yolaaiinfohub-backend.onrender.com';
-      }
+      };
 
       const params = new URLSearchParams(window.location.search);
       const verifyForm = document.getElementById('verifyForm');
@@ -86,107 +86,124 @@
       const methodDivs = document.querySelectorAll('.verify-method');
       const tokenToken = params.get('token');
       const paramEmail = params.get('email');
+      const tokenEmailInput = document.getElementById('verifyEmail');
+      const otpEmailInput = document.getElementById('verifyEmail2');
+      const otpCodeInput = document.getElementById('verifyCode');
       let currentMethod = 'token';
-      
-      // If token is present, pre-fill and auto-verify if email is also present
-      if (tokenToken) {
-        document.getElementById('verifyEmail').value = paramEmail || '';
-        statusEl.className = 'status';
-        statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Verification link detected. Click Verify to complete your email verification.';
+
+      function syncMethodState(method) {
+        const isTokenMethod = method === 'token';
+        tokenEmailInput.disabled = !isTokenMethod;
+        otpEmailInput.disabled = isTokenMethod;
+        otpCodeInput.disabled = isTokenMethod;
+        tokenEmailInput.required = isTokenMethod;
+        otpEmailInput.required = !isTokenMethod;
+        otpCodeInput.required = !isTokenMethod;
       }
-      
-      // Tab switching
-      tabButtons.forEach(btn => {
+
+      function setTabState(method) {
+        currentMethod = method;
+        tabButtons.forEach((btn) => {
+          const isActive = btn.getAttribute('data-method') === method;
+          btn.classList.toggle('is-active', isActive);
+          btn.style.color = isActive ? '#0f766e' : '#999';
+          btn.style.borderBottomColor = isActive ? '#0f766e' : 'transparent';
+        });
+        methodDivs.forEach((div) => {
+          const isActive = div.getAttribute('data-method') === method;
+          div.style.display = isActive ? 'block' : 'none';
+        });
+        syncMethodState(method);
+        statusEl.innerHTML = '';
+        statusEl.className = 'status';
+      }
+
+      if (tokenToken) {
+        tokenEmailInput.value = paramEmail || '';
+        statusEl.className = 'status';
+        statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Verification link detected. Verifying your email...';
+      }
+
+      setTabState('token');
+
+      tabButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
-          const method = btn.getAttribute('data-method');
-          currentMethod = method;
-          
-          // Update active tab
-          tabButtons.forEach(b => b.classList.remove('is-active'));
-          btn.classList.add('is-active');
-          btn.style.color = '#0f766e';
-          btn.style.borderBottomColor = '#0f766e';
-          
-          // Update inactive tabs
-          tabButtons.forEach(b => {
-            if (b !== btn) {
-              b.style.color = '#999';
-              b.style.borderBottomColor = 'transparent';
-            }
-          });
-          
-          // Show/hide methods
-          methodDivs.forEach(div => {
-            div.style.display = div.getAttribute('data-method') === method ? 'block' : 'none';
-          });
-          
-          statusEl.innerHTML = '';
-          statusEl.className = 'status';
+          setTabState(btn.getAttribute('data-method'));
         });
       });
-      
-      // Form submission
+
       verifyForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const apiBase = getApiBase();
-        
+
         try {
           if (currentMethod === 'token') {
-            // Token-based verification
-            const email = document.getElementById('verifyEmail').value.trim();
+            const email = tokenEmailInput.value.trim();
             if (!email && !tokenToken) {
               statusEl.className = 'status error';
               statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> Enter your email address.';
               return;
             }
-            
+
             const response = await fetch(apiBase + '/api/verify-email', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               credentials: 'include',
-              body: JSON.stringify({ 
-                email: email || paramEmail, 
-                token: tokenToken 
+              body: JSON.stringify({
+                email: email || paramEmail,
+                token: tokenToken
               })
             });
+
             const data = await response.json().catch(() => ({}));
             if (!response.ok || !data.success) {
               statusEl.className = 'status error';
               statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + (data.error || 'Verification failed.');
               return;
             }
+
             statusEl.className = 'status success';
             statusEl.innerHTML = '<i class="fas fa-circle-check"></i> Your email is verified. You can now sign in.';
-          } else {
-            // OTP code-based verification
-            const email = document.getElementById('verifyEmail2').value.trim();
-            const code = document.getElementById('verifyCode').value.trim();
-            if (!email || !code) {
-              statusEl.className = 'status error';
-              statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> Enter both your email and the verification code.';
-              return;
-            }
-            
-            const response = await fetch(apiBase + '/api/verify-email-otp', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials: 'include',
-              body: JSON.stringify({ email, code })
-            });
-            const data = await response.json().catch(() => ({}));
-            if (!response.ok || !data.success) {
-              statusEl.className = 'status error';
-              statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + (data.error || 'Verification failed.');
-              return;
-            }
-            statusEl.className = 'status success';
-            statusEl.innerHTML = '<i class="fas fa-circle-check"></i> Your email is verified. You can now sign in.';
+            return;
           }
+
+          const email = otpEmailInput.value.trim();
+          const code = otpCodeInput.value.trim();
+          if (!email || !code) {
+            statusEl.className = 'status error';
+            statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> Enter both your email and the verification code.';
+            return;
+          }
+
+          const response = await fetch(apiBase + '/api/verify-email-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email, code })
+          });
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || !data.success) {
+            statusEl.className = 'status error';
+            statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + (data.error || 'Verification failed.');
+            return;
+          }
+
+          statusEl.className = 'status success';
+          statusEl.innerHTML = '<i class="fas fa-circle-check"></i> Your email is verified. You can now sign in.';
         } catch (error) {
           statusEl.className = 'status error';
           statusEl.innerHTML = '<i class="fas fa-circle-exclamation"></i> ' + (error && error.message ? error.message : 'Verification failed.');
         }
       });
+
+      if (tokenToken) {
+        setTimeout(() => {
+          if (currentMethod === 'token') {
+            verifyForm.requestSubmit();
+          }
+        }, 150);
+      }
     })();
   </script>
 </body>
