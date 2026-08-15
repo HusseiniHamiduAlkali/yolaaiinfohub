@@ -29,6 +29,7 @@ const helmet = require('helmet');
 const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
 const { getEmailVerificationError } = require('./server/authVerification');
+const { buildPasswordResetFallbackResponse } = require('./server/passwordResetUtils');
 require('dotenv').config({
   path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
 });
@@ -1657,18 +1658,25 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
       }
     } else {
       if (isProduction) {
-        console.error('Password reset email failed: SMTP is not configured in production.');
-        return res.status(503).json({
-          success: false,
-          error: 'Password reset email is not configured on this server. Please contact support.'
+        console.warn('Password reset email not configured in production. Generated reset link available in logs for manual follow-up:', resetUrl);
+        const respProductionFallback = buildPasswordResetFallbackResponse({
+          resetUrl,
+          lastResetLink,
+          includeResetInResponse,
+          isProduction: true
         });
+        return res.status(200).json(respProductionFallback);
       }
 
       if (process.env.SUPPRESS_RESET_LOG !== 'true') {
         console.log('Email not configured; reset link:', resetUrl);
       }
-      const respNoEmail = { success: true, message: 'Password reset link generated. Email sending is not configured on the server; check server logs for the reset link.' };
-      if (includeResetInResponse && lastResetLink) respNoEmail.resetLink = lastResetLink;
+      const respNoEmail = buildPasswordResetFallbackResponse({
+        resetUrl,
+        lastResetLink,
+        includeResetInResponse,
+        isProduction: false
+      });
       return res.json(respNoEmail);
     }
 
