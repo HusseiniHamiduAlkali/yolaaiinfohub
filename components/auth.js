@@ -461,11 +461,14 @@ function showAuthModal(type) {
       }
 
       url = `${API_BASE}/api/login`;
-      // If input looks like email, send as email
-      if (/^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(usernameOrEmail)) {
-        body = { email: usernameOrEmail, password };
+      body = {
+        identifier: usernameOrEmail,
+        password: password
+      };
+      if (usernameOrEmail.includes('@')) {
+        body.email = usernameOrEmail;
       } else {
-        body = { username: usernameOrEmail, password };
+        body.username = usernameOrEmail;
       }
     }
     
@@ -518,8 +521,12 @@ function showAuthModal(type) {
       console.error('❌ Login failed:', data.error || data.message);
       const errorEl = document.getElementById('auth-error');
       let errorMessage = 'An error occurred. Please check your details and try again.';
-      if (res.status === 403 && data.requiresEmailVerification) {
-        errorMessage = data.message || data.error || 'Please verify your email before signing in. Check your inbox for the verification link or code.';
+      const loginErrorText = (data.message || data.error || '').toLowerCase();
+      if (res.status === 403 || data.requiresEmailVerification || loginErrorText.includes('verify your email') || loginErrorText.includes('not verified yet')) {
+        const userEmail = data.email || (usernameOrEmail && usernameOrEmail.includes('@') ? usernameOrEmail : '');
+        const verifyLink = `/pages/verify-email.html${userEmail ? `?email=${encodeURIComponent(userEmail)}` : ''}`;
+        errorMessage = `<div>${data.message || data.error || 'Please verify your email before signing in.'}</div>` +
+          `<div style="margin-top: 8px;"><a href="${verifyLink}" style="color: #3182ce; text-decoration: underline; font-weight: bold;">Verify Email Now &rarr;</a></div>`;
       } else if (res.status === 400) {
         if (type === 'signup') {
           errorMessage = data.error || data.message || 'Unable to create your account. Please verify the signup fields.';

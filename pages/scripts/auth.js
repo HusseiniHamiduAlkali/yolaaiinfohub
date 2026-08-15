@@ -404,9 +404,16 @@
             showStatus(status, "info", '<i class="fas fa-spinner fa-spin"></i>Signing you in...');
 
             try {
-                var payload = { password: password.value };
                 var raw = identifier.value.trim();
-                if (raw.indexOf("@") !== -1) payload.email = raw; else payload.username = raw;
+                var payload = {
+                    password: password.value,
+                    identifier: raw
+                };
+                if (raw.indexOf("@") !== -1) {
+                    payload.email = raw;
+                } else {
+                    payload.username = raw;
+                }
 
                 var response = await fetch(getApiBase() + "/api/login", {
                     method: "POST",
@@ -418,12 +425,13 @@
 
                 if (!response.ok || !data.success) {
                     var errorMessage = data.error || data.message || "Unable to sign in right now.";
-                    if (response.status === 403 && data.requiresEmailVerification) {
-                        errorMessage = data.message || data.error || 'Please verify your email before signing in. Check your inbox for the verification link or code.';
+                    if (response.status === 403 || data.requiresEmailVerification || errorMessage.toLowerCase().includes('verify your email') || errorMessage.toLowerCase().includes('not verified yet')) {
+                        var targetEmail = data.email || (raw.indexOf("@") !== -1 ? raw : "");
+                        var verifyUrl = "../pages/verify-email.html" + (targetEmail ? "?email=" + encodeURIComponent(targetEmail) : "");
+                        var reminderText = data.message || data.error || 'Please verify your email before signing in. Check your inbox for the verification link or code.';
+                        errorMessage = reminderText + '<br><a href="' + verifyUrl + '" style="color: #0f766e; text-decoration: underline; font-weight: 600; display: inline-block; margin-top: 8px;"><i class="fas fa-arrow-right"></i> Verify Email Now</a>';
                     } else if (response.status === 400) {
-                        if (errorMessage.toLowerCase().includes('password')) {
-                            errorMessage = 'Incorrect password. Please try again.';
-                        }
+                        errorMessage = data.error || data.message || 'Invalid login credentials. Please check your username or email and try again.';
                     }
                     showStatus(status, "error", '<i class="fas fa-triangle-exclamation"></i>' + errorMessage);
                     return;
