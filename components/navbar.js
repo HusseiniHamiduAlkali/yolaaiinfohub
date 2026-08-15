@@ -761,7 +761,7 @@ window.Navbar = {
     
     try {
       // Use window.API_BASE if available, otherwise build from current hostname
-      const apiBase = window.API_BASE || (function() {
+      const apiBase = window.API_BASE || window.__API_BASE__ || window.API_BASE_PROD_URL || window.BACKEND_URL || window.BACK_END_URL || window.__APP_API_BASE__ || (function() {
         try {
           const h = window.location.hostname;
           if (!h || h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.startsWith('192.') || h.startsWith('10.')) {
@@ -769,7 +769,7 @@ window.Navbar = {
             console.log('%c📍 API endpoint:', 'color: #8b5cf6;', endpoint);
             return endpoint;
           }
-          return 'https://yolaaiinfohub-backend.onrender.com';
+          return 'https://yolaaiinfohub-authentication.onrender.com';
         } catch (e) { 
           console.error('%c⚠️ Error determining API base:', 'color: #f59e0b;', e);
           return 'http://localhost:4000'; 

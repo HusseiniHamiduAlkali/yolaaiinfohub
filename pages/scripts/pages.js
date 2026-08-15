@@ -108,7 +108,7 @@
 
     /* ========== Password reset ========== */
     function getApiBase() {
-        const configuredBase = (window.API_BASE || window.__API_BASE__ || '').replace(/\/$/, '');
+        const configuredBase = (window.API_BASE || window.__API_BASE__ || window.API_BASE_PROD_URL || window.BACKEND_URL || window.BACK_END_URL || window.__APP_API_BASE__ || '').replace(/\/$/, '');
         if (configuredBase) return configuredBase;
 
         const host = window.location && window.location.hostname ? window.location.hostname : '';
@@ -116,7 +116,7 @@
             return 'http://localhost:4000';
         }
 
-        return 'https://yolaaiinfohub-backend.onrender.com';
+        return 'https://yolaaiinfohub-authentication.onrender.com';
     }
 
     document.querySelectorAll('.field-suffix-btn[data-toggle-password]').forEach((btn) => {

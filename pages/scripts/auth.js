@@ -50,14 +50,14 @@
     ];
 
     function getApiBase() {
-        var configuredBase = window.API_BASE || window.__API_BASE__ || "";
+        var configuredBase = window.API_BASE || window.__API_BASE__ || window.API_BASE_PROD_URL || window.BACKEND_URL || window.BACK_END_URL || window.__APP_API_BASE__ || "";
         if (configuredBase) return configuredBase.replace(/\/$/, "");
 
         var host = window.location && window.location.hostname ? window.location.hostname : "";
         if (!host || host === "localhost" || host === "127.0.0.1" || host === "::1" || host.startsWith("192.") || host.startsWith("10.")) {
             return "http://localhost:4000";
         }
-        return "https://yolaaiinfohub-backend.onrender.com";
+        return "https://yolaaiinfohub-authentication.onrender.com";
     }
 
     function storeUserSession(data, fallbackIdentifier) {

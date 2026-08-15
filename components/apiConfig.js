@@ -20,7 +20,15 @@
   // - while developing (localhost) point at local backend
   // - in production use the configured backend URL from environment/build config
   const envProdBase = (typeof window !== 'undefined' && window.__API_BASE__) ? window.__API_BASE__ : null;
-  const prodBase = injected || envProdBase || (typeof window !== 'undefined' && window.API_BASE_PROD_URL) || '';
+  const directEnvBase = (typeof window !== 'undefined' && (
+    window.API_BASE_PROD_URL ||
+    window.API_BASE_URL ||
+    window.BACKEND_URL ||
+    window.BACK_END_URL ||
+    window.__APP_API_BASE__ ||
+    window.__API_BASE__
+  )) || null;
+  const prodBase = injected || envProdBase || directEnvBase || 'https://yolaaiinfohub-authentication.onrender.com';
   const initialBase = window.API_BASE || injected ||
     (isLocalHost(location.hostname) ? DEFAULT_LOCAL : prodBase || DEFAULT_LOCAL);
   window.API_BASE = initialBase;
