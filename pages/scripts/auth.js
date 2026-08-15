@@ -419,7 +419,7 @@
                 if (!response.ok || !data.success) {
                     var errorMessage = data.error || data.message || "Unable to sign in right now.";
                     if (response.status === 403 && data.requiresEmailVerification) {
-                        errorMessage = 'Please verify your email before signing in. Check your inbox for the verification link or code.';
+                        errorMessage = data.message || data.error || 'Please verify your email before signing in. Check your inbox for the verification link or code.';
                     } else if (response.status === 400) {
                         if (errorMessage.toLowerCase().includes('password')) {
                             errorMessage = 'Incorrect password. Please try again.';

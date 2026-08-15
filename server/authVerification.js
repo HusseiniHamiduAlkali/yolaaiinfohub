@@ -1,4 +1,14 @@
-function getEmailVerificationError(user) {
+function getVerificationReminderMessage({ email, resendVerification = false } = {}) {
+  const address = email ? ` to ${email}` : '';
+
+  if (resendVerification) {
+    return `Your email is not verified yet. A new verification email has been sent${address}. Please check your inbox and verify before signing in again.`;
+  }
+
+  return 'Please verify your email before signing in. Check your inbox for the verification link or code.';
+}
+
+function getEmailVerificationError(user, options = {}) {
   if (!user) return null;
 
   const isLocalAccount = user.authProvider === 'local' || !user.authProvider;
@@ -8,7 +18,10 @@ function getEmailVerificationError(user) {
     return {
       status: 403,
       requiresEmailVerification: true,
-      message: 'Please verify your email before signing in. Check your inbox for the verification link or code.'
+      message: getVerificationReminderMessage({
+        email: user.email,
+        resendVerification: !!options.resendVerification
+      })
     };
   }
 
@@ -16,5 +29,6 @@ function getEmailVerificationError(user) {
 }
 
 module.exports = {
-  getEmailVerificationError
+  getEmailVerificationError,
+  getVerificationReminderMessage
 };

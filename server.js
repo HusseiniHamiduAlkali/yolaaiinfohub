@@ -28,7 +28,7 @@ const validator = require('express-validator');
 const helmet = require('helmet');
 const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
-const { getEmailVerificationError } = require('./server/authVerification');
+const { getEmailVerificationError, getVerificationReminderMessage } = require('./server/authVerification');
 const { buildPasswordResetFallbackResponse } = require('./server/passwordResetUtils');
 require('dotenv').config({
   path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env'
@@ -1332,6 +1332,60 @@ async function sendOtpEmail(to, code, purpose = 'verify your account') {
   }
 }
 
+async function sendVerificationEmail(user) {
+  if (!user || !user.email) {
+    return { sent: false, reason: 'missing user email' };
+  }
+
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  const verificationUrl = `${(process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app').replace(/\/$/, '')}/pages/verify-email.html?token=${verificationToken}&email=${encodeURIComponent(user.email)}`;
+  const emailOtpCode = generateOtpCode();
+
+  const updatedUser = await User.updateOne({ _id: user._id }, {
+    $set: {
+      emailVerificationToken: verificationToken,
+      emailVerified: false,
+      emailOtpCode,
+      emailOtpExpires: Date.now() + 10 * 60 * 1000
+    }
+  });
+
+  if (updatedUser.modifiedCount === 0 && updatedUser.matchedCount === 0) {
+    return { sent: false, reason: 'user not found' };
+  }
+
+  const subject = 'Verify your email for Yola AI Info Hub';
+  const html = `
+    <h2>Verify your email</h2>
+    <p>Hi ${user.name || user.username || 'there'},</p>
+    <p>You recently tried to sign in before confirming your email address.</p>
+    <p>Please verify your email by visiting <a href="${verificationUrl}">this secure verification link</a>.</p>
+    <p>If you prefer a code, use <strong>${emailOtpCode}</strong> on the verification page.</p>
+    <p>This verification link and code expire in 10 minutes.</p>
+    <p>If you did not request this, you can safely ignore this message.</p>
+    <br>
+    <p>Best regards,<br>Yola AI Info Hub Team</p>
+  `;
+
+  if (!transporter || !emailConfigured) {
+    console.warn('Email not configured, verification email skipped for', user.email);
+    return { sent: false, reason: 'email not configured' };
+  }
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: user.email,
+      subject,
+      html
+    });
+    return { sent: true, verificationUrl, emailOtpCode };
+  } catch (error) {
+    console.error('Failed to resend verification email:', error);
+    return { sent: false, reason: 'send failed', error };
+  }
+}
+
 async function sendSmsOtp(user, code) {
   const provider = (process.env.SMS_PROVIDER || 'twilio').toLowerCase();
   if (provider !== 'twilio') {
@@ -1846,10 +1900,18 @@ app.post('/api/login', loginLimiter, async (req, res) => {
 
     const verificationError = getEmailVerificationError(user);
     if (verificationError) {
+      const resendResult = await sendVerificationEmail(user);
+      const message = resendResult.sent
+        ? getVerificationReminderMessage({ email: user.email, resendVerification: true })
+        : getVerificationReminderMessage({ email: user.email, resendVerification: false });
+
       return res.status(verificationError.status).json({
         success: false,
-        error: verificationError.message,
-        requiresEmailVerification: true
+        error: message,
+        requiresEmailVerification: true,
+        message,
+        resendVerification: resendResult.sent,
+        email: user.email
       });
     }
 

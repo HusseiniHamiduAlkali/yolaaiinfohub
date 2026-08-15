@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { getEmailVerificationError } = require('../server/authVerification');
+const { getEmailVerificationError, getVerificationReminderMessage } = require('../server/authVerification');
 const { buildPasswordResetFallbackResponse } = require('../server/passwordResetUtils');
 
 test('blocks local accounts that are not email verified', () => {
@@ -37,6 +37,21 @@ test('allows google-authenticated accounts without blocking', () => {
   });
 
   assert.equal(result, null);
+});
+
+test('returns a resend-verification message when sending a fresh email', () => {
+  const result = getEmailVerificationError({
+    email: 'user@example.com',
+    authProvider: 'local',
+    emailVerified: false,
+    password: 'hashed'
+  }, { resendVerification: true });
+
+  assert.ok(result);
+  assert.equal(result.status, 403);
+  assert.equal(result.requiresEmailVerification, true);
+  assert.match(result.message, /new verification email has been sent/i);
+  assert.match(getVerificationReminderMessage({ email: 'user@example.com', resendVerification: true }), /new verification email has been sent/i);
 });
 
 test('keeps production password reset requests successful when email delivery is disabled', () => {

@@ -519,7 +519,7 @@ function showAuthModal(type) {
       const errorEl = document.getElementById('auth-error');
       let errorMessage = 'An error occurred. Please check your details and try again.';
       if (res.status === 403 && data.requiresEmailVerification) {
-        errorMessage = 'Please verify your email before signing in. Check your inbox for the verification link or code.';
+        errorMessage = data.message || data.error || 'Please verify your email before signing in. Check your inbox for the verification link or code.';
       } else if (res.status === 400) {
         if (type === 'signup') {
           errorMessage = data.error || data.message || 'Unable to create your account. Please verify the signup fields.';
