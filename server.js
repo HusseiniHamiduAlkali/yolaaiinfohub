@@ -90,10 +90,6 @@ function getPrimaryFrontendUrl() {
   return selected.replace(/\/$/, '');
 }
 
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 function buildGoogleUsername(email) {
   const base = String(email || '').split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '').toLowerCase();
   const safeBase = base || 'googleuser';
