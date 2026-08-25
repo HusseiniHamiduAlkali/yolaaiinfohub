@@ -1,0 +1,13 @@
+{
+  "provider": "Adamawa State Environmental Protection Agency (ADSEPA) — community schedule",
+  "note": "Set out bins by 6:00 AM on your collection day. Times are indicative and can shift during rains or public holidays.",
+  "zones": [
+    { "id": "jimeta-north", "name": "Jimeta North / Karewa", "lga": "Yola North", "general": ["Monday", "Thursday"], "recyclables": ["Wednesday"], "organic": ["Saturday"], "window": "6:00 – 11:00", "crew": "Crew A" },
+    { "id": "doubeli", "name": "Doubeli / Nassarawo", "lga": "Yola North", "general": ["Tuesday", "Friday"], "recyclables": ["Thursday"], "organic": ["Saturday"], "window": "6:30 – 12:00", "crew": "Crew A" },
+    { "id": "luggere", "name": "Luggere / Rumde", "lga": "Yola North", "general": ["Monday", "Friday"], "recyclables": ["Tuesday"], "organic": ["Sunday"], "window": "7:00 – 12:00", "crew": "Crew B" },
+    { "id": "yola-town", "name": "Yola Town / Bakari Guso", "lga": "Yola South", "general": ["Wednesday", "Saturday"], "recyclables": ["Monday"], "organic": ["Friday"], "window": "6:00 – 11:30", "crew": "Crew B" },
+    { "id": "yolde-pate", "name": "Yolde Pate / Ngurore Road", "lga": "Yola South", "general": ["Tuesday", "Saturday"], "recyclables": ["Friday"], "organic": ["Wednesday"], "window": "7:00 – 13:00", "crew": "Crew C" },
+    { "id": "mautech", "name": "MAUTECH / Girei Road", "lga": "Girei", "general": ["Thursday"], "recyclables": ["Monday"], "organic": ["Tuesday", "Saturday"], "window": "8:00 – 13:00", "crew": "Crew C" },
+    { "id": "damilu", "name": "Damilu / Bachure", "lga": "Yola North", "general": ["Wednesday", "Sunday"], "recyclables": ["Saturday"], "organic": ["Thursday"], "window": "6:30 – 11:00", "crew": "Crew D" }
+  ]
+}

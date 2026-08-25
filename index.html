@@ -14,29 +14,23 @@
   <!--<link rel="icon" type="image/jpg" href="Data/Images/jippujam.jpg" style="overflow: hidden;object-fit: fill;width: 100%;height: 100%; border-radius:15px;"/>-->
   <!--<link rel="icon" type="image/jpg" href="Data/Images/jippujam.jpg"/>
   <link rel="apple-touch-icon" href="Data/Images/jippujam.jpg">-->
-  <link rel="icon" type="image/png" href="1111.png"/>
-  <link rel="apple-touch-icon" href="1111.png"/>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="favicon.png"/>
   <title>Yola AI Info Hub</title>
   <link rel="stylesheet" href="styles/global.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="/components/ecoinfo/styles/eco.css">
   <link rel="stylesheet" href="styles/navbar.css">
   <link rel="stylesheet" href="styles/home.css">
   <link rel="stylesheet" href="styles/dark-mode.css">
-  <link rel="stylesheet" href="styles/settings.css">
-  <link rel="stylesheet" href="styles/eduinfo.css">
-  <link rel="stylesheet" href="styles/agroinfo.css">
+  
+  
   <link rel="stylesheet" href="styles/mediinfo.css">
-  <link rel="stylesheet" href="styles/naviinfo.css">
-  <link rel="stylesheet" href="styles/ecoinfo.css">
-  <link rel="stylesheet" href="styles/serviinfo.css">
-  <link rel="stylesheet" href="styles/communityinfo.css">
-  <link rel="stylesheet" href="styles/aboutinfo.css">
   <link rel="stylesheet" href="styles/auth.css">
-  <link rel="stylesheet" href="Other_features/styles/maps.css">
-  <link rel="stylesheet" href="Other_features/styles/servi.css">
-  <!--<link rel="stylesheet" href="pages/styles/pages.css">-->
-  <link rel="stylesheet" href="Other_features/styles/ecoAI.css">
-  <link rel="stylesheet" href="Other_features/styles/aetherflow.css">
-  <link rel="stylesheet" href="Other_features/styles/yola-maps.css">
+  <link rel="stylesheet" href="/components/naviinfo/styles/maps.css">
+  <link rel="stylesheet" href="styles/servi.css">
+  <link rel="stylesheet" href="/components/ecoinfo/scripts/aetherflow.js">
+  <!--<link rel="stylesheet" href="Other_features/styles/atmospheric-conditions.css">-->
+  <link rel="stylesheet" href="/components/naviinfo/styles/yola-maps.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous">
   <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
@@ -44,7 +38,8 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" crossorigin="anonymous">
-  <script src="components/theme-switcher.js"></script>
+  
+  <script src="scripts/apiConfig.js"></script>
 </head>
 <body>
   <div id="navbar"></div>
@@ -139,39 +134,36 @@
       return window.tomtomSDKLoading;
     };
   </script>
-  <script src="Other_features/scripts/aetherflow.js"></script>
+  <script src="/components/ecoinfo/scripts/aetherflow.js"></script>
   <script src="Other_features/scripts/tomtomMap.js" defer></script>
-  <script src="components/i18n.js?t=20260308" defer></script>
-  <script src="components/learnmore-links.js?t=20260308" defer></script>
-  <script src="components/dark-mode.js?t=20260308" defer></script>
+  <script src="scripts/i18n.js" defer></script>
+  <script src="scripts/learnmore-links.js?t=20260308" defer></script>
+  <script src="scripts/dark-mode.js?t=20260308" defer></script>
   <script src="components/navbar.js?t=20260308" defer></script>
-  <script src="components/auth.js?t=20260308" defer></script>
-  <script src="components/chatHistoryManager.js?t=20260308" defer></script>
-  <script src="components/chatHandler.js?t=20260308" defer></script>
-  <script src="components/searchhandler.js?t=20260308" defer></script>
-  <script src="components/voiceCallHandler.js?t=20260308" defer></script>
-  <script src="components/settings.js?t=20260308" defer></script>
+  <script src="scripts/auth.js?t=20260308" defer></script>
+  <script src="components/AI/chatHistoryManager.js?t=20260308" defer></script>
+  <script src="components/AI/chatHandler.js?t=20260308" defer></script>
+  <script src="scripts/searchHandler.js?t=20260308" defer></script>
+  <script src="components/AI/voiceCallHandler.js" defer></script>
+  <script src="scripts/settings.js?t=20260308" defer></script>
   <script src="components/home.js?t=20260308" defer></script>
   <script src="components/eduinfo.js?t=20260308" defer></script>
   <script src="components/agroinfo.js?t=20260308" defer></script>
   <script src="components/mediinfo.js?t=20260308" defer></script>
-  <script src="components/weatherinfo.js"></script>
+  
   <script src="components/weatherinfo.js.js"></script>
   <script src="components/dealzinfo.js"></script>
   <script src="components/naviinfo.js?t=20260308" defer></script>
-  <!--<script src="components/ecoinfo.js?t=20260308" defer></script>-->
+  <script src="components/ecoinfo.js?t=20260308" defer></script>
   <script src="components/serviinfo.js?t=20260308" defer></script>
   <script src="components/communityinfo.js?t=20260308" defer></script>
-  <script src="Other_features/scripts/ecoClassifier.js?t=20260308" defer></script>
-  <script src="Other_features/scripts/ecoAI.js" defer></script>
-  <script src="components/details-navigation.js?t=20260308" defer></script>
-  <script src="Other_features/scripts/maps.js"></script>
+  <script src="scripts/details-navigation.js?t=20260308" defer></script>
+  <script src="/components/naviinfo/scripts/maps.js"></script>
   <script src="pages/scripts/pages.js"></script>
-  <script src="Other_features/scripts/servi.js"></script>
+  <script src="components/serviinfo/scripts/serviFiltersHandler.js"></script>
   <script src=""></script>
-  <!--<link rel="stylesheet" href="pages/styles/pages.css">-->
   <script src="app.js?t=20260308" defer></script>
-  <!-- About route now uses the Settings page; removed legacy about script -->
+  
   <script>
     // Section loader for auth and main pages
     // Internal loader that actually performs the section load. Returns a Promise.
@@ -182,7 +174,7 @@
       // shared UI handles used by both the loader and the TomTom preloader
       const navbarDiv = document.getElementById('navbar');
       const minimalAppbar = `<div class="minimal-appbar"><span class="appname">Yola AI Info Hub</span></div>`;
-      const sections = ['home', 'eduinfo', 'dealzinfo', 'weatherinfo', 'naviinfo', 'ecoinfo', 'serviinfo', 'communityinfo', 'about', 'settings'];
+      const sections = ['home', 'eduinfo', 'dealzinfo', 'naviinfo', 'ecoinfo', 'serviinfo', 'communityinfo', 'about'];
 
       // Handle auth sections first
       sections.forEach(s => {
@@ -218,13 +210,13 @@
         home: 'components/home.js',
         eduinfo: 'components/eduinfo.js',
         dealzinfo: 'components/dealzinfo.js',
-        weatherinfo: 'components/weatherinfo.js',
+        
         naviinfo: 'components/naviinfo.js',
         communityinfo: 'components/communityinfo.js',
         ecoinfo: 'components/ecoinfo.js',
         serviinfo: 'components/serviinfo.js',
-        settings: 'components/settings.js',
-        about: 'components/settings.js'
+        settings: 'scripts/settings.js',
+        about: 'scripts/settings.js'
       };
       const promise = new Promise((resolve) => {
   const baseSrc = routes[section] || routes['home'];
@@ -393,6 +385,7 @@
     
     // Load saved section if available (restores from details page back-button), otherwise default to home
     (function(){
+      const requestedSection = new URLSearchParams(window.location.search).get('section');
       const pendingSection = sessionStorage.getItem('lastSection');
       // Support both legacy 'lastScroll' and newer 'lastScrollMain'/'lastScrollWindow'
       const pendingScrollMain = parseInt(sessionStorage.getItem('lastScrollMain') || '0', 10) || 0;
@@ -515,15 +508,16 @@
           window.__restoringSection = false;
         });
       } else {
-        console.log('No pending section detected, loading home via else block');
-        window.loadSection('home');
+        const initialSection = requestedSection || 'home';
+        console.log('No pending section detected, loading section via else block:', initialSection);
+        window.loadSection(initialSection);
       }
     })();
   </script>
 
   <!-- PWA and Notifications Scripts -->
-  <script src="components/notifications.js?t=20260308"></script>
-  <script src="components/pwa-installer.js?t=20260308"></script>
+  <script src="scripts/notifications.js?t=20260308"></script>
+  <script src="scripts/pwa-installer.js?t=20260308"></script>
   
   <!-- Service Worker Registration -->
   <script>

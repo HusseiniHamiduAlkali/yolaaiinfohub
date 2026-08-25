@@ -10,6 +10,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "npm install && echo 'Build complete'",
+    "import-schools": "node scripts/import-schools.js",
+    "import-schools:write": "node scripts/import-schools.js --write",
     "predeploy": "npm run build",
     "deploy": "netlify deploy --prod",
     "render-deploy": "echo 'Render deployment handled via render.yaml'"

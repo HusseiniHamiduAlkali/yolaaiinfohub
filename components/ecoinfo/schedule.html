@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waste collection schedule for Yola wards — pickup days and reminders</title>
+<meta name="description" content="Check general, recyclable and organic waste collection days for your Yola ward, export them to your calendar, set reminders and track your household recycling rate.">
+<meta property="og:title" content="Yola waste collection schedule">
+<meta property="og:description" content="Pickup days by ward, calendar export, reminders and a household waste log.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles/eco.css">
+<link rel="stylesheet" href="/pages/styles/pages.css">
+</head>
+<body>
+
+     <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+
+  <header class="site-header controls eco-mobile-nav">
+    <div class="header-inner">
+      <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html" class="active" aria-current="page">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/ecoinfo/admin.html">Admin</a></nav>
+    </div>
+  </header>
+
+
+<section class="hero">
+  <div class="hero-inner" style="margin-bottom: 35px;">
+    <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+        <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+        <div href="../index.html" class="nav-logo">
+            <span class="navbar-appname-desktop"></span>
+        </div>
+    </div>
+    <div>
+      <div class="eyebrow">Waste management</div>
+      <h1>Collection schedule &amp; household tracking</h1>
+      <p class="lead" id="provider">Loading provider…</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#zone-picker">Find my pickup days</a>
+        <a class="btn btn-outline" href="#log">Log my household waste</a>
+      </div>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="../../index.html?section=ecoinfo">Dashboard</a><a href="atmosphere.html">Atmosphere</a><a href="classify.html">AI Classifier</a><a href="report.html">Report Dumping</a><a href="recycling.html">Recycling</a><a href="schedule.html" class="active" aria-current="page">Schedule</a><a href="learn.html">Learn</a><a href="community.html">Community</a><a href="admin.html">Admin</a></nav>
+    </div>
+  </header>
+</section>
+
+<section class="section" id="zone-picker">
+  <div class="container">
+    <div class="field" style="max-width:460px">
+      <label class="label" for="zone">Your area</label>
+      <select class="select" id="zone"></select>
+      <p class="help" id="note"></p>
+    </div>
+    <div id="zone-detail" style="margin-top:20px"></div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--cream-soft)">
+  <div class="container">
+    <div class="eyebrow">All wards</div>
+    <h2>Full city schedule</h2>
+    <div class="table-wrap" style="margin-top:18px">
+      <table>
+        <thead><tr><th>Area</th><th>General</th><th>Recyclables</th><th>Organic</th><th>Window</th></tr></thead>
+        <tbody id="all-zones"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="log">
+  <div class="container">
+    <div class="grid grid-2" style="gap:30px;align-items:start">
+      <form class="card" style="padding:26px" id="log-form">
+        <div class="eyebrow">Household tracking</div>
+        <h2 style="margin:.4rem 0 1rem">Log a bag of waste</h2>
+        <div class="field">
+          <label class="label" for="log-stream">Stream</label>
+          <select class="select" id="log-stream">
+            <option>General waste</option>
+            <option>Plastic</option>
+            <option>Paper &amp; cardboard</option>
+            <option>Metal</option>
+            <option>Glass</option>
+            <option>Organic</option>
+            <option>E-waste</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="log-kg">Approximate weight (kg)</label>
+          <input class="input" id="log-kg" type="number" min="0.1" step="0.1" placeholder="e.g. 3.5">
+          <p class="help">A full standard bin bag is roughly 5–8 kg.</p>
+        </div>
+        <label class="checkline" style="margin-bottom:16px">
+          <input type="checkbox" id="log-recycled"> <span>This was recycled, composted or sold — not sent to a dump</span>
+        </label>
+        <div class="hero-actions">
+          <button class="btn btn-gold" type="submit">Add entry</button>
+          <button class="btn btn-ghost" type="button" id="clear-log">Clear log</button>
+        </div>
+        <p class="help">Stored on this device only.</p>
+      </form>
+
+      <div class="card" style="padding:26px">
+        <h3 style="margin-top:0">Your recycling performance</h3>
+        <div class="grid grid-3" id="log-stats" style="margin:14px 0"></div>
+        <h4>Recent entries</h4>
+        <div id="log-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="//">Home</a></li>
+                        <li><a href="/pages/about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/report.html">Report / comment</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="/pages/help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/privacy.html">Privacy policy</a></li>
+                        <li><a href="/pages/terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">©<span id="year"> 2026</span>  AlkaliCodes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+<script type="module" src="scripts/schedule.js"></script>
+</body>
+</html>

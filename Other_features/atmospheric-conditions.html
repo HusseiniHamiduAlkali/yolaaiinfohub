@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atmospheric conditions</title>
-    <link rel="stylesheet" href="../styles/aetherflow.css">
-    <link rel="stylesheet" href="../styles/ecoinfo.css">
+    <link rel="stylesheet" href="styles/aetherflow.css">
 </head>
 <body>
       
@@ -326,7 +325,7 @@
 // Load AetherFlow dashboard
 if (!window.aetherflowLoaded) {
   const script = document.createElement('script');
-  script.src = 'components/aetherflow.js';
+  script.src = 'scripts/aetherflow.js';
   script.onload = () => { window.aetherflowLoaded = true; };
   document.head.appendChild(script);
 }
@@ -483,7 +482,7 @@ if (document.querySelector('.tempreature') || document.querySelector('.air-quali
           window.initAetherflowDashboard();
         } else if (!window.aetherflowLoaded) {
           const script = document.createElement('script');
-          script.src = 'components/aetherflow.js';
+          script.src = 'scripts/aetherflow.js';
           script.onload = () => {
             window.aetherflowLoaded = true;
             if (typeof window.initAetherflowDashboard === 'function') {
@@ -555,6 +554,6 @@ function toggleDetails(button) {
 }
 
   </script>
-<script src="../components/aetherflow.js"></script>
+<script src="scripts/aetherflow.js"></script>
 </body>
 </html>  

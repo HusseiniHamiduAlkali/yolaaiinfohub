@@ -2,7 +2,7 @@
 // Load common AI utilities first
 if (!window.commonAILoaded) {
   const script = document.createElement('script');
-  script.src = 'components/commonAI.js';
+    script.src = 'scripts/commonAI.js';
   script.onload = () => { window.commonAILoaded = true; };
   document.head.appendChild(script);
 }

@@ -1,0 +1,34 @@
+{
+  "tips": [
+    { "id": 1, "category": "Waste", "title": "Separate at the source", "body": "Keep three containers at home: dry recyclables, organic food waste, and residual waste. Sorting at the point of use is the single biggest boost to recycling rates in Yola.", "impact": "High" },
+    { "id": 2, "category": "Waste", "title": "Never burn nylon or plastic", "body": "Open burning of sachets and plastics releases dioxins that irritate lungs and worsen harmattan haze. Bundle nylon and take it to a buy-back hub instead.", "impact": "High" },
+    { "id": 3, "category": "Water", "title": "Harvest rainwater in the wet season", "body": "A 100 m² roof can capture over 8,000 litres from a single 100 mm rain event. Use clean covered barrels and screen the inlet against mosquitoes.", "impact": "High" },
+    { "id": 4, "category": "Energy", "title": "Right-size your generator use", "body": "Run heavy appliances together in one generator window rather than many short starts. Short cycles waste fuel and increase emissions per kWh.", "impact": "Medium" },
+    { "id": 5, "category": "Energy", "title": "Switch to LED and solar lanterns", "body": "LEDs use up to 85% less power than incandescent bulbs, so your inverter or solar bank lasts far longer per charge.", "impact": "Medium" },
+    { "id": 6, "category": "Air", "title": "Cook with better stoves", "body": "Improved cookstoves and LPG cut indoor smoke dramatically compared with three-stone firewood fires — a major cause of respiratory illness.", "impact": "High" },
+    { "id": 7, "category": "Air", "title": "Mask up on dusty harmattan days", "body": "When PM10 climbs above 150 µg/m³, a simple well-fitted mask meaningfully reduces the dust you inhale on okada and open-market trips.", "impact": "Medium" },
+    { "id": 8, "category": "Waste", "title": "Compost your kitchen scraps", "body": "Food waste is roughly half of typical household waste. Composting it turns a disposal cost into free fertiliser for your garden.", "impact": "High" },
+    { "id": 9, "category": "Water", "title": "Keep waste out of drainage channels", "body": "Blocked drains are the leading cause of flash flooding in Jimeta. Report blocked channels through EcoInfo so crews can clear them before the rains peak.", "impact": "High" },
+    { "id": 10, "category": "Community", "title": "Organise a monthly street clean-up", "body": "Neighbourhood clean-ups clear hotspots faster than any agency can. Log yours on EcoInfo to earn community points and track progress.", "impact": "Medium" },
+    { "id": 11, "category": "Transport", "title": "Combine trips and share rides", "body": "Two combined trips instead of four halves your fuel spend and tailpipe emissions — and reduces traffic dust on unpaved roads.", "impact": "Medium" },
+    { "id": 12, "category": "Nature", "title": "Plant shade trees on your compound", "body": "Neem, mango and moringa cool the air around buildings by several degrees, cut dust and stabilise soil against erosion.", "impact": "High" },
+    { "id": 13, "category": "Waste", "title": "Refill instead of re-buying", "body": "Buy larger refills of soap, oil and detergent and decant into reused containers. Less packaging waste and lower cost per litre.", "impact": "Medium" },
+    { "id": 14, "category": "Community", "title": "Report illegal dumping early", "body": "Fresh dumps are cheap to clear; established ones attract more waste and become permanent. Report within the first days with a photo and location.", "impact": "High" }
+  ],
+  "carbonFactors": {
+    "gridElectricityKgPerKwh": 0.44,
+    "generatorPetrolKgPerLitre": 2.31,
+    "generatorDieselKgPerLitre": 2.68,
+    "carPetrolKgPerKm": 0.192,
+    "motorcycleKgPerKm": 0.103,
+    "busKgPerKm": 0.089,
+    "wasteLandfillKgPerKg": 0.58,
+    "wasteRecycledKgPerKg": 0.06,
+    "wasteBurnedKgPerKg": 1.42,
+    "waterKgPerM3": 0.34,
+    "lpgKgPerKg": 2.98,
+    "firewoodKgPerKg": 1.75,
+    "treeAbsorptionKgPerYear": 21,
+    "nigeriaAverageMonthlyKg": 190
+  }
+}

@@ -14,6 +14,19 @@ This project is a responsive web application built with HTML, CSS, and JavaScrip
 2. Add your Gemini API key and Google Maps API key in the placeholders in the code.
 3. Open `index.html` to start the app.
 
+### School content administrator
+
+The school database manager is available at `http://localhost:4000/admin-schools.html` when the backend is running. Create a normal user account first, then set `CONTENT_ADMIN_BOOTSTRAP_SECRET` in `.env` and run:
+
+```bash
+curl -X POST http://localhost:4000/api/admin/bootstrap-content-admin \
+   -H "Content-Type: application/json" \
+   -H "x-content-admin-secret: YOUR_BOOTSTRAP_SECRET" \
+   -d '{"email":"YOUR_ACCOUNT_EMAIL"}'
+```
+
+The bootstrap endpoint only works when no `admin` or `content-admin` user exists. After promotion, log in normally and open the admin page. Import the existing school records with `npm run import-schools:write` after confirming the dry run with `npm run import-schools`.
+
 Tip: To avoid external CDN/CORS/MIME issues with TomTom's Web SDK, install it locally so the backend can serve it:
 
    npm install @tomtom-international/web-sdk-maps

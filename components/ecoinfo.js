@@ -1,0 +1,87 @@
+
+// Load common AI utilities first
+if (!window.commonAILoaded) {
+  const script = document.createElement('script');
+  script.src = 'scripts/commonAI.js';
+  script.onload = () => { window.commonAILoaded = true; };
+  document.head.appendChild(script);
+}
+
+// Robust navbar loader
+window.renderSection = function() {
+  if (typeof window.ensureNavbarLoaded === 'function') {
+    window.ensureNavbarLoaded();
+  }
+  if (!document.getElementById('global-css')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'styles/global.css';
+    link.id = 'global-css';
+    document.head.appendChild(link);
+  }
+
+    return fetch('templates/eco.html').then(r => r.text()).then(html => {
+      // Eco is loaded as a fragment; scripts are initialized by the app shell.
+      return html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+    }).then(html => {
+      document.getElementById('main-content').innerHTML = html;
+
+      const navToggle = document.getElementById('nav-toggle');
+      const primaryNav = document.getElementById('primary-nav');
+      if (navToggle && primaryNav) {
+        navToggle.addEventListener('click', () => {
+          const open = primaryNav.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded', String(open));
+        });
+        primaryNav.addEventListener('click', (event) => {
+          if (event.target.closest('a')) primaryNav.classList.remove('open');
+        });
+      }
+
+      document.querySelectorAll('.dashboard > .sun-card').forEach((card, index) => {
+        if (index > 0) card.remove();
+      });
+
+
+      // Scroll reveal for service cards in the servi template
+      if ('IntersectionObserver' in window) {
+        const revealCards = document.querySelectorAll('.section4');
+        let lastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        let scrollDirection = 'down';
+
+        window.addEventListener('scroll', () => {
+          const currentY = window.scrollY || document.documentElement.scrollTop || 0;
+          if (currentY > lastScrollY) {
+            scrollDirection = 'down';
+          } else if (currentY < lastScrollY) {
+            scrollDirection = 'up';
+          }
+          lastScrollY = currentY;
+        }, { passive: true });
+
+        if (revealCards.length) {
+          const cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.remove('hiding');
+                entry.target.classList.add('showing');
+                if (scrollDirection === 'up') {
+                  entry.target.classList.add('instant');
+                  requestAnimationFrame(() => entry.target.classList.remove('instant'));
+                }
+              } else if (scrollDirection === 'down') {
+                entry.target.classList.add('hiding');
+                entry.target.classList.remove('showing');
+              }
+            });
+          }, { threshold: 0.2 });
+          revealCards.forEach(card => cardObserver.observe(card));
+        }
+      }
+
+
+    }).catch(err => {
+      console.error('Failed to load eco template:', err);
+      document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';
+  });
+};

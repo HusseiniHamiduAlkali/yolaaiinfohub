@@ -1,0 +1,225 @@
+{
+  "categories": [
+    {
+      "id": "pet-plastic",
+      "label": "PET plastic bottle",
+      "material": "Plastic (PET #1)",
+      "keywords": ["bottle", "pet", "water bottle", "soft drink", "plastic bottle", "coke", "fanta", "eva"],
+      "recyclable": true,
+      "biodegradable": false,
+      "hazardous": false,
+      "dropOffMaterial": "plastic",
+      "steps": [
+        "Empty the bottle completely and rinse with a little water.",
+        "Remove the cap and label — caps are collected separately as HDPE.",
+        "Crush the bottle flat to save space.",
+        "Take to a plastic buy-back hub; you can be paid per kilogram."
+      ],
+      "reuse": ["Drip irrigation for garden plants", "Storage for grains or seeds", "School craft projects"]
+    },
+    {
+      "id": "nylon-sachet",
+      "label": "Nylon / pure water sachet",
+      "material": "Low-density polyethylene",
+      "keywords": ["sachet", "pure water", "nylon", "polythene", "bag", "wrapper", "leather"],
+      "recyclable": true,
+      "biodegradable": false,
+      "hazardous": false,
+      "dropOffMaterial": "nylon",
+      "steps": [
+        "Shake out any water and let the sachet dry.",
+        "Bundle sachets together in one larger bag — loose nylon blocks drains.",
+        "Drop at a plastic buy-back hub that accepts nylon.",
+        "Never burn nylon: it releases toxic fumes."
+      ],
+      "reuse": ["Stuffing for eco-bricks", "Plant nursery bags"]
+    },
+    {
+      "id": "food-waste",
+      "label": "Food / kitchen waste",
+      "material": "Organic",
+      "keywords": ["food", "peel", "vegetable", "fruit", "leftover", "rice", "yam", "bones", "organic", "cassava"],
+      "recyclable": false,
+      "biodegradable": true,
+      "hazardous": false,
+      "dropOffMaterial": "organic",
+      "steps": [
+        "Keep food waste separate from plastics and metals.",
+        "Compost at home in a shaded pit or bin, layering with dry leaves.",
+        "Turn the pile weekly; use finished compost on your garden after 6–8 weeks.",
+        "Alternatively drop at the community compost site."
+      ],
+      "reuse": ["Home compost", "Livestock feed (cooked, unsalted scraps)", "Biogas digester feedstock"]
+    },
+    {
+      "id": "e-waste",
+      "label": "Electronic waste",
+      "material": "Mixed electronics",
+      "keywords": ["phone", "laptop", "charger", "cable", "tv", "radio", "computer", "electronic", "circuit", "screen"],
+      "recyclable": true,
+      "biodegradable": false,
+      "hazardous": true,
+      "dropOffMaterial": "e-waste",
+      "steps": [
+        "Back up and wipe any personal data from the device.",
+        "Remove batteries and keep them separate.",
+        "Do not burn or break the casing — it releases lead and mercury.",
+        "Deliver to the e-waste collection point for certified dismantling."
+      ],
+      "reuse": ["Repair and resale", "Spare parts for technicians"]
+    },
+    {
+      "id": "battery",
+      "label": "Battery",
+      "material": "Lead / lithium / alkaline",
+      "keywords": ["battery", "batteries", "torch cell", "inverter battery", "lithium", "power bank"],
+      "recyclable": true,
+      "biodegradable": false,
+      "hazardous": true,
+      "dropOffMaterial": "batteries",
+      "steps": [
+        "Tape the terminals of lithium and button cells to prevent short circuits.",
+        "Store in a dry, non-metal container away from children.",
+        "Never place batteries in household bins or open fires — they explode and leach acid.",
+        "Hand over at the e-waste collection point."
+      ],
+      "reuse": ["Certified refurbishment of inverter/car batteries"]
+    },
+    {
+      "id": "glass",
+      "label": "Glass bottle or jar",
+      "material": "Glass",
+      "keywords": ["glass", "jar", "bottle glass", "beer bottle", "louvre", "window glass", "mirror"],
+      "recyclable": true,
+      "biodegradable": false,
+      "hazardous": false,
+      "dropOffMaterial": "glass",
+      "steps": [
+        "Rinse out residue and remove metal or plastic lids.",
+        "Keep whole bottles intact — they are worth more for reuse.",
+        "Wrap broken glass in thick paper and place in a sealed labelled box.",
+        "Deliver to the glass and bottle depot."
+      ],
+      "reuse": ["Refill for oils and spices", "Bottle lamps and planters"]
+    },
+    {
+      "id": "metal-can",
+      "label": "Metal can / scrap metal",
+      "material": "Aluminium or steel",
+      "keywords": ["can", "tin", "metal", "aluminium", "steel", "iron", "roofing sheet", "milo tin", "scrap"],
+      "recyclable": true,
+      "biodegradable": false,
+      "hazardous": false,
+      "dropOffMaterial": "metal",
+      "steps": [
+        "Empty and rinse the can.",
+        "Flatten cans to save space (watch the sharp edges).",
+        "Collect until you have a few kilograms.",
+        "Sell at the scrap metal yard — aluminium pays best."
+      ],
+      "reuse": ["Seedling pots", "Storage tins", "Craft lanterns"]
+    },
+    {
+      "id": "paper",
+      "label": "Paper / cardboard",
+      "material": "Cellulose fibre",
+      "keywords": ["paper", "carton", "cardboard", "newspaper", "book", "box", "exercise book"],
+      "recyclable": true,
+      "biodegradable": true,
+      "hazardous": false,
+      "dropOffMaterial": "paper",
+      "steps": [
+        "Keep paper clean and dry — oily or wet paper is rejected.",
+        "Flatten cartons and remove tape and staples.",
+        "Bundle and tie with string.",
+        "Take to the paper and carton recycler."
+      ],
+      "reuse": ["Wrapping and packing material", "Papier-mâché and briquettes", "Compost brown layer"]
+    },
+    {
+      "id": "textile",
+      "label": "Clothing / textile",
+      "material": "Fabric",
+      "keywords": ["cloth", "clothes", "shirt", "fabric", "textile", "shoe", "bag cloth", "wrapper cloth"],
+      "recyclable": true,
+      "biodegradable": false,
+      "hazardous": false,
+      "dropOffMaterial": "textile",
+      "steps": [
+        "Wash and dry the items.",
+        "Separate wearable clothing from worn-out fabric.",
+        "Donate wearable pieces; worn fabric becomes industrial rags.",
+        "Drop at the textile reuse point."
+      ],
+      "reuse": ["Donation", "Cleaning rags", "Patchwork and craft"]
+    },
+    {
+      "id": "medical",
+      "label": "Medical / sharps waste",
+      "material": "Clinical",
+      "keywords": ["syringe", "needle", "drug", "medicine", "expired", "bandage", "medical", "sharps", "test kit"],
+      "recyclable": false,
+      "biodegradable": false,
+      "hazardous": true,
+      "dropOffMaterial": "medical",
+      "steps": [
+        "Place sharps in a rigid puncture-proof container (a thick plastic bottle works).",
+        "Never flush medicine down a toilet or drain.",
+        "Keep sealed and labelled 'MEDICAL WASTE'.",
+        "Hand over at the specialist hazardous waste intake — call ahead."
+      ],
+      "reuse": []
+    },
+    {
+      "id": "chemical",
+      "label": "Paint, solvent or pesticide",
+      "material": "Chemical",
+      "keywords": ["paint", "thinner", "solvent", "pesticide", "insecticide", "engine oil", "chemical", "fertiliser"],
+      "recyclable": false,
+      "biodegradable": false,
+      "hazardous": true,
+      "dropOffMaterial": "hazardous",
+      "steps": [
+        "Keep the product in its original labelled container.",
+        "Never pour into drains, soil or waterways.",
+        "Store upright, away from heat and children.",
+        "Deliver to the hazardous waste intake point."
+      ],
+      "reuse": ["Share unused paint with community projects"]
+    },
+    {
+      "id": "construction",
+      "label": "Construction rubble",
+      "material": "Concrete, sand, blocks",
+      "keywords": ["rubble", "block", "cement", "concrete", "sand", "tiles", "debris", "brick"],
+      "recyclable": true,
+      "biodegradable": false,
+      "hazardous": false,
+      "dropOffMaterial": "construction",
+      "steps": [
+        "Separate rebar and metal for the scrap yard.",
+        "Crushed concrete can be reused as hardcore for compaction.",
+        "Never dump rubble in drainage channels or on roadsides.",
+        "Arrange a licensed haulier for large volumes."
+      ],
+      "reuse": ["Road base and driveway fill", "Erosion control"]
+    },
+    {
+      "id": "general",
+      "label": "General non-recyclable waste",
+      "material": "Mixed residual",
+      "keywords": ["diaper", "sanitary", "styrofoam", "ceramic", "dirt", "dust", "mixed", "sweepings"],
+      "recyclable": false,
+      "biodegradable": false,
+      "hazardous": false,
+      "dropOffMaterial": "general",
+      "steps": [
+        "Bag securely so it does not scatter.",
+        "Place in your household bin for the scheduled collection day.",
+        "Do not burn — open burning releases dioxins.",
+        "Keep it out of drains and open plots."
+      ],
+      "reuse": []
+    }
+  ]
+}

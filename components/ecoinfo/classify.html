@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI waste classifier — is it recyclable, and how do I dispose of it safely?</title>
+<meta name="description" content="Upload a photo or describe an item and EcoInfo tells you whether it is recyclable, biodegradable or hazardous, plus safe disposal steps and reuse ideas for Yola.">
+<meta property="og:title" content="AI waste classifier for Yola">
+<meta property="og:description" content="Photo or text in, disposal guidance out — recyclable, hazardous, reuse ideas and the nearest drop-off point.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles/eco.css">
+<link rel="stylesheet" href="/pages/styles/pages.css">
+</head>
+<body>
+
+     <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+
+  <header class="site-header controls eco-mobile-nav">
+    <div class="header-inner">
+      <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html" class="active" aria-current="page">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/ecoinfo/admin.html">Admin</a></nav>
+    </div>
+  </header>
+
+    <!-- Desktop hero: brand lives here on larger screens -->
+    <header class="hero" aria-label="About Yola AI Info Hub">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner" style="margin-bottom: 35px;">
+            <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+                <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+                <div href="../index.html" class="nav-logo">
+                    <span class="navbar-appname-desktop"></span>
+                </div>
+            </div>
+            <div>    
+              <span class="eyebrow">AI-assisted · works offline with local rules</span>
+              <h1>Your AI objects classifier</h1>
+              <h3>What is this, and how do I get rid of it safely?</h3>
+              <p class="lead">Photograph the item, describe it, or both. EcoInfo classifies it as recyclable, biodegradable or hazardous and gives you step-by-step disposal guidance tuned to what Yola's centres actually accept.</p>
+              <div class="hero-actions">
+                <a href="#dropzone"><button class="btn btn-gold" id="">Classify now</button></a>
+                <a class="btn btn-outline" href="../../index.html">Return home</a>
+              </div>
+            </div>
+        </div>
+        <header class="site-header">
+          <div class="container header-inner">
+            <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
+            <nav class="nav" id="primary-nav" aria-label="Primary"><a href="../../index.html?section=ecoinfo">Dashboard</a><a href="atmosphere.html">Atmosphere</a><a href="classify.html" class="active" aria-current="page">AI Classifier</a><a href="report.html">Report Dumping</a><a href="recycling.html">Recycling</a><a href="schedule.html">Schedule</a><a href="learn.html">Learn</a><a href="community.html">Community</a><a href="admin.html">Admin</a></nav>
+          </div>
+        </header>
+    </header>
+
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2" style="gap:30px;align-items:start">
+
+      <form class="card" style="padding:26px" id="classify-form" novalidate>
+        <div class="eyebrow">Step 1 — evidence</div>
+        <h2 style="margin:.4rem 0 1rem">Tell EcoInfo about the item</h2>
+
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload photos of the item">
+          <div style="font-size:1.8rem">📷</div>
+          <p style="margin:.4rem 0 0"><strong>Tap to add a photo</strong> or drag one here</p>
+          <p class="small muted" style="margin:.2rem 0 0">Up to 3 images · resized on your device before upload</p>
+        </div>
+        <input type="file" id="photos" accept="image/*" capture="environment" multiple hidden>
+        <div class="thumbs" id="thumbs"></div>
+
+        <div class="field" style="margin-top:20px">
+          <label class="label" for="description">Describe the item</label>
+          <textarea class="textarea" id="description" placeholder="e.g. an empty plastic bottle with a metal cap, or a cracked phone charger"></textarea>
+          <p class="help">Mention the material, size and whether it held food, chemicals or medicine.</p>
+        </div>
+
+        <div class="field">
+          <span class="label">Quick examples</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap" id="examples"></div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="context">Where is it from?</label>
+          <select class="select" id="context">
+            <option value="household">Household</option>
+            <option value="market or shop">Market or shop</option>
+            <option value="construction site">Construction site</option>
+            <option value="clinic or pharmacy">Clinic or pharmacy</option>
+            <option value="workshop or garage">Workshop or garage</option>
+            <option value="farm">Farm</option>
+            <option value="street or public space">Street or public space</option>
+          </select>
+        </div>
+
+        <div class="hero-actions">
+          <button class="btn btn-gold" type="submit" id="classify-btn">Classify item</button>
+          <button class="btn btn-ghost" type="button" id="reset-btn">Start over</button>
+        </div>
+        <p class="help">Photos are processed for classification only. Nothing is published or shared with other users.</p>
+      </form>
+
+      <div>
+        <div id="result"></div>
+        <div class="card" style="padding:22px;margin-top:18px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <h3 style="margin:0">Recent items</h3>
+            <button class="btn btn-ghost btn-sm" id="clear-history">Clear</button>
+          </div>
+          <div id="history" class="grid" style="gap:10px;margin-top:12px"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--cream-soft)">
+  <div class="container">
+    <div class="eyebrow">Golden rules</div>
+    <h2>Four habits that make every classification easier</h2>
+    <div class="grid grid-4" style="margin-top:22px">
+      <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-soap" aria-hidden="true"></i></div><h3>Clean and dry</h3><p class="small muted">Rinse containers. Food residue contaminates whole batches of recyclables and kills their value.</p></div>
+      <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-shuffle" aria-hidden="true"></i></div><h3>Separate materials</h3><p class="small muted">Remove metal lids from glass, caps from bottles, batteries from devices before drop-off.</p></div>
+      <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-fire" aria-hidden="true"></i></div><h3>Never burn</h3><p class="small muted">Burning plastics, nylon and e-waste releases dioxins and heavy metals into the air you breathe.</p></div>
+      <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i></div><h3>Isolate hazards</h3><p class="small muted">Medicines, sharps, paints, pesticides and batteries always go to the specialist intake point.</p></div>
+    </div>
+  </div>
+</section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="//">Home</a></li>
+                        <li><a href="/pages/about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/report.html">Report / comment</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="/pages/help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/privacy.html">Privacy policy</a></li>
+                        <li><a href="/pages/terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">©<span id="year"> 2026</span>  AlkaliCodes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+<script type="module" src="scripts/classify.js"></script>
+</body>
+</html>

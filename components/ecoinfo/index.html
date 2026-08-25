@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yola EcoInfo — Live environment, waste &amp; clean-up intelligence</title>
+<meta name="description" content="Live Yola weather, air quality and driving clarity, AI waste classification, illegal dumping reports and recycling guidance — all in one place.">
+<meta property="og:title" content="Yola EcoInfo — Live environment &amp; waste intelligence">
+<meta property="og:description" content="Real-time atmospheric conditions for Yola plus AI waste classification and community clean-up tracking.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles/eco.css">
+<link rel="stylesheet" href="/pages/styles/pages.css">
+</head>
+<body>
+
+
+  <header class="site-header controls eco-mobile-nav">
+    <div class="header-inner">
+      <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html" class="active" aria-current="page">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/ecoinfo/admin.html">Admin</a></nav>
+    </div>
+  </header>
+
+
+<section class="hero">
+  <div class="hero-inner" style="margin-bottom: 35px;">
+    <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+        <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+        <div href="../index.html" class="nav-logo">
+            <span class="navbar-appname-desktop"></span>
+        </div>
+    </div>
+    <div>
+      <div class="eyebrow">EcoInfo dashboard</div>
+      <h1>Know your air. Sort your waste.<br>Clean up your ward.</h1>
+      <p class="lead">EcoInfo brings live atmospheric conditions, AI-powered waste guidance and community clean-up tracking into one calm, fast dashboard built for Yola.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="atmosphere.html">View live conditions</a>
+        <a class="btn btn-outline" href="report.html">Report illegal dumping</a>
+      </div>
+    <!--<div class="now-card" id="snapshot" style="margin-top:34px">
+        <div class="skeleton" style="height:26px;width:40%"></div>
+        <div class="skeleton" style="height:60px;margin-top:14px"></div>-->
+      </div>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="../../index.html?section=ecoinfo" class="active" aria-current="page">Dashboard</a><a href="atmosphere.html">Atmosphere</a><a href="classify.html">AI Classifier</a><a href="report.html">Report Dumping</a><a href="recycling.html">Recycling</a><a href="schedule.html">Schedule</a><a href="learn.html">Learn</a><a href="community.html">Community</a><a href="admin.html">Admin</a></nav>
+    </div>
+  </header>
+</section>
+
+<section class="section-tight">
+  <div class="container" id="alerts" style="display:grid;gap:12px"></div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="eyebrow">What you can do here</div>
+    <h2>Six tools, one environment hub</h2>
+    <p class="lead">Everything works on a phone, over a weak connection, and keeps your data on your device unless you choose to submit it.</p>
+
+    <div class="grid grid-3" style="margin-top:26px">
+      <a class="card card-hover" style="padding:24px" href="atmosphere.html">
+        <div class="icon-badge"><i class="fas fa-cloud-sun" aria-hidden="true"></i></div>
+        <h3>Atmospheric conditions</h3>
+        <p class="small muted">Temperature now and hour-by-hour for 24 hours, wind, gusts, humidity, UV, pressure, rainfall and a 7-day outlook.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="atmosphere.html#air">
+        <div class="icon-badge"><i class="fas fa-lungs" aria-hidden="true"></i></div>
+        <h3>Air quality &amp; clarity</h3>
+        <p class="small muted">PM2.5, PM10, Saharan dust, ozone and a driving-clarity score that tells you when visibility is risky.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="classify.html">
+        <div class="icon-badge"><i class="fas fa-robot" aria-hidden="true"></i></div>
+        <h3>AI waste classifier</h3>
+        <p class="small muted">Snap a photo or describe an item — get recyclable / hazardous status and safe disposal steps for Yola.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="report.html">
+        <div class="icon-badge"><i class="fas fa-location-dot" aria-hidden="true"></i></div>
+        <h3>Illegal dumping reports</h3>
+        <p class="small muted">Photo evidence, GPS pin, severity and a tracking code so you can follow the clean-up to completion.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="recycling.html">
+        <div class="icon-badge"><i class="fas fa-recycle" aria-hidden="true"></i></div>
+        <h3>Recycling &amp; drop-off map</h3>
+        <p class="small muted">Buy-back hubs, e-waste intake, composting and hazardous waste points sorted by distance from you.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="schedule.html">
+        <div class="icon-badge"><i class="fas fa-calendar-days" aria-hidden="true"></i></div>
+        <h3>Collection schedule</h3>
+        <p class="small muted">Pickup days by ward, calendar export, reminders, and a household waste log to track your recycling rate.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--cream-soft)">
+  <div class="container">
+    <div class="grid grid-2" style="gap:32px;align-items:start">
+      <div>
+        <div class="eyebrow">Today's guidance</div>
+        <h2>Small habits, measurable impact</h2>
+        <p class="lead">Three tips rotated daily from the EcoInfo library, tuned to Yola's climate, markets and waste streams.</p>
+        <a class="btn btn-emerald" href="learn.html">Open the full library</a>
+      </div>
+      <div class="grid" id="tips" style="gap:14px"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2" style="gap:32px;align-items:start">
+      <div class="card" style="padding:26px">
+        <div class="eyebrow">Your activity</div>
+        <h3 style="margin-top:.4rem">Recent on this device</h3>
+        <div id="activity"></div>
+        <div class="hero-actions">
+          <button class="btn btn-ghost btn-sm" id="sync-queue">Check offline queue</button>
+          <a class="btn btn-ghost btn-sm" href="community.html">Community &amp; points</a>
+        </div>
+      </div>
+      <div class="card card-emerald" style="padding:28px">
+        <div class="eyebrow" style="color:var(--gold-300)">For officials</div>
+        <h3>Admin console for waste management</h3>
+        <p>Triage reports by severity and ward, assign crews, record actions, publish community alerts and export CSV evidence for planning.</p>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="admin.html">Open admin console</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="//">Home</a></li>
+                        <li><a href="/pages/about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/report.html">Report / comment</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="/pages/help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/privacy.html">Privacy policy</a></li>
+                        <li><a href="/pages/terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">©<span id="year"> 2026</span>  AlkaliCodes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+<script type="module" src="scripts/dashboard.js"></script>
+</body>
+</html>

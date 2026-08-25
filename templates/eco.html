@@ -1,0 +1,471 @@
+
+<header class="hero">
+    <div class="hero-inner">
+        <span class="eyebrow">Yola · Environment</span>
+        <h1>Environmental <em>Information</em></h1>
+        <p>Know your environment, sort your waste and clean up your ward.</p>
+    </div>
+    <div class="hero-glow" aria-hidden="true"></div>
+</header>
+
+  <header class="site-header controls">
+    <div class="header-inner">
+      <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html" class="active" aria-current="page">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/ecoinfo/admin.html">Admin</a></nav>
+    </div>
+  </header>
+
+
+<section class="info-section">
+
+<section class="hero" style="margin-top: 200px; border-radius: 40px;">
+  <div class="container" style="padding: 20px !important;">
+    
+    <h2 style="color:#f3ecec !important;">Know your air. Sort your waste.<br>Clean up your ward.</h2>
+    <p class="lead">EcoInfo brings live atmospheric conditions, AI-powered waste guidance and community clean-up tracking into one calm, fast dashboard built for Yola.</p>
+    <div class="hero-actions">
+      <a class="btn btn-gold" href="/components/ecoinfo/atmosphere.html">View live conditions</a>
+      <a class="btn btn-outline" href="/components/ecoinfo/classify.html">Classify an item with AI</a>
+      <a class="btn btn-outline" href="/components/ecoinfo/report.html">Report illegal dumping</a>
+    </div>
+
+  <!--<div class="now-card" id="snapshot" style="margin-top:34px">
+      <div class="skeleton" style="height:26px;width:40%"></div>
+      <div class="skeleton" style="height:60px;margin-top:14px"></div>
+    </div>-->
+  </div>
+</section>
+
+
+
+
+<section class="section-tight">
+  <div class="container" id="alerts" style="display:grid;gap:12px"></div>
+</section>
+
+<section class="section">
+  <div class="">
+    <div class="eyebrow">What you can do here</div>
+    <h2>Six tools, one environment hub</h2>
+    <p class="lead">Everything works on a phone, over a weak connection, and keeps your data on your device unless you choose to submit it.</p>
+
+    <div class="grid grid-3" style="margin-top:26px">
+      <a class="card card-hover" style="padding:24px" href="/components/ecoinfo/atmosphere.html">
+        <div class="icon-badge feature-icon"><i class="fas fa-cloud-sun" aria-hidden="true"></i></div>
+        <h3>Atmospheric conditions</h3>
+        <p class="small muted">Temperature now and hour-by-hour for 24 hours, wind, gusts, humidity, UV, pressure, rainfall and a 7-day outlook.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="/components/ecoinfo/atmosphere.html#air">
+        <div class="icon-badge feature-icon"><i class="fas fa-lungs" aria-hidden="true"></i></div>
+        <h3>Air quality &amp; clarity</h3>
+        <p class="small muted">PM2.5, PM10, Saharan dust, ozone and a driving-clarity score that tells you when visibility is risky.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="/components/ecoinfo/classify.html">
+        <div class="icon-badge feature-icon"><i class="fas fa-robot" aria-hidden="true"></i></div>
+        <h3>AI waste classifier</h3>
+        <p class="small muted">Snap a photo or describe an item — get recyclable / hazardous status and safe disposal steps for Yola.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="/components/ecoinfo/report.html">
+        <div class="icon-badge feature-icon"><i class="fas fa-location-dot" aria-hidden="true"></i></div>
+        <h3>Illegal dumping reports</h3>
+        <p class="small muted">Photo evidence, GPS pin, severity and a tracking code so you can follow the clean-up to completion.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="/components/ecoinfo/recycling.html">
+        <div class="icon-badge feature-icon"><i class="fas fa-recycle" aria-hidden="true"></i></div>
+        <h3>Recycling &amp; drop-off map</h3>
+        <p class="small muted">Buy-back hubs, e-waste intake, composting and hazardous waste points sorted by distance from you.</p>
+      </a>
+      <a class="card card-hover" style="padding:24px" href="/components/ecoinfo/schedule.html">
+        <div class="icon-badge feature-icon"><i class="fas fa-calendar-days" aria-hidden="true"></i></div>
+        <h3>Collection schedule</h3>
+        <p class="small muted">Pickup days by ward, calendar export, reminders, and a household waste log to track your recycling rate.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--cream-soft); padding: 45px; border-radius: 24px;">
+  <div class="">
+    <div class="grid grid-2" style="gap:32px;align-items:start">
+      <div>
+        <div class="eyebrow">Today's guidance</div>
+        <h2>Small habits, measurable impact</h2>
+        <p class="lead">Three tips rotated daily from the EcoInfo library, tuned to Yola's climate, markets and waste streams.</p>
+        <a class="btn btn-emerald" href="/components/ecoinfo/learn.html">Open the full library</a>
+      </div>
+      <div class="grid" id="tips" style="gap:14px"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2" style="gap:32px;align-items:start">
+      <div class="card" style="padding:26px">
+        <div class="eyebrow">Your activity</div>
+        <h3 style="margin-top:.4rem">Recent on this device</h3>
+        <div id="activity"></div>
+        <div class="hero-actions">
+          <button class="btn btn-ghost btn-sm" id="sync-queue">Check offline queue</button>
+          <a class="btn btn-ghost btn-sm" href="/components/ecoinfo/community.html">Community &amp; points</a>
+        </div>
+      </div>
+      <div class="card card-emerald" style="padding:28px">
+        <div class="eyebrow" style="color:var(--gold-300)">For officials</div>
+        <h3>Admin console for waste management</h3>
+        <p>Triage reports by severity and ward, assign crews, record actions, publish community alerts and export CSV evidence for planning.</p>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="/components/ecoinfo/admin.html">Open admin console</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-separator">
+                <div class="footer-brand">
+                      <div class="brand-lockup">
+                          <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                              <defs>
+                                  <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                      <stop offset="0%" stop-color="#064e3b"/>
+                                      <stop offset="100%" stop-color="#17997a"/>
+                                  </linearGradient>
+                              </defs>
+                              <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                              <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                              <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                              <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                          </svg>
+                          <div class="brand-text">
+                              <span class="brand-name">Yola AI Info Hub</span>
+                          </div>
+                      </div>
+                      <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+                <div class="footer-grid">
+
+                  <div class="footer-group">
+                      <h3 class="footer-heading">Info Hub</h3>
+                      <ul class="footer-links">
+                          <li><a href="/">Home</a></li>
+                          <li><a href="../pages/about.html">About</a></li>
+                          <li><a href="#">Sitemap/directories</a></li>
+                      </ul>
+                  </div>
+
+                  <div class="footer-group">
+                      <h3 class="footer-heading">Support</h3>
+                      <ul class="footer-links">
+                          <li><a href="../pages/report.html">Report / comment</a></li>
+                          <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                          <li><a href="../pages/help.html">Help center</a></li>
+                      </ul>
+                  </div>
+
+                  <div class="footer-group">
+                      <h3 class="footer-heading">Legal</h3>
+                      <ul class="footer-links">
+                          <li><a href="../pages/privacy.html">Privacy policy</a></a></li>
+                          <li><a href="../pages/terms.html">Terms of use</a></li>
+                      </ul>
+                  </div>
+              </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+              <p class="copyright">© <span id="year">2026</span> AlkaliCodes. All rights reserved.</p>
+              <div class="footer-preferences" aria-label="Display preferences">
+                <label class="footer-preference" aria-label="Language"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c2.4 2.5 3.5 5.5 3.5 9s-1.1 6.5-3.5 9c-2.4-2.5-3.5-5.5-3.5-9S9.6 5.5 12 3Z" stroke="currentColor" stroke-width="1.8"/></svg><select id="language-select" aria-label="Language"><option value="en">English</option><option value="ar">العربية</option><option value="fr">Français</option><option value="ha">Hausa</option><option value="ff">Fulfulde</option><option value="yo">Yorùbá</option><option value="ig">Igbo</option><option value="pcm">Nigerian Pidgin</option></select></label>
+                    <div class="footer-preference"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><button type="button" id="theme-select" class="theme-toggle" aria-label="Theme" aria-pressed="false"><span class="theme-toggle-track" aria-hidden="true"></span><span class="theme-toggle-state">Light</span></button></div>
+              </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+<script>
+function getLangFolder() {
+  const langMap = {
+    'en': 'En',
+    'ar': 'Ar',
+    'fr': 'Fr',
+    'ha': 'Ha',
+    'ff': 'Fu',
+    'yo': 'Yo',
+    'ig': 'Ig',
+    'pcm': 'Pi'
+  };
+  const lang = window.getAppLanguage ? window.getAppLanguage() : 'en';
+  return langMap[lang] || 'En';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a[href^="details/"]').forEach(link => {
+    const href = link.getAttribute('href');
+    const parts = href.split('/');
+    if (parts.length >= 3) {
+      const section = parts[1];
+      const file = parts[2];
+      link.classList.add('learn-more-link');
+      link.dataset.section = section;
+      link.dataset.file = file;
+      link.setAttribute('href', `details/${section}/${getLangFolder()}/${file}`);
+    }
+  });
+});
+</script>
+
+
+<script>
+    
+// Keep the injected template from rendering repeated weather cards.
+function normalizeAetherflowMarkup() {
+  document.querySelectorAll('.dashboard > .sun-card').forEach((card, index) => {
+    if (index > 0) card.remove();
+  });
+}
+
+normalizeAetherflowMarkup();
+
+// --- Estimate Air Quality based on weather conditions ---
+window.estimateAirQuality = function(weatherData) {
+  const airQualityElement = document.querySelector('.air-quality');
+  if (!airQualityElement) return;
+  
+  // Estimate AQI based on weather factors (higher wind = better air quality, etc)
+  let estimatedAQI = 75; // Base moderate level
+  
+  if (weatherData && weatherData.windspeed) {
+    // Higher wind speed helps disperse pollutants
+    if (weatherData.windspeed > 10) estimatedAQI -= 15; // Good ventilation
+    else if (weatherData.windspeed > 5) estimatedAQI -= 10;
+    else estimatedAQI += 10; // Stagnant air
+  }
+  
+  // Add randomness for realism (±10)
+  estimatedAQI = Math.max(0, Math.min(500, estimatedAQI + (Math.random() * 20 - 10)));
+  estimatedAQI = Math.round(estimatedAQI);
+  
+  let aqiStatus = 'Unknown';
+  if (estimatedAQI <= 50) aqiStatus = 'Good';
+  else if (estimatedAQI <= 100) aqiStatus = 'Moderate';
+  else if (estimatedAQI <= 150) aqiStatus = 'Unhealthy for Sensitive';
+  else if (estimatedAQI <= 200) aqiStatus = 'Unhealthy';
+  else if (estimatedAQI <= 300) aqiStatus = 'Very Unhealthy';
+  else aqiStatus = 'Hazardous';
+  
+  airQualityElement.innerHTML = `<p class="weather-value">${aqiStatus}</p><p class="weather-label">Est. AQI: ${estimatedAQI}</p>`;
+};
+
+// --- Live Weather & Air Quality for Yola ---
+window.initEcoWeatherDisplay = async function() {
+  // Yola coordinates
+  const yolaLat = 9.2035;
+  const yolaLon = 12.4954;
+  
+  let currentWeather = null; // Declare outside so it's available in error handlers
+  
+  try {
+    // Fetch current weather from Open-Meteo API (free, no key required)
+    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${yolaLat}&longitude=${yolaLon}&current_weather=true&hourly=relative_humidity_2m`);
+    const weatherData = await weatherRes.json();
+    
+    if (weatherData && weatherData.current_weather) {
+      currentWeather = weatherData.current_weather;
+      const tempElement = document.querySelector('.tempreature');
+      const windspeedElement = document.querySelector('.windspeed');
+      const humidityElement = document.querySelector('.humidity');
+      
+      // Update temperature
+      if (tempElement) {
+        tempElement.innerHTML = `<p class="weather-value">${Math.round(currentWeather.temperature)}°C</p><p class="weather-label">Temperature</p>`;
+      }
+      
+      // Update windspeed
+      if (windspeedElement) {
+        windspeedElement.innerHTML = `<p class="weather-value">${Math.round(currentWeather.windspeed)} km/h</p><p class="weather-label">Wind Speed</p>`;
+      }
+      
+      // Update humidity (from hourly data)
+      if (humidityElement && weatherData.hourly && weatherData.hourly.relative_humidity_2m && weatherData.hourly.relative_humidity_2m[0]) {
+        const humidity = weatherData.hourly.relative_humidity_2m[0];
+        humidityElement.innerHTML = `<p class="weather-value">${humidity}%</p><p class="weather-label">Humidity</p>`;
+      }
+    }
+    
+    // Fetch Air Quality data from WAQI (World Air Quality Index) - free endpoint
+    try {
+      // Try WAQI public endpoint (no key required for basic requests)
+      const waqiRes = await fetch(`https://api.waqi.info/feed/yola/?token=demo`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      
+      if (waqiRes.ok) {
+        const waqiData = await waqiRes.json();
+        
+        if (waqiData && waqiData.data) {
+          const airQualityElement = document.querySelector('.air-quality');
+          const aqi = parseInt(waqiData.data.aqi) || null;
+          let aqiStatus = 'Good'; // Default to Good if no data
+          
+          // AQI standards (0-500 scale)
+          if (aqi !== null) {
+            if (aqi <= 50) aqiStatus = 'Good';
+            else if (aqi <= 100) aqiStatus = 'Moderate';
+            else if (aqi <= 150) aqiStatus = 'Unhealthy for Sensitive Groups';
+            else if (aqi <= 200) aqiStatus = 'Unhealthy';
+            else if (aqi <= 300) aqiStatus = 'Very Unhealthy';
+            else aqiStatus = 'Hazardous';
+          }
+          
+          if (airQualityElement) {
+            airQualityElement.innerHTML = `<p class="weather-value">${aqiStatus}</p><p class="weather-label">AQI: ${aqi || 'Est.'}</p>`;
+          }
+        }
+      } else {
+        // Fallback: Estimate AQI based on weather conditions
+        if (currentWeather) {
+          window.estimateAirQuality(currentWeather);
+        }
+      }
+    } catch (aqError) {
+      // Air quality API failed, use fallback estimation
+      console.warn('Air quality API unavailable, using estimation:', aqError);
+      if (currentWeather) {
+        window.estimateAirQuality(currentWeather);
+      }
+    }
+    
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    // Display error states for main weather data
+    const tempEl = document.querySelector('.tempreature');
+    if (tempEl) tempEl.innerHTML = `<p class="weather-value">--</p><p class="weather-label">Temperature</p>`;
+    
+    const windEl = document.querySelector('.windspeed');
+    if (windEl) windEl.innerHTML = `<p class="weather-value">--</p><p class="weather-label">Wind Speed</p>`;
+    
+    const humidEl = document.querySelector('.humidity');
+    if (humidEl) humidEl.innerHTML = `<p class="weather-value">--</p><p class="weather-label">Humidity</p>`;
+    
+    const airEl = document.querySelector('.air-quality');
+    if (airEl) airEl.innerHTML = `<p class="weather-value">--</p><p class="weather-label">Air Quality</p>`;
+  }
+};
+
+// Auto-run on page load if weather display exists
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.querySelector('.tempreature') || document.querySelector('.air-quality')) {
+    window.initEcoWeatherDisplay();
+    // Refresh every 30 minutes
+    setInterval(window.initEcoWeatherDisplay, 30 * 60 * 1000);
+  }
+});
+
+// Also run on direct initialization
+if (document.querySelector('.tempreature') || document.querySelector('.air-quality')) {
+  window.initEcoWeatherDisplay();
+}
+
+
+    // Initialize Eco section features and weather dashboard after template injection
+    setTimeout(() => {
+      if (typeof window.initEcoFeatures === 'function') {
+        window.initEcoFeatures();
+      }
+
+      const initializeAetherflow = () => {
+        normalizeAetherflowMarkup();
+        if (typeof window.initAetherflowDashboard === 'function') {
+          window.initAetherflowDashboard();
+        } else if (!window.aetherflowLoaded) {
+          const script = document.createElement('script');
+          script.src = 'scripts/aetherflow.js';
+          script.onload = () => {
+            window.aetherflowLoaded = true;
+            if (typeof window.initAetherflowDashboard === 'function') {
+              window.initAetherflowDashboard();
+            }
+          };
+          document.head.appendChild(script);
+        }
+      };
+
+      initializeAetherflow();
+      // Section-specific chat history is no longer preloaded here.
+      window.observeChatContainers && window.observeChatContainers();
+    }, 100);
+
+
+
+
+
+function ensureToggleDetailsIcons() {
+  if (document.getElementById('toggle-details-icons')) return;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.style.position = 'absolute';
+  svg.style.width = '0';
+  svg.style.height = '0';
+  svg.style.overflow = 'hidden';
+  svg.id = 'toggle-details-icons';
+
+  const createSymbol = (id, pathD) => {
+    const symbol = document.createElementNS(svgNS, 'symbol');
+    symbol.id = id;
+    symbol.setAttribute('viewBox', '0 0 24 24');
+    const circle = document.createElementNS(svgNS, 'circle');
+    circle.setAttribute('cx', '12');
+    circle.setAttribute('cy', '12');
+    circle.setAttribute('r', '9');
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', pathD);
+    symbol.appendChild(circle);
+    symbol.appendChild(path);
+    return symbol;
+  };
+
+  svg.appendChild(createSymbol('toggle-icon-closed', 'M8 10l4 4 4-4'));
+  svg.appendChild(createSymbol('toggle-icon-open', 'M8 14l4-4 4 4'));
+  document.body.insertBefore(svg, document.body.firstChild);
+}
+
+function toggleDetails(button) {
+  ensureToggleDetailsIcons();
+  const atmospheric_conditions = document.getElementById('dashboard');
+  if (!atmospheric_conditions) return;
+
+  const isHidden = atmospheric_conditions.style.display === 'none' || getComputedStyle(atmospheric_conditions).display === 'none';
+  const open = isHidden;
+  atmospheric_conditions.style.display = open ? 'grid' : 'none';
+
+  const useEl = button.querySelector('use');
+  if (useEl) {
+    const symbol = open ? '#toggle-icon-open' : '#toggle-icon-closed';
+    useEl.setAttribute('href', symbol);
+    useEl.setAttribute('xlink:href', symbol);
+  }
+
+  button.setAttribute('aria-expanded', open ? 'true' : 'false');
+  button.title = open ? 'Hide details' : 'Show details';
+}
+
+  </script>
+<script src="/Other_features/scripts/aetherflow.js"></script>
+
+<script type="module" src="/components/ecoinfo/scripts/dashboard.js"></script>

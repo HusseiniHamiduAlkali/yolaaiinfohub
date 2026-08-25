@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atmospheric conditions in Yola — temperature, air quality &amp; driving clarity</title>
+<meta name="description" content="Live Yola weather: current temperature, 24-hour hourly forecast, wind speed, UV index, humidity, air quality and an atmospheric clarity score for driving.">
+<meta property="og:title" content="Atmospheric conditions in Yola">
+<meta property="og:description" content="Hourly temperature, wind, UV, humidity, air quality and driving clarity for Yola, Adamawa State.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles/eco.css">
+<link rel="stylesheet" href="/pages/styles/pages.css">
+<link rel="stylesheet" href="/components/ecoinfo/styles/aetherflow.css">
+</head>
+<body>
+
+
+
+     <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+  <header class="site-header controls eco-mobile-nav">
+    <div class="header-inner">
+      <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html">Dashboard</a><a href="/components/ecoinfo/atmosphere.html" class="active" aria-current="page">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/ecoinfo/admin.html">Admin</a></nav>
+    </div>
+  </header>
+
+
+    <!-- Desktop hero: brand lives here on larger screens -->
+    <header class="hero" aria-label="About Yola AI Info Hub">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-inner" style="margin-bottom: 35px;">
+            <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+                <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+                <div href="../index.html" class="nav-logo">
+                    <span class="navbar-appname-desktop"></span>
+                </div>
+            </div>
+            <div>    
+              <span class="eyebrow">Live from Open-Meteo · Yola 9.20°N, 12.50°E</span>
+              <h1>Atmospheric conditions</h1>
+              <p class="lead">Everything happening in the air above Yola right now — and what it means for your commute, your health and your work outdoors.</p>
+              <div class="hero-actions">
+                <button class="btn btn-gold" id="refresh">Refresh now</button>
+                <a class="btn btn-outline" href="#air">Jump to air quality</a>
+              </div>
+            </div>
+        </div>
+        <header class="site-header">
+          <div class="container header-inner">
+            <nav class="nav" id="primary-nav" aria-label="Primary"><a href="../../index.html?section=ecoinfo">Dashboard</a><a href="atmosphere.html" class="active" aria-current="page">Atmosphere</a><a href="classify.html">AI Classifier</a><a href="report.html">Report Dumping</a><a href="recycling.html">Recycling</a><a href="schedule.html">Schedule</a><a href="learn.html">Learn</a><a href="community.html">Community</a><a href="admin.html">Admin</a></nav>
+          </div>
+        </header>
+    </header>
+
+
+<section class="hero" style="display: none;">
+  <div class="container">
+    
+    <div class="now-card" id="now" style="margin-top:30px">
+      <div class="skeleton" style="height:28px;width:45%"></div>
+      <div class="skeleton" style="height:70px;margin-top:14px"></div>
+    </div>
+    <p class="small" id="status" style="color:rgba(245,240,224,0.6);margin-top:14px">Loading live conditions…</p>
+  </div>
+</section>
+
+
+    <div class="">
+        <!-- AetherFlow Weather Dashboard -->
+      <div style="flex-direction: column; margin-top: 100px;" class="section-eco aetherflow-container">
+        <!--<h2 class="section-eco-h2" >Weather and Atmospheric conditions</h2>-->
+        
+        <!--<div class="dashboard" id="dashboard" style="display: none;">-->
+        <div class="dashboard" id="dashboard" >
+          <!-- Hero Section -->
+          <section class="bento-card hero-card">
+            <div class="hero-bg-icon">
+              <svg fill="currentColor" height="240" viewBox="0 0 24 24" width="240"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+            </div>
+            <div class="hero-header">
+              <div class="location-info">
+                <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path></svg>
+                <h2>Yola, Adamawa</h2>
+              </div>
+              <p class="current-date" id="current-date">Monday, 12 June</p>
+            </div>
+            <div class="weather-main">
+              <div class="temp-display">
+                <span class="temp-val" id="hero-temp">22°</span>
+                <div class="temp-details">
+                  <span class="weather-desc" id="weather-desc">Partly Cloudy</span>
+                  <span class="feels-like" id="feels-like">Feels like 24° • H: 26° L: 18°</span>
+                </div>
+              </div>
+              <div class="quick-stats">
+                <div class="stat-item">
+                  <svg class="icon icon-sm" style="color: var(--primary); margin-bottom: 4px;" viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.47-8 11.72 0 4.44 3.58 8.03 8 8.03s8-3.58 8-8.03c0-3.25-2.67-7.17-8-11.72z"></path></svg>
+                  <span class="stat-val" id="precip-val">12%</span>
+                  <span class="stat-label">Precip</span>
+                </div>
+                <div class="stat-item">
+                  <svg class="icon icon-sm" style="color: var(--primary); margin-bottom: 4px;" viewBox="0 0 24 24"><path d="M13.96 16.04c.8 0 1.5-.3 2.11-.91.61-.61.91-1.31.91-2.11s-.3-1.5-.91-2.11c-.61-.61-1.31-.91-2.11-.91-.8 0-1.5.3-2.11.91-.61.61-.91 1.31-.91 2.11s.3 1.5.91 2.11c.61.61 1.31.91 2.11.91zM7 11h3V9H7v2zm0 4h10v-2H7v2zm0 4h7v-2H7v2z"></path></svg>
+                  <span class="stat-val" id="wind-val">14 km/h</span>
+                  <span class="stat-label">Wind</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5-Day Forecast -->
+          <section class="bento-card forecast-card">
+            <span class="card-label">5-Day Forecast</span>
+            <div class="forecast-list" id="forecast-list">
+              <div class="forecast-row">
+                <span class="day-name">Tue</span>
+                <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+                <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+                <span class="day-temp">24°</span>
+              </div>
+              <div class="forecast-row">
+                <span class="day-name">Wed</span>
+                <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+                <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+                <span class="day-temp">24°</span>
+              </div>
+              <div class="forecast-row">
+                <span class="day-name">Thurs</span>
+                <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+                <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+                <span class="day-temp">33°</span>
+              </div>
+              <div class="forecast-row">
+                <span class="day-name">Fri</span>
+                <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+                <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+                <span class="day-temp">37°</span>
+              </div>
+              <div class="forecast-row">
+                <span class="day-name">Sat</span>
+                <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+                <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+                <span class="day-temp">21°</span>
+              </div>
+            </div>
+            <a href="#daily">
+            <button class="view-report">
+              
+                View full report 
+                <svg class="icon-sm" style="fill:none; stroke:currentColor; stroke-width:2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"></path></svg>
+              
+            </button>
+            </a>
+          </section>
+
+          
+          <!-- Sunrise & Sunset -->
+          <section class="bento-card sun-card">
+            <span class="card-label">Sunrise &amp; Sunset</span>
+            <div class="sun-grid">
+              <div class="sun-item">
+                <div class="sun-icon sunrise-icon">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.92h-2V3.5h2V.58zm1.28 5.67l1.79-1.8 1.41 1.41-1.8 1.79-1.4-1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6h12c0-3.31-2.69-6-6-6zm-8 11h16c0-4.42-3.58-8-8-8s-8 3.58-8 8z" fill="currentColor"></path></svg>
+                </div>
+                <div class="sun-info">
+                  <span>Sunrise</span>
+                  <span class="sun-time" id="sunrise-time">05:42 AM</span>
+                </div>
+              </div>
+              <div class="sun-item">
+                <div class="sun-icon sunset-icon">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M12.12 2.02a10.01 10.01 0 0 0-4.03 9.47 10.01 10.01 0 0 0 8.43 8.43 10 10 0 0 0 9.47-4.03 10.1 10.1 0 0 1-7.91-7.91 10.1 10.1 0 0 1-5.96-5.96z" fill="currentColor"></path></svg>
+                </div>
+                <div class="sun-info">
+                  <span>Sunset</span>
+                  <span class="sun-time" id="sunset-time">06:14 PM</span>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Hourly Forecast -->
+          <section class="bento-card hourly-card">
+            <span class="card-label">Hourly Forecast</span>
+            <div class="hourly-scroll" id="hourly-scroll">
+              <div class="hour-item">
+                <span class="hour-time">NOW</span>
+                <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+                <span class="hour-temp">22°</span>
+              </div>
+              <div class="hour-item">
+                <span class="hour-time">--</span>
+                <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+                <span class="hour-temp">--°</span>
+              </div>
+              <div class="hour-item">
+                <span class="hour-time">--</span>
+                <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+                <span class="hour-temp">--°</span>
+              </div>
+              <div class="hour-item">
+                <span class="hour-time">--</span>
+                <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+                <span class="hour-temp">--°</span>
+              </div>
+              <div class="hour-item">
+                <span class="hour-time">--</span>
+                <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+                <span class="hour-temp">--°</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- UV Index -->
+          <section class="bento-card metric-card">
+            <span class="card-label">UV Index</span>
+            <div style="display: flex; flex-direction: column; ">
+              <span class="metric-val" id="uv-index">4</span>
+              <span class="metric-desc" id="uv-status">Moderate</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="uv-progress" style="width: 33%"></div>
+            </div>
+          </section>
+
+
+          <!-- Visibility -->
+          <section class="bento-card metric-card">
+            <span class="card-label">Visibility</span>
+            <div style="display: flex; flex-direction: column; ">
+              <span class="metric-val" id="visibility-val">10 km</span>
+              <span class="metric-desc">Perfectly clear sky</span>
+            </div>
+            <div class="metric-tag" style="color: var(--secondary)">
+              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"></path></svg>
+              <span>Optimal</span>
+            </div>
+          </section>
+
+          <!-- Air Quality -->
+          <section class="bento-card metric-card">
+            <span class="card-label">Air Quality</span>
+            <div style="display: flex; flex-direction: column; ">
+              <span class="metric-val" id="air-quality-val">42</span>
+              <span class="metric-desc" id="air-quality-status">Good (PM2.5)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="air-quality-progress" style="width: 42%; background-color: var(--secondary);"></div>
+            </div>
+          </section>
+
+          
+          <!-- Humidity -->
+          <section class="bento-card metric-card">
+            <span class="card-label">Humidity</span>
+            <div style="display: flex; flex-direction: column; ">
+              <span class="metric-val" id="humidity-val">64%</span>
+              <span class="metric-desc" id="dew-point">The dew point is 15°</span>
+            </div>
+            <div class="metric-tag" style="color: var(--primary)">
+              <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"></path></svg>
+              <span>Normal Range</span>
+            </div>
+          </section>
+          
+          <!-- Pressure -->
+          <section class="bento-card pressure-card pressure-card-desktop" style="gap:0;">
+            <span class="card-label">Pressure</span>
+            <div class="pressure-content">
+              <div class="gauge-container">
+                <svg height="128" style="transform: rotate(-90deg)" width="128">
+                  <circle cx="64" cy="64" fill="none" r="58" stroke="var(--surface-container)" stroke-dasharray="270 360" stroke-linecap="round" stroke-width="4"></circle>
+                  <circle cx="64" cy="64" fill="none" r="58" stroke="var(--primary)" stroke-dasharray="180 360" stroke-linecap="round" stroke-width="4"></circle>
+                </svg>
+                <div class="gauge-text" style="position: absolute;">
+                  <span class="gauge-val" id="pressure-val">1012</span>
+                  <span class="gauge-unit">hPa</span>
+                </div>
+              </div>
+              <p class="pressure-text">The atmospheric pressure is stable and within normal ranges for the current season.</p>
+            </div>
+          </section>
+
+          
+          <!-- Pressure Mobile -->
+          <section class="bento-card pressure-card pressure-card-mobile" style="gap:0;">
+            <span class="card-label">Pressure</span>
+            <div class="pressure-content">
+              <div class="gauge-container">
+                <svg height="128" style="transform: rotate(-90deg)" width="128">
+                  <circle cx="64" cy="64" fill="none" r="58" stroke="var(--surface-container)" stroke-dasharray="270 360" stroke-linecap="round" stroke-width="4"></circle>
+                  <circle cx="64" cy="64" fill="none" r="58" stroke="var(--primary)" stroke-dasharray="180 360" stroke-linecap="round" stroke-width="4"></circle>
+                </svg>
+                <div class="gauge-text" style="position: absolute;">
+                  <span class="gauge-val" id="pressure-val">1012</span>
+                  <span class="gauge-unit">hPa</span>
+                </div>
+              </div>
+              <p class="pressure-text">The atmospheric pressure is stable and within normal ranges for the current season.</p>
+            </div>
+          </section>
+
+          
+        </div>
+        
+      </div>
+    </div>
+
+
+<section class="section-tight">
+  <div class="container" id="alerts" style="display:grid;gap:12px; padding: 50px"></div>
+</section>
+
+<section class="section">
+  <div class="container" style="padding: 50px;">
+    <div class="eyebrow">Next few hours</div>
+    <h2>Hour-by-hour outlook</h2>
+    <p class="lead">Tempreature trend analytic</p>
+    <div class="hourly-strip" id="hourly" aria-label="Hourly forecast"></div>
+    <div class="card" style="padding:20px;margin-top:20px" id="chart"></div>
+  </div>
+</section>
+
+<section class="section" id="aq" style="background:var(--cream-soft)">
+  <div class="container">
+    <div class="eyebrow">Breathing &amp; visibility</div>
+    <h2>Air quality and atmospheric clarity</h2>
+    <div class="grid grid-2" style="margin-top:22px;align-items:start">
+      <div class="card" style="padding:26px">
+        <h3 style="margin-top:0">Air quality</h3>
+        <div id="air"></div>
+      </div>
+      <div class="card" style="padding:26px">
+        <h3 style="margin-top:0">Clarity for driving</h3>
+        <div id="clarity"></div>
+        <label class="checkline" style="margin-top:16px">
+          <input type="checkbox" id="dust-sim">
+          <span class="small">Preview a heavy harmattan dust event (what the score looks like at 1.5&nbsp;km visibility)</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="eyebrow">Week ahead</div>
+    <h2>7-day outlook for Yola</h2>
+    <div class="grid grid-4" id="daily" style="margin-top:22px"></div>
+    <p class="help">Data: Open-Meteo forecast and air-quality APIs. Driving clarity is an EcoInfo index combining visibility, dust, precipitation and PM10.</p>
+  </div>
+</section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="//">Home</a></li>
+                        <li><a href="/pages/about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/report.html">Report / comment</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="/pages/help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/privacy.html">Privacy policy</a></li>
+                        <li><a href="/pages/terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">©<span id="year"> 2026</span>  AlkaliCodes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+<script type="module" src="scripts/atmosphere.js"></script>
+<script src="scripts/aetherflow.js"></script>
+</body>
+</html>

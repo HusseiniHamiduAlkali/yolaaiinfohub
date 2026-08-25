@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <title>School Content Admin | Yola AI Info Hub</title>
+  <link rel="stylesheet" href="styles/admin-schools.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <p class="eyebrow">Content administration</p>
+        <h1>School records</h1>
+        <p class="muted">Create, update, publish, or remove school details stored in MongoDB.</p>
+      </div>
+      <a class="back-link" href="index.html">Back to app</a>
+    </header>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+
+    <section class="admin-grid">
+      <aside class="panel records-panel">
+        <div class="panel-heading">
+          <h2>Records</h2>
+          <button id="new-record" class="button button-primary" type="button">New school</button>
+        </div>
+        <div id="records" class="records-list"><p class="muted">Loading records...</p></div>
+      </aside>
+
+      <section class="panel editor-panel">
+        <div class="panel-heading">
+          <div>
+            <h2 id="editor-title">New school</h2>
+            <p class="muted">English title and summary are required. Localized data accepts JSON.</p>
+          </div>
+          <button id="delete-record" class="button button-danger" type="button" hidden>Delete</button>
+        </div>
+        <form id="school-form">
+          <input id="record-id" type="hidden">
+          <div class="form-grid">
+            <label>Slug<input id="slug" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="example-school"></label>
+            <label>Image path<input id="image" placeholder="Data/Images/example.jpg"></label>
+            <label class="wide">English title<input id="title-en" required></label>
+            <label class="wide">English summary<textarea id="summary-en" required rows="3"></textarea></label>
+            <label>Tags<input id="tags" placeholder="school, secondary, yola"></label>
+            <label>Sort order<input id="sort-order" type="number" value="0"></label>
+            <label class="wide">Localized titles JSON<textarea id="titles-json" rows="5" placeholder='{"en":"School name","ha":"...","ar":"..."}'></textarea></label>
+            <label class="wide">Localized summaries JSON<textarea id="summaries-json" rows="5" placeholder='{"en":"School summary","ha":"..."}'></textarea></label>
+            <label class="wide">Sections JSON<textarea id="sections-json" rows="10" placeholder='[{"heading":{"en":"Programs"},"body":{"en":"..."},"items":[{"en":"Primary"}]}]'></textarea></label>
+          </div>
+          <label class="published"><input id="published" type="checkbox" checked> Published</label>
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">Save school</button>
+            <button id="reset-form" class="button" type="button">Reset</button>
+          </div>
+        </form>
+      </section>
+    </section>
+  </main>
+  <script src="../../scripts/apiConfig.js"></script>
+  <script src="admin-schools.js"></script>
+</body>
+</html>

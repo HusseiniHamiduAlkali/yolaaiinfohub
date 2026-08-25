@@ -1,5 +1,5 @@
 // API keys should be provided server-side or injected at build time.
-// Use `components/apiConfig.js` or Netlify/GitHub secrets to provide `window.API_BASE` and keep keys off the client.
+// Use `scripts/apiConfig.js` or Netlify/GitHub secrets to provide `window.API_BASE` and keep keys off the client.
 window.GEMINI_API_KEY = window.GEMINI_API_KEY || null;
 window.MAPS_API_KEY = window.MAPS_API_KEY || null;
 
@@ -157,7 +157,8 @@ async function initializeApp() {
 
     // Determine the section to load based on the URL path
     const path = window.location.pathname.split('/').pop();
-    const section = path === '' || path === 'index.html' ? 'home' : path.replace('.html', '');
+    const requestedSection = new URLSearchParams(window.location.search).get('section');
+    const section = requestedSection || (path === '' || path === 'index.html' ? 'home' : path.replace('.html', ''));
     // If a details->back restore is pending, avoid forcing the default section here
     // Also skip if a restore just completed (the restored section is already loaded)
     if(!sessionStorage.getItem('lastSection') && !window.__restoringSection && !window.__restoreJustCompleted){

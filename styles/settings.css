@@ -226,12 +226,12 @@ body.dark-mode .dark-mode-toggle-settings:hover {
 
 /* Language Selector */
 #language-select, #theme-select {
-  padding: 0.6rem 1rem;
-  border: 1px solid #cbd5e1;
+  padding: 0;
+  border: 0;
   border-radius: 6px;
-  background: #fff;
-  color: #2d3748;
-  font-size: 1rem;
+  background: transparent;
+  color: 0;
+  
   cursor: pointer;
   transition: all 0.3s ease;
   width: 95px;

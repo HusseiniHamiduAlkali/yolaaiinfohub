@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoInfo admin console — waste management and dumping enforcement</title>
+<meta name="description" content="Officer console for Yola waste management: triage illegal dumping reports, assign crews, record actions, export evidence and publish community alerts.">
+<meta property="og:title" content="EcoInfo admin console">
+<meta property="og:description" content="Triage reports, assign crews, track resolution times and publish alerts.">
+<meta property="og:type" content="website">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles/eco.css">
+<link rel="stylesheet" href="/pages/styles/pages.css">
+</head>
+<body>
+
+     <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+
+  <header class="site-header controls eco-mobile-nav">
+    <div class="header-inner">
+      <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/ecoinfo/admin.html" class="active" aria-current="page">Admin</a></nav>
+    </div>
+  </header>
+
+
+<section class="hero">
+  <div class="hero-inner" style="margin-bottom: 35px;">
+    <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+        <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+        <div href="../index.html" class="nav-logo">
+            <span class="navbar-appname-desktop"></span>
+        </div>
+    </div>
+    <div>
+      <div class="eyebrow">Restricted area</div>
+      <h1>Waste management console</h1>
+      <p class="lead">Triage incoming dumping reports, assign crews, record the action taken and keep residents informed.</p>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="../../index.html?section=ecoinfo">Dashboard</a><a href="atmosphere.html">Atmosphere</a><a href="classify.html">AI Classifier</a><a href="report.html">Report Dumping</a><a href="recycling.html">Recycling</a><a href="schedule.html">Schedule</a><a href="learn.html">Learn</a><a href="community.html">Community</a><a href="admin.html" class="active" aria-current="page">Admin</a></nav>
+    </div>
+  </header>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <div class="card hidden" style="padding:26px;max-width:460px" id="login-card">
+      <div class="eyebrow">Sign in</div>
+      <h2 style="margin:.4rem 0 1rem">Officer access</h2>
+      <div class="banner banner-info hidden" id="offline-note">
+        <span>ℹ️</span><span>The EcoInfo service is not running. Use demo mode to explore the console with sample reports.</span>
+      </div>
+      <form id="login-form">
+        <div class="field">
+          <label class="label" for="email">Work email</label>
+          <input class="input" id="email" type="email" autocomplete="username" placeholder="officer@adsepa.ng">
+        </div>
+        <div class="field">
+          <label class="label" for="password">Password</label>
+          <input class="input" id="password" type="password" autocomplete="current-password">
+        </div>
+        <p class="error" id="login-error"></p>
+        <div class="hero-actions">
+          <button class="btn btn-gold" type="submit" id="login-btn">Sign in</button>
+          <button class="btn btn-ghost" type="button" id="demo-btn">Explore demo mode</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="console" class="hidden">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="eyebrow">Signed in as</div>
+          <strong id="who"></strong>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" id="refresh">Refresh</button>
+          <button class="btn btn-ghost btn-sm" id="export">Export CSV</button>
+          <button class="btn btn-ghost btn-sm" id="logout">Sign out</button>
+        </div>
+      </div>
+
+      <div class="grid grid-4" id="stats" style="margin:22px 0"></div>
+
+      <div class="card" style="padding:20px">
+        <div class="grid grid-3" style="gap:14px">
+          <div class="field" style="margin:0">
+            <label class="label" for="f-status">Status</label>
+            <select class="select" id="f-status">
+              <option value="">All</option>
+              <option>submitted</option><option>reviewing</option><option>assigned</option>
+              <option>resolved</option><option>rejected</option>
+            </select>
+          </div>
+          <div class="field" style="margin:0">
+            <label class="label" for="f-severity">Severity</label>
+            <select class="select" id="f-severity">
+              <option value="">All</option><option>high</option><option>medium</option><option>low</option>
+            </select>
+          </div>
+          <div class="field" style="margin:0">
+            <label class="label" for="f-q">Search</label>
+            <input class="input" id="f-q" placeholder="Code, ward or landmark">
+          </div>
+        </div>
+        <p class="small muted" id="count" style="margin:12px 0 0"></p>
+      </div>
+
+      <div class="table-wrap" style="margin-top:18px">
+        <table>
+          <thead><tr><th>Code</th><th>Type</th><th>Severity</th><th>Location</th><th>Status</th><th>Crew</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div id="detail" class="hidden" style="margin-top:20px"></div>
+
+      <div class="card" style="padding:26px;margin-top:26px;max-width:620px">
+        <div class="eyebrow">Broadcast</div>
+        <h3 style="margin:.4rem 0 1rem">Publish a community alert</h3>
+        <form id="alert-form">
+          <div class="field">
+            <label class="label" for="a-title">Title</label>
+            <input class="input" id="a-title" placeholder="Drain clearing — Jimeta North">
+          </div>
+          <div class="field">
+            <label class="label" for="a-body">Message</label>
+            <textarea class="textarea" id="a-body" placeholder="What is happening, where, and what residents should do."></textarea>
+          </div>
+          <div class="field">
+            <label class="label" for="a-level">Level</label>
+            <select class="select" id="a-level"><option value="info">Information</option><option value="warn">Advisory</option><option value="danger">Urgent</option></select>
+          </div>
+          <button class="btn btn-gold" type="submit">Publish alert</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="//">Home</a></li>
+                        <li><a href="/pages/about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/report.html">Report / comment</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="/pages/help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/privacy.html">Privacy policy</a></li>
+                        <li><a href="/pages/terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">©<span id="year"> 2026</span>  AlkaliCodes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+<script type="module" src="scripts/admin.js"></script>
+</body>
+</html>

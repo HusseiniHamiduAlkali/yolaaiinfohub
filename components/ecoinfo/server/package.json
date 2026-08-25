@@ -1,0 +1,19 @@
+{
+  "name": "ecoinfo-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local backend for the Yola EcoInfo pages: reports, admin auth, AI waste classification.",
+  "scripts": {
+    "start": "node index.js",
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

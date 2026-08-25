@@ -13,7 +13,7 @@ function getSectionFromUrl() {
   let path = window.location.pathname.replace(/^\/+/, '').toLowerCase();
   if (!path || path === '' || path === 'index.html') return 'home';
   path = path.split('/').pop().split('?')[0].split('#')[0];
-  const valid = ['home','eduinfo','dealzinfo','weatherinfo','naviinfo','','serviinfo','communityinfo','settings'];
+  const valid = ['home','eduinfo','dealzinfo','naviinfo','','serviinfo','communityinfo'];
   return valid.includes(path) ? path : 'home';
 }
 
@@ -21,6 +21,11 @@ function getSectionFromUrl() {
 function updateNavbarAuthSection() {
   const navbarAuth = document.getElementById('navbar-auth');
   if (!navbarAuth) return;
+
+  navbarAuth.style.removeProperty('display');
+  navbarAuth.style.removeProperty('visibility');
+  navbarAuth.style.removeProperty('pointer-events');
+  navbarAuth.removeAttribute('aria-hidden');
 
   let authButtonsHTML;
   if (window.currentUser && window.currentUser.username) {
@@ -102,11 +107,11 @@ window.highlightActiveNav = function(section) {
     //else if (i18nKey === 'eduinfo') btnSection = 'eduinfo';
     else if (i18nKey === 'ecoinfo') btnSection = 'ecoinfo';
     else if (i18nKey === 'dealzinfo') btnSection = 'dealzinfo';
-    else if (i18nKey === 'weatherinfo') btnSection = 'weatherinfo';
+    
     else if (i18nKey === 'naviinfo') btnSection = 'naviinfo';
     else if (i18nKey === 'communityinfo') btnSection = 'communityinfo';
     else if (i18nKey === 'serviinfo') btnSection = 'serviinfo';
-    else if (i18nKey === 'settings') btnSection = 'settings';
+    
     if (btnSection === section) {
       btn.classList.add('active');
     }
@@ -198,7 +203,15 @@ function renderNavbar(isLoading = false) {
         </div>
         <div class="navbar-links-container">
           <ul class="navbar-links">
-            <li><button onclick="window.loadSection('home')"><span data-i18n="home">Home</span></button></li>
+            <li><button onclick="window.loadSection('home')">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 24 24"
+                 fill="currentColor"
+                 height="25"
+                 width="20">
+                <path d="M12 3L3 10.5V21h7v-6h4v6h7V10.5L12 3z"/>
+              </svg>
+            <span data-i18n="home">Home</span></button></li>
             <!--<li><button onclick="window.loadSection('eduinfo')"><span data-i18n="eduinfo">EduInfo</span></button></li>-->
             <li><button onclick="window.loadSection('naviinfo')">  
               <svg viewBox="0 0 24 24" width="18" height="20" style="align-self:normal;" fill="currentColor">
@@ -240,19 +253,7 @@ function renderNavbar(isLoading = false) {
                   <path d="M3 12h18M10 12v2h4v-2" stroke="#298d29" stroke-width="1.3" fill="#fff"/>
                 </svg>
                 <span data-i18n="serviinfo">ServiInfo</span></button></li>
-            <li><button onclick="window.loadSection('weatherinfo')">                
-              <!-- =========================================================
-                  12. WEATHER / SUN + CLOUD
-                  GOOD GENERAL WEATHER BUTTON
-                  ========================================================= -->
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
-                <!-- Sun -->
-                <circle cx="9" cy="8" r="3.2" fill="currentColor"/>
-                <path d="M9 2v1.5M9 12.5V14M3 8h1.5M12.5 8H14 M4.8 3.8l1 1M11.2 11.2l1 1" stroke="currentColor" stroke-width="1.3"stroke-linecap="round"/>
-                <!-- Cloud -->
-                <path d="M7 19h10a4.2 4.2 0 0 0 .5-8.37 A5.7 5.7 0 0 0 7 11.2 A3.9 3.9 0 0 0 7 19Z" fill="currentColor"/>
-              </svg>
-              <span data-i18n="weatherinfo">WeatherInfo</span></button></li>
+            
             <li><button onclick="window.loadSection('dealzinfo')">  
               <!-- =========================================================
                   7. PRICE CHART — UPWARD
@@ -265,17 +266,7 @@ function renderNavbar(isLoading = false) {
                 <path d="m16 6 3-1v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               <span data-i18n="dealzinfo">DealzInfo</span></button></li>
-            <li>
-              <button onclick="window.loadSection('settings')" aria-label="Settings">
-                <span class="nav-icon" aria-hidden="true" style="width: 100%; height: 100%;">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
-                    <path d="M9.7 3h4.6l.6 2.1c.5.2 1 .5 1.4.8l2-.7 2.3 4-1.7 1.4v1.8l1.7 1.4-2.3 4-2-.7c-.4.3-.9.6-1.4.8L14.3 21H9.7l-.6-2.1c-.5-.2-1-.5-1.4-.8l-2 .7-2.3-4 1.7-1.4v-1.8L3.4 10l2.3-4 2 .7c.4-.3.9-.6 1.4-.8L9.7 3Z" fill="currentColor"/>
-                    <circle cx="12" cy="12" r="3.2" fill="#298d29"/>
-                  </svg>
-                </span>
-                <span class="sr-only" data-i18n="settings" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px;">Settings</span>
-              </button>
-            </li>
+            
           </ul>
         </div>
       </div>
@@ -591,7 +582,15 @@ function renderNavbar(isLoading = false) {
         linksList.className = 'mobile-links';
 
         const mobileMenuIcons = {
-          home: '',
+          home: `
+            <svg xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                height="20"
+                width="25">
+              <path d="M12 3L3 10.5V21h7v-6h4v6h7V10.5L12 3z"/>
+            </svg>
+          `,
           naviinfo: `
             <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="20" fill="currentColor" aria-hidden="true">
               <path d="M3.4 20.4 11.7 3.6a1.6 1.6 0 0 1 2.8 0l8.3 16.8a1.6 1.6 0 0 1-2.1 2.1L13 18.2l-7.7 4.3a1.6 1.6 0 0 1-1.9-2.1Z" transform="rotate(45 12 12)"/>
@@ -620,13 +619,7 @@ function renderNavbar(isLoading = false) {
               <path d="M3 12h18M10 12v2h4v-2" stroke="#298d29" stroke-width="1.3" fill="#fff"/>
             </svg>
           `,
-          weatherinfo: `
-            <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
-              <circle cx="9" cy="8" r="3.2" fill="currentColor"/>
-              <path d="M9 2v1.5M9 12.5V14M3 8h1.5M12.5 8H14 M4.8 3.8l1 1M11.2 11.2l1 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-              <path d="M7 19h10a4.2 4.2 0 0 0 .5-8.37 A5.7 5.7 0 0 0 7 11.2 A3.9 3.9 0 0 0 7 19Z" fill="currentColor"/>
-            </svg>
-          `,
+          
           dealzinfo: `
             <svg class="nav-icon" viewBox="0 0 24 24" width="20" height="24" fill="none" aria-hidden="true">
               <path d="M4 19V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
@@ -634,13 +627,8 @@ function renderNavbar(isLoading = false) {
               <path d="m6 15 4-4 3 2 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="m16 6 3-1v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          `,
-          settings: `
-            <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
-              <path d="M9.7 3h4.6l.6 2.1c.5.2 1 .5 1.4.8l2-.7 2.3 4-1.7 1.4v1.8l1.7 1.4-2.3 4-2-.7c-.4.3-.9.6-1.4.8L14.3 21H9.7l-.6-2.1c-.5-.2-1-.5-1.4-.8l-2 .7-2.3-4 1.7-1.4v-1.8L3.4 10l2.3-4 2 .7c.4-.3.9-.6 1.4-.8L9.7 3Z" fill="currentColor"/>
-              <circle cx="12" cy="12" r="3.2" fill="#298d29"/>
-            </svg>
           `
+          
         };
 
         [
@@ -649,9 +637,7 @@ function renderNavbar(isLoading = false) {
           { name: 'CommunityInfo', section: 'communityinfo', i18n: 'communityinfo' },
           { name: 'EcoInfo', section: 'ecoinfo', i18n: 'ecoinfo' },
           { name: 'ServiInfo', section: 'serviinfo', i18n: 'serviinfo' },
-          { name: 'WeatherInfo', section: 'weatherinfo', i18n: 'weatherinfo' },
-          { name: 'DealzInfo', section: 'dealzinfo', i18n: 'dealzinfo' },
-          { name: 'Settings', section: 'settings', i18n: 'settings' }
+          { name: 'DealzInfo', section: 'dealzinfo', i18n: 'dealzinfo' }
         ].forEach(link => {
           const li = document.createElement('li');
           const btn = document.createElement('button');

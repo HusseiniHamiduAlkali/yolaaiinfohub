@@ -253,11 +253,6 @@ a { color: inherit; text-decoration: none; }
 /* ============================================================
    Card grid (desktop default) — repeat/auto-fill
    ============================================================ */
-.section4-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-}
 
 .section4 {
     background: var(--paper);

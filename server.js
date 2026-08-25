@@ -8,8 +8,8 @@ const { OAuth2Client } = require('google-auth-library');
 
 function getGoogleOAuthConfig() {
   return {
-    clientId: process.env.SSO_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || '',
-    clientSecret: process.env.SSO_GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET || ''
+    clientId: process.env.SSO_GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.SSO_GOOGLE_CLIENT_SECRET || ''
   };
 }
 
@@ -18,6 +18,7 @@ const googleClient = new OAuth2Client(getGoogleOAuthConfig().clientId);
 
 const express = require('express');
 const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
@@ -34,15 +35,12 @@ const fileUpload = require('express-fileupload');
 const {
   getEmailVerificationError,
   getVerificationReminderMessage,
-  isEmailVerificationRequiredResponse,
-  getVerificationErrorMessage,
   normalizeEmailIdentifier,
-  getUserLookupQuery,
-  getEmailLookupCandidates,
-  escapeRegExp
+  getUserLookupQuery
 } = require('./server/authVerification');
 const { buildPasswordResetFallbackResponse } = require('./server/passwordResetUtils');
 const { sendEmailWithGmailSmtp } = require('./services/gmailMailer');
+const ContentItem = require('./server/contentItemModel');
 
 
 const app = express();
@@ -74,20 +72,19 @@ app.set('trust proxy', 1);
 const isProduction = process.env.NODE_ENV === 'production';
 
 function getPrimaryFrontendUrl() {
-  const rawValue = process.env.FRONTEND_URL || process.env.FRONT_END_URL || (isProduction ? 'https://yolaaiinfohub.netlify.app' : 'http://localhost:5500');
+  const rawValue = process.env.FRONTEND_URL || process.env.FRONT_END_URL || 'https://yolaaiinfohub.netlify.app';
   const candidates = rawValue
     .split(',')
     .map((value) => value.trim())
     .filter(Boolean);
 
-  if (isProduction) {
-    const nonLocalCandidate = candidates.find((value) => !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(value));
-    const selected = nonLocalCandidate || candidates[0] || 'https://yolaaiinfohub.netlify.app';
-    return selected.replace(/\/$/, '');
-  }
-
-  const selected = candidates[0] || 'http://localhost:5500';
+  const nonLocalCandidate = candidates.find((value) => !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(value));
+  const selected = nonLocalCandidate || candidates[0] || 'https://yolaaiinfohub.netlify.app';
   return selected.replace(/\/$/, '');
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function buildGoogleUsername(email) {
@@ -155,6 +152,11 @@ app.use(cors(corsOptions));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'yola-info-hub-secret',
+  store: process.env.MONGO_URI ? MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions',
+    ttl: 60 * 60 * 24
+  }) : undefined,
   resave: false,
   saveUninitialized: false,
   proxy: true,
@@ -162,7 +164,7 @@ app.use(session({
     secure: isProduction,
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24,
-    sameSite: isProduction ? 'none' : false,
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
     domain: undefined
   }
@@ -359,8 +361,7 @@ app.post('/api/auth/google', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Google OAuth client ID is not configured' });
     }
 
-    const client = new OAuth2Client(clientId);
-    const ticket = await client.verifyIdToken({
+    const ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: clientId
     });
@@ -1239,7 +1240,7 @@ const validateSignup = [
   body('email')
     .isEmail()
     .withMessage('Enter a valid email address')
-    .normalizeEmail({ gmail_remove_dots: false, gmail_remove_subaddress: false, all_lowercase: true }),
+    .normalizeEmail(),
   body('password')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters long')
@@ -1519,7 +1520,7 @@ const userSchema = new mongoose.Schema({
   bio: String,
   termsAccepted: { type: Boolean, required: true },
   termsAcceptedDate: { type: Date },
-  role: { type: String, enum: ['user', 'admin', 'moderator'], default: 'user' },
+  role: { type: String, enum: ['user', 'admin', 'moderator', 'content-admin'], default: 'user' },
   // User settings
   settings: {
     language: { type: String, default: 'en' },
@@ -1547,6 +1548,178 @@ const chatHistorySchema = new mongoose.Schema({
 });
 chatHistorySchema.index({ userId: 1, section: 1 }, { unique: true });
 const ChatHistory = mongoose.model('ChatHistory', chatHistorySchema);
+
+function getLocalizedValue(value, language = 'en') {
+  if (!value) return '';
+  return value[language] || value.en || Object.values(value).find(Boolean) || '';
+}
+
+function serializeContentItem(item, language = 'en') {
+  const raw = item.toObject ? item.toObject() : item;
+  return {
+    id: raw._id,
+    category: raw.category,
+    slug: raw.slug,
+    title: getLocalizedValue(raw.title, language),
+    summary: getLocalizedValue(raw.summary, language),
+    tagline: getLocalizedValue(raw.tagline, language),
+    image: raw.image,
+    sections: (raw.sections || []).map(section => ({
+      heading: getLocalizedValue(section.heading, language),
+      body: getLocalizedValue(section.body, language),
+      items: (section.items || []).map(item => getLocalizedValue(item, language)).filter(Boolean)
+    })),
+    tags: raw.tags || [],
+    location: raw.location || {},
+    contact: raw.contact || {},
+    published: raw.published,
+    sortOrder: raw.sortOrder
+  };
+}
+
+function requireContentAdmin(req, res, next) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  User.findById(req.session.userId).select('role accountStatus').then(user => {
+    if (!user || user.accountStatus === 'suspended') {
+      return res.status(403).json({ error: 'Content administrator access required' });
+    }
+    if (!['admin', 'content-admin'].includes(user.role)) {
+      return res.status(403).json({ error: 'Content administrator access required' });
+    }
+    req.contentAdmin = user;
+    next();
+  }).catch(error => {
+    console.error('Content admin authorization error:', error);
+    res.status(500).json({ error: 'Unable to verify administrator access' });
+  });
+}
+
+function normalizeContentPayload(body = {}) {
+  const payload = { ...body };
+  payload.category = payload.category || 'school';
+  payload.slug = String(payload.slug || '').trim().toLowerCase();
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(payload.slug)) {
+    throw new Error('Slug must contain lowercase letters, numbers, and hyphens only');
+  }
+  if (payload.category !== 'school') {
+    throw new Error('This endpoint currently supports schools only');
+  }
+  if (!payload.title || typeof payload.title !== 'object' || !payload.title.en) {
+    throw new Error('English title is required');
+  }
+  return payload;
+}
+
+app.post('/api/admin/bootstrap-content-admin', async (req, res) => {
+  try {
+    const expectedSecret = process.env.CONTENT_ADMIN_BOOTSTRAP_SECRET;
+    if (!expectedSecret || req.get('x-content-admin-secret') !== expectedSecret) {
+      return res.status(403).json({ error: 'Invalid bootstrap credentials' });
+    }
+
+    const existingAdmin = await User.exists({ role: { $in: ['admin', 'content-admin'] } });
+    if (existingAdmin) {
+      return res.status(409).json({ error: 'A content administrator already exists' });
+    }
+
+    const identifier = String(req.body.email || req.body.username || '').trim();
+    if (!identifier) return res.status(400).json({ error: 'Email or username is required' });
+    const query = identifier.includes('@') ? { email: identifier.toLowerCase() } : { username: identifier };
+    const user = await User.findOneAndUpdate(query, { role: 'content-admin' }, { new: true }).select('username email role');
+    if (!user) return res.status(404).json({ error: 'User account not found' });
+
+    res.json({ success: true, administrator: user });
+  } catch (error) {
+    console.error('Content admin bootstrap error:', error);
+    res.status(500).json({ error: 'Unable to bootstrap content administrator' });
+  }
+});
+
+app.get('/api/content/schools', async (req, res) => {
+  try {
+    const language = String(req.query.language || 'en').toLowerCase();
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 50, 1), 100);
+    const search = String(req.query.search || '').trim();
+    const filter = { category: 'school', published: true };
+    if (search) {
+      filter.$text = { $search: search };
+    }
+
+    const [items, total] = await Promise.all([
+      ContentItem.find(filter).sort({ sortOrder: 1, 'title.en': 1 }).skip((page - 1) * limit).limit(limit),
+      ContentItem.countDocuments(filter)
+    ]);
+
+    res.json({ items: items.map(item => serializeContentItem(item, language)), page, limit, total });
+  } catch (error) {
+    console.error('School list error:', error);
+    res.status(500).json({ error: 'Unable to load schools' });
+  }
+});
+
+app.get('/api/content/schools/:slug', async (req, res) => {
+  try {
+    const language = String(req.query.language || 'en').toLowerCase();
+    const item = await ContentItem.findOne({ category: 'school', slug: req.params.slug, published: true });
+    if (!item) return res.status(404).json({ error: 'School not found' });
+    res.json({ item: serializeContentItem(item, language) });
+  } catch (error) {
+    console.error('School detail error:', error);
+    res.status(500).json({ error: 'Unable to load school' });
+  }
+});
+
+app.get('/api/admin/content/schools', requireContentAdmin, async (req, res) => {
+  try {
+    const items = await ContentItem.find({ category: 'school' }).sort({ sortOrder: 1, 'title.en': 1 });
+    res.json({ items });
+  } catch (error) {
+    console.error('Admin school list error:', error);
+    res.status(500).json({ error: 'Unable to load school records' });
+  }
+});
+
+app.post('/api/admin/content/schools', requireContentAdmin, async (req, res) => {
+  try {
+    const payload = normalizeContentPayload(req.body);
+    const item = await ContentItem.create({ ...payload, createdBy: req.session.userId, updatedBy: req.session.userId });
+    res.status(201).json({ item });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'A school with this slug already exists' });
+    res.status(400).json({ error: error.message || 'Unable to create school' });
+  }
+});
+
+app.put('/api/admin/content/schools/:id', requireContentAdmin, async (req, res) => {
+  try {
+    const payload = normalizeContentPayload(req.body);
+    const item = await ContentItem.findOneAndUpdate(
+      { _id: req.params.id, category: 'school' },
+      { ...payload, updatedBy: req.session.userId },
+      { new: true, runValidators: true }
+    );
+    if (!item) return res.status(404).json({ error: 'School not found' });
+    res.json({ item });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'A school with this slug already exists' });
+    res.status(400).json({ error: error.message || 'Unable to update school' });
+  }
+});
+
+app.delete('/api/admin/content/schools/:id', requireContentAdmin, async (req, res) => {
+  try {
+    const result = await ContentItem.deleteOne({ _id: req.params.id, category: 'school' });
+    if (!result.deletedCount) return res.status(404).json({ error: 'School not found' });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('School delete error:', error);
+    res.status(500).json({ error: 'Unable to delete school' });
+  }
+});
 
 // Signup
 app.options('/api/signup', cors(corsOptions)); // Handle preflight
@@ -1613,34 +1786,39 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
       }
     });
 
-    await sendEmailNotification(email, 'Verify your email - Welcome to Yola AI Info Hub', `
-      <div style="font-family:Arial,sans-serif;max-width:600px;margin:20px auto;background:#fff;padding:24px;border-radius:12px;border:1px solid #e2e8f0;">
-        <h2 style="color:#0f766e;margin-top:0;">Welcome to Yola AI Info Hub!</h2>
-        <p>Dear ${name},</p>
-        <p>Thank you for signing up for Yola AI Info Hub. Your account has been created successfully.</p>
-        <p><strong>Username:</strong> ${username}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
-        <h3 style="color:#1e293b;">Please verify your email address</h3>
-        <p>Click the button below to verify your email address immediately:</p>
-        <div style="text-align:center;margin:24px 0;">
-          <a href="${verificationUrl}" style="background:#0f766e;color:#fff;padding:12px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Verify Email Now</a>
-        </div>
-        <p>Or enter this 6-digit verification code on the verification page:</p>
-        <div style="text-align:center;margin:16px 0;">
-          <span style="font-size:24px;font-weight:bold;letter-spacing:4px;color:#0f766e;background:#f0fdf4;padding:8px 20px;border-radius:8px;border:1px dashed #0f766e;display:inline-block;">${emailOtpCode}</span>
-        </div>
-        <p style="font-size:13px;color:#64748b;">This verification link and code expire in 10 minutes.</p>
-        <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
-        <p style="font-size:13px;color:#64748b;">If you did not create this account, please ignore this email.</p>
-        <p style="font-size:13px;color:#64748b;">Best regards,<br>Yola AI Info Hub Team</p>
-        <p style="font-size:12px;color:#94a3b8;">Contact: Husseini Hamidu Alkali | husseinihamidualkali@gmail.com | +234 7012244240</p>
-      </div>
+    await sendEmailNotification(email, 'Welcome to Yola AI Info Hub', `
+      <h2>Welcome to Yola AI Info Hub!</h2>
+      <p>Dear ${name},</p>
+      <p>Thank you for signing up for Yola AI Info Hub. Your account has been created successfully.</p>
+      <p><strong>Username:</strong> ${username}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p>You can now access all features of our platform including AI chat, maps, and community resources.</p>
+      <p>Please verify your email by visiting <a href="${verificationUrl}">this secure verification link</a>.</p>
+      <p>If you prefer to verify with a code, use <strong>${emailOtpCode}</strong> on the verification page.</p>
+      <p>If you have any questions, feel free to contact our support team.</p>
+      <br>
+      <p>Best regards,<br>Yola AI Info Hub Team</p>
+      <p>For more information, contact the developer: <br> Husseini Hamidu Alkali <br> +234 7012244240 / +234 9069530196 <br> husseinihamidualkali@gmail.com</p>
     `);
 
     if (phone && process.env.SMS_VERIFY_REQUIRED === 'true') {
       await sendSmsOtp({ phone }, phoneOtpCode);
     }
+
+    // Send welcome email notification
+    const welcomeHtml = `
+      <h2>Welcome to Yola AI Info Hub!</h2>
+      <p>Dear ${name},</p>
+      <p>Thank you for signing up for Yola AI Info Hub. Your account has been created successfully.</p>
+      <p><strong>Username:</strong> ${username}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p>You can now access all features of our platform including AI chat, maps, and community resources.</p>
+      <p>If you have any questions, feel free to contact our support team.</p>
+      <br>
+      <p>Best regards,<br>Yola AI Info Hub Team</p>
+      <p>For more information, contact the developer: <br> Husseini Hamidu Alkali <br> +234 7012244240 / +234 9069530196 <br> husseinihamidualkali@gmail.com</p>
+    `;
+    sendEmailNotification(email, 'Welcome to Yola AI Info Hub', welcomeHtml);
 
     req.session.userId = user._id;
     req.session.save((err) => {
@@ -1671,87 +1849,79 @@ app.post('/api/signup', signupLimiter, validateSignup, async (req, res) => {
 // Password reset request
 app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
   try {
-    const { email, phone, username, identifier } = req.body;
-    const rawInput = String(email || username || identifier || phone || '').trim();
-    if (!rawInput) {
-      return res.status(400).json({ error: 'Email, username, or phone required' });
+    const { email, phone } = req.body;
+    if (!email && !phone) {
+      return res.status(400).json({ error: 'Email or phone required' });
     }
 
-    const normalizedEmail = normalizeEmailIdentifier(rawInput);
-    const candidates = getEmailLookupCandidates(rawInput);
-    const lookupConditions = [
-      { email: normalizedEmail },
-      { email: { $regex: `^${escapeRegExp(normalizedEmail)}$`, $options: 'i' } },
-      { username: rawInput },
-      { username: { $regex: `^${escapeRegExp(rawInput)}$`, $options: 'i' } },
-      { phone: rawInput }
-    ];
-    for (const cand of candidates) {
-      lookupConditions.push({ email: cand });
-    }
-
-    const user = await User.findOne({ $or: lookupConditions });
+    const user = await User.findOne(email ? { email } : { phone });
     if (!user) {
-      return res.status(404).json({ error: 'No account found with those details. Please check your spelling.' });
+      return res.status(404).json({ error: 'No account with that email exists' });
     }
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     const hash = await bcrypt.hash(resetToken, 10);
     
-    await User.updateOne({ _id: user._id }, { $set: { resetToken: hash, resetTokenExpires: Date.now() + 3600000 } });
+  // Use a targeted update to avoid triggering full-document validators
+  await User.updateOne({ _id: user._id }, { $set: { resetToken: hash, resetTokenExpires: Date.now() + 3600000 } });
 
+    // Build a safe reset URL: ALWAYS use production domain for email links
+    // Never use request origin for email links - it may be localhost/127.0.0.1
+    // Extract production URL from environment (ignore localhost entries)
     const frontendUrl = getPrimaryFrontendUrl();
     const origin = frontendUrl.replace(/\/$/, '');
-    const resetEmail = user.email || normalizedEmail;
-    const resetUrl = `${origin}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(resetEmail)}`;
-    lastResetLink = resetUrl;
+    const resetEmail = email || user.email;
+    // User's site uses pages/reset-password.html as the reset page; build link accordingly
+  const resetUrl = `${origin}/pages/reset-password.html?token=${resetToken}&email=${encodeURIComponent(resetEmail)}`;
+  // store for debugging
+  lastResetLink = resetUrl;
 
-    const destination = user.email || resetEmail;
-    const subject = 'Password Reset - Yola AI Info Hub';
-    const html = `<html>
-            <body style="font-family:Arial,sans-serif;background-color:#f4f7f5;padding:20px;">
-              <div style="max-width:600px;margin:30px auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
-                <h2 style="color:#0f766e;">Password Reset Request</h2>
-                <p>Dear ${user.name || user.username || 'User'},</p>
-                <p>We received a request to reset your password for Yola AI Info Hub.</p>
-                <p>Click the button below to reset your password:</p>
-                <div style="text-align:center;margin:30px 0;">
-                  <a href="${resetUrl}" style="background:#0f766e;color:white;padding:12px 30px;text-decoration:none;border-radius:6px;display:inline-block;font-weight:bold;">Reset Password</a>
-                </div>
-                <p>This link expires in 1 hour.</p>
-                <p style="margin:20px 0;">If the button doesn't work, copy and paste this link into your browser:</p>
-                <p style="background:#f0fdf4;padding:12px;border-radius:6px;word-break:break-all;color:#134e4a;">${resetUrl}</p>
-                <hr style="margin:25px 0;border:none;border-top:1px solid #e5e7eb;">
-                <p style="color:#666;font-size:13px;">If you didn't request this password reset, please ignore this email.</p>
-                <p style="color:#666;font-size:13px;">Best regards,<br>Yola AI Info Hub Team</p> 
-                <p style="font-size:12px;color:#888;">Contact: Husseini Hamidu Alkali | husseinihamidualkali@gmail.com | +234 7012244240</p>
-              </div> 
-            </body>
-          </html>`;
-    const text = `Password Reset Request\n\nDear ${user.name || user.username || 'User'},\n\nClick this link to reset your password:\n${resetUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, ignore this email.\n\nBest regards,\nYola AI Info Hub Team`;
+    // Prepare mail options with proper HTML formatting
+    const destination = email || user.email;
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      to: destination,
+      subject: 'Password Reset - Yola AI Info Hub',
+      html: `<html>
+              <body style="font-family:Arial,sans-serif;">
+                <div style="max-width:600px;margin:30px auto;">
+                  <h2>Password Reset</h2>
+                    <p>Hi User,</p>
+                    <p>Click the button below to reset your password:</p>
+                    <div style="text-align:center;margin:30px 0;">
+                      <a href="${resetUrl}" style="background:#3498db;color:white;padding:12px 30px;text-decoration:none;border-radius:4px;display:inline-block;font-weight:bold;">Reset Password</a>
+                    </div>
+                    <p>This link expires in 1 hour.</p>
+                    <p style="margin:25px 0;">If the button doesn't work, copy this link to your browser:</p>
+                    <p style="background:#f0f0f0;padding:12px;word-break:break-all;">${resetUrl}</p>
+                    <hr style="margin:25px 0;">
+                    <p style="color:#666;font-size:13px;">If you didn't request this reset, you can ignore this email.</p>
+                    <p style="color:#666;font-size:13px;">Best regards,<br>Yola AI Info Hub Team</p> 
+                    <p>For more information, contact the developer: <br> Husseini Hamidu Alkali <br> +234 7012244240 / +234 9069530196 <br> husseinihamidualkali@gmail.com</p>
+                </div> 
+              </body>
+            </html>`,
+      text: `Password Reset Request\n\nHi User,\n\nClick this link to reset your password:\n${resetUrl}\n\nThis link expires in 1 hour.\n\nIf you didn't request this, ignore this email.\n\nBest regards,\nYola AI Info Hub Team`
+    };
 
-    if (sendEmailWithGmailSmtp && emailConfigured) {
+    // Send email if transporter is configured; otherwise log the reset URL for manual testing
+    if (transporter && emailConfigured) {
       try {
-        await sendEmailWithGmailSmtp({
-          to: destination,
-          subject,
-          html,
-          text
-        });
+        await transporter.sendMail(mailOptions);
         console.log(`Password reset email sent to ${destination}`);
       } catch (sendErr) {
-        console.error('Failed to send password reset email via Brevo:', sendErr && sendErr.message ? sendErr.message : sendErr);
+        console.error('Failed to send password reset email:', sendErr && sendErr.message ? sendErr.message : sendErr);
         if (process.env.SUPPRESS_RESET_LOG !== 'true') {
           console.log('Fallback - reset URL (copy this to browser to test):', resetUrl);
         }
-        const respFail = { success: true, message: 'Password reset link generated. Please check your inbox or spam folder.' };
+        const respFail = { success: true, message: 'Password reset link generated. If you do not receive an email, contact support or check server logs.' };
         if (includeResetInResponse && lastResetLink) respFail.resetLink = lastResetLink;
         return res.json(respFail);
       }
     } else {
       if (isProduction) {
-        console.warn('Password reset email not configured in production. Generated reset link:', resetUrl);
+        console.warn('Password reset email not configured in production. Generated reset link available in logs for manual follow-up:', resetUrl);
         const respProductionFallback = buildPasswordResetFallbackResponse({
           resetUrl,
           lastResetLink,
@@ -1773,7 +1943,7 @@ app.post('/api/forgot-password', forgotPasswordLimiter, async (req, res) => {
       return res.json(respNoEmail);
     }
 
-    const respOk = { success: true, message: 'Password reset email sent. Please check your inbox and spam folder.' };
+    const respOk = { success: true, message: email ? 'Password reset email sent' : 'Password reset request recorded' };
     if (includeResetInResponse && lastResetLink) respOk.resetLink = lastResetLink;
     res.json(respOk);
   } catch (error) {
@@ -1821,16 +1991,8 @@ app.post('/api/reset-password', async (req, res) => {
 app.post('/api/verify-email', async (req, res) => {
   try {
     const { token, email, code } = req.body;
-    const normalizedEmail = normalizeEmailIdentifier(email);
-    const candidates = getEmailLookupCandidates(email);
-    const lookupConditions = [
-      { email: normalizedEmail },
-      { email: { $regex: `^${escapeRegExp(normalizedEmail)}$`, $options: 'i' } }
-    ];
-    for (const cand of candidates) {
-      lookupConditions.push({ email: cand });
-    }
-    const user = await User.findOne({ $or: lookupConditions });
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
       return res.status(400).json({ error: 'Invalid verification request' });
@@ -1859,20 +2021,12 @@ app.post('/api/verify-email', async (req, res) => {
 app.post('/api/verify-email-otp', async (req, res) => {
   try {
     const { email, code } = req.body;
-    const normalizedEmail = normalizeEmailIdentifier(email);
+    const normalizedEmail = String(email || '').trim().toLowerCase();
     if (!normalizedEmail || !code) {
       return res.status(400).json({ error: 'Email and code are required' });
     }
 
-    const candidates = getEmailLookupCandidates(email);
-    const lookupConditions = [
-      { email: normalizedEmail },
-      { email: { $regex: `^${escapeRegExp(normalizedEmail)}$`, $options: 'i' } }
-    ];
-    for (const cand of candidates) {
-      lookupConditions.push({ email: cand });
-    }
-    const user = await User.findOne({ $or: lookupConditions });
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user || !user.emailOtpCode || !user.emailOtpExpires || Date.now() > user.emailOtpExpires) {
       return res.status(400).json({ error: 'Verification code expired or invalid' });
     }
@@ -1925,10 +2079,9 @@ app.post('/api/verify-phone-otp', async (req, res) => {
 app.options('/api/login', cors(corsOptions)); // Handle preflight
 app.post('/api/login', loginLimiter, async (req, res) => {
   try {
-    const { username, email, password, identifier, usernameOrEmail } = req.body;
-    const rawIdentifier = String(identifier || usernameOrEmail || email || username || '').trim();
-    const normalizedEmail = normalizeEmailIdentifier(email || (rawIdentifier.includes('@') ? rawIdentifier : ''));
-    const userLookup = getUserLookupQuery({ email: normalizedEmail, username, identifier, usernameOrEmail });
+    const { username, email, password } = req.body;
+    const normalizedEmail = normalizeEmailIdentifier(email);
+    const userLookup = getUserLookupQuery({ email: normalizedEmail, username });
 
     // Check if MongoDB is connected
     if (mongoose.connection.readyState !== 1) {
@@ -1941,36 +2094,28 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     // Dev logging: record the login identifier (not the password) and timestamp
     if (!isProduction) {
       try {
-        console.log('✓ Login attempt:', { identifier: rawIdentifier, ts: new Date().toISOString() });
+        console.log('✓ Login attempt:', { identifier: email || username, ts: new Date().toISOString() });
       } catch (e) { /* ignore logging errors */ }
     }
     let user = null;
 
-    if (Object.keys(userLookup).length > 0) {
+    if (normalizedEmail) {
       user = await User.findOne(userLookup);
-    }
-
-    // Comprehensive fallback lookup if initial query didn't find the user
-    if (!user && rawIdentifier) {
-      const candidates = getEmailLookupCandidates(rawIdentifier);
-      const orConditions = [
-        { email: normalizedEmail },
-        { email: { $regex: `^${escapeRegExp(normalizedEmail)}$`, $options: 'i' } },
-        { username: rawIdentifier },
-        { username: { $regex: `^${escapeRegExp(rawIdentifier)}$`, $options: 'i' } }
-      ];
-      for (const cand of candidates) {
-        orConditions.push({ email: cand });
+      if (!user) {
+        user = await User.findOne({ email: { $regex: `^${escapeRegExp(normalizedEmail)}$`, $options: 'i' } });
       }
-      user = await User.findOne({ $or: orConditions });
+    } else {
+      user = await User.findOne({ username: String(username || '').trim() });
+      if (!user) {
+        user = await User.findOne({ username: { $regex: `^${escapeRegExp(String(username || '').trim())}$`, $options: 'i' } });
+      }
     }
 
     if (!user) {
-      if (!isProduction) console.log('Login result: user not found for', rawIdentifier);
-      return res.status(400).json({ error: 'Account not found with this email or username. Please check your credentials or create an account.' });
+      if (!isProduction) console.log('Login result: user not found for', normalizedEmail || username);
+      return res.status(400).json({ error: 'Invalid credentials' });
     }
 
-    // Email verification check for unverified accounts
     const verificationError = getEmailVerificationError(user);
     if (verificationError) {
       const resendResult = await sendVerificationEmail(user);
@@ -1989,13 +2134,10 @@ app.post('/api/login', loginLimiter, async (req, res) => {
     }
 
     // Check password
-    if (!password) {
-      return res.status(400).json({ error: 'Password is required' });
-    }
-
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       if (!isProduction) console.log('Login result: password mismatch for', user.username);
+      return res.status(400).json({ error: 'Wrong password' });
       
       // Increment login attempts
       await User.updateOne({ _id: user._id }, { $inc: { loginAttempts: 1 } });
@@ -2018,7 +2160,7 @@ app.post('/api/login', loginLimiter, async (req, res) => {
         sendEmailNotification(user.email, 'Yola AI Info Hub - Security Alert', failedLoginHtml);
       }
       
-      return res.status(400).json({ error: 'Incorrect password. Please check your password and try again.' });
+      return res.status(400).json({ error: 'Invalid credentials' });
     }
 
   // Update login info with targeted update (avoids full-document validation)
@@ -2413,9 +2555,9 @@ app.post('/api/send-feedback', async (req, res) => {
       return res.status(400).json({ error: 'Feedback message is required' });
     }
 
-    // If email service is not configured, warn and return error
-    if (!emailConfigured && !sendEmailWithGmailSmtp) {
-      console.warn('Email service not configured. Feedback cannot be sent.');
+    // If email transporter is not configured, return error
+    if (!transporter) {
+      console.warn('Email transporter not configured. Feedback cannot be sent.');
       return res.status(500).json({ error: 'Email service not available. Please try again later.' });
     }
 
@@ -2434,22 +2576,16 @@ app.post('/api/send-feedback', async (req, res) => {
     // Send email to both specified email addresses
     const feedbackEmails = ['husseinihamidualkali@gmail.com', 'yolaaiinfohub.auth@gmail.com'];
     
-    if (emailConfigured && sendEmailWithGmailSmtp) {
-      for (const recipientEmail of feedbackEmails) {
-        try {
-          await sendEmailWithGmailSmtp({
-            to: recipientEmail,
-            subject: `[Yola AI Info Hub] New User Feedback from ${name || 'Anonymous'}`,
-            html: emailContent,
-            text: `New User Feedback from ${name || 'Anonymous'} (${email || 'No email'})\n\n${message}`
-          });
-        } catch (e) {
-          console.warn(`Could not send feedback copy to ${recipientEmail}:`, e.message);
-        }
-      }
+    for (const recipientEmail of feedbackEmails) {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: recipientEmail,
+        subject: `[Yola AI Info Hub] New User Feedback from ${name || 'Anonymous'}`,
+        html: emailContent
+      });
     }
 
-    console.log(`Feedback processed for ${feedbackEmails.join(', ')}`);
+    console.log(`Feedback sent to ${feedbackEmails.join(', ')}`);
     res.json({ success: true, message: 'Thank you! Your feedback has been sent successfully.' });
   } catch (error) {
     console.error('Error sending feedback:', error);

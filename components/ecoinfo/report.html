@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report illegal dumping in Yola — photo evidence, GPS and live tracking</title>
+<meta name="description" content="Report an illegal dump site in Yola with photo evidence and a map pin, then track the clean-up from review to resolved with your tracking code.">
+<meta property="og:title" content="Report illegal dumping in Yola">
+<meta property="og:description" content="Attach photos, drop a map pin, get a tracking code and follow the clean-up to completion.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="styles/eco.css">
+<link rel="stylesheet" href="/pages/styles/pages.css">
+</head>
+<body>
+
+     <div class="minimal-nav">
+        <div class="minimal-nav-content">
+            <div href="../index.html" class="nav-logo">
+                <img src="../../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
+                <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
+                <span class="navbar-appname"><img src="../../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+            </div>
+            <a href="../../index.html" style="color: #fff;" class="return home">
+                <i class="fas fa-home" style="font-size: x-large;"></i>
+            </a>
+        </div>
+    </div>
+
+
+
+  <header class="site-header controls eco-mobile-nav">
+    <div class="header-inner">
+      <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html" class="active" aria-current="page">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/ecoinfo/admin.html">Admin</a></nav>
+    </div>
+  </header>
+
+
+<section class="hero">
+  <div class="hero-inner" style="margin-bottom: 35px;">
+    <div style="display: flex; flex-direction: row; gap: 30px; margin: 25px 0 25px 0;">
+        <!--<h1 class="hero-title">Yola AI Info Hub</h1>-->
+        <div href="../index.html" class="nav-logo">
+            <span class="navbar-appname-desktop"></span>
+        </div>
+    </div>
+    <div>
+      <div class="eyebrow">Community waste enforcement</div>
+      <h1>Report illegal dumping</h1>
+      <p class="lead">Fresh dump sites are cheap to clear; ignored ones become permanent. Send photo evidence and an exact location, and follow the clean-up with your tracking code.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#form-card">File a report</a>
+        <a class="btn btn-outline" href="#track">Track an existing report</a>
+      </div>
+    </div>
+  </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="../../index.html?section=ecoinfo">Dashboard</a><a href="atmosphere.html">Atmosphere</a><a href="classify.html">AI Classifier</a><a href="report.html" class="active" aria-current="page">Report Dumping</a><a href="recycling.html">Recycling</a><a href="schedule.html">Schedule</a><a href="learn.html">Learn</a><a href="community.html">Community</a><a href="admin.html">Admin</a></nav>
+    </div>
+  </header>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-3" style="margin-bottom:34px">
+      <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-camera" aria-hidden="true"></i></div><h3>1. Capture evidence</h3><p class="small muted">Photograph the site from a safe distance. Include a landmark so the crew can identify it.</p></div>
+      <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-location-dot" aria-hidden="true"></i></div><h3>2. Pin the location</h3><p class="small muted">Use your GPS or tap the map. Accurate pins cut response time dramatically.</p></div>
+      <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></div><h3>3. Track the action</h3><p class="small muted">Your code shows review, crew assignment and the resolved date once the site is cleared.</p></div>
+    </div>
+
+    <div class="grid grid-2" style="gap:30px;align-items:start">
+      <div class="card" style="padding:26px" id="form-card">
+        <div class="eyebrow">Report details</div>
+        <h2 style="margin:.4rem 0 1rem">Tell us what you found</h2>
+        <form id="report-form" novalidate>
+          <div class="field">
+            <label class="label" for="wasteType">Type of waste <span class="muted">(required)</span></label>
+            <select class="select" id="wasteType" aria-describedby="err-wasteType">
+              <option value="">Select…</option>
+              <option>Household mixed</option>
+              <option>Plastic and nylon</option>
+              <option>Organic market waste</option>
+              <option>Construction rubble</option>
+              <option>E-waste</option>
+              <option>Medical waste</option>
+              <option>Chemical / oil</option>
+              <option>Abandoned vehicle or scrap</option>
+              <option>Animal carcass</option>
+            </select>
+            <p class="error" id="err-wasteType"></p>
+          </div>
+
+          <div class="field">
+            <span class="label">Severity</span>
+            <div class="radio-row">
+              <label class="radio-chip"><input type="radio" name="severity" value="low"> Low — a few bags</label>
+              <label class="radio-chip"><input type="radio" name="severity" value="medium" checked> Medium — a growing pile</label>
+              <label class="radio-chip"><input type="radio" name="severity" value="high"> High — blocking a drain or road</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="landmark">Nearest landmark <span class="muted">(required)</span></label>
+            <input class="input" id="landmark" placeholder="e.g. behind Karewa market drainage" aria-describedby="err-landmark">
+            <p class="error" id="err-landmark"></p>
+          </div>
+
+          <div class="field">
+            <label class="label" for="ward">Ward / area</label>
+            <select class="select" id="ward">
+              <option>Jimeta North</option>
+              <option>Doubeli</option>
+              <option>Luggere</option>
+              <option>Yola Town</option>
+              <option>Yolde Pate</option>
+              <option>MAUTECH / Girei Road</option>
+              <option>Damilu</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label" for="occurred">When did you see it?</label>
+            <input class="input" type="datetime-local" id="occurred">
+          </div>
+
+          <div class="field">
+            <label class="label" for="description">Description <span class="muted">(required)</span></label>
+            <textarea class="textarea" id="description" placeholder="What is dumped, how large is it, is it burning, is it blocking anything?" aria-describedby="err-description"></textarea>
+            <p class="error" id="err-description"></p>
+          </div>
+
+          <div class="field">
+            <span class="label">Photo evidence</span>
+            <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Add evidence photos">
+              <div style="font-size:1.7rem">🖼️</div>
+              <p style="margin:.4rem 0 0"><strong>Add up to 4 photos</strong></p>
+              <p class="small muted" style="margin:.2rem 0 0">Resized on your device — safe on mobile data</p>
+            </div>
+            <input type="file" id="evidence" accept="image/*" capture="environment" multiple hidden>
+            <div class="thumbs" id="thumbs"></div>
+          </div>
+
+          <div class="field">
+            <span class="label">Location</span>
+            <div id="map" class="map map-sm"></div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px">
+              <button class="btn btn-ghost btn-sm" type="button" id="locate">Use my location</button>
+              <span class="small muted">Pinned: <strong id="coord-readout">not set</strong></span>
+            </div>
+            <input type="hidden" id="lat"><input type="hidden" id="lon">
+            <p class="help">Tap the map to place or move the pin. Coordinates are optional but speed up response a lot.</p>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label class="label" for="name">Your name <span class="muted">(optional)</span></label>
+              <input class="input" id="name" placeholder="Leave blank to stay anonymous">
+            </div>
+            <div class="field">
+              <label class="label" for="phone">Phone <span class="muted">(optional)</span></label>
+              <input class="input" id="phone" placeholder="0800 000 0000" aria-describedby="err-phone">
+              <p class="error" id="err-phone"></p>
+            </div>
+          </div>
+
+          <label class="checkline" style="margin-bottom:12px">
+            <input type="checkbox" id="anonymous"> <span>Hide my details from crews — contact me only if essential</span>
+          </label>
+          <label class="checkline" style="margin-bottom:18px">
+            <input type="checkbox" id="consent"> <span>I confirm this report is accurate to the best of my knowledge</span>
+          </label>
+
+          <div class="hero-actions">
+            <button class="btn btn-gold" type="submit" id="submit-btn">Submit report</button>
+            <button class="btn btn-ghost" type="reset">Clear form</button>
+          </div>
+          <p class="help">No connection? The report is saved on your device and can be resubmitted later.</p>
+        </form>
+      </div>
+
+      <div>
+        <div id="success" class="hidden" aria-live="polite"></div>
+
+        <div class="card" style="padding:24px" id="track">
+          <div class="eyebrow">Tracking</div>
+          <h3 style="margin:.4rem 0 1rem">Check a report</h3>
+          <form id="track-form" style="display:flex;gap:10px;flex-wrap:wrap">
+            <input class="input" id="track-code" placeholder="YEC-2026-XXXXX" style="flex:1;min-width:180px">
+            <button class="btn btn-emerald" type="submit">Track</button>
+          </form>
+          <div id="track-result" style="margin-top:16px"></div>
+        </div>
+
+        <div class="card" style="padding:24px;margin-top:18px">
+          <h3 style="margin:0 0 12px">Your reports on this device</h3>
+          <div id="my-reports" class="grid" style="gap:10px"></div>
+        </div>
+
+        <div class="card card-emerald" style="padding:24px;margin-top:18px">
+          <h3>Emergencies</h3>
+          <p>For burning waste, chemical spills or medical waste in a public space, call the environmental hotline immediately rather than waiting for a scheduled crew.</p>
+          <a class="btn btn-gold btn-sm" href="tel:+2348000000000">Call the hotline</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text"><span class="brand-name">Yola AI Info Hub</span></div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="//">Home</a></li>
+                        <li><a href="/pages/about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/report.html">Report / comment</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="/pages/help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="/pages/privacy.html">Privacy policy</a></li>
+                        <li><a href="/pages/terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">©<span id="year"> 2026</span>  AlkaliCodes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="scripts/report.js"></script>
+</body>
+</html>

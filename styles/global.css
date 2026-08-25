@@ -235,6 +235,7 @@ a { color: inherit; text-decoration: none; }
     box-shadow: var(--shadow-md);
     border: 1px solid var(--line);
     transition: box-shadow .2s ease, transform .2s ease;
+    width: 100%;
 }
 
 .search-bar:focus-within {
@@ -295,6 +296,7 @@ a { color: inherit; text-decoration: none; }
     cursor: pointer;
     transition: all .18s ease;
     font-family: inherit;
+    min-height: 30px;
 }
 .chip:hover {
     transform: translateY(-1px);
@@ -317,7 +319,7 @@ a { color: inherit; text-decoration: none; }
     font-weight: 600;
     font-size: clamp(24px, 3vw, 34px);
     color: var(--emerald-800);
-    margin: 0 0 22px;
+    margin: 45px 0px 22px;
     letter-spacing: -0.01em;
     position: relative;
     padding-left: 18px;
@@ -337,8 +339,9 @@ a { color: inherit; text-decoration: none; }
    ============================================================ */
 .section4-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 24px;
+    margin-top: 14px;
 }
 
 .section4 {
@@ -352,6 +355,7 @@ a { color: inherit; text-decoration: none; }
     transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
     opacity: 1;
     transform: translateY(14px);
+    
 }
 
 
@@ -560,6 +564,133 @@ a { color: inherit; text-decoration: none; }
 .copyright { margin: 0; font-size: 13px; color: rgba(245, 240, 224, 0.6); }
 
 .section4-with-padding {padding: 15px; background: transparent;}
+
+.footer-preferences {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.footer-preference {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 6px 10px;
+    color: var(--cream);
+    background: rgba(245, 240, 224, 0.08);
+    border: 1px solid rgba(245, 240, 224, 0.18);
+    border-radius: 8px;
+}
+
+.footer-preference svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    color: var(--gold-200);
+}
+
+.footer-preference select,
+.footer-preference select#language-select,
+.footer-preference select#theme-select {
+    min-width: 92px;
+    width: auto;
+    padding: 2px 18px 2px 0;
+    color: inherit !important;
+    background: transparent !important;
+    border: 0;
+    outline: 0;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.footer-preference select:focus-visible {
+    outline: 2px solid var(--gold-200);
+    outline-offset: 3px;
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 72px;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--gold-200);
+    outline-offset: 3px;
+}
+
+.theme-toggle-track {
+    position: relative;
+    width: 32px;
+    height: 18px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: rgba(245, 240, 224, 0.35);
+    transition: background .2s ease;
+}
+
+.theme-toggle-track::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--cream);
+    transition: transform .2s ease;
+}
+
+.theme-toggle[data-theme="dark"] .theme-toggle-track {
+    background: var(--gold-500);
+}
+
+.theme-toggle[data-theme="dark"] .theme-toggle-track::after {
+    transform: translateX(14px);
+    background: var(--emerald-900);
+}
+
+.footer-preference option {
+    color: var(--ink);
+    background: var(--paper);
+}
+
+.footer-bottom {
+    display: flex;
+    align-items: center;
+    
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 599px) {
+    .footer-preferences {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .footer-preference {
+        flex: 1 1 0;
+    }
+
+    .footer-preference select,
+    .theme-toggle {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
 /* ============================================================
    Motion preferences
    ============================================================ */
@@ -624,15 +755,15 @@ a { color: inherit; text-decoration: none; }
         overflow: hidden;
         transform: none;
         opacity: 1;
-        height: 160px;
+        height: 100%;
     }
     .section4:hover { transform: none; }
 
     .img-placeholder {
         aspect-ratio: auto;
         width: 100%;
-        height: 100%;
-        min-height: 96px;
+        height: 150px !important;
+        min-height: 130px !important;
     }
 
     .card-body {
@@ -684,7 +815,7 @@ a { color: inherit; text-decoration: none; }
     right: 1.5rem;
     font-size: 1.5rem;
   }
-  .chip {padding: 8px 12px !important; font-size: 9px;}
+  .chip {padding: 8px 12px !important; font-size: 9px !important;}
   .follow-label {font-size: 9px;}
   .footer-separator {flex-direction: column;}
   .footer-heading {font-size: 11px;}
