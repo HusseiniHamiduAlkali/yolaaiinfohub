@@ -34,3 +34,128 @@
         stroke="currentColor"
         stroke-width="1.5"/>
 </svg>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <article class="section4 hiding">
+                <div>
+                    <div class="img-placeholder place-img-placeholder">
+                        
+                    </div>
+                    <div class="card-body" style="padding: 8px !important;">
+                        <div class="place-details-actions mobile">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3Z"/>
+                                <path d="M9 3v15"/>
+                                <path d="M15 6v15"/>
+                            </svg>
+                            View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/fresh-air-transit.html">Learn more →</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    
+                    <div class="place-meta">
+                        <div class="meta-item">
+                            <span class="meta-icon">
+                                <!-- LOCATION SVG -->
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                                    <circle cx="12" cy="10" r="2.5"></circle>
+                                </svg>
+                            </span>
+                            Yola, Adamawa State
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">
+                                <!-- DISTANCE SVG -->
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <path d="M12 7v5l3 2"></path>
+                                </svg>
+                            </span>
+                            About 8 km from Yola town
+                        </div>
+                    </div>
+                    <div class="place-details-actions desktop">
+                        <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3Z"/>
+                            <path d="M9 3v15"/>
+                            <path d="M15 6v15"/>
+                        </svg>
+                        View on Map</button>
+                        
+                    </div>
+                </div>
+            </article>
+
+
+
+            
+
+
+
+                
+
+
+
+
+
+
+
+
+                
+                        
+                        <h3>Bosco comprehensive school, Yola.</h3>
+                        <h3>Remi Yola.</h3>
+                        
+
+                        <h3>Suher International Academy, Yola.</h3>
+                        <h3>Aliyu Musdafa Academy, Yola.</h3>
+                        
+                        
+                        <h3>Brighter Future International Academy, Yola.</h3>
+                        <h3>Noble Intelllects Academy, Yola.</h3>
+                        
+                        <h3>KAY Academy, Yola.</h3>
+                        
+                        <h3>Access International Academy, Yola.</h3>
+                        <h3>HIM Academy, Yola.</h3>
+                        <h3>Command Secondary School, Yola.</h3>
+                        <h3>Police Children School, Yola.</h3>
+                        
+                        
+
+
+
+
+
+                        
+                        
+
+                        
+
+
+
+
+
+                                
+                        <h3>Wuro-Hausa Area Court Judge, Yola.</h3>
+                        <h3>Damare Area Court, Yola.</h3>

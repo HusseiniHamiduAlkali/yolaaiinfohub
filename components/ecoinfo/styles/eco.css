@@ -234,7 +234,7 @@ img { max-width: 100%; display: block; }
 
 .btn-gold {
   background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
-  color: var(--emerald-900);
+  color: var(--emerald-900) !important;
   box-shadow: var(--shadow-gold);
 }
 .btn-emerald {

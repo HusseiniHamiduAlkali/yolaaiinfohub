@@ -13,7 +13,7 @@ function getSectionFromUrl() {
   let path = window.location.pathname.replace(/^\/+/, '').toLowerCase();
   if (!path || path === '' || path === 'index.html') return 'home';
   path = path.split('/').pop().split('?')[0].split('#')[0];
-  const valid = ['home','eduinfo','dealzinfo','naviinfo','','serviinfo','communityinfo'];
+  const valid = ['home','eduinfo','dealzinfo','naviinfo','','serviinfo','communityinfo', 'agroinfo'];
   return valid.includes(path) ? path : 'home';
 }
 
@@ -107,7 +107,7 @@ window.highlightActiveNav = function(section) {
     //else if (i18nKey === 'eduinfo') btnSection = 'eduinfo';
     else if (i18nKey === 'ecoinfo') btnSection = 'ecoinfo';
     else if (i18nKey === 'dealzinfo') btnSection = 'dealzinfo';
-    
+    else if (i18nKey === 'agroinfo') btnSection = 'agroinfo';
     else if (i18nKey === 'naviinfo') btnSection = 'naviinfo';
     else if (i18nKey === 'communityinfo') btnSection = 'communityinfo';
     else if (i18nKey === 'serviinfo') btnSection = 'serviinfo';
@@ -203,26 +203,25 @@ function renderNavbar(isLoading = false) {
         </div>
         <div class="navbar-links-container">
           <ul class="navbar-links">
-            <li><button onclick="window.loadSection('home')">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 24 24"
-                 fill="currentColor"
-                 height="25"
-                 width="20">
-                <path d="M12 3L3 10.5V21h7v-6h4v6h7V10.5L12 3z"/>
-              </svg>
-            <span data-i18n="home">Home</span></button></li>
-            <!--<li><button onclick="window.loadSection('eduinfo')"><span data-i18n="eduinfo">EduInfo</span></button></li>-->
-            <li><button onclick="window.loadSection('naviinfo')">  
-              <svg viewBox="0 0 24 24" width="18" height="20" style="align-self:normal;" fill="currentColor">
-                <path d="M3.4 20.4 11.7 3.6a1.6 1.6 0 0 1 2.8 0l8.3 16.8a1.6 1.6 0 0 1-2.1 2.1L13 18.2l-7.7 4.3a1.6 1.6 0 0 1-1.9-2.1Z" transform="rotate(45 12 12)"/>
-              </svg>
-              <span data-i18n="naviinfo">NaviInfo</span></button></li>
+         
+            <li>
+              <button onclick="window.loadSection('home')">
+                <i class="fas fa-house"></i>
+                <span data-i18n="home">Home</span>
+              </button>
+            </li>
+ 
+            <li>
+              <button onclick="window.loadSection('naviinfo')">  
+                <svg viewBox="0 0 24 24" width="18" height="20" style="align-self:normal;" fill="currentColor">
+                  <path d="M3.4 20.4 11.7 3.6a1.6 1.6 0 0 1 2.8 0l8.3 16.8a1.6 1.6 0 0 1-2.1 2.1L13 18.2l-7.7 4.3a1.6 1.6 0 0 1-1.9-2.1Z" transform="rotate(45 12 12)"/>
+                </svg>
+                <span data-i18n="naviinfo">NaviInfo</span>
+              </button>
+            </li>
+
             <li><button onclick="window.loadSection('communityinfo')">
-              <!-- =========================================================
-                  1. THREE PEOPLE
-                  Simple and very clear community icon
-                  ========================================================= -->
+              <!--=================== 1. THREE PEOPLE      ==================-->
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
                 <circle cx="12" cy="7" r="3" fill="currentColor"/>
                 <circle cx="5.5" cy="9" r="2.5" fill="currentColor" opacity=".75"/>
@@ -232,20 +231,39 @@ function renderNavbar(isLoading = false) {
                 <path d="M21.5 18c-.2-2.5-1.2-3.8-3-3.8 -1.3 0-2.2.7-2.7 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
               </svg>
               <span data-i18n="communityinfo">CommunityInfo</span></button></li>
+
             <li><button onclick="window.loadSection('ecoinfo')">                
               <!-- =========================================================
-                1. ECO / LEAF
-                Simple and excellent for an "Eco Info" button
+                1. ECO / LEAF Simple and excellent for an "Eco Info" button
                 ========================================================= -->
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
                 <path d="M20.5 3.5C12 3.8 6.2 6.4 5 12.2c-.8 3.8 1.8 7.3 5.5 7.3 6.2 0 9.2-7.1 10-16Z" fill="currentColor"/>
                 <path d="M4 21c2.5-5.5 7-8.5 13-11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
               </svg>
             <span data-i18n="ecoinfo">EcoInfo</span></button></li>
+            
+            <li><button onclick="window.loadSection('agroinfo')">
+            
+                <svg viewBox="0 0 24 24"
+                    width="24" height="24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M12 18V7"/>
+                    <path d="M12 10C8 10 6 7 6 4c4 0 6 2 6 6z"/>
+                    <path d="M12 8c3-4 6-4 8-3-1 3-4 5-8 5z"/>
+                    <path d="M4 19c3-2 5 2 8 0s5 2 8 0"/>
+                    <path d="M4 22c3-2 5 2 8 0s5 2 8 0"/>
+                </svg>
+
+            
+            <span data-i18n="agroinfo">AgroInfo</span></button></li>
+
             <li><button onclick="window.loadSection('serviinfo')">
                 <!-- =========================================================
-                    11. TOOLBOX
-                    Professional / technician services
+                    11. TOOLBOX Professional / technician services
                     ========================================================= -->
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
                   <rect x="3" y="8" width="18" height="11" rx="2" fill="currentColor"/>
@@ -257,7 +275,6 @@ function renderNavbar(isLoading = false) {
             <li><button onclick="window.loadSection('dealzinfo')">  
               <!-- =========================================================
                   7. PRICE CHART — UPWARD
-                  Excellent for market prices
                   ========================================================= -->
               <svg viewBox="0 0 24 24" width="20" height="24" fill="none">
                 <path d="M4 19V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
@@ -596,6 +613,7 @@ function renderNavbar(isLoading = false) {
               <path d="M3.4 20.4 11.7 3.6a1.6 1.6 0 0 1 2.8 0l8.3 16.8a1.6 1.6 0 0 1-2.1 2.1L13 18.2l-7.7 4.3a1.6 1.6 0 0 1-1.9-2.1Z" transform="rotate(45 12 12)"/>
             </svg>
           `,
+          
           communityinfo: `
             <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
               <circle cx="12" cy="7" r="3" fill="currentColor"/>
@@ -610,6 +628,11 @@ function renderNavbar(isLoading = false) {
             <svg class="nav-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
               <path d="M20.5 3.5C12 3.8 6.2 6.4 5 12.2c-.8 3.8 1.8 7.3 5.5 7.3 6.2 0 9.2-7.1 10-16Z" fill="currentColor"/>
               <path d="M4 21c2.5-5.5 7-8.5 13-11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          `,
+          agroinfo: `
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="20" fill="currentColor" aria-hidden="true">
+              <path d="M3.4 20.4 11.7 3.6a1.6 1.6 0 0 1 2.8 0l8.3 16.8a1.6 1.6 0 0 1-2.1 2.1L13 18.2l-7.7 4.3a1.6 1.6 0 0 1-1.9-2.1Z" transform="rotate(45 12 12)"/>
             </svg>
           `,
           serviinfo: `
@@ -633,6 +656,7 @@ function renderNavbar(isLoading = false) {
 
         [
           { name: 'Home', section: 'home', i18n: 'home' },
+          { name: 'AgroInfo', section: 'agroinfo', i18n: 'agroinfo' },
           { name: 'NaviInfo', section: 'naviinfo', i18n: 'naviinfo' },
           { name: 'CommunityInfo', section: 'communityinfo', i18n: 'communityinfo' },
           { name: 'EcoInfo', section: 'ecoinfo', i18n: 'ecoinfo' },

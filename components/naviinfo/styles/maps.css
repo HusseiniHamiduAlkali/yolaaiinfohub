@@ -163,7 +163,7 @@
     border: none;
     border-radius: 999px;
     background: transparent;
-    color: var(--ink-soft);
+    color: inherit;
     font: inherit;
     font-weight: 700;
     font-size: 14px;
@@ -214,7 +214,7 @@
 .field-label {
     font-size: 13px;
     font-weight: 700;
-    color: var(--emerald-800);
+    color : #2f9b7f;
     letter-spacing: 0.02em;
 }
 
@@ -474,7 +474,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 14px;
+    /*margin-bottom: 14px;*/
+    margin-bottom: 0;
 }
 
 .meta-pill {
@@ -1344,7 +1345,7 @@
 }
 .btn-primary {
     background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-400) 100%);
-    color: var(--emerald-900);
+    color: var(--emerald-900) !important;
     box-shadow: var(--shadow-gold);
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -10px rgba(201, 168, 76, 0.55); }

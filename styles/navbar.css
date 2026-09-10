@@ -133,6 +133,7 @@ nav.navbar {
   text-decoration: none;
   cursor: pointer;
   transition: opacity 0.2s ease;
+  width: 100%;
 }
 
 .navbar-profile-link:hover {

@@ -1,0 +1,217 @@
+
+/* =========================================================
+   YOLA AI INFO HUB — NAVIINFO PLACE CARDS
+   ========================================================= */
+
+:root {
+    --emerald: #087f5b;
+    --emerald-dark: #056044;
+    --emerald-soft: #e8f7f1;
+
+    --gold: #d6a72c;
+    --gold-light: #f5df9a;
+
+    --text: #17352d;
+    --muted: #71827d;
+
+    --surface: #ffffff;
+    --background: #f4f8f6;
+
+    --border: #e2ebe7;
+
+    --shadow:
+        0 10px 30px rgba(10, 70, 50, 0.08);
+
+    --radius: 22px;
+}
+
+/* =========================================================
+   LOCATION INFORMATION
+   ========================================================= */
+
+.place-meta {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-bottom: 17px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #566d65;
+}
+
+.meta-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    background: var(--emerald-soft);
+    color: var(--emerald);
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.place-details-actions {
+    display: grid;
+
+    grid-template-columns:
+        1.2fr 1fr;
+
+    gap: 9px;
+}
+.place-details-actions a {justify-self: center !important;}
+.action-btn {
+    min-height: 35px;
+
+    padding: 0px 7px;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--border);
+
+    display: inline-flex;
+
+    justify-content: center;
+
+    align-items: center;
+    text-wrap: nowrap;
+    gap: 7px;
+
+    font-size: 10px;
+
+    font-weight: 750;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+    color: #fff !important;
+}
+.place-details-actions a {font-size: 10px !important; }
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.map-btn {
+    background: var(--emerald);
+
+    border-color: var(--emerald);
+
+    color: white;
+}
+
+.map-btn:hover {
+    background: var(--emerald-dark);
+}
+
+.details-btn {
+    background: white;
+
+    color: var(--emerald);
+}
+
+.details-btn:hover {
+    background: var(--emerald-soft);
+}
+
+.place-article {flex-direction: row !important; height : 230px !important;}
+.place-card-head {width: 40%; display: flex; flex-direction: column; justify-content: space-between;}
+
+.place-img-placeholder {height: 50% !important; min-height: 100px !important; width: 100% !important;}
+.place-img-placeholder img { width: 90% !important; height: 90% !important; margin-top: 10px; margin-left: 10px; border-radius: 12px;}
+.place-article .card-body { justify-content: space-between;}
+.place-article > .card-body > p {display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; flex: none}
+
+
+
+@media screen and (min-width: 599px) {
+    .section4-mauth button {font-size: 12px; padding : 0 40px}
+    .section4-mauth a {font-size: 12px !important; }
+    .section4-mauth .place-details-actions {gap: 50px }
+}
+
+@media screen and (max-width: 599px) {
+    .section4-mauth .place-details-actions {gap: 20px }
+    .place-card-head {width: 100% !important;}
+
+    .place-meta {
+        gap: 5px;
+
+        margin-bottom: 9px;
+    }
+
+    .meta-item {
+        font-size: 8px !important;
+        gap: 5px;
+    }
+
+    .meta-icon {
+        width: 22px;
+        height: 20px;
+
+        border-radius: 6px;
+    }
+
+    .meta-icon svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .place-actions {
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 6px;
+    }
+
+    .action-btn {
+        min-height: 30px;
+
+        padding: 3px 4px;
+        text-wrap: nowrap;
+        font-size: 7px;
+        gap: 3px !important;
+        border-radius: 9px;
+    }
+
+    .action-btn svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .place-badges {
+        top: 9px;
+        left: 9px;
+        right: 9px;
+    }
+
+    .badge {
+        padding: 5px 7px;
+
+        font-size: 8px;
+    }
+
+    .favorite {
+        width: 29px;
+        height: 29px;
+
+        font-size: 14px;
+    }
+}
+

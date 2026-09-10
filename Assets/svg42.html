@@ -1,0 +1,923 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AgroInfo SVG Icon Options</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px 50px;
+            font-family: Arial, sans-serif;
+            background: #f2f7f3;
+            color: #123b28;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64756b;
+            margin: 0 auto 30px;
+        }
+
+        .icon-grid {
+            max-width: 1100px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(145px, 1fr));
+
+            gap: 22px;
+        }
+
+        .icon-card {
+            background: #ffffff;
+            border: 1px solid #dce9df;
+            border-radius: 20px;
+            padding: 18px 10px 15px;
+            text-align: center;
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, 0.06);
+
+            transition: 0.2s ease;
+        }
+
+        .icon-card:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .agro-btn {
+            width: 82px;
+            height: 82px;
+
+            margin: auto;
+
+            border: none;
+            border-radius: 22px;
+
+            background: #eaf6ed;
+            color: #13804b;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .agro-btn:hover {
+            background: #dcefe2;
+            transform: scale(1.06);
+        }
+
+        .agro-btn svg {
+            width: 52px;
+            height: 52px;
+            display: block;
+        }
+
+        .number {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #829087;
+        }
+
+        .name {
+            margin-top: 4px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .description {
+            margin-top: 5px;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #718078;
+        }
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 20px 10px 35px;
+            }
+
+            .icon-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+                gap: 14px;
+            }
+
+            .icon-card {
+                padding: 15px 7px;
+            }
+
+            .agro-btn {
+                width: 75px;
+                height: 75px;
+            }
+
+            .agro-btn svg {
+                width: 48px;
+                height: 48px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🌱 AgroInfo</h1>
+
+    <p class="subtitle">
+        Choose an SVG icon for the AgroInfo button
+    </p>
+
+
+    <div class="icon-grid">
+
+
+        <!-- OPTION 1 — Leaf -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M20 4C10 4 4 9 4 17"/>
+                    <path d="M4 17c0-6 5-10 16-13"/>
+                    <path d="M4 17c3 0 6 1 8 4"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 01</div>
+            <div class="name">Leaf</div>
+            <div class="description">
+                Simple agricultural identity
+            </div>
+        </div>
+
+
+        <!-- OPTION 2 — Two Leaves -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 21V10"/>
+
+                    <path d="M12 13C7 13 5 10 5 6c4 0 7 2 7 7z"/>
+
+                    <path d="M12 10c0-5 3-8 8-8 0 5-3 8-8 8z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 02</div>
+            <div class="name">Growing Plant</div>
+            <div class="description">
+                Represents growth and farming
+            </div>
+        </div>
+
+
+        <!-- OPTION 3 — Sprout -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 22V10"/>
+
+                    <path d="M12 12C8 12 5 9 5 5c4 0 7 2 7 7z"/>
+
+                    <path d="M12 9c0-4 3-7 7-7 0 4-3 7-7 7z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 03</div>
+            <div class="name">Sprout</div>
+            <div class="description">
+                Clean modern AgroInfo symbol
+            </div>
+        </div>
+
+
+        <!-- OPTION 4 — Plant in Soil -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M12 18V7"/>
+                    <path d="M12 10C8 10 6 7 6 4c4 0 6 2 6 6z"/>
+                    <path d="M12 8c3-4 6-4 8-3-1 3-4 5-8 5z"/>
+                    <path d="M4 19c3-2 5 2 8 0s5 2 8 0"/>
+                    <path d="M4 22c3-2 5 2 8 0s5 2 8 0"/>
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 04</div>
+            <div class="name">Plant + Soil</div>
+            <div class="description">
+                Farming from the ground up
+            </div>
+        </div>
+
+
+        <!-- OPTION 5 — Leaf Circle -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <circle cx="12" cy="12" r="9"/>
+
+                    <path d="M12 18V8"/>
+
+                    <path d="M12 12C8 12 7 9 7 7c3 0 5 2 5 5z"/>
+
+                    <path d="M12 10c0-3 2-5 5-5 0 3-2 5-5 5z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 05</div>
+            <div class="name">Leaf Circle</div>
+            <div class="description">
+                Good for a compact navigation button
+            </div>
+        </div>
+
+
+        <!-- OPTION 6 — Farm -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.9"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M3 21h18"/>
+
+                    <path d="M5 21V10l7-6 7 6v11"/>
+
+                    <path d="M9 21v-6h6v6"/>
+
+                    <path d="M3 10h18"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 06</div>
+            <div class="name">Farm</div>
+            <div class="description">
+                Agriculture and rural farming
+            </div>
+        </div>
+
+
+        <!-- OPTION 7 — Tractor -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <circle cx="7" cy="17" r="3"/>
+                    <circle cx="18" cy="17" r="2"/>
+
+                    <path d="M10 17h6"/>
+
+                    <path d="M5 14V8h7l3 6"/>
+
+                    <path d="M12 8V5h4l2 6"/>
+
+                    <path d="M3 20h18"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 07</div>
+            <div class="name">Tractor</div>
+            <div class="description">
+                Mechanized agriculture
+            </div>
+        </div>
+
+
+        <!-- OPTION 8 — Corn -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M9 4c-2 4-1 9 3 16"/>
+
+                    <path d="M15 4c2 4 1 9-3 16"/>
+
+                    <path d="M8 8h8"/>
+                    <path d="M8 11h8"/>
+                    <path d="M9 14h6"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 08</div>
+            <div class="name">Corn</div>
+            <div class="description">
+                Crop-specific agricultural icon
+            </div>
+        </div>
+
+
+        <!-- OPTION 9 — Wheat -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 22V3"/>
+
+                    <path d="M12 7c-3 0-5-2-5-5 3 0 5 2 5 5z"/>
+
+                    <path d="M12 10c3 0 5-2 5-5-3 0-5 2-5 5z"/>
+
+                    <path d="M12 14c-3 0-5-2-5-5 3 0 5 2 5 5z"/>
+
+                    <path d="M12 17c3 0 5-2 5-5-3 0-5 2-5 5z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 09</div>
+            <div class="name">Grain</div>
+            <div class="description">
+                Crops, grains and harvest
+            </div>
+        </div>
+
+
+        <!-- OPTION 10 — Seed -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 21c-4-3-6-6-6-10 0-4 3-6 6-8 3 2 6 4 6 8 0 4-2 7-6 10z"/>
+
+                    <path d="M12 5v12"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 10</div>
+            <div class="name">Seed</div>
+            <div class="description">
+                Seeds and crop production
+            </div>
+        </div>
+
+
+        <!-- OPTION 11 — Leaf + Sun -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.7"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <circle cx="17" cy="6" r="3"/>
+
+                    <path d="M17 1v1"/>
+                    <path d="M17 10v1"/>
+                    <path d="M12 6h1"/>
+                    <path d="M21 6h1"/>
+
+                    <path d="M12 21V11"/>
+
+                    <path d="M12 14C8 14 5 11 5 8c4 0 7 2 7 6z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 11</div>
+            <div class="name">Leaf + Sun</div>
+            <div class="description">
+                Agriculture, sunlight and growth
+            </div>
+        </div>
+
+
+        <!-- OPTION 12 — Leaf + Water -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 21V10"/>
+
+                    <path d="M12 13C8 13 6 10 6 7c4 0 6 2 6 6z"/>
+
+                    <path d="M12 11c3-4 6-4 8-3-1 3-4 5-8 5z"/>
+
+                    <path d="M19 14c-2 3-3 4-3 6a3 3 0 0 0 6 0c0-2-1-3-3-6z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 12</div>
+            <div class="name">Leaf + Water</div>
+            <div class="description">
+                Crops, irrigation and farming
+            </div>
+        </div>
+
+
+        <!-- OPTION 13 — Agriculture Globe -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <circle cx="12" cy="12" r="9"/>
+
+                    <path d="M3 12h18"/>
+                    <path d="M12 3c3 3 3 15 0 18"/>
+                    <path d="M12 3c-3 3-3 15 0 18"/>
+
+                    <path d="M8 17c2-2 4-2 6 0"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 13</div>
+            <div class="name">Agro Globe</div>
+            <div class="description">
+                Agriculture information worldwide
+            </div>
+        </div>
+
+
+        <!-- OPTION 14 — Agriculture Info -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <circle cx="12" cy="12" r="9"/>
+
+                    <path d="M12 17v-5"/>
+
+                    <circle
+                        cx="12"
+                        cy="8"
+                        r="0.8"
+                        fill="currentColor"/>
+
+                    <path d="M8 12c1-3 3-4 4-4"/>
+                    <path d="M16 12c-1-3-3-4-4-4"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 14</div>
+            <div class="name">Agro Info</div>
+            <div class="description">
+                Best for an information section
+            </div>
+        </div>
+
+
+        <!-- OPTION 15 — Plant in Circle -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <circle cx="12" cy="12" r="9"/>
+
+                    <path d="M12 19V9"/>
+
+                    <path d="M12 12C8 12 7 9 7 7c3 0 5 2 5 5z"/>
+
+                    <path d="M12 10c0-3 2-5 5-5 0 3-2 5-5 5z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 15</div>
+            <div class="name">Plant Badge</div>
+            <div class="description">
+                Strong navigation-style icon
+            </div>
+        </div>
+
+
+        <!-- OPTION 16 — Sprout in Ground -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 18V7"/>
+
+                    <path d="M12 10C9 10 7 8 7 5c3 0 5 2 5 5z"/>
+
+                    <path d="M12 8c3-3 5-3 7-2-1 3-3 4-7 4z"/>
+
+                    <path d="M5 18c2-1 4 1 7 0s5 1 7 0"/>
+
+                    <path d="M5 21c2-1 4 1 7 0s5 1 7 0"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 16</div>
+            <div class="name">Sprout + Soil</div>
+            <div class="description">
+                Very clearly agricultural
+            </div>
+        </div>
+
+
+        <!-- OPTION 17 — Farm Field -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M3 19l6-4 6 3 6-4"/>
+
+                    <path d="M3 22h18"/>
+
+                    <path d="M12 18V7"/>
+
+                    <path d="M12 10C9 10 7 8 7 5c3 0 5 2 5 5z"/>
+
+                    <path d="M12 8c3-3 5-3 7-2-1 3-3 4-7 4z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 17</div>
+            <div class="name">Farm Field</div>
+            <div class="description">
+                Fields and crop cultivation
+            </div>
+        </div>
+
+
+        <!-- OPTION 18 — Agriculture + Technology -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.7"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 20V9"/>
+
+                    <path d="M12 12C8 12 6 9 6 6c4 0 6 2 6 6z"/>
+
+                    <path d="M12 10c0-4 3-6 7-6 0 4-3 6-7 6z"/>
+
+                    <circle cx="18" cy="17" r="3"/>
+
+                    <path d="M18 15.5v3"/>
+                    <path d="M16.5 17h3"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 18</div>
+            <div class="name">AgroTech</div>
+            <div class="description">
+                Agriculture + technology
+            </div>
+        </div>
+
+
+        <!-- OPTION 19 — Filled Leaf -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="currentColor">
+
+                    <path d="
+                        M20.5 3.5
+                        C11 3.5 4 8 4 15
+                        C4 18.5 6.5 21 10 21
+                        C17 21 20.5 13 20.5 3.5Z
+                    "/>
+
+                    <path
+                        d="M5 18c3-4 7-7 12-10"
+                        fill="none"
+                        stroke="white"
+                        stroke-width="1.7"
+                        stroke-linecap="round"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 19</div>
+            <div class="name">Filled Leaf</div>
+            <div class="description">
+                Bold and highly visible
+            </div>
+        </div>
+
+
+        <!-- OPTION 20 — Three Leaves -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 21V11"/>
+
+                    <path d="M12 14C8 14 5 12 5 8c4 0 7 2 7 6z"/>
+
+                    <path d="M12 11C9 8 9 5 11 3c3 2 3 5 1 8z"/>
+
+                    <path d="M12 14c4 0 7-2 7-6-4 0-7 2-7 6z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 20</div>
+            <div class="name">Three Leaves</div>
+            <div class="description">
+                Rich agricultural identity
+            </div>
+        </div>
+
+
+        <!-- OPTION 21 — Tree -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 21V14"/>
+
+                    <path d="M7 14h10"/>
+
+                    <path d="M8 14c-3-1-4-4-2-7 1-2 3-3 5-3"/>
+
+                    <path d="M16 14c3-1 4-4 2-7-1-2-3-3-5-3"/>
+
+                    <path d="M12 4c0-2 1-3 3-3"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 21</div>
+            <div class="name">Tree</div>
+            <div class="description">
+                Nature and agriculture
+            </div>
+        </div>
+
+
+        <!-- OPTION 22 — Harvest -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 21V7"/>
+
+                    <path d="M12 10c-3 0-5-2-5-5 3 0 5 2 5 5z"/>
+
+                    <path d="M12 12c3 0 5-2 5-5-3 0-5 2-5 5z"/>
+
+                    <path d="M5 20h14"/>
+
+                    <path d="M7 17c2-2 3-2 5 0 2-2 3-2 5 0"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 22</div>
+            <div class="name">Harvest</div>
+            <div class="description">
+                Crop production and harvest
+            </div>
+        </div>
+
+
+        <!-- OPTION 23 — Agriculture Badge -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M12 3l2 2 3-.2.8 3 2.2 2-2.2 2 .2 3-3 .8-2-2-2 2-3-.8-3 .2-2-2.2-2 2.2-2-.2-3 3 .8 2-2z"/>
+
+                    <path d="M12 17V9"/>
+
+                    <path d="M12 12c-3 0-4-2-4-4 3 0 4 2 4 4z"/>
+
+                    <path d="M12 11c3-3 5-3 6-2-1 3-3 4-6 4z"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 23</div>
+            <div class="name">Agro Badge</div>
+            <div class="description">
+                Distinctive app navigation icon
+            </div>
+        </div>
+
+
+        <!-- OPTION 24 — Leaf + Information -->
+        <div class="icon-card">
+            <button class="agro-btn" aria-label="AgroInfo">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M11 21V10"/>
+
+                    <path d="M11 13C7 13 5 10 5 7c4 0 6 2 6 6z"/>
+
+                    <path d="M11 11c0-4 3-6 7-6 0 4-3 6-7 6z"/>
+
+                    <circle cx="18" cy="18" r="3"/>
+
+                    <path d="M18 17v2"/>
+
+                    <circle
+                        cx="18"
+                        cy="15.8"
+                        r=".5"
+                        fill="currentColor"/>
+
+                </svg>
+
+            </button>
+
+            <div class="number">OPTION 24</div>
+            <div class="name">Agro Information</div>
+            <div class="description">
+                Particularly suitable for AgroInfo
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+</html>
+
