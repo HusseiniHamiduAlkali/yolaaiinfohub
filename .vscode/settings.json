@@ -1,4 +1,10 @@
 {
     "liveServer.settings.port": 5502,
-    "liveServer.settings.injectBody": false
+    "liveServer.settings.injectBody": false,
+    "chat.tools.terminal.autoApprove": {
+        "/^cd \"/Users/ibrahimgarba/Desktop/Yola AI Info Hub\" && node --check components/naviinfo/scripts/maps\\.js && node --check scripts/searchHandler\\.js$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
 }

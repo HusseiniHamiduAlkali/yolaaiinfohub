@@ -242,8 +242,24 @@
 		var heading = card.querySelector('h3, h2');
 		var location = card.querySelector('.meta-item');
 		var query = [heading && heading.textContent, location && location.textContent, 'Yola, Adamawa'].filter(Boolean).join(', ');
-		var section = document.querySelector('.map-section');
-		if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		var mapSection = document.querySelector('.section3[data-category="Maps"], .map-section, .section3[data-category="maps"]');
+		var mapChip = document.querySelector('.filter-chips .chip[data-filter="Maps"], .filter-chips .chip[data-filter="maps"]');
+		var searchInput = document.querySelector('.search-bar input');
+		if (searchInput) searchInput.value = '';
+		if (mapChip) {
+			document.querySelectorAll('.filter-chips .chip').forEach(function (chip) {
+				chip.classList.remove('active');
+				chip.setAttribute('aria-selected', 'false');
+			});
+			mapChip.classList.add('active');
+			mapChip.setAttribute('aria-selected', 'true');
+			if (typeof performSearch === 'function') {
+				performSearch('', 'Maps');
+			}
+		}
+		if (mapSection) {
+			mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
 		api('geocode', { text: query }).then(function (body) {
 			var place = body.features && body.features[0] && normalizedFeature(body.features[0]);
 			if (!place) throw new Error('This place could not be located yet.');
