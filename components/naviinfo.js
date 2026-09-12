@@ -47,6 +47,7 @@ window.renderSection = function() {
   }
     return fetch('templates/navi.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
+        if (typeof window.initYolaMap === 'function') window.initYolaMap();
     
     
       // Scroll reveal for service cards in the servi template
@@ -992,10 +993,7 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
     /* --------------------------------------------------------
        Go
        -------------------------------------------------------- */
-    document.addEventListener('DOMContentLoaded', function () {
-        wireUp();
-        loadMapsApi();
-    });
+    document.addEventListener('DOMContentLoaded', function () {});
 })();
 
 

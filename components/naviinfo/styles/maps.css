@@ -89,6 +89,7 @@
     box-shadow: var(--shadow-md);
     min-height: 420px;
     height: clamp(420px, 62vh, 680px);
+    z-index: 1;
 }
 
 .map-canvas {
@@ -97,6 +98,30 @@
     background:
         radial-gradient(600px 300px at 20% 10%, rgba(23, 153, 122, 0.12), transparent 65%),
         var(--cream-soft);
+}
+
+.yola-map-marker {
+    width: 18px;
+    height: 18px;
+    border: 3px solid #fff;
+    border-radius: 50% 50% 50% 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+    transform: rotate(-45deg);
+}
+
+.yola-map-marker::after {
+    content: "";
+    display: block;
+    width: 5px;
+    height: 5px;
+    margin: 4px auto;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.maplibregl-ctrl-group {
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Google InfoWindow / UI font alignment */
@@ -735,7 +760,7 @@
     position: absolute;
     top: 14px;
     right: 14px;
-    z-index: 5;
+    z-index: 400;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -775,7 +800,7 @@
     left: 50%;
     bottom: 18px;
     transform: translateX(-50%);
-    z-index: 6;
+    z-index: 400;
     max-width: calc(100% - 32px);
     padding: 11px 18px;
     border-radius: 999px;

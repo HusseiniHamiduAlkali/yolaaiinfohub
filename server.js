@@ -246,6 +246,78 @@ app.get('/api/tomtom-key', (req, res) => {
   res.status(200).json({ apiKey });
 });
 
+async function geoapifyRequest(endpoint, params) {
+  const apiKey = process.env.GEOAPIFY_API_KEY;
+  if (!apiKey) {
+    const error = new Error('Geoapify API key is not configured on the server.');
+    error.statusCode = 503;
+    throw error;
+  }
+
+  const url = new URL(`https://api.geoapify.com/${endpoint}`);
+  Object.entries({ ...params, apiKey }).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') url.searchParams.set(key, value);
+  });
+  const response = await fetch(url.toString());
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(body.message || 'Geoapify request failed.');
+    error.statusCode = response.status >= 400 && response.status < 500 ? response.status : 502;
+    throw error;
+  }
+  return body;
+}
+
+app.get('/api/geoapify/geocode', async (req, res) => {
+  const text = String(req.query.text || '').trim();
+  if (text.length < 2 || text.length > 180) return res.status(400).json({ error: 'A valid search text is required.' });
+  try {
+    const body = await geoapifyRequest('v1/geocode/search', { text, limit: 6 });
+    res.json(body);
+  } catch (error) {
+    res.status(error.statusCode || 502).json({ error: error.message });
+  }
+});
+
+app.get('/api/geoapify/search', async (req, res) => {
+  const text = String(req.query.text || '').trim();
+  const lat = Number(req.query.lat);
+  const lon = Number(req.query.lon);
+  const category = String(req.query.category || '').trim();
+  if ((!text && !category) || text.length > 180 || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return res.status(400).json({ error: 'Search text and valid map coordinates are required.' });
+  }
+  try {
+    if (category) {
+      const places = await geoapifyRequest('v2/places', {
+        categories: category,
+        filter: `circle:${lon},${lat},8000`,
+        limit: 20
+      });
+      return res.json(places);
+    }
+    const geocoded = await geoapifyRequest('v1/geocode/search', { text, bias: `proximity:${lon},${lat}`, limit: 20 });
+    res.json(geocoded);
+  } catch (error) {
+    res.status(error.statusCode || 502).json({ error: error.message });
+  }
+});
+
+app.get('/api/geoapify/route', async (req, res) => {
+  const start = String(req.query.start || '').trim();
+  const end = String(req.query.end || '').trim();
+  const mode = String(req.query.mode || 'drive').toLowerCase();
+  if (!/^[-\d.]+,[-\d.]+$/.test(start) || !/^[-\d.]+,[-\d.]+$/.test(end) || !['drive', 'walk', 'bicycle'].includes(mode)) {
+    return res.status(400).json({ error: 'Valid start, end, and supported travel mode are required.' });
+  }
+  try {
+    const body = await geoapifyRequest('v1/routing', { waypoints: `${start}|${end}`, mode, details: 'instruction_details' });
+    res.json(body);
+  } catch (error) {
+    res.status(error.statusCode || 502).json({ error: error.message });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   const dbConnected = mongoose.connection.readyState === 1;

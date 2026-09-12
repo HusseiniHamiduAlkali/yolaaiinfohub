@@ -38,7 +38,7 @@ Allow: /pages/report.html
 Allow: /?*
 
 # Sitemap location
-Sitemap: https://yolaaiinfohub.com/sitemap.xml
+Sitemap: https://yolaaiinfohub.netlify.app/sitemap.xml
 
 # Crawl delay to prevent server overload (in seconds)
 # This is optional and can be adjusted based on server capacity
@@ -81,6 +81,9 @@ Disallow: /
 
 User-agent: MJ12bot
 Disallow: /
+
+User-agent: OAI-SearchBot
+Allow: /
 
 # Allow favicon and robots.txt requests
 Allow: /favicon.ico

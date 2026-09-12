@@ -25,8 +25,8 @@
         <div class="filter-chips" role="tablist" aria-label="Filter by category">
             
             <!-- Map + Pin -->
-            <button data-filter="Maps" role="" class="icon chip" aria-selected="false" style="padding-top: 0!important; padding-bottom: 0 !important; justify-items: center; display: flex; align-items: center;">
-                <svg viewBox="0 0 24 24" fill="none" width="24px" width="6vw" max-width="25px" padding="3px 0px">
+            <button type="button" data-filter="Maps" role="tab" class="icon chip" aria-label="Show map" aria-selected="false" title="Show map" style="padding-top: 0!important; padding-bottom: 0 !important; justify-items: center; display: flex; align-items: center;">
+                <svg viewBox="0 0 24 24" fill="none" width="24px" style="max-width: 25px; padding: 3px 0;">
                     <path d="M3 5.5 8.5 3l7 3 5.5-2.5v15L15.5 21l-7-3L3 20.5v-15Z"
                         stroke="currentColor" stroke-width="1.7"/>
                     <path d="M8.5 3v15M15.5 6v15"
@@ -38,29 +38,32 @@
                             </g>
                 </svg>
             </button>
-            
+
             <button class="chip active" data-filter="All" role="tab" aria-selected="true">All Places</button>
-            <button class="chip" data-filter="Agents" role="tab">Agents & stations</button>
+            <button class="chip" data-filter="Agents" role="tab">Taxi & flight agents</button>
+        <!--<button class="chip" data-filter="Agents" role="tab">Agents & stations</button>
+            <button class="chip" data-filter="Flights" role="tab">Flight agents</button>-->
             <button class="chip" data-filter="Filling_Stations" role="tab">Filling stations</button>
-            <button class="chip" data-filter="Flights" role="tab">Flight agents</button>
-            <button class="chip" data-filter="Parks" role="tab">Parks & recreations</button>
             <button class="chip" data-filter="Commercial_centers" role="tab">Commercial centers</button>
             <button class="chip" data-filter="Hotels" role="tab">Hotels & restaurants</button>
-            <button class="chip" data-filter="Religious centers" role="tab">Religious centers</button>
-            <button class="chip" data-filter="Banks" role="tab">Banks & ATM kiosks</button> 
-            <button class="chip" data-filter="Universities" role="tab">Universities/HEIs</button>
+            <button class="chip" data-filter="Educational" role="tab">Educational Instituitions</button>
+        <!--<button class="chip" data-filter="Universities" role="tab">Universities/HEIs</button>
             <button class="chip" data-filter="Colleges" role="tab">Colleges</button>
             <button class="chip" data-filter="Schools" role="tab">Schools</button>
             <button class="chip" data-filter="Religious" role="tab">Faith-based</button>
-            <button class="chip" data-filter="Libraries" role="tab">Libraries</button>
-            <button class="chip" data-filter="PHCCs" role="tab">PHCCs</button>
+            <button class="chip" data-filter="Libraries" role="tab">Libraries</button>-->
+            <button class="chip" data-filter="Health" role="tab">Hospitals & Pharmacies</button>
+        <!--<button class="chip" data-filter="PHCCs" role="tab">PHCCs</button>
             <button class="chip" data-filter="Specialists" role="tab">Specialists</button>
             <button class="chip" data-filter="Teaching hospital" role="tab">Teaching hospital</button>
-            <button class="chip" data-filter="Pharmacies" role="tab">Pharmacies</button>
+            <button class="chip" data-filter="Pharmacies" role="tab">Pharmacies</button>-->
+            <button class="chip" data-filter="Parks" role="tab">Parks & recreations</button>
+            <button class="chip" data-filter="Religious centers" role="tab">Religious centers</button>
+            <button class="chip" data-filter="Banks" role="tab">Banks & ATM kiosks</button> 
             <button class="chip" data-filter="Judiciary" role="tab">Judiciary</button>
             <button class="chip" data-filter="Sports" role="tab">Sports & SPA</button>
-            <button class="chip" data-filter="Green_spaces" role="tab">Green spaces</button>
-            <button class="chip" data-filter="Others" role="tab">Structures</button>
+        <!--<button class="chip" data-filter="Green_spaces" role="tab">Green spaces</button>-->
+            <button class="chip" data-filter="Others" role="tab">Iconic structures</button>
         </div>
     </div>
 
@@ -174,7 +177,6 @@
                                     <button class="mode-btn is-active" type="button" data-mode="DRIVING" aria-pressed="true" title="Drive"><i class="fas fa-car" aria-hidden="true"></i><span>Drive</span></button>
                                     <button class="mode-btn" type="button" data-mode="WALKING" aria-pressed="false" title="Walk"><i class="fas fa-person-walking" aria-hidden="true"></i><span>Walk</span></button>
                                     <button class="mode-btn" type="button" data-mode="BICYCLING" aria-pressed="false" title="Bike"><i class="fas fa-bicycle" aria-hidden="true"></i><span>Bike</span></button>
-                                    <button class="mode-btn" type="button" data-mode="TRANSIT" aria-pressed="false" title="Transit"><i class="fas fa-bus" aria-hidden="true"></i><span>Transit</span></button>
                                 </div>
 
                                 <div class="route-actions">
@@ -210,12 +212,11 @@
 
                         <div class="map-overlay" id="mapOverlay" hidden>
                             <div class="overlay-card">
-                                <div class="overlay-icon"><i class="fas fa-key" aria-hidden="true"></i></div>
-                                <h3 id="overlayTitle">Google Maps key needed</h3>
+                                <div class="overlay-icon"><i class="fas fa-location-dot" aria-hidden="true"></i></div>
+                                <h3 id="overlayTitle">Yola, Nigeria</h3>
                                 <p id="overlayText">
-                                    Open <code>map.js</code> and set <code>GOOGLE_MAPS_API_KEY</code> to your own key.
-                                    Enable the Maps JavaScript API, Places API (New), Geocoding API and Directions API,
-                                    then restrict the key to your domain.
+                                    Map search and routing use the Geoapify service through the Yola AI Info Hub server.
+                                    Configure <code>GEOAPIFY_API_KEY</code> on the server to enable them.
                                 </p>
                             </div>
                         </div>
@@ -420,7 +421,7 @@
                 </div>
                 <div class="card-body">
                     <h3>The Young Shall Grow Motors Limited (YSG Transport)</h3>
-                    <p>...</p>
+                    <p>Professional legal education campus preparing students for legal practice and public service.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -458,7 +459,7 @@
             </div>
         </div>
 
-        <div class="section3" data-category="Flights">
+        <div class="section3" data-category="Agents" data-category="Flights">
             <h3 class="section3-title" >Flight Airlines</h3>
             <div class="section4-container">
 
@@ -467,7 +468,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img src="Data/Images/flights/binani-air-logo.jpeg" alt="Fresh Air Mass Transit Buses" loading="lazy" />
+                        <img src="Data/Images/flights/binani-air-logo.jpeg" alt="Binani Airlines logo" loading="lazy" />
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -481,7 +482,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Binani Airlines</h3>
-                    <p>...</p>
+                    <p>Flight booking and travel services connecting Yola travelers with scheduled domestic routes.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i style="transform: rotate(-25deg);" class="fas fa-plane"></i>Book a flight</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -493,7 +494,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img src="Data/Images/flights/azman-air-logo.png" alt="Fresh Air Mass Transit Buses" loading="lazy" />
+                        <img src="Data/Images/flights/azman-air-logo.png" alt="Azman Air logo" loading="lazy" />
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -507,7 +508,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Azman Air services, Nigeria Ltd.</h3>
-                    <p>...</p>
+                    <p>Nigerian airline offering ticket booking and scheduled passenger flights for travelers in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i style="transform: rotate(-25deg);" class="fas fa-plane"></i>Book a flight</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -520,7 +521,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img src="Data/Images/flights/ng-eagle-air-logo.png" alt="Fresh Air Mass Transit Buses" loading="lazy" />
+                        <img src="Data/Images/flights/ng-eagle-air-logo.png" alt="NG-Eagle Airlines logo" loading="lazy" />
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -534,7 +535,7 @@
                 </div>
                 <div class="card-body">
                     <h3>NG-Eagle Airlines.</h3>
-                    <p>...</p>
+                    <p>Regional airline service for arranging passenger travel and flight reservations from Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i style="transform: rotate(-25deg);" class="fas fa-plane"></i>Book a flight</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -546,7 +547,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img src="Data/Images/flights/manzo-air-logo.jpeg" alt="Fresh Air Mass Transit Buses" loading="lazy" />
+                        <img src="Data/Images/flights/manzo-air-logo.jpeg" alt="Manzo Travel and Tours logo" loading="lazy" />
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -560,7 +561,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Manzo Travel and Tours.</h3>
-                    <p>...</p>
+                    <p>Travel agency providing flight reservations, tour planning, and passenger travel assistance.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i style="transform: rotate(-25deg);" class="fas fa-plane"></i>Book a flight</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -572,7 +573,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img src="Data/Images/flights/aric-air-logo.png" alt="Fresh Air Mass Transit Buses" loading="lazy" />
+                        <img src="Data/Images/flights/aric-air-logo.png" alt="Aric Airlines logo" loading="lazy" />
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -586,7 +587,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Aric Airlines</h3>
-                    <p>...</p>
+                    <p>Airline booking service for passengers seeking scheduled flights and travel support from Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i style="transform: rotate(-25deg);" class="fas fa-plane"></i>Book a flight</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -597,7 +598,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img src="Data/Images/flights/max-air-logo.jpg" alt="Fresh Air Mass Transit Buses" loading="lazy" />
+                        <img src="Data/Images/flights/max-air-logo.jpg" alt="Max Air logo" loading="lazy" />
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -611,7 +612,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Max Air Flights Nigeria.</h3>
-                    <p>...</p>
+                    <p>Passenger airline offering flight reservations and domestic travel services for Yola residents.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i style="transform: rotate(-25deg);" class="fas fa-plane"></i>Book a flight</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -631,7 +632,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/filling_stations/nnpc.jpg"/>
+                            <img alt="NNPC filling station in Yola" loading="lazy" src="Data/Images/filling_stations/nnpc.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -645,7 +646,7 @@
                 </div>
                 <div class="card-body">
                     <h3>NNPC filling station, Yola.</h3>
-                    <p>...</p>
+                    <p>Fuel station providing petrol and other vehicle refuelling services for motorists in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -658,7 +659,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/filling_stations/mrs.jpg"/>
+                            <img alt="MRS filling station in Yola" loading="lazy" src="Data/Images/filling_stations/mrs.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -672,7 +673,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Mrs filling station, Yola.</h3>
-                    <p>...</p>
+                    <p>MRS service station supplying fuel and basic forecourt services to drivers in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -684,7 +685,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="../Data/Images/filling_stations/total.jpg"/>
+                            <img alt="Total filling station in Yola" loading="lazy" src="../Data/Images/filling_stations/total.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -698,7 +699,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Total filling station, Yola.</h3>
-                    <p>...</p>
+                    <p>Total service station offering vehicle refuelling and convenient roadside fuel services.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -711,7 +712,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="../Data/Images/filling_stations/ap.jpeg"/>
+                            <img alt="AP Oil and Gas filling station in Yola" loading="lazy" src="../Data/Images/filling_stations/ap.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -725,7 +726,7 @@
                 </div>
                 <div class="card-body">
                     <h3>'AP' Oil and Gas, Fueling Station, Yola.</h3>
-                    <p>...</p>
+                    <p>AP Oil and Gas station providing petrol and everyday refuelling services for local motorists.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -736,7 +737,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="../Data/Images/filling_stations/eterna.jpg"/>
+                            <img alt="Eterna filling station in Yola" loading="lazy" src="../Data/Images/filling_stations/eterna.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -750,7 +751,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Eterna filling station, Yola.</h3>
-                    <p>...</p>
+                    <p>Eterna service station offering fuel supplies for private, commercial, and public transport vehicles.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -761,7 +762,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="../Data/Images/filling_stations/shafa.jpeg"/>
+                            <img alt="AYM Shafaa filling station in Yola" loading="lazy" src="../Data/Images/filling_stations/shafa.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -775,7 +776,7 @@
                 </div>
                 <div class="card-body">
                     <h3>AYM Shafaa Fueling Station, Yola.</h3>
-                    <p>...</p>
+                    <p>Local AYM Shafaa station supplying fuel to motorists around Wuro-Hausa and Yola Town.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -786,7 +787,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="../Data/Images/filling_stations/rano.jpeg"/>
+                            <img alt="A A Rano filling station in Yola" loading="lazy" src="../Data/Images/filling_stations/rano.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -800,7 +801,7 @@
                 </div>
                 <div class="card-body">
                     <h3>A A Rano (Ranoil) Fueling Station, Yola.</h3>
-                    <p>...</p>
+                    <p>A A Ranoil station providing petrol and vehicle refuelling services in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -812,7 +813,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="" loading="lazy" src="../Data/Images/filling_stations/optima.jpg"/>
+                        <img alt="Optima filling station in Yola" loading="lazy" src="../Data/Images/filling_stations/optima.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -826,7 +827,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Optima Filling Station, Yola.</h3>
-                    <p>...</p>
+                    <p>Optima filling station serving drivers with fuel and routine forecourt services.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -838,7 +839,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="" loading="lazy" src="../Data/Images/filling_stations/nipco.jpg"/>
+                        <img alt="NIPCO filling station in Yola" loading="lazy" src="../Data/Images/filling_stations/nipco.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -852,7 +853,7 @@
                 </div>
                 <div class="card-body">
                     <h3>NIPCO Nigeria, Oil Station, Yola.</h3>
-                    <p>...</p>
+                    <p>NIPCO service station providing fuel for cars, motorcycles, buses, and other vehicles.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="details/Navi/.html"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -945,7 +946,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/parks/beth-haran.jpeg"/>
+                            <img alt="Beth-haran Garden and Marquee in Yola" loading="lazy" src="Data/Images/parks/beth-haran.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -959,7 +960,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Beth-haran Garden & Marquee, Yola.</h3>
-                    <p>...</p>
+                    <p>Garden and event venue offering an outdoor setting for gatherings, celebrations, and recreation.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -971,7 +972,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/parks/cilantro.png"/>
+                            <img alt="Cilantro Park in Yola" loading="lazy" src="Data/Images/parks/cilantro.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -985,7 +986,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Cilantro Park, Yola.</h3>
-                    <p>...</p>
+                    <p>Recreational park and leisure venue for dining, social gatherings, and relaxed outdoor visits.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -996,7 +997,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/parks/option365.png"/>
+                            <img alt="Option 365 Resort in Yola" loading="lazy" src="Data/Images/parks/option365.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -1010,7 +1011,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Option 365 Resort, Yola.</h3>
-                    <p>...</p>
+                    <p>Resort and leisure destination offering a place to relax, socialize, and enjoy recreational activities.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -1076,7 +1077,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="SanHusein Shopping Mall Yola - Modern retail shopping center" loading="lazy" src="Data/Images/commercial/sanhusein.png"/>
+                            <img alt="SanHusein Shopping Mall Yola - Modern retail shopping center" loading="lazy" src="Data/Images/commercial/sanhusein.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -1200,7 +1201,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="" loading="lazy" src="Data/Images/commercial/shopping.jpg"/>
+                        <img alt="Mudassir and Brothers MUDATEX store in Yola" loading="lazy" src="Data/Images/commercial/mudassir.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -1213,8 +1214,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <h3>Shopping complexe, jimeta Yola.</h3>
-                    <p>...</p>
+                    <h3>Mudassir & Brothers (MUDATEX) Nig. Ltd. Yola Branch.</h3>
+                    <p>Textile and clothing retailer supplying fabrics, garments, and related household merchandise in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -1225,7 +1226,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="" loading="lazy" src="Data/Images/commercial/.jpg"/>
+                        <img alt="Hajja Yawo Plaza in Yola" loading="lazy" src="Data/Images/commercial/.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -1239,7 +1240,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Hajja Yawo Plaza</h3>
-                    <p>...</p>
+                    <p>Local shopping plaza serving nearby residents with access to everyday goods and commercial services.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -1756,7 +1757,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/religious/macm2.jpg" alt="Modibbo Adama Central Mosque, Yola" loading="lazy" />
+                            <img src="Data/Images/religious/macm.jpg" alt="Modibbo Adama Central Mosque, Yola" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -1833,6 +1834,61 @@
                     </div>
                 </article>
 
+
+                <!-- Dodore Islamic center -->
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/religious/dodore-center.jpg" alt="Dodore Islamic center" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>Dodore Islamic center, Yola.</h3>
+                        <p data-i18n="Navi_section4_p_">Islamic worship and community center serving residents in the Dodore area of Yola.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
+                                <!-- Alibaba Jumma'at Mosque -->
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/religious/alibaba.png" alt="Alibaba Jumma'at Mosque" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 data-i18n="Navi_section4_h3_39">Alibaba Jumma'at Mosque, Jimeta Yola.</h3>
+                        <p data-i18n="Navi_section4_p_39">Local mosque providing daily prayers and community gatherings.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/alibaba-mosque.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
                 <!-- MAUTH Jumma'at Mosque -->
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
@@ -1887,11 +1943,10 @@
                     </div>
                 </article>
 
-                <!-- Alibaba Jumma'at Mosque -->
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/religious/alibaba.png" alt="Alibaba Jumma'at Mosque" loading="lazy" />
+                            <img src="Data/Images/religious/nepa-mosque.jpg" alt="Dodore Islamic center" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -1905,35 +1960,8 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3 data-i18n="Navi_section4_h3_39">Alibaba Jumma'at Mosque.</h3>
-                        <p data-i18n="Navi_section4_p_39">Local mosque providing daily prayers and community gatherings.</p>
-                        <div class="place-details-actions">
-                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
-                            <a data-i18n="learn_more" href="details/Navi/alibaba-mosque.html">Learn more →</a>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Dodore Islamic center -->
-                <article class="section4 hiding place-article">
-                    <div class="place-card-head">
-                        <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/religious/.png" alt="Dodore Islamic center" loading="lazy" />
-                        </div>
-                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
-                            <div class="place-meta">
-                                <div class="meta-item">
-                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
-                                </div>
-                                <div class="meta-item">
-                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3>Dodore Islamic center, Yola.</h3>
-                        <p data-i18n="Navi_section4_p_">...</p>
+                        <h3>NEPA Jumma'at mosque, Jimeta Yola.</h3>
+                        <p data-i18n="Navi_section4_p_">Local mosque providing daily prayers and a place for community worship in Jimeta.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -1944,33 +1972,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/religious/.png" alt="Dodore Islamic center" loading="lazy" />
-                        </div>
-                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
-                            <div class="place-meta">
-                                <div class="meta-item">
-                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
-                                </div>
-                                <div class="meta-item">
-                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3>Doubeli Jumma'at mosque, Yola.</h3>
-                        <p data-i18n="Navi_section4_p_">...</p>
-                        <div class="place-details-actions">
-                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
-                            <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="section4 hiding place-article">
-                    <div class="place-card-head">
-                        <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/religious/.png" alt="Dodore Islamic center" loading="lazy" />
+                            <img src="Data/Images/religious/modibbo-lamido.jpg" alt="Dodore Islamic center" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -1985,7 +1987,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Modibbo Lamido community masjid, Yola.</h3>
-                        <p data-i18n="Navi_section4_p_">...</p>
+                        <p data-i18n="Navi_section4_p_">Community masjid supporting daily worship and religious gatherings for residents of Yola.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -1993,7 +1995,7 @@
                     </div>
                 </article>
 
-                <article class="section4 hiding place-article">
+            <!--<article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
                             <img src="Data/Images/religious/.png" alt="Dodore Islamic center" loading="lazy" />
@@ -2011,13 +2013,13 @@
                     </div>
                     <div class="card-body">
                         <h3>Al-mashkur Jumma'at mosque, Yola.</h3>
-                        <p data-i18n="Navi_section4_p_">...</p>
+                        <p data-i18n="Navi_section4_p_">Community library offering a quiet place for reading, study, and access to learning resources.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
                         </div>
                     </div>
-                </article>
+                </article>-->
                 
 
 
@@ -2114,7 +2116,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/gtgate.jpg" alt="GT Bank" loading="lazy" />
+                            <img src="Data/Images/banks/gt-logo.png" alt="GT Bank" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2141,7 +2143,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/zenithgate.jpg" alt="Zenith Bank" loading="lazy" />
+                            <img src="Data/Images/banks/zenith-logo.png" alt="Zenith Bank" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2168,7 +2170,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/fidelitygate.jpg" alt="Fidelity Bank" loading="lazy" />
+                            <img src="Data/Images/banks/fidelity-logo.jpg" alt="Fidelity Bank" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2191,38 +2193,11 @@
                     </div>
                 </article>
 
-                <!-- Stanbic IBTC Bank -->
-                <article class="section4 hiding place-article">
-                    <div class="place-card-head">
-                        <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/stanbic.jpg" alt="Stanbic IBTC" loading="lazy" />
-                        </div>
-                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
-                            <div class="place-meta">
-                                <div class="meta-item">
-                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
-                                </div>
-                                <div class="meta-item">
-                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3 data-i18n="Navi_section4_h3_46">Stanbic IBTC Bank, Yola Branch.</h3>
-                        <p data-i18n="Navi_section4_p_46">International bank providing diverse financial services and investment options.</p>
-                        <div class="place-details-actions">
-                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
-                            <a data-i18n="learn_more" href="details/Navi/stanbic-ibtc-bank.html">Learn more →</a>
-                        </div>
-                    </div>
-                </article>
-
                 <!-- Access Bank -->
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/access.png" alt="Access Bank" loading="lazy" />
+                            <img src="Data/Images/banks/access-logo.jpg" alt="Access Bank" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2249,7 +2224,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/sterling.jpg" alt="Sterling Bank" loading="lazy" />
+                            <img src="Data/Images/banks/sterling-logo.jpg" alt="Sterling Bank" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2275,7 +2250,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/union-logo.png" alt="Union Bank of Nigeria logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2290,7 +2265,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Union Bank of Nigeria, Yola Branch.</h3>
-                        <p>...</p>
+                        <p>Commercial bank branch providing personal, business, and everyday banking services in Yola.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2301,7 +2276,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/keystone-logo.jpg" alt="Keystone Bank logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2316,7 +2291,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Keystone Bank, Yola Branch.</h3>
-                        <p>...</p>
+                        <p>Bank branch offering account services, payments, transfers, and other financial support in Yola.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2327,7 +2302,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/lotus-logo.png" alt="Lotus Bank logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2342,7 +2317,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Lotus Bank, Yola Branch.</h3>
-                        <p>...</p>
+                        <p>Islamic finance-focused bank branch providing personal and business banking services in Yola.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2354,7 +2329,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/jaiz-logo.jpg" alt="Jaiz Bank logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2369,7 +2344,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Jaiz Bank, Yola Branch.</h3>
-                        <p>...</p>
+                        <p>Non-interest banking branch offering Sharia-compliant financial products and customer services.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2380,7 +2355,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/uba-logo.jpg" alt="United Bank for Africa logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2394,8 +2369,8 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3>United Bank of Africa (UBA), Yola Branch.</h3>
-                        <p>...</p>
+                        <h3>United Bank for Africa (UBA), Yola Branch.</h3>
+                        <p>Full-service bank branch supporting deposits, transfers, payments, and personal or business accounts.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2406,7 +2381,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/polaris-logo.jpg" alt="Polaris Bank logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2420,8 +2395,8 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3>Polaris Bank, Yola Branch.</h3>        
-                        <p>...</p>
+                        <h3>Polaris Bank, Yola Branch.</h3>
+                        <p>Retail and commercial banking branch serving customers with accounts, transfers, and payment services.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2429,10 +2404,11 @@
                     </div>
                 </article>
 
+
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/firstbank-logo.jpg" alt="First Bank of Nigeria logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2446,19 +2422,19 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3>Ummah Microfinance bank, Yola Branch.</h3>            
-                        <p>...</p>
+                        <h3>First Bank of Nigeria, Yola Branch.</h3>
+                        <p>Established banking branch offering everyday financial services to individuals and businesses in Yola.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
                         </div>
                     </div>
                 </article>
-
+                
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/wema-logo.jpg" alt="WEMA Bank logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2472,8 +2448,8 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3>National Mortgage Bank, Yola Branch.</h3>
-                        <p>...</p>
+                        <h3>WEMA Bank, Yola Branch.</h3>
+                        <p>Commercial bank branch providing accounts, electronic payments, transfers, and other financial services.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2484,7 +2460,217 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/eco-logo.png" alt="EcoBank logo" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>Eco Bank, Yola Branch.</h3>
+                        <p>Regional banking branch offering personal, business, digital banking, and payment services in Yola.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+                
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/banks/fcmb-logo.jpg" alt="First City Monument Bank logo" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>First City Monument Bank (FCMB), Yol.</h3>
+                        <p>Financial services branch supporting savings, payments, transfers, and banking needs for Yola customers.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
+
+                <!-- Stanbic IBTC Bank -->
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/banks/stanbic-logo.jpg" alt="Stanbic IBTC" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 data-i18n="Navi_section4_h3_46">Stanbic IBTC Bank, Yola Branch.</h3>
+                        <p data-i18n="Navi_section4_p_46">International bank providing diverse financial services and investment options.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/stanbic-ibtc-bank.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/banks/mortgage-logo.jpg" alt="Federal Mortgage Bank of Nigeria logo" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>Federal Mortgage Bank of Nigeria, Yola Branch.</h3>
+                        <p>Mortgage finance institution supporting home ownership, housing finance, and related services in Yola.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/banks/nirsal-logo.jpg" alt="NIRSAL Microfinance Bank logo" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>NIRSAL Microfinance Bank, Yola Branch.</h3>
+                        <p>Microfinance bank serving individuals and small businesses with accessible accounts and financial services.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/banks/opay-logo.jpg" alt="Opay logo" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>Opay e-Banking Agent Office, Yola.</h3>
+                        <p>Agent outlet supporting electronic transfers, bill payments, cash services, and mobile wallet transactions.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/banks/moniepoint-logo.jpg" alt="Moniepoint logo" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>Moniepoint e-Banking Agent Office, Yola.</h3>
+                        <p>Agent office providing point-of-sale payments, transfers, withdrawals, and other everyday cash services.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/banks/palmpay-logo.jpg" alt="Palmpay logo" loading="lazy" />
+                        </div>
+                        <div class="card-body" style="padding: 8px !important; justify-content: center;">
+                            <div class="place-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-location-dot"></i></div>Yola, Adamawa State
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon"><i class="fa fa-clock"></i></div>About 8 km from Yola town
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3>Palmpay e-Banking Agent Office, Yola.</h3>
+                        <p>Mobile payment agent supporting wallet transactions, bill payments, transfers, and cash-in or cash-out services.</p>
+                        <div class="place-details-actions">
+                            <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
+                            <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="section4 hiding place-article">
+                    <div class="place-card-head">
+                        <div class="img-placeholder place-img-placeholder">
+                            <img src="Data/Images/banks/cbn-logo.jpg" alt="Central Bank of Nigeria logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2499,7 +2685,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Central Bank of Nigeria (CBN), Adamawa State Branch, Yola.</h3>
-                        <p>...</p>
+                        <p>Central banking office responsible for monetary and banking oversight activities in Adamawa State.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2510,7 +2696,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/boi-logo.jpg" alt="Bank of Industry logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2525,7 +2711,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Bank of Industry (BOI), Yola Branch.</h3>
-                        <p>...</p>
+                        <p>Development finance branch supporting businesses, industrial projects, and enterprise funding in the region.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2536,7 +2722,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/banks/.jpg" alt="" loading="lazy" />
+                            <img src="Data/Images/banks/boa-logo.jpg" alt="Bank of Agriculture logo" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -2551,7 +2737,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Bank of Agriculture (BOA), Yola Branch.</h3>
-                        <p>...</p>
+                        <p>Agricultural development bank branch supporting farmers, agribusinesses, and rural enterprise financing.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/sterling-bank.html">Learn more →</a>
@@ -2565,9 +2751,9 @@
     </div>
 
 
-    <div class="section2">
+    <div class="section2" data-category="Educational">
         
-        <div class="section3" data-category="Universities">
+        <div class="section3"  data-category="Educational" data-category="Universities">
             <h2 class="section3-title">Universities/Higher Educational Institutions (HEIs)</h2>
             <div class="section4-container">
                 
@@ -2663,7 +2849,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Nigerian Law School, Yola campus.</h3>
-                    <p>...</p>
+                    <p>Library providing books, study space, and educational resources for learners and residents in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -2674,7 +2860,7 @@
             </div>
         </div>
 
-        <div class="section3" data-category="Colleges">
+        <div class="section3"  data-category="Educational" data-category="Colleges">
             <h2 class="section3-title">Colleges</h2>
             <div class="section4-container">
             <article class="section4 hiding place-article">
@@ -2829,7 +3015,7 @@
             </div>
         </div>
 
-        <div class="section3" data-category="Schools">
+        <div class="section3"  data-category="Educational" data-category="Schools">
             <h2 class="section3-title">Elementary And Secondary Schools</h2>
             <div class="section4-container">
                 
@@ -2850,7 +3036,7 @@
                 </div>
                 <div class="card-body">
                     <h3 data-i18n="Edu_section4_h3_11">Aliyu Musdafa College, (AMC) Yola</h3>
-                    <p data-i18n="Edu_section4_p_11">Historic institution providing quality education to students across the state.</p>
+                    <p data-i18n="Edu_section4_p_11">Established secondary school in Yola offering academic education and student development across science and arts subjects.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/amc-yola.html">Learn more →</a>
@@ -2898,7 +3084,7 @@
                 </div>
                 <div class="card-body">
                     <h3 data-i18n="Edu_section4_h3_14">Adroit International Academy, Yola.</h3>
-                    <p data-i18n="Edu_section4_p_14">Historic institution providing quality education to students across the state.</p>
+                    <p data-i18n="Edu_section4_p_14">International academy providing structured classroom learning, modern subjects, and personal development for students.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/adroit-academy.html">Learn more →</a>
@@ -2970,7 +3156,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Ahmadu Ribadu College (ARC), Yola.</h3>
-                    <p>Historic institution providing quality education to students across the state.</p>
+                    <p>College offering secondary education with a focus on academic achievement, discipline, and student growth.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/sra-yola.html">Learn more →</a>
@@ -3043,7 +3229,7 @@
                 </div>
                 <div class="card-body">
                     <h3 data-i18n="Edu_section4_h3_20">Sulaiman Ribadu Academy, Yola.</h3>
-                    <p data-i18n="Edu_section4_p_20">Historic institution providing quality education to students across the state.</p>
+                    <p data-i18n="Edu_section4_p_20">Academy supporting strong foundational learning and academic preparation for children and young people in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/sra-yola.html">Learn more →</a>
@@ -3103,7 +3289,7 @@
             <!--<article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/.jpg"/>
+                            <img alt="Yola Model School" loading="lazy" src="Data/Images/educational/.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3117,7 +3303,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Yola Model School.</h3>
-                    <p>...</p>
+                    <p>School providing foundational and secondary education for children and young people in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3128,7 +3314,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="../Data/Images/educational/abti-logo.jpeg"/>
+                            <img alt="ABTI International Academy logo" loading="lazy" src="../Data/Images/educational/abti-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3142,7 +3328,7 @@
                 </div>
                 <div class="card-body">
                     <h3>ABTI International Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>Private academy offering structured basic and secondary education with an international outlook.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3153,7 +3339,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="../Data/Images/educational/neroxa-logo.jpeg"/>
+                            <img alt="Neroxa International Academy logo" loading="lazy" src="../Data/Images/educational/neroxa-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3167,7 +3353,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Neroxa International Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>International academy providing classroom learning and student development across core subjects.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3178,7 +3364,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/col-isa-logo.jpeg"/>
+                            <img alt="Col. Isa Ahmed Memorial School logo" loading="lazy" src="Data/Images/educational/col-isa-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3192,7 +3378,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Col. Isa Ahmed Memorial School, Yola.</h3>
-                    <p>...</p>
+                    <p>Memorial school offering basic and secondary education with emphasis on academic growth and character.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3204,7 +3390,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="../Data/Images/educational/hayatu-iyawa-logo.jpeg"/>
+                            <img alt="Hayatu Iyaawa College logo" loading="lazy" src="../Data/Images/educational/hayatu-iyawa-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3218,7 +3404,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Hayatu Iyaawa College, Yola.</h3>
-                    <p>...</p>
+                    <p>College providing general education and a supportive learning environment for students in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3230,7 +3416,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/jokems-logo.jpeg"/>
+                            <img alt="Jokems Ultimate Academy logo" loading="lazy" src="Data/Images/educational/jokems-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3244,7 +3430,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Jokems Ultimate Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>Academy offering foundational and secondary education with attention to academic and personal development.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3255,7 +3441,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/excel-logo.jpeg"/>
+                            <img alt="Excel International School logo" loading="lazy" src="Data/Images/educational/excel-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3269,7 +3455,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Excel International School, Yola.</h3>
-                    <p>...</p>
+                    <p>International school providing a broad curriculum for learners in the Jimeta and Yola area.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3281,7 +3467,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/fombina-logo.jpeg"/>
+                            <img alt="Fombina Royal Academy logo" loading="lazy" src="Data/Images/educational/fombina-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3295,7 +3481,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Fombina Royal Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>Royal academy offering basic and secondary education in a structured learning environment.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3306,7 +3492,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img style="background: transparent;" alt="" loading="lazy" src="Data/Images/educational/lumbi-logo.jpeg"/>
+                            <img style="background: transparent;" alt="Lumbi International Academy logo" loading="lazy" src="Data/Images/educational/lumbi-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3320,7 +3506,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Lumbi Int'l Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>International academy providing foundational education and secondary-level learning for Yola families.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3331,7 +3517,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/concordia-logo.jpeg"/>
+                            <img alt="Concordia College logo" loading="lazy" src="Data/Images/educational/concordia-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3345,7 +3531,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Concordia College, Yola.</h3>
-                    <p>...</p>
+                    <p>College offering a broad academic programme for students pursuing basic and secondary education.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3356,7 +3542,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/air-force-logo.jpeg"/>
+                            <img alt="Airforce Comprehensive School logo" loading="lazy" src="Data/Images/educational/air-force-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3370,7 +3556,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Airforce Comprehensive School (AFCS), Yola.</h3>
-                    <p>...</p>
+                    <p>Comprehensive school providing academic education and structured development for children of service families and the wider community.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3381,7 +3567,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/achievers-logo.jpeg"/>
+                            <img alt="Great Achievers Model School logo" loading="lazy" src="Data/Images/educational/achievers-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3395,7 +3581,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Great Achievers Model School (GAMS), Yola.</h3>
-                    <p>...</p>
+                    <p>Model school focused on strong academic foundations, learner confidence, and character development.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3406,7 +3592,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/pryme-logo.jpeg"/>
+                            <img alt="Pryme Academy logo" loading="lazy" src="Data/Images/educational/pryme-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3420,7 +3606,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Pryme Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>Academy providing basic and secondary education with a focus on consistent classroom learning.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3431,7 +3617,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/austine-logo.jpeg"/>
+                            <img alt="Austine International Academy logo" loading="lazy" src="Data/Images/educational/austine-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3445,7 +3631,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Austine Int'l Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>International academy offering organized basic and secondary education for students in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3459,7 +3645,7 @@
             </div>
         </div>
 
-        <div class="section3" data-category="Religious">
+        <div class="section3"  data-category="Educational" data-category="Religious">
             <h2 class="section3-title">Religious Basic and Secondary schools</h2>
             <div class="section4-container">
 
@@ -3555,7 +3741,7 @@
                 </div>
                 <div class="card-body">
                     <h3 data-i18n="Edu_section4_h3_17">Baitul-Ateeq College, Yola.</h3>
-                    <p data-i18n="Edu_section4_p_17">Historic institution providing quality education to students across the state.</p>
+                    <p data-i18n="Edu_section4_p_17">College providing academic and character education in a community-focused learning environment.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/baitul-ateeq.html">Learn more →</a>
@@ -3567,7 +3753,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/flying-colors-logo.jpeg"/>
+                            <img alt="Flying Colours International Academy logo" loading="lazy" src="Data/Images/educational/flying-colors-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3581,7 +3767,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Flying Colours International Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>International academy providing structured basic and secondary education for students in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3617,7 +3803,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/.png"/>
+                            <img alt="Restoration Highschool in Yola" loading="lazy" src="Data/Images/educational/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3631,7 +3817,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Restoration Highschool, Yola.</h3>
-                    <p>...</p>
+                    <p>High school supporting academic learning, student development, and character formation in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3643,7 +3829,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/baptist-logo.jpeg"/>
+                            <img alt="Baptist Academy logo" loading="lazy" src="Data/Images/educational/baptist-logo.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3657,7 +3843,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Baptist Academy, Jimeta Yola.</h3>
-                    <p>...</p>
+                    <p>Faith-based academy providing basic and secondary education with a Christian learning environment.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3668,7 +3854,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/.png"/>
+                            <img alt="Tarbiyyatul-aulaad Elementary School in Yola" loading="lazy" src="Data/Images/educational/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3682,7 +3868,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Tarbiyyatul-aulaad Elementry School, Yola.</h3>
-                    <p>...</p>
+                    <p>Elementary school providing foundational learning and early academic development for children in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3693,7 +3879,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="" loading="lazy" src="Data/Images/educational/.png"/>
+                            <img alt="Darul-arqam Islamic Academy in Yola" loading="lazy" src="Data/Images/educational/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3707,7 +3893,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Darul-arqam Islamic Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>Islamic academy combining religious instruction with foundational academic education for young learners.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3718,7 +3904,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="" loading="lazy" src="Data/Images/educational/.png"/>
+                            <img alt="Iqraa International Academy in Yola" loading="lazy" src="Data/Images/educational/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3732,7 +3918,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Iqraa' International Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>Academy offering Quranic learning alongside general education in a structured school environment.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3743,7 +3929,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="" loading="lazy" src="Data/Images/educational/.png"/>
+                            <img alt="Ibn Abbas Academy in Yola" loading="lazy" src="Data/Images/educational/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3757,7 +3943,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Ibn Abbas Academy, Yola.</h3>
-                    <p>...</p>
+                    <p>Islamic academy providing religious and academic learning for children and students in Yola.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3769,7 +3955,7 @@
             </div>
         </div>
 
-        <div class="section3" data-category="Libraries">
+        <div class="section3"  data-category="Educational" data-category="Libraries">
             <h2 class="section3-title">Libraries And Knowledge Centers</h2>
             <div class="section4-container">
             <article class="section4 hiding place-article">
@@ -3823,7 +4009,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="Karatu Library, Yola" loading="lazy" src="Data/Images/educational/karatulibrary.jpeg"/>
+                            <img alt="Karatu Library in Yola" loading="lazy" src="Data/Images/educational/karatulibrary.jpeg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3837,7 +4023,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Karatu Library, Yola.</h3>
-                    <p>...</p>
+                    <p>Local library offering reading space and access to books and study resources for the Yola community.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/.html">Learn more →</a>
@@ -3871,7 +4057,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="Cosmotech Learning center, Yola" loading="lazy" src="Data/Images/educational/cosmotech.png"/>
+                            <img alt="Gateway Educational Hub in Yola" loading="lazy" src="Data/Images/educational/gateway.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3885,7 +4071,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Gateway Educational Hub, Yola.</h3>
-                    <p>...</p>
+                    <p>Educational hub offering study support, learning resources, and a space for community knowledge sharing.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/cosmotech-yola.html">Learn more →</a>
@@ -3895,7 +4081,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                            <img alt="Cosmotech Learning center, Yola" loading="lazy" src="Data/Images/educational/cosmotech.png"/>
+                            <img alt="Northern Intelligence Hub in Yola" loading="lazy" src="Data/Images/educational/nih.jpg"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -3909,7 +4095,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Nothern Intelligence Hub, Yola.</h3>
-                    <p>...</p>
+                    <p>Learning and innovation hub supporting digital skills, research, and practical technology education.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="../details/En/Edu/cosmotech-yola.html">Learn more →</a>
@@ -3929,7 +4115,7 @@
     <div class="section2">
         <!--<h2 data-i18n="medi_section2_h2" >Medical Institutions in Yola</h2>-->
         
-        <div class="section3" data-category="PHCCs">
+        <div class="section3" data-category="Health" data-category="PHCCs">
             <h3 class="section3-title" data-i18n="medi_section3_h3_1">Primary Healthcare Centers</h3>
             <div class="section4-container">
                 
@@ -4010,7 +4196,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="Yola PHC" loading="lazy" src="Data/Images/hospitals/.png"/>
+                        <img alt="Bako Primary Health Care Centre in Yola" loading="lazy" src="Data/Images/hospitals/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -4024,7 +4210,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Bako PHCC, Yola.</h3>
-                    <p>...</p>
+                    <p>Primary care centre providing basic consultations, preventive care, and essential health services to Bako residents.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Medi/.html">Learn more →</a>
@@ -4035,7 +4221,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="Yola PHC" loading="lazy" src="Data/Images/hospitals/.png"/>
+                        <img alt="Yolde-pate Primary Health Care Centre in Yola" loading="lazy" src="Data/Images/hospitals/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -4049,7 +4235,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Yolde-pate PHCC, Yola.</h3>
-                    <p>...</p>
+                    <p>Community health centre offering primary treatment, health advice, and preventive services in Yolde-pate.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Medi/.html">Learn more →</a>
@@ -4061,7 +4247,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="Yola PHC" loading="lazy" src="Data/Images/hospitals/.png"/>
+                        <img alt="Bakari Mbamoi Primary Health Care Centre in Yola" loading="lazy" src="Data/Images/hospitals/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -4075,7 +4261,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Bakari Mbamoi PHCC, Yola.</h3>
-                    <p>...</p>
+                    <p>Primary healthcare facility serving Bakari Mbamoi residents with basic medical and preventive care.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Medi/.html">Learn more →</a>
@@ -4086,7 +4272,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="Yola PHC" loading="lazy" src="Data/Images/hospitals/.png"/>
+                        <img alt="Adarawo Primary Health Care Centre in Yola" loading="lazy" src="Data/Images/hospitals/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -4100,7 +4286,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Adarawo PHCC, Yola.</h3>
-                    <p>...</p>
+                    <p>Local primary care facility providing consultations, maternal support, and essential community health services.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Medi/.html">Learn more →</a>
@@ -4111,7 +4297,7 @@
             <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="Yola PHC" loading="lazy" src="Data/Images/hospitals/.png"/>
+                        <img alt="Nana Asmau Maternity in Yola" loading="lazy" src="Data/Images/hospitals/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -4125,7 +4311,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Nana Asma'u Maternity, Yola.</h3>
-                    <p>...</p>
+                    <p>Maternity facility supporting antenatal care, maternal health, and related services for women and families.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Medi/.html">Learn more →</a>
@@ -4136,7 +4322,7 @@
                         <article class="section4 hiding place-article">
                 <div class="place-card-head">
                     <div class="img-placeholder place-img-placeholder">
-                        <img alt="Yola PHC" loading="lazy" src="Data/Images/hospitals/.png"/>
+                        <img alt="Karewa Primary Health Care Centre in Yola" loading="lazy" src="Data/Images/hospitals/.png"/>
                     </div>
                     <div class="card-body" style="padding: 8px !important; justify-content: center;">
                         <div class="place-meta">
@@ -4150,7 +4336,7 @@
                 </div>
                 <div class="card-body">
                     <h3>Karewa PHCC, Yola.</h3>
-                    <p>...</p>
+                    <p>Primary healthcare centre providing basic treatment, health education, and preventive care in Karewa.</p>
                     <div class="place-details-actions">
                         <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                         <a data-i18n="learn_more" href="details/Medi/.html">Learn more →</a>
@@ -4163,7 +4349,7 @@
             </div>
         </div>
 
-        <div class="section3" data-category="Specialists">
+        <div class="section3" data-category="Health" data-category="Specialists">
             <h3 class="section3-title"  data-i18n="medi_section3_h3_2">Secondary Hospitals</h3>
             <div class="section4-container">
 
@@ -4323,8 +4509,8 @@
         </div>
 
         
-        <div class="section3" data-category="Teaching hospital">
-            <h3 class="section3-title" data-i18n="medi_section3_h3_3" style="padding: 0 55px; font-size: 12px !important;" style=" font-size: 12px !important;" style="height: 270px;">The Tertiary Hospital in Yola.</h3>
+        <div class="section3" data-category="Health" data-category="Teaching hospital">
+            <h3 class="section3-title" data-i18n="medi_section3_h3_3">The Tertiary Hospital in Yola.</h3>
             <div class="section4-container" style="display: flex;">
                 <div class="section4-mau-container">
                     <article class="section4 section4-mauth">
@@ -4352,7 +4538,7 @@
             </div>
         </div>    
 
-        <div class="section3" data-category="Pharmacies">
+        <div class="section3" data-category="Health" data-category="Pharmacies">
             <h3 class="section3-title"  data-i18n="medi_section3_h3_4">Pharmacies</h3>
 
             <div class="section4-container">
@@ -4598,7 +4784,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/sports/.jpg" alt="MAU Sports Center" loading="lazy" />
+                            <img src="Data/Images/judiciary/high-court.jpg" alt="Adamawa State High Court Complex in Yola" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -4613,7 +4799,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Adamawa State High Court Complex, Yola.</h3>
-                        <p>...</p>
+                        <p>State High Court complex hosting judicial proceedings and court administration for Adamawa State.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -4624,7 +4810,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images//.jpg" alt="MAU Sports Center" loading="lazy" />
+                            <img src="Data/Images/judiciary/court-of-appeal.jpg" alt="Shariah Court of Appeal in Yola" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -4638,8 +4824,8 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3>Adamawa State Shari'ah Court of Appeal, Yola.</h3>
-                        <p>...</p>
+                        <h3>Shari'ah Court of Appeal, Yola.</h3>
+                        <p>Appellate court serving Shariah legal matters and appeals within its jurisdiction in Adamawa State.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -4650,7 +4836,7 @@
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
-                            <img src="Data/Images/sports/.jpg" alt="MAU Sports Center" loading="lazy" />
+                            <img src="Data/Images/judiciary/jsc.jpg" alt="Adamawa State Judicial Commission Service in Yola" loading="lazy" />
                         </div>
                         <div class="card-body" style="padding: 8px !important; justify-content: center;">
                             <div class="place-meta">
@@ -4665,7 +4851,7 @@
                     </div>
                     <div class="card-body">
                         <h3>Adamawa State Judicial Comission Service, Yola.</h3>
-                        <p>...</p>
+                        <p>Judicial administration body supporting the coordination and oversight of court services in Adamawa State.</p>
                         <div class="place-details-actions">
                             <button class="action-btn map-btn" href="https://www.google.com/maps/search/?api=1&query=Yola+City+Centre+Adamawa" target="_blank" rel="noopener"><i class="fas fa-route"></i>View on Map</button>
                             <a data-i18n="learn_more" href="details/Navi/.html">Learn more →</a>
@@ -5015,11 +5201,12 @@
             </div>
         </div>
         
+        <!--
         <div class="section3" data-category="Green_spaces">
             <h3 class="section3-title" data-i18n="eco_section3_h3_4">Green Spaces</h3>
             <div class="section4-container">
             
-                <!-- Benue Valley Reserve -->
+                
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
@@ -5045,8 +5232,7 @@
                         </div>
                     </div>
                 </article>
-
-                <!-- Yola Community Garden -->
+                
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
@@ -5073,7 +5259,6 @@
                     </div>
                 </article>
 
-                <!-- Yola Eco Park -->
                 <article class="section4 hiding place-article">
                     <div class="place-card-head">
                         <div class="img-placeholder place-img-placeholder">
@@ -5101,7 +5286,8 @@
                 </article>
             
             </div>
-        </div>
+        </div>-->
+
     </div>
 
 
