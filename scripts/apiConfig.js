@@ -29,11 +29,14 @@
     window.__API_BASE__
   )) || null;
   const prodBase = injected || envProdBase || directEnvBase || 'https://yolaaiinfohub-authentication.onrender.com';
+  const localHostBase = isLocalHost(location.hostname)
+    ? `http://${location.hostname || 'localhost'}:4000`
+    : DEFAULT_LOCAL;
   const initialBase = window.API_BASE || injected ||
-    (isLocalHost(location.hostname) ? DEFAULT_LOCAL : prodBase || DEFAULT_LOCAL);
+    (isLocalHost(location.hostname) ? localHostBase : prodBase || DEFAULT_LOCAL);
   window.API_BASE = initialBase;
   window.API_BASE_CANDIDATES = isLocalHost(location.hostname)
-    ? Array.from(new Set([initialBase, ...LOCAL_PORT_CANDIDATES.filter((candidate) => candidate !== initialBase)]))
+    ? Array.from(new Set([initialBase, ...LOCAL_PORT_CANDIDATES.filter((candidate) => candidate !== initialBase && candidate.includes(location.hostname || 'localhost'))]))
     : [initialBase];
 
   window.getApiBase = function() {

@@ -47,6 +47,7 @@ window.renderSection = function() {
   }
     return fetch('templates/navi.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
+        if (typeof window.initializeSearchHandlers === 'function') window.initializeSearchHandlers();
         if (typeof window.initYolaMap === 'function') window.initYolaMap();
     
     

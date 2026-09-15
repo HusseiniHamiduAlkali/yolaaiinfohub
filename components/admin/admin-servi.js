@@ -1,0 +1,35 @@
+(function () {
+  'use strict';
+  var state = { records: [], selected: null, categories: [], areas: [] };
+  var $ = function (id) { return document.getElementById(id); };
+  function apiBase() { return typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE || 'http://localhost:4000'); }
+  function escapeHtml(value) { return String(value || '').replace(/[&<>'"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c]; }); }
+  function status(message, type) { $('status').textContent = message; $('status').className = 'status ' + (type || ''); }
+  function request(url, options) { return fetch(apiBase() + url, Object.assign({ credentials: 'include', headers: { 'Content-Type': 'application/json' } }, options || {})).then(function (response) { return response.json().then(function (data) { if (!response.ok) throw new Error(data.error || 'Request failed'); return data; }); }); }
+  function populateOptions() { $('category').innerHTML = state.categories.map(function (value) { return '<option>' + escapeHtml(value) + '</option>'; }).join(''); $('areas').innerHTML = state.areas.map(function (value) { return '<option>' + escapeHtml(value) + '</option>'; }).join(''); }
+  function renderRecords() { var filter = $('status-filter').value; var records = state.records.filter(function (record) { return !filter || record.status === filter; }); $('records').innerHTML = records.length ? records.map(function (record) { return '<button class="record ' + (state.selected && state.selected._id === record._id ? 'active' : '') + '" data-id="' + record._id + '" type="button"><strong>' + escapeHtml(record.displayName) + '</strong><span>' + escapeHtml(record.status) + ' · ' + escapeHtml(record.category) + '</span></button>'; }).join('') : '<p class="muted">No listings found.</p>'; Array.prototype.forEach.call(document.querySelectorAll('[data-id]'), function (button) { button.addEventListener('click', function () { state.selected = state.records.find(function (record) { return record._id === button.dataset.id; }); fillForm(state.selected); renderRecords(); }); }); }
+  function clearForm() { state.selected = null; $('record-id').value = ''; $('professional-form').reset(); $('editor-title').textContent = 'New listing'; $('record-status').value = 'draft'; $('verification-status').value = 'unverified'; $('delete-record').hidden = true; Array.prototype.forEach.call($('areas').options, function (option) { option.selected = false; }); }
+  function fillForm(record) { $('record-id').value = record._id; $('editor-title').textContent = 'Edit ' + record.displayName; $('display-name').value = record.displayName || ''; $('profession').value = record.profession || ''; $('slug').value = record.slug || ''; $('category').value = record.category || ''; $('years-experience').value = record.yearsExperience || 0; $('availability').value = record.availability || 'available'; $('record-status').value = record.status || 'draft'; $('verification-status').value = record.verificationStatus || 'unverified'; $('phone').value = record.contact?.phone || ''; $('email').value = record.contact?.email || ''; $('image').value = record.image || ''; $('price').value = record.pricing?.label || ''; $('service-tags').value = (record.serviceTags || []).join(', '); $('hours').value = record.hours || ''; $('bio').value = record.bio || ''; Array.prototype.forEach.call($('areas').options, function (option) { option.selected = (record.areas || []).includes(option.value); }); $('delete-record').hidden = false; }
+  function payload() { return { displayName: $('display-name').value.trim(), profession: $('profession').value.trim(), slug: $('slug').value.trim(), category: $('category').value, areas: Array.from($('areas').selectedOptions).map(function (option) { return option.value; }), yearsExperience: Number($('years-experience').value) || 0, availability: $('availability').value, status: $('record-status').value, verificationStatus: $('verification-status').value, phone: $('phone').value.trim(), email: $('email').value.trim(), image: $('image').value.trim(), price: $('price').value.trim(), serviceTags: $('service-tags').value.split(',').map(function (value) { return value.trim(); }).filter(Boolean), hours: $('hours').value.trim(), bio: $('bio').value.trim() }; }
+  function loadRecords() { return request('/api/admin/content/professionals').then(function (data) { state.records = data.items || []; state.categories = data.categories || []; state.areas = data.areas || []; populateOptions(); renderRecords(); status('Loaded ' + state.records.length + ' listings.', 'success'); }); }
+  $('approve-pending').addEventListener('click', function () {
+    var pending = state.records.filter(function (record) { return record.status === 'pending' || record.status === 'draft'; });
+    if (!pending.length) { status('There are no pending or draft listings to approve.', 'success'); return; }
+    if (!window.confirm('Publish ' + pending.length + ' pending/draft listings? Review imported placeholder records before approving them.')) return;
+    Promise.all(pending.map(function (record) {
+      return request('/api/admin/content/professionals/' + encodeURIComponent(record._id), {
+        method: 'PUT',
+        body: JSON.stringify(Object.assign({}, record, { status: 'published' }))
+      });
+    })).then(function () { status('Approved ' + pending.length + ' listings.', 'success'); return loadRecords(); }).catch(function (error) { status(error.message, 'error'); });
+  });
+  $('new-record').addEventListener('click', function () { clearForm(); renderRecords(); }); $('reset-form').addEventListener('click', function () { state.selected ? fillForm(state.selected) : clearForm(); }); $('status-filter').addEventListener('change', renderRecords);
+  $('professional-form').addEventListener('submit', function (event) { event.preventDefault(); var id = $('record-id').value; request(id ? '/api/admin/content/professionals/' + encodeURIComponent(id) : '/api/admin/content/professionals', { method: id ? 'PUT' : 'POST', body: JSON.stringify(payload()) }).then(function () { status('Listing saved.', 'success'); return loadRecords(); }).catch(function (error) { status(error.message, 'error'); }); });
+  $('delete-record').addEventListener('click', function () { var id = $('record-id').value; if (!id || !window.confirm('Delete this professional permanently?')) return; request('/api/admin/content/professionals/' + encodeURIComponent(id), { method: 'DELETE' }).then(function () { clearForm(); return loadRecords(); }).then(function () { status('Listing deleted.', 'success'); }).catch(function (error) { status(error.message, 'error'); }); });
+  loadRecords().catch(function (error) {
+    var message = error.message === 'Content administrator access required'
+      ? 'This account is signed in but is not a content-admin. Sign out and use the account created at /admin/setup.html, or ask an existing admin to promote this account.'
+      : error.message + '. Sign in with a content-admin account first.';
+    status(message, 'error');
+  });
+}());

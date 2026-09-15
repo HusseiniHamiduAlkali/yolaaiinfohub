@@ -119,6 +119,26 @@
     background: #fff;
 }
 
+.yola-map-marker-label {
+    position: absolute;
+    left: 14px;
+    top: -9px;
+    min-width: max-content;
+    max-width: 190px;
+    padding: 3px 6px;
+    border: 1px solid rgba(6, 78, 59, 0.18);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.94);
+    color: #17352d;
+    font: 600 10px/1.2 "Plus Jakarta Sans", system-ui, sans-serif;
+    overflow: hidden;
+    pointer-events: none;
+    text-overflow: ellipsis;
+    transform: rotate(45deg);
+    transform-origin: left center;
+    white-space: nowrap;
+}
+
 .maplibregl-ctrl-group {
     border: 1px solid var(--line);
     box-shadow: var(--shadow-sm);

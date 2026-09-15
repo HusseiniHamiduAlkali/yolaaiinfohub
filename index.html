@@ -97,43 +97,13 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" defer onerror="console.debug('TensorFlow loaded (source map warnings are expected and safe)')"></script>
   <script>
-    // ensures the TomTom SDK is loaded (local vendor copy preferred, fallback to CDN)
+    // Only preload TomTom when a real TomTom key is configured. The app is intentionally using the free MapLibre/OpenFreeMap stack.
     window.ensureTomTomSDK = function(){
+      if (!window.TOMTOM_API_KEY && !window.NAVI_MAP_API_KEY) {
+        return Promise.resolve();
+      }
       if (window.tomtomSDKLoading) return window.tomtomSDKLoading;
-      window.tomtomSDKLoading = new Promise((resolve, reject) => {
-        // try local vendor path first
-        const localCss = '/vendor/tomtom/maps/maps-web.min.css';
-        const localJs = '/vendor/tomtom/maps/maps-web.min.js';
-
-        function loadJs(src){
-          const s = document.createElement('script');
-          s.src = src;
-          s.crossOrigin = 'anonymous';
-          s.onload = resolve;
-          s.onerror = () => reject(new Error('TomTom SDK failed to load: ' + src));
-          document.head.appendChild(s);
-        }
-
-        // always append CSS (no onload event)
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = localCss;
-        link.crossOrigin = 'anonymous';
-        link.onerror = () => { /* ignore */ };
-        document.head.appendChild(link);
-
-        // attempt JS - use fetch with crossorigin to avoid ORB issues
-        fetch(localJs, {method:'HEAD', mode: 'no-cors'}).then(resp => {
-          if (resp.ok) loadJs(localJs);
-          else {
-            // fallback CDN with crossorigin attribute
-            loadJs('https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js');
-          }
-        }).catch(() => {
-          // fallback CDN with crossorigin attribute
-          loadJs('https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.22.0/maps/maps-web.min.js');
-        });
-      });
+      window.tomtomSDKLoading = Promise.resolve();
       return window.tomtomSDKLoading;
     };
   </script>
@@ -162,8 +132,10 @@
   <script src="components/serviinfo.js?t=20260308" defer></script>
   <script src="components/communityinfo.js?t=20260308" defer></script>
   <script src="scripts/details-navigation.js?t=20260308" defer></script>
+  <script src="Data/NaviInfo/place-coordinates.js"></script>
   <script src="/components/naviinfo/scripts/maps.js?v=20260912-webgl-detect"></script>
   <script src="pages/scripts/pages.js"></script>
+  <script src="components/serviinfo/scripts/serviDirectory.js"></script>
   <script src="components/serviinfo/scripts/serviFiltersHandler.js"></script>
   <script src=""></script>
   <script src="app.js?t=20260308" defer></script>
@@ -277,20 +249,25 @@
     };
 
     // Public loader: if a restore is in progress, queue requests (ignore 'home')
+    window.__sectionLoadPromises = window.__sectionLoadPromises || {};
     window.loadSection = function(section){
+      const normalizedSection = String(section || 'home').toLowerCase();
       window.__pendingLoadQueue = window.__pendingLoadQueue || [];
       if(window.__restoringSection){
-        console.log('loadSection queued during restore:', section, 'flag state:', window.__restoringSection);
+        console.log('loadSection queued during restore:', normalizedSection, 'flag state:', window.__restoringSection);
         return new Promise((resolve, reject) => {
-          window.__pendingLoadQueue.push({section, resolve, reject});
+          window.__pendingLoadQueue.push({section: normalizedSection, resolve, reject});
         });
       }
-      if(section === 'home'){
-        console.log('loadSection direct (restore complete): home flag state:', window.__restoringSection, 'STACK:', new Error().stack);
-      } else {
-        console.log('loadSection direct (restore complete):', section, 'flag state:', window.__restoringSection);
+      if (window.__sectionLoadPromises[normalizedSection]) {
+        return window.__sectionLoadPromises[normalizedSection];
       }
-      return window.__performLoadSection(section);
+      const promise = window.__performLoadSection(normalizedSection);
+      window.__sectionLoadPromises[normalizedSection] = promise;
+      promise.finally(() => {
+        delete window.__sectionLoadPromises[normalizedSection];
+      });
+      return promise;
     };
     // CHECK AUTH STATUS FIRST, THEN RENDER NAVBAR ONCE
     // This ensures navbar displays correct logged-in state on initial page load

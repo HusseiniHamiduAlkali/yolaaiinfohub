@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create first administrator | Yola AI Info Hub</title>
+  <link rel="stylesheet" href="/pages/styles/pages.css">
+  <style>
+    :root { color-scheme: light; }
+    body { min-height: 100vh; margin: 0; background: #eef4f1; }
+    .setup-shell { width: min(680px, calc(100% - 32px)); margin: 32px auto; }
+    .setup-card { background: #fff; border-radius: 12px; padding: clamp(20px, 5vw, 42px); box-shadow: 0 18px 50px rgba(10, 55, 45, .12); }
+    .setup-card h1 { margin-top: 0; color: #064e3b; }
+    .setup-card p { color: #52635e; line-height: 1.55; }
+    .setup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .setup-grid label { display: grid; gap: 7px; color: #263833; font-weight: 600; }
+    .setup-grid .wide { grid-column: 1 / -1; }
+    input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #b9c9c3; border-radius: 6px; font: inherit; }
+    .secret-field { margin-top: 22px; padding-top: 18px; border-top: 1px solid #dbe5e1; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    button, .back { border: 0; border-radius: 6px; padding: 13px 18px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+    button { background: #064e3b; color: white; }
+    .back { background: #e2ebe7; color: #064e3b; }
+    #status { margin-top: 18px; padding: 12px; border-radius: 6px; display: none; }
+    #status.show { display: block; background: #e8f4ee; color: #145c3f; }
+    #status.error { background: #fff0ed; color: #a32d20; }
+    @media (max-width: 560px) { .setup-shell { width: min(100% - 20px, 680px); margin: 10px auto; } .setup-grid { grid-template-columns: 1fr; } .setup-grid .wide { grid-column: auto; } }
+  </style>
+</head>
+<body>
+  <main class="setup-shell">
+    <section class="setup-card">
+      <p class="eyebrow">Administrator setup</p>
+      <h1>Create or activate an admin account</h1>
+      <p>Use this form to create the first content administrator, or to promote an existing account when an administrator already exists. It requires the private setup secret and the account password. After creation or promotion, sign in again normally.</p>
+      <form id="admin-setup-form">
+        <div class="setup-grid">
+          <label>Full name<input name="name" required autocomplete="name"></label>
+          <label>Username<input name="username" required minlength="3" autocomplete="username"></label>
+          <label>Email<input name="email" type="email" required autocomplete="email"></label>
+          <label>Phone<input name="phone" type="tel" autocomplete="tel"></label>
+          <label>Password<input name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="Uppercase, lowercase, number, symbol"></label>
+          <label>National ID (NIN)<input name="nin" inputmode="numeric" pattern="[0-9]{11}" required></label>
+          <label>State<input name="state" value="Adamawa" required></label>
+          <label>LGA<input name="lga" value="Yola" required></label>
+          <label class="wide">Address<input name="address" required autocomplete="street-address"></label>
+          <label class="wide secret-field">Private setup secret<input name="secret" type="password" required autocomplete="off"></label>
+        </div>
+        <div class="actions"><button type="submit">Create administrator</button><a class="back" href="/pages/auth.html">Back to sign in</a></div>
+        <div id="status" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+  <script src="/scripts/apiConfig.js"></script>
+  <script>
+    (function () {
+      var form = document.getElementById('admin-setup-form');
+      var status = document.getElementById('status');
+      var apiBase = typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE || 'http://localhost:4000');
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        var values = Object.fromEntries(new FormData(form).entries());
+        var secret = values.secret;
+        delete values.secret;
+        values.termsAccepted = true;
+        var button = form.querySelector('button');
+        button.disabled = true;
+        status.className = 'show';
+        status.textContent = 'Creating administrator account...';
+        fetch(apiBase + '/api/admin/setup-first-admin', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-content-admin-secret': secret }, body: JSON.stringify(values) })
+          .then(function (response) { return response.json().then(function (data) { if (!response.ok) throw new Error(data.error || 'Setup failed'); return data; }); })
+          .then(function (data) { status.textContent = data.message + ' You can now return to sign in.'; form.reset(); })
+          .catch(function (error) { status.className = 'show error'; status.textContent = error.message; })
+          .finally(function () { button.disabled = false; });
+      });
+    }());
+  </script>
+</body>
+</html>

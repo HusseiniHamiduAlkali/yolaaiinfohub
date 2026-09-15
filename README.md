@@ -27,6 +27,28 @@ curl -X POST http://localhost:4000/api/admin/bootstrap-content-admin \
 
 The bootstrap endpoint only works when no `admin` or `content-admin` user exists. After promotion, log in normally and open the admin page. Import the existing school records with `npm run import-schools:write` after confirming the dry run with `npm run import-schools`.
 
+### ServiInfo professional directory
+
+ServiInfo listings are stored in the MongoDB `professionals` collection. During local development, start the frontend with Five Server and open `http://127.0.0.1:5500/admin/servi` (use the actual Five Server port if different). In production, open `https://yolaaiinfohub.netlify.app/admin/servi`. The page is hosted by the frontend; it connects to the configured Render API backend for authenticated data. Content administrators can create and edit listings, publish or suspend them, and mark verified professionals. Public listings only include records with `status: published`.
+
+To create the first administrator from a phone, open `http://127.0.0.1:5500/admin/setup` locally or `https://yolaaiinfohub.netlify.app/admin/setup` in production. Enter the account details and the private `CONTENT_ADMIN_BOOTSTRAP_SECRET` configured on the backend. This setup is one-time and is refused after an administrator exists. Verify the account email, then sign in and open the ServiInfo admin page.
+
+The public join form creates a `pending` listing for review; it cannot publish or verify records. New public profiles use `/servi/<slug>` URLs.
+
+To inspect the existing static cards before importing them:
+
+```bash
+npm run import-professionals
+```
+
+After reviewing the dry-run summary and configuring `MONGO_URI`, import or update the records with:
+
+```bash
+npm run import-professionals:write
+```
+
+The importer is idempotent by slug. Placeholder phone numbers and records with no recorded experience are imported as drafts so they are not presented as trusted public listings automatically.
+
 Tip: To avoid external CDN/CORS/MIME issues with TomTom's Web SDK, install it locally so the backend can serve it:
 
    npm install @tomtom-international/web-sdk-maps

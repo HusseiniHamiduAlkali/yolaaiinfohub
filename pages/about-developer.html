@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About the Developer — Husseini Hamidu Alkali | Yola AI Info Hub</title>
+<meta name="description" content="Meet Husseini Hamidu Alkali, the developer behind the Yola AI Info Hub. Education, experience, skills and contact details.">
+<meta property="og:title" content="About the Developer — Husseini Hamidu Alkali">
+<meta property="og:description" content="Developer profile for the Yola AI Info Hub: background, skills and contact.">
+<meta property="og:type" content="profile">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* =========================================================
+   Yola AI Info Hub — About the Developer
+   "Golden Emerald Prestige" design system (inline)
+   ========================================================= */
+
+:root {
+  --emerald-900: #04322a;
+  --emerald-800: #064e3b;
+  --emerald-700: #0d7a5f;
+  --emerald-600: #17997a;
+
+  --gold-500: #c9a84c;
+  --gold-400: #d9bd6a;
+  --gold-300: #e5cf7a;
+  --gold-200: #f0d78c;
+
+  --cream: #f5f0e0;
+  --cream-soft: #faf6ea;
+  --paper: #ffffff;
+
+  --ink: #142520;
+  --ink-soft: #3d4d47;
+  --muted: #6b7a74;
+  --line: rgba(6, 78, 59, 0.12);
+
+  --radius: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+
+  --shadow-sm: 0 2px 6px rgba(6, 78, 59, 0.06);
+  --shadow-md: 0 10px 30px -12px rgba(6, 78, 59, 0.25);
+  --shadow-gold: 0 12px 30px -14px rgba(201, 168, 76, 0.5);
+
+  --container: 1160px;
+  --header-h: 68px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg, var(--cream-soft) 0%, var(--paper) 40%);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Fraunces", ui-serif, Georgia, serif;
+  line-height: 1.15;
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+h3 { font-size: 1.15rem; }
+
+p { margin: 0 0 14px; color: var(--ink-soft); }
+
+a { color: var(--emerald-700); text-decoration: none; }
+a:hover { color: var(--emerald-600); }
+
+img { max-width: 100%; display: block; }
+
+:focus-visible {
+  outline: 3px solid var(--emerald-600);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section { padding: 56px 0; }
+.section-tight { padding: 32px 0; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold-500);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.eyebrow::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-500), var(--emerald-700));
+}
+
+.lead { font-size: 1.05rem; max-width: 62ch; }
+.muted { color: var(--muted); }
+.small { font-size: 0.85rem; }
+.center { text-align: center; }
+
+/* ---------------- Header ---------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-inner {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; color: var(--ink); }
+.brand:hover { color: var(--ink); }
+
+.brand-mark {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--emerald-800), var(--emerald-600));
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  flex: none;
+}
+.brand-mark::after {
+  content: "";
+  position: absolute; top: -3px; right: -3px;
+  width: 12px; height: 12px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold-300), var(--gold-500));
+  border: 2px solid var(--paper);
+}
+.brand-mark svg { width: 20px; height: 20px; }
+
+.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-name { font-family: "Fraunces", serif; font-weight: 700; font-size: 1rem; }
+.brand-tag { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+
+.nav { display: flex; align-items: center; gap: 4px; }
+.nav a {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.nav a:hover { background: var(--cream-soft); color: var(--emerald-800); }
+.nav a.active { background: var(--emerald-800); color: var(--cream); }
+
+.nav-toggle {
+  display: none;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: pointer;
+  align-items: center; justify-content: center;
+}
+.nav-toggle span, .nav-toggle span::before, .nav-toggle span::after {
+  display: block; width: 18px; height: 2px; border-radius: 2px;
+  background: var(--emerald-800); position: relative;
+}
+.nav-toggle span::before { content: ""; position: absolute; top: -6px; }
+.nav-toggle span::after { content: ""; position: absolute; top: 6px; }
+
+/* ---------------- Buttons ---------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.94rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  font-family: inherit;
+  text-align: center;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
+  color: var(--emerald-900);
+  box-shadow: var(--shadow-gold);
+}
+.btn-emerald {
+  background: linear-gradient(135deg, var(--emerald-800), var(--emerald-700));
+  color: var(--cream);
+  box-shadow: var(--shadow-md);
+}
+.btn-outline {
+  background: transparent;
+  border-color: rgba(245, 240, 224, 0.45);
+  color: var(--cream);
+}
+.btn-outline:hover { background: rgba(245, 240, 224, 0.12); }
+.btn-ghost {
+  background: var(--paper);
+  border-color: var(--line);
+  color: var(--emerald-800);
+}
+.btn-ghost:hover { background: var(--cream-soft); }
+.btn-sm { padding: 8px 14px; font-size: 0.85rem; }
+
+/* ---------------- Hero / profile ---------------- */
+
+.profile-hero {
+  color: var(--cream);
+  border-radius: var(--radius-xl);
+  padding: 56px 40px;
+  margin: 24px 0 8px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 500px at 90% -10%, rgba(201, 168, 76, 0.35), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(23, 153, 122, 0.55), transparent 60%),
+    linear-gradient(135deg, var(--emerald-900) 0%, var(--emerald-800) 60%, var(--emerald-700) 100%);
+}
+.profile-hero h1 { color: var(--cream); margin-bottom: 6px; }
+.profile-hero p { color: rgba(245, 240, 224, 0.82); }
+.profile-hero .eyebrow { color: var(--gold-300); display: flex !important; }
+.profile-hero .eyebrow::before { background: linear-gradient(90deg, var(--gold-300), transparent); }
+
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  background: inherit !important;
+}
+
+.profile-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 35% !important;
+  border: 4px solid rgba(245, 240, 224, 0.25);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  flex: none;
+  background: linear-gradient(135deg, var(--emerald-600), var(--gold-500));
+  display: grid;
+  place-items: center;
+  font-family: "Fraunces", serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--cream);
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-meta { flex: 1; min-width: 260px; justify-items: center;}
+.role-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(245, 240, 224, 0.12);
+  border: 1px solid rgba(245, 240, 224, 0.2);
+  color: var(--gold-300);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+
+}
+
+/* ---------------- Cards & grids ---------------- */
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 22px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(201, 168, 76, 0.5);
+}
+.card-emerald {
+  background: linear-gradient(135deg, var(--emerald-900), var(--emerald-800));
+  color: var(--cream);
+  border-color: rgba(245, 240, 224, 0.12);
+}
+.card-emerald h2, .card-emerald h3 { color: var(--cream); }
+.card-emerald p { color: rgba(245, 240, 224, 0.8); }
+
+.grid { display: grid; gap: 18px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.icon-badge {
+  width: 44px; height: 44px;
+  border-radius: 13px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.1), rgba(201, 168, 76, 0.18));
+  color: var(--emerald-800);
+  margin-bottom: 14px;
+  font-size: 1.2rem;
+}
+
+/* ---------------- Timeline ---------------- */
+
+.timeline { list-style: none; margin: 0; padding: 0 0 0 22px; border-left: 2px solid var(--line); }
+.timeline li { position: relative; padding: 0 0 18px 16px; }
+.timeline li::before {
+  content: ""; position: absolute; left: -31px; top: 5px;
+  width: 12px; height: 12px; border-radius: 999px;
+  background: var(--cream); border: 2px solid var(--line);
+}
+.timeline li.done::before { background: var(--emerald-700); border-color: var(--emerald-700); }
+.timeline li.current::before { background: var(--gold-500); border-color: var(--gold-500); box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.25); }
+.timeline .t-title { font-weight: 700; color: var(--ink); }
+.timeline .t-meta { font-size: 0.8rem; color: var(--muted); }
+.timeline .t-desc { font-size: 0.9rem; color: var(--ink-soft); margin-top: 4px; }
+
+/* ---------------- Skills & pills ---------------- */
+
+.skill-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 0.8rem; font-weight: 700;
+  background: var(--cream-soft); color: var(--emerald-800);
+  border: 1px solid var(--line);
+}
+
+/* ---------------- Contact ---------------- */
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.contact-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.contact-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.contact-icon {
+  width: 40px; height: 40px; border-radius: 11px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, rgba(6,78,59,0.08), rgba(201,168,76,0.15));
+  color: var(--emerald-800); font-size: 1.1rem; flex: none;
+}
+.contact-info { min-width: 0; }
+.contact-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+.contact-value { font-size: 0.92rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.copy-row { display: flex; gap: 10px; flex-wrap: nowrap; margin-top: 18px; }
+
+/* ---------------- Toast ---------------- */
+
+.toast-wrap {
+  position: fixed; right: 18px; bottom: 18px; z-index: 200;
+  display: flex; flex-direction: column; gap: 10px; max-width: min(360px, calc(100vw - 36px));
+}
+.toast {
+  background: var(--emerald-900); color: var(--cream);
+  padding: 13px 16px; border-radius: var(--radius);
+  box-shadow: var(--shadow-md); font-size: 0.9rem; font-weight: 600;
+  border-left: 4px solid var(--gold-500);
+  animation: toast-in 0.25s ease;
+}
+@keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ---------------- Footer ---------------- */
+
+.site-footer {
+  margin-top: 64px;
+  background: linear-gradient(135deg, var(--emerald-900), var(--emerald-800));
+  color: rgba(245, 240, 224, 0.78);
+  border-top-left-radius: 34px;
+  border-top-right-radius: 34px;
+  padding: 52px 0 28px;
+}
+.site-footer h4 { color: var(--cream); font-size: 0.95rem; margin-bottom: 12px; }
+.site-footer a { color: rgba(245, 240, 224, 0.78); display: block; padding: 4px 0; font-size: 0.9rem; }
+.site-footer a:hover { color: var(--gold-300); }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 28px; }
+.footer-bottom {
+  margin-top: 34px; padding-top: 18px;
+  border-top: 1px solid rgba(245, 240, 224, 0.14);
+   justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  font-size: 0.82rem;
+}
+.site-footer .brand-name, .site-footer .brand { color: var(--cream); }
+.site-footer .brand-tag { color: rgba(245, 240, 224, 0.6); }
+
+/* ---------------- Scroll reveal ---------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ---------------- Responsive ---------------- */
+
+@media (max-width: 899px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 599px) {
+  .nav {
+    position: fixed; inset: var(--header-h) 0 auto 0;
+    flex-direction: column; align-items: stretch;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    padding: 12px; gap: 4px; box-shadow: var(--shadow-md);
+    display: none;
+  }
+  .nav.open { display: flex; }
+  .nav a { padding: 12px 14px; border-radius: 12px; }
+  .nav-toggle { display: inline-flex; }
+
+  .profile-hero { padding: 36px 22px; border-radius: var(--radius-lg); margin-top: 14px; }
+  .section { padding: 36px 0; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .btn { width: 100%; }
+  .hero-actions { width: 100%; }
+  .card { padding: 18px; }
+  .site-footer { border-top-left-radius: 28px; border-top-right-radius: 28px; }
+  .profile-card { justify-content: center; text-align: center;flex-direction: column; }
+  .profile-meta { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+@media print {
+  .site-header, .site-footer, .nav-toggle, .toast-wrap { display: none !important; }
+}
+</style>
+<link rel="stylesheet" href="../fontawesome/css/all.min.css">
+<link rel="stylesheet" href="styles/pages.css">
+</head>
+<body>
+<!--
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Yola AI Info Hub</span>
+        <span class="brand-tag">EcoInfo</span>
+      </div>
+    </a>
+    <nav class="nav" id="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="atmosphere.html">Atmosphere</a>
+      <a href="classify.html">Classify</a>
+      <a href="report.html">Report</a>
+      <a href="recycling.html">Recycling</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="learn.html">Learn</a>
+      <a href="community.html">Community</a>
+      <a href="about-developer.html" class="active">Developer</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+      <span></span>
+    </button>
+  </div>
+</header>-->
+
+<main>
+
+<section class="profile-hero">
+  <div class="container">
+    <div class="profile-card">
+      <div class="profile-avatar" id="avatar" title="Profile picture placeholder — replace src in the img tag">
+        <img src="../Data/Images/11112.png" alt="Husseini Hamidu Alkali">
+      </div>
+      <div class="profile-meta">
+        <div class="eyebrow">Behind the build</div>
+        <h1>Husseini Hamidu Alkali</h1>
+        <h1>~ AlkaliCodes</h1>
+        <p class="lead">I design and build calm, useful digital tools that help people in Yola make sense of their environment — from live atmospheric conditions and AI waste guidance to community-driven clean-up tracking.</p>
+        <div class="role-tag">Lead Developer · Product Architect · Community Tech Builder</div>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="#contact">Get in touch</a>
+          <a class="btn btn-outline" href="../index.html">Return Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid-2" style="gap:32px;align-items:start">
+      <div class="reveal">
+        <div class="eyebrow">Background</div>
+        <h2>A builder at heart</h2>
+        <p>I am a software developer based in Yola, Adamawa State, with a strong interest in civic technology, environmental data and products that work well on low-bandwidth connections.</p>
+        <p>I started the Yola AI Info Hub to give residents one reliable place for local environmental intelligence — not just raw data, but actionable guidance they can use every day.</p>
+        <p>When I am not coding, I am usually learning about mentoring early-stage developers or exploring how AI can be made practical for Nigerian communities.</p>
+      </div>
+      <div class="card card-emerald reveal" style="padding:28px">
+        <h3 style="margin-top:0">Quick facts</h3>
+        <ul style="margin:0;padding:0;list-style:none;display:grid;gap:10px">
+          <li style="display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(245,240,224,0.12);padding-bottom:10px">
+            <span style="color:var(--gold-300)">Location</span>
+            <span style="font-weight:600">Yola, Adamawa State, Nigeria</span>
+          </li>
+          <li style="display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(245,240,224,0.12);padding-bottom:10px">
+            <span style="color:var(--gold-300)">Focus</span>
+            <span style="font-weight:600">Full-stack web &amp; AI products</span>
+          </li>
+          <li style="display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(245,240,224,0.12);padding-bottom:10px">
+            <span style="color:var(--gold-300)">Stack</span>
+            <span style="font-weight:600">React, TypeScript, Node.js, Tailwind</span>
+          </li>
+          <li style="display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(245,240,224,0.12);padding-bottom:10px">
+            <span style="color:var(--gold-300)">Experience</span>
+            <span style="font-weight:600">5+ years building products</span>
+          </li>
+          <li style="display:flex;justify-content:space-between;gap:12px">
+            <span style="color:var(--gold-300)">Languages</span>
+            <span style="font-weight:600">English, Hausa, Fulfulde</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="education" style="background:var(--cream-soft)">
+  <div class="container">
+    <div class="eyebrow reveal">Education</div>
+    <h2 class="reveal">Where I learned to build</h2>
+    <p class="lead reveal">A mix of formal training, self-directed study and hands-on product work.</p>
+
+    <div class="grid grid-2" style="gap:30px;margin-top:26px;align-items:start">
+      <div class="card reveal">
+        <h3 style="margin-top:0">Formal education</h3>
+        <ul class="timeline">
+        <!--<li class="done">
+            <div class="t-title">MSc in Computer Science (Artificial Intelligence)</div>
+            <div class="t-meta">Modibbo Adama University, Yola · 2024 – 2026</div>
+            <div class="t-desc">Research focus on machine learning for environmental monitoring and low-resource natural language processing.</div>
+          </li>-->
+          <li class="done">
+            <div class="t-title">Senior Secondary School Certificate</div>
+            <div class="t-meta">Aliyu Musdafa College, Yola · 2018 – 2021</div>
+            <div class="t-desc">Science stream with good grades in Mathematics, Physics and Computer Studies.</div>
+          </li>
+          <li class="current">
+            <div class="t-title">Bachelor's degree in Medicine and Surgery · MBBS</div>
+            <div class="t-meta">Modibbo Adama University, Yola · 2025 – till date</div>
+            <div class="t-desc">Basic medical science descipline, with instrumental practice and vigorous examinations.</div>
+          </li>
+        </ul>
+      </div>
+      <div class="card reveal">
+        <h3 style="margin-top:0">Certifications &amp; training</h3>
+        <ul class="timeline">
+          <li class="done">
+            <div class="t-title">Google Cloud Professional Data Engineer</div>
+            <div class="t-meta">Google Cloud · 2024</div>
+          </li>
+          <li class="done">
+            <div class="t-title">Meta Front-End Developer Professional Certificate</div>
+            <div class="t-meta">Coursera · 2023</div>
+          </li>
+          <li class="done">
+            <div class="t-title">AWS Cloud Practitioner</div>
+            <div class="t-meta">Amazon Web Services · 2023</div>
+          </li>
+          <li class="current">
+            <div class="t-title">AI for Everyone &amp; Machine Learning Specialization</div>
+            <div class="t-meta">DeepLearning.AI · In progress</div>
+          </li>
+          <li class="current">
+            <div class="t-title">Universal AI Mastery &amp; MIT Open Learning</div>
+            <div class="t-meta">3MTT Nigeria ◇ MIT Open Learning · In progress</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="experience">
+  <div class="container">
+    <div class="eyebrow reveal">Experience</div>
+    <h2 class="reveal">What I have worked on</h2>
+    <p class="lead reveal">A track record of shipping products, leading small teams and solving real problems for local users.</p>
+
+    <div class="grid grid-2" style="gap:30px;margin-top:26px;align-items:start">
+      <div class="card reveal">
+        <h3 style="margin-top:0">Work history</h3>
+        <ul class="timeline">
+          <li class="current">
+            <div class="t-title">Lead Developer &amp; Product Architect</div>
+            <div class="t-meta">Yola AI Info Hub · 2024 – Present</div>
+            <div class="t-desc">Designed and shipped EcoInfo end-to-end: weather integration, AI waste classifier, illegal-dumping reports and admin console.</div>
+          </li>
+          <!--<li class="done">
+            <div class="t-title">Full-Stack Software Engineer</div>
+            <div class="t-meta">TechBridge Solutions, Yola · 2022 – 2024</div>
+            <div class="t-desc">Built React dashboards and Node.js APIs for agriculture and logistics clients across Northern Nigeria.</div>
+          </li>-->
+          <li class="done">
+            <div class="t-title">Freelance Web Developer</div>
+            <div class="t-meta">Self-employed · 2020 – 2022</div>
+            <div class="t-desc">Delivered websites and inventory systems for SMEs, schools and community organisations in Adamawa.</div>
+          </li>
+        </ul>
+      </div>
+      <div class="card reveal">
+        <h3 style="margin-top:0">Selected projects</h3>
+        <ul class="timeline">
+          <li class="done">
+            <div class="t-title">Yola EcoInfo Platform</div>
+            <div class="t-meta">Open-source environmental intelligence hub</div>
+            <div class="t-desc">Live atmospheric data, AI waste classification, dumping reports and community tracking.</div>
+          </li>
+          <li class="done">
+            <div class="t-title">MarketPrice NG</div>
+            <div class="t-meta">Agricultural commodity price tracker</div>
+            <div class="t-desc">SMS and web-based price alerts for farmers across Adamawa and Taraba states.</div>
+          </li>
+          <li class="done">
+            <div class="t-title">ClinicQueue</div>
+            <div class="t-meta">Patient queue management system</div>
+            <div class="t-desc">Offline-first PWA for rural clinics, reducing average wait times by 40%.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--cream-soft)">
+  <div class="container">
+    <div class="eyebrow reveal">Skills</div>
+    <h2 class="reveal">Tools and technologies I use</h2>
+    <p class="lead reveal">I choose the stack that best fits the problem, the team and the connectivity constraints of the users.</p>
+
+    <div class="card reveal" style="margin-top:22px">
+      <h3 style="margin-top:0">Core stack</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
+        <span class="skill-pill">JavaScript (ESNext)</span>
+        <span class="skill-pill">TypeScript</span>
+        <span class="skill-pill">React</span>
+        <span class="skill-pill">TanStack Start</span>
+        <span class="skill-pill">Node.js</span>
+        <span class="skill-pill">Express</span>
+        <span class="skill-pill">Tailwind CSS</span>
+        <span class="skill-pill">HTML5 &amp; CSS3</span>
+        <span class="skill-pill">REST APIs</span>
+        <span class="skill-pill">GraphQL</span>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:18px">
+      <div class="card reveal">
+        <div class="icon-badge">🤖</div>
+        <h3>AI &amp; Data</h3>
+        <p class="small muted">OpenAI APIs, prompt engineering, vector search, basic ML pipelines with Python and scikit-learn.</p>
+      </div>
+      <div class="card reveal">
+        <div class="icon-badge">🗺️</div>
+        <h3>Maps &amp; GIS</h3>
+        <p class="small muted">Leaflet, Mapbox, geolocation APIs, spatial data handling for reporting and routing.</p>
+      </div>
+      <div class="card reveal">
+        <div class="icon-badge">🛠️</div>
+        <h3>DevOps &amp; Cloud</h3>
+        <p class="small muted">Git, GitHub Actions, Vercel, Cloudflare, Supabase, Docker basics and SQLite/PostgreSQL.</p>
+      </div>
+      <div class="card reveal">
+        <div class="icon-badge">🎨</div>
+        <h3>UI / UX</h3>
+        <p class="small muted">Figma, accessible component design, mobile-first responsive layouts and design systems.</p>
+      </div>
+      <div class="card reveal">
+        <div class="icon-badge">📱</div>
+        <h3>Progressive Web Apps</h3>
+        <p class="small muted">Service workers, offline storage, local-first architecture and low-bandwidth optimisation.</p>
+      </div>
+      <div class="card reveal">
+        <div class="icon-badge">👥</div>
+        <h3>Leadership</h3>
+        <p class="small muted">Product scoping, code review, mentoring juniors and translating user needs into shipped features.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="container">
+    <div class="eyebrow reveal">Contact</div>
+    <h2 class="reveal">Let's build something useful</h2>
+    <p class="lead reveal">Open to collaborations, freelance work, speaking opportunities and civic-tech partnerships focused on Northern Nigeria.</p>
+
+    <div class="card reveal" style="margin-top:22px">
+      <h3 style="margin-top:0">Direct contact</h3>
+      <div class="contact-grid">
+        <a class="contact-card" href="mailto:husseinihamidualkali@gmail.com">
+          <div class="contact-icon">✉️</div>
+          <div class="contact-info">
+            <div class="contact-label">Email</div>
+            <div class="contact-value">husseinihamidualkali@gmail.com</div>
+          </div>
+        </a>
+        <a class="contact-card" href="tel:+2348000000000">
+          <div class="contact-icon">📞</div>
+          <div class="contact-info">
+            <div class="contact-label">Phone</div>
+            <div class="contact-value">+234 906 3525 370</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://wa.me/2348000000000" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">💬</div>
+          <div class="contact-info">
+            <div class="contact-label">WhatsApp</div>
+            <div class="contact-value">+234 701 2244 240</div>
+          </div>
+        </a>
+        <div class="contact-card">
+          <div class="contact-icon">📍</div>
+          <div class="contact-info">
+            <div class="contact-label">Location</div>
+            <div class="contact-value">Yola, Adamawa State, Nigeria</div>
+          </div>
+        </div>
+      </div>
+      <div class="copy-row">
+        <button class="btn btn-ghost btn-sm" data-copy="husseinihamidualkali@gmail.com" type="button">Copy email</button>
+        <button class="btn btn-ghost btn-sm" data-copy="+2347012244240" type="button">Copy phone</button>
+      </div>
+    </div>
+
+    <div class="card reveal" style="margin-top:18px">
+      <h3 style="margin-top:0">Social &amp; professional profiles</h3>
+      <div class="contact-grid">
+        <a class="contact-card" href="https://linkedin.com/in/husseinihamidualkali" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">💼</div>
+          <div class="contact-info">
+            <div class="contact-label">LinkedIn</div>
+            <div class="contact-value">linkedin.com/in/husseinihamidualkali</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://github.com/husseinihamidu" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">🐙</div>
+          <div class="contact-info">
+            <div class="contact-label">GitHub</div>
+            <div class="contact-value">github.com/husseinihamidu</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://twitter.com/husseinihamidu" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">🐦</div>
+          <div class="contact-info">
+            <div class="contact-label">X / Twitter</div>
+            <div class="contact-value">@husseinihamidu</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://facebook.com/husseinihamidu" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">👍</div>
+          <div class="contact-info">
+            <div class="contact-label">Facebook</div>
+            <div class="contact-value">facebook.com/husseinialkali</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://instagram.com/husseinihamidu" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">📸</div>
+          <div class="contact-info">
+            <div class="contact-label">Instagram</div>
+            <div class="contact-value">@husseinihamidu</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://t.me/husseinihamidu" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">✈️</div>
+          <div class="contact-info">
+            <div class="contact-label">Telegram</div>
+            <div class="contact-value">t.me/husseinihamidu</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://husseinihamidu.dev" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">🌐</div>
+          <div class="contact-info">
+            <div class="contact-label">Portfolio</div>
+            <div class="contact-value">husseinihamidu.dev</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://youtube.com/@husseinihamidu" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">▶️</div>
+          <div class="contact-info">
+            <div class="contact-label">YouTube</div>
+            <div class="contact-value">@husseinihamidu</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--cream-soft)">
+  <div class="container center reveal">
+    <div class="eyebrow" style="justify-content:center">Back to the hub</div>
+    <h2>Explore the Yola AI Info Hub</h2>
+    <p class="lead" style="margin:0 auto 20px">Navigation, Community, Environmental, Professionals, Business and other more information  — all in one place.</p>
+    <div class="hero-actions" style="justify-content:center">
+      <a class="btn btn-emerald" href="../index.html">Return to the Home page</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="brand-lockup">
+                        <svg class="brand-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="footerIconGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#064e3b"/>
+                                    <stop offset="100%" stop-color="#17997a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="48" height="48" rx="12" fill="url(#footerIconGrad)"/>
+                            <path d="M24 10c-6.6 0-12 5.4-12 12 0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" stroke="#f5f0e0" stroke-width="2.5" fill="none"/>
+                            <circle cx="24" cy="22" r="4.5" fill="#c9a84c"/>
+                            <path d="M34 10l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z" fill="#f0d78c"/>
+                        </svg>
+                        <div class="brand-text">
+                            <span class="brand-name">Yola AI Info Hub</span>
+                        </div>
+                    </div>
+                    <p class="footer-tagline">AI-powered information for Yola, Adamawa State, Nigeria.</p>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Info Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="#">Sitemap/directories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="report.html">Report / comment</a></li>
+                        <li><a href="mailto:info.yolaaiinfohub@gmail.com">Contact us</a></li>
+                        <li><a href="help.html">Help center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-group">
+                    <h3 class="footer-heading">Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">Privacy policy</a></li>
+                        <li><a href="terms.html">Terms of use</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="social-row">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" aria-label="X / Twitter"><i class="fab fa-x-twitter" aria-hidden="true"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">© <span id="year">2026</span> AlkaliCodes. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+ 
+<div class="toast-wrap" id="toast-wrap" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Mobile navigation toggle
+  const toggle = document.getElementById('nav-toggle');
+  const nav = document.getElementById('site-nav');
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      toggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+    });
+    nav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+      });
+    });
+  }
+
+  // Copy-to-clipboard with toast feedback
+  const toastWrap = document.getElementById('toast-wrap');
+  function showToast(message, type) {
+    if (!toastWrap) return;
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + (type || 'ok');
+    toast.textContent = message;
+    toastWrap.appendChild(toast);
+    setTimeout(() => toast.remove(), 2600);
+  }
+
+  document.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.getAttribute('data-copy') || '';
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        showToast('Copied to clipboard: ' + text, 'ok');
+      } catch (err) {
+        showToast('Could not copy. Please select and copy manually.', 'err');
+      }
+    });
+  });
+
+  // Scroll reveal
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // Active nav link based on scroll position
+  const sections = document.querySelectorAll('main section[id]');
+  const navLinks = document.querySelectorAll('#site-nav a[href^="#"]');
+  function updateActiveNav() {
+    let current = '';
+    const scrollPos = window.scrollY + 100;
+    sections.forEach(section => {
+      if (section.offsetTop <= scrollPos) {
+        current = section.getAttribute('id') || '';
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+  updateActiveNav();
+})();
+</script>
+
+</body>
+</html>

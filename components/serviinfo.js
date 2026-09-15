@@ -25,10 +25,12 @@ window.renderServiSection = function() {
   return fetch('templates/servi.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
 
-    if (window.initServiFilters) {
-      window.initServiFilters();
-    }
+    return (window.loadServiDirectory ? window.loadServiDirectory() : Promise.resolve())
+      .then(function () {
+        if (window.initServiFilters) window.initServiFilters();
+      });
 
+  }).then(function () {
     if ('IntersectionObserver' in window) {
       const revealCards = document.querySelectorAll('.section4, .pro-card');
       let lastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
@@ -116,11 +118,50 @@ function initializeServiDirectory() {
       });
 
       if (!valid) { if (success) success.hidden = true; return; }
-      if (success) {
-        success.hidden = false;
-        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-      joinForm.reset();
+
+      var apiBase = typeof window.getApiBase === 'function'
+        ? window.getApiBase()
+        : (window.API_BASE || 'http://localhost:4000');
+      var formData = new FormData(joinForm);
+      var payload = {
+        displayName: formData.get('fullName'),
+        profession: formData.get('profession'),
+        category: formData.get('category'),
+        area: formData.get('area'),
+        yearsExperience: Number(formData.get('experience') || 0),
+        phone: formData.get('phone'),
+        email: formData.get('email'),
+        price: formData.get('price'),
+        serviceTags: String(formData.get('skills') || '').split(',').map(function (value) { return value.trim(); }).filter(Boolean),
+        bio: formData.get('bio')
+      };
+      var submitButton = joinForm.querySelector('button[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
+      fetch(apiBase + '/api/content/professionals/submissions', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (response) {
+        return response.json().then(function (data) {
+          if (!response.ok) throw new Error(data.error || 'Unable to submit listing');
+          return data;
+        });
+      }).then(function () {
+        if (success) {
+          success.hidden = false;
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        joinForm.reset();
+      }).catch(function (error) {
+        if (success) {
+          success.hidden = false;
+          success.innerHTML = '<i class="fas fa-circle-exclamation" aria-hidden="true"></i><div><strong>Submission could not be sent.</strong><div>' + error.message + '</div></div>';
+          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }).finally(function () {
+        if (submitButton) submitButton.disabled = false;
+      });
     });
 
     joinForm.querySelectorAll('input, select, textarea').forEach(function (field) {
@@ -194,7 +235,7 @@ function initializeServiDirectory() {
         }
       }
 
-      Array.prototype.slice.call(group.querySelectorAll('.section4')).forEach(function (item) {
+      Array.prototype.slice.call(group.querySelectorAll('.pro-card, .section4')).forEach(function (item) {
         var itemCategory = normalizeCategory(item.getAttribute('data-category'));
         if (!itemCategory || itemCategory === 'All') {
           var fallbackCategory = normalizeCategory(group.getAttribute('data-category'));
@@ -228,7 +269,7 @@ function initializeServiDirectory() {
       var shouldShowGroup = currentCategory === 'All' || groupCategory === currentCategory;
       var visibleSectionItems = 0;
 
-      Array.prototype.slice.call(group.querySelectorAll('.section4')).forEach(function (item) {
+      Array.prototype.slice.call(group.querySelectorAll('.pro-card, .section4')).forEach(function (item) {
         var itemCategory = normalizeCategory(item.getAttribute('data-category') || groupCategory || 'All');
         var q = (searchInput && searchInput.value ? searchInput.value : '').trim().toLowerCase();
         var chosenArea = areaSelect ? areaSelect.value : 'All';

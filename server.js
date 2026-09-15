@@ -41,6 +41,8 @@ const {
 const { buildPasswordResetFallbackResponse } = require('./server/passwordResetUtils');
 const { sendEmailWithGmailSmtp } = require('./services/gmailMailer');
 const ContentItem = require('./server/contentItemModel');
+const Professional = require('./server/professionalModel');
+const { categories: professionalCategories, areas: professionalAreas, normalizeArea, slugify } = require('./server/professionalTaxonomy');
 
 
 const app = express();
@@ -142,7 +144,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'x-content-admin-secret'],
   exposedHeaders: ['Set-Cookie', 'x-auth-token'],
   optionsSuccessStatus: 200
 };
@@ -284,19 +286,25 @@ app.get('/api/geoapify/search', async (req, res) => {
   const lat = Number(req.query.lat);
   const lon = Number(req.query.lon);
   const category = String(req.query.category || '').trim();
-  if ((!text && !category) || text.length > 180 || !Number.isFinite(lat) || !Number.isFinite(lon)) {
-    return res.status(400).json({ error: 'Search text and valid map coordinates are required.' });
+  const requestedLimit = Number(req.query.limit);
+  const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(Math.round(requestedLimit), 1), 200) : 20;
+  const safeLat = Number.isFinite(lat) ? lat : 9.2035;
+  const safeLon = Number.isFinite(lon) ? lon : 12.4954;
+
+  if ((!text && !category) || text.length > 180) {
+    return res.status(400).json({ error: 'Search text or a category is required.' });
   }
+
   try {
     if (category) {
       const places = await geoapifyRequest('v2/places', {
         categories: category,
-        filter: `circle:${lon},${lat},8000`,
-        limit: 20
+        filter: `circle:${safeLon},${safeLat},8000`,
+        limit
       });
       return res.json(places);
     }
-    const geocoded = await geoapifyRequest('v1/geocode/search', { text, bias: `proximity:${lon},${lat}`, limit: 20 });
+    const geocoded = await geoapifyRequest('v1/geocode/search', { text, bias: `proximity:${safeLon},${safeLat}`, limit: 20 });
     res.json(geocoded);
   } catch (error) {
     res.status(error.statusCode || 502).json({ error: error.message });
@@ -1710,6 +1718,74 @@ app.post('/api/admin/bootstrap-content-admin', async (req, res) => {
   }
 });
 
+app.post('/api/admin/setup-first-admin', signupLimiter, validateSignup, async (req, res) => {
+  try {
+    const expectedSecret = process.env.CONTENT_ADMIN_BOOTSTRAP_SECRET;
+    if (!expectedSecret || req.get('x-content-admin-secret') !== expectedSecret) {
+      return res.status(403).json({ error: 'Invalid administrator setup secret' });
+    }
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
+
+    const { username, email, name, nin, password, phone, address, state, lga } = req.body;
+    const normalizedEmail = normalizeEmailIdentifier(email);
+    const existingUser = await User.findOne({
+      $or: [
+        { username },
+        { email: normalizedEmail },
+        { email: { $regex: `^${escapeRegExp(normalizedEmail)}$`, $options: 'i' } },
+        { nin }
+      ]
+    });
+
+    const existingAdmin = await User.exists({ role: { $in: ['admin', 'content-admin'] } });
+    if (existingAdmin && existingUser) {
+      const passwordMatches = await bcrypt.compare(password, existingUser.password);
+      if (!passwordMatches) return res.status(403).json({ error: 'The account password does not match. Sign in with the existing account details.' });
+      if (existingUser.accountStatus === 'suspended') return res.status(403).json({ error: 'This account is suspended' });
+      existingUser.role = 'content-admin';
+      existingUser.accountStatus = 'active';
+      await existingUser.save();
+      return res.json({ success: true, promoted: true, email: existingUser.email, message: 'Existing account promoted to content-admin. Sign in again to access administration.' });
+    }
+    if (existingAdmin) return res.status(409).json({ error: 'An administrator already exists. Use that account or provide the existing account email and password to promote it.' });
+    if (existingUser) return res.status(409).json({ error: 'An account with this username, email, or NIN already exists' });
+
+    const hash = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      username,
+      email: normalizedEmail,
+      name,
+      nin,
+      phone: phone || '',
+      address,
+      state,
+      lga,
+      password: hash,
+      role: 'content-admin',
+      accountStatus: 'active',
+      termsAccepted: true,
+      termsAcceptedDate: new Date()
+    });
+
+    const verification = await sendVerificationEmail(user);
+    res.status(201).json({
+      success: true,
+      email: user.email,
+      requiresEmailVerification: true,
+      verificationSent: verification.sent,
+      message: verification.sent
+        ? 'Administrator account created. Verify your email before signing in.'
+        : 'Administrator account created. Email verification could not be sent; check the backend email configuration.'
+    });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'An account with one of these details already exists' });
+    console.error('First administrator setup error:', error);
+    res.status(500).json({ error: 'Unable to create administrator account' });
+  }
+});
+
 app.get('/api/content/schools', async (req, res) => {
   try {
     const language = String(req.query.language || 'en').toLowerCase();
@@ -1790,6 +1866,224 @@ app.delete('/api/admin/content/schools/:id', requireContentAdmin, async (req, re
   } catch (error) {
     console.error('School delete error:', error);
     res.status(500).json({ error: 'Unable to delete school' });
+  }
+});
+
+function serializeProfessional(professional) {
+  const raw = professional.toObject ? professional.toObject() : professional;
+  return {
+    id: raw._id,
+    slug: raw.slug,
+    displayName: raw.displayName,
+    profession: raw.profession,
+    bio: raw.bio || '',
+    category: raw.category,
+    serviceTags: raw.serviceTags || [],
+    areas: raw.areas || [],
+    yearsExperience: raw.yearsExperience || 0,
+    pricing: raw.pricing || {},
+    availability: raw.availability,
+    hours: raw.hours || '',
+    image: raw.image || '',
+    contact: raw.contact || {},
+    verificationStatus: raw.verificationStatus,
+    ratingAverage: raw.ratingAverage || 0,
+    reviewCount: raw.reviewCount || 0,
+    status: raw.status,
+    createdAt: raw.createdAt,
+    updatedAt: raw.updatedAt
+  };
+}
+
+function normalizeProfessionalPayload(body = {}, { admin = false } = {}) {
+  const displayName = String(body.displayName || body.fullName || '').trim();
+  const profession = String(body.profession || '').trim();
+  const category = String(body.category || '').trim();
+  const areas = (Array.isArray(body.areas) ? body.areas : [body.area]).filter(Boolean).map(normalizeArea);
+  const serviceTags = (Array.isArray(body.serviceTags) ? body.serviceTags : String(body.skills || '').split(',')).map(value => String(value).trim()).filter(Boolean);
+  if (!displayName || !profession || !category || !areas.length) throw new Error('Name, profession, category, and at least one area are required');
+  if (!professionalCategories.includes(category)) throw new Error('Invalid professional category');
+  if (areas.some(area => !professionalAreas.includes(area))) throw new Error('Invalid professional area');
+
+  const rawSlug = String(body.slug || slugify(displayName)).trim().toLowerCase();
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(rawSlug)) throw new Error('Slug must contain lowercase letters, numbers, and hyphens only');
+  const payload = {
+    slug: rawSlug,
+    displayName,
+    profession,
+    bio: String(body.bio || '').trim(),
+    category,
+    serviceTags,
+    areas,
+    yearsExperience: Number(body.yearsExperience ?? body.experience ?? 0),
+    pricing: {
+      label: String(body.pricing?.label || body.price || '').trim(),
+      from: body.pricing?.from === '' || body.pricing?.from == null ? undefined : Number(body.pricing.from),
+      to: body.pricing?.to === '' || body.pricing?.to == null ? undefined : Number(body.pricing.to),
+      currency: String(body.pricing?.currency || 'NGN').trim().toUpperCase()
+    },
+    availability: ['available', 'busy', 'closed'].includes(body.availability) ? body.availability : 'available',
+    hours: String(body.hours || '').trim(),
+    image: String(body.image || '').trim(),
+    contact: {
+      phone: String(body.contact?.phone || body.phone || '').trim(),
+      whatsapp: String(body.contact?.whatsapp || body.whatsapp || body.phone || '').trim(),
+      email: String(body.contact?.email || body.email || '').trim().toLowerCase(),
+      website: String(body.contact?.website || body.website || '').trim()
+    }
+  };
+  if (admin) {
+    payload.status = ['draft', 'pending', 'published', 'rejected', 'suspended'].includes(body.status) ? body.status : 'draft';
+    payload.verificationStatus = ['unverified', 'pending', 'verified'].includes(body.verificationStatus) ? body.verificationStatus : 'unverified';
+    payload.ratingAverage = Number(body.ratingAverage || 0);
+    payload.reviewCount = Number(body.reviewCount || 0);
+    payload.legacySource = String(body.legacySource || '').trim();
+  } else {
+    payload.status = 'pending';
+    payload.verificationStatus = 'unverified';
+  }
+  return payload;
+}
+
+function buildProfessionalFilter(query, includeUnpublished = false) {
+  const filter = includeUnpublished ? {} : { status: 'published' };
+  const search = String(query.search || '').trim();
+  const category = String(query.category || '').trim();
+  const area = String(query.area || '').trim();
+  const minRating = Number(query.minRating || 0);
+  if (search) {
+    const searchRegex = new RegExp(escapeRegExp(search), 'i');
+    filter.$or = [
+      { displayName: searchRegex }, { profession: searchRegex },
+      { bio: searchRegex }, { serviceTags: searchRegex }, { areas: searchRegex }
+    ];
+  }
+  if (category && category !== 'All') filter.category = category;
+  if (area && area !== 'All') filter.areas = normalizeArea(area);
+  if (minRating > 0) filter.ratingAverage = { $gte: minRating };
+  if (query.available === 'true') filter.availability = 'available';
+  if (query.verified === 'true') filter.verificationStatus = 'verified';
+  if (query.status && includeUnpublished) filter.status = query.status;
+  return filter;
+}
+
+function professionalSort(sort) {
+  switch (sort) {
+    case 'reviews': return { reviewCount: -1, ratingAverage: -1 };
+    case 'experience': return { yearsExperience: -1, displayName: 1 };
+    case 'newest': return { createdAt: -1 };
+    case 'name': return { displayName: 1 };
+    default: return { ratingAverage: -1, reviewCount: -1, displayName: 1 };
+  }
+}
+
+app.get('/api/content/professionals', async (req, res) => {
+  try {
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 100, 1), 200);
+    const filter = buildProfessionalFilter(req.query);
+    const [items, total] = await Promise.all([
+      Professional.find(filter).sort(professionalSort(req.query.sort)).skip((page - 1) * limit).limit(limit),
+      Professional.countDocuments(filter)
+    ]);
+    res.json({ items: items.map(serializeProfessional), page, limit, total, categories: professionalCategories, areas: professionalAreas });
+  } catch (error) {
+    console.error('Professional list error:', error);
+    res.status(500).json({ error: 'Unable to load professionals' });
+  }
+});
+
+app.get('/api/content/professionals/:slug', async (req, res) => {
+  try {
+    const professional = await Professional.findOne({ slug: req.params.slug, status: 'published' });
+    if (!professional) return res.status(404).json({ error: 'Professional not found' });
+    res.json({ item: serializeProfessional(professional) });
+  } catch (error) {
+    console.error('Professional detail error:', error);
+    res.status(500).json({ error: 'Unable to load professional' });
+  }
+});
+
+app.post('/api/content/professionals/submissions', async (req, res) => {
+  try {
+    const payload = normalizeProfessionalPayload(req.body);
+    const professional = await Professional.create(payload);
+    res.status(201).json({ item: serializeProfessional(professional), message: 'Listing submitted for review' });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'A listing with this name already exists' });
+    res.status(400).json({ error: error.message || 'Unable to submit listing' });
+  }
+});
+
+app.get('/api/admin/content/professionals', requireContentAdmin, async (req, res) => {
+  try {
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 100, 1), 200);
+    const filter = buildProfessionalFilter(req.query, true);
+    const [items, total] = await Promise.all([
+      Professional.find(filter).sort({ updatedAt: -1 }).skip((page - 1) * limit).limit(limit),
+      Professional.countDocuments(filter)
+    ]);
+    res.json({ items, page, limit, total, categories: professionalCategories, areas: professionalAreas });
+  } catch (error) {
+    console.error('Admin professional list error:', error);
+    res.status(500).json({ error: 'Unable to load professional records' });
+  }
+});
+
+app.post('/api/admin/content/professionals', requireContentAdmin, async (req, res) => {
+  try {
+    const payload = normalizeProfessionalPayload(req.body, { admin: true });
+    payload.createdBy = req.session.userId;
+    payload.updatedBy = req.session.userId;
+    const professional = await Professional.create(payload);
+    res.status(201).json({ item: professional });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'A professional with this slug already exists' });
+    res.status(400).json({ error: error.message || 'Unable to create professional' });
+  }
+});
+
+app.put('/api/admin/content/professionals/:id', requireContentAdmin, async (req, res) => {
+  try {
+    const payload = normalizeProfessionalPayload(req.body, { admin: true });
+    payload.updatedBy = req.session.userId;
+    const professional = await Professional.findByIdAndUpdate(req.params.id, payload, { new: true, runValidators: true });
+    if (!professional) return res.status(404).json({ error: 'Professional not found' });
+    res.json({ item: professional });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'A professional with this slug already exists' });
+    res.status(400).json({ error: error.message || 'Unable to update professional' });
+  }
+});
+
+app.patch('/api/admin/content/professionals/:id/moderation', requireContentAdmin, async (req, res) => {
+  try {
+    const updates = {};
+    if (['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status)) updates.status = req.body.status;
+    if (['unverified', 'pending', 'verified'].includes(req.body.verificationStatus)) {
+      updates.verificationStatus = req.body.verificationStatus;
+      updates.verifiedAt = req.body.verificationStatus === 'verified' ? new Date() : undefined;
+      updates.verifiedBy = req.body.verificationStatus === 'verified' ? req.session.userId : undefined;
+    }
+    if (!Object.keys(updates).length) return res.status(400).json({ error: 'A valid status or verificationStatus is required' });
+    updates.updatedBy = req.session.userId;
+    const professional = await Professional.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+    if (!professional) return res.status(404).json({ error: 'Professional not found' });
+    res.json({ item: professional });
+  } catch (error) {
+    res.status(400).json({ error: error.message || 'Unable to update professional status' });
+  }
+});
+
+app.delete('/api/admin/content/professionals/:id', requireContentAdmin, async (req, res) => {
+  try {
+    const result = await Professional.deleteOne({ _id: req.params.id });
+    if (!result.deletedCount) return res.status(404).json({ error: 'Professional not found' });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Professional delete error:', error);
+    res.status(500).json({ error: 'Unable to delete professional' });
   }
 });
 
@@ -2274,7 +2568,7 @@ app.post('/api/login', loginLimiter, async (req, res) => {
         return res.status(500).json({ error: 'Failed to establish session' });
       }
       console.log('✅ Session saved successfully. Setting Set-Cookie header');
-      res.json({ success: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar });
+      res.json({ success: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar, role: user.role, accountStatus: user.accountStatus });
     });
   } catch (error) {
     console.error('❌ Login error:', error);
@@ -2320,7 +2614,7 @@ app.get('/api/me', async (req, res) => {
   const user = await User.findById(req.session.userId);
   if (!user) return res.json({ loggedIn: false });
   const avatar = user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=3182ce&color=fff`;
-  res.json({ loggedIn: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar });
+  res.json({ loggedIn: true, username: user.username, name: user.name, email: user.email, phone: user.phone, state: user.state, lga: user.lga, address: user.address, profilePicture: user.profilePicture, avatar, role: user.role, accountStatus: user.accountStatus });
 });
 
 // Get public profile by username (limited fields)
@@ -2666,6 +2960,9 @@ app.post('/api/send-feedback', async (req, res) => {
 });
 
 // Mount the Gemini API router
+app.get('/servi/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, 'components', 'serviinfo', 'servi-profile.html'));
+});
 app.use(express.static(__dirname));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

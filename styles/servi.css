@@ -146,6 +146,7 @@
     padding: 12px 16px;
     min-height: 48px;
     border: 1px solid rgba(6, 78, 59, 0.1);
+    margin: 0;
 }
 
 .search-panel-field i { color: var(--emerald-700, #0d7a5f); font-size: 15px; }
@@ -522,7 +523,7 @@
     box-shadow: 0 24px 60px -30px rgba(6, 78, 59, 0.7);
     border-color: rgba(201, 168, 76, 0.55);
 }
-
+.pro-card .img-placeholder { width: 100%; height: 100%;}
 .see-all {
     display: inline-flex;
     align-items: center;
@@ -568,10 +569,10 @@
     display: flex;
     align-items: center;
     gap: 7px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     padding: 0 !important;
 }
-.pro-role { margin: 2px 0 0; font-size: 14px; color: var(--ink-soft, #3d4d47); padding: 0 !important }
+.pro-role { margin: 2px 0 0; font-size: 14px; color: var(--ink-soft, #3d4d47) !important; padding: 0 !important }
 
 .verified {
     color: #0d7a5f;
@@ -888,7 +889,7 @@
         transform: none !important;
     }
     .pro-card:hover { transform: none; }
-    .pro-card .avatar { width: 54px; height: 54px; border-radius: 15px; font-size: 17px; }
+    .pro-card .avatar { width: 100px; height: 100px; border-radius: 15px; font-size: 17px; }
     .pro-name { font-size: 16px; }
     .pro-role { font-size: 13px; }
     .pro-meta { font-size: 12.5px; gap: 4px 12px; }

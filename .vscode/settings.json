@@ -5,6 +5,26 @@
         "/^cd \"/Users/ibrahimgarba/Desktop/Yola AI Info Hub\" && node --check components/naviinfo/scripts/maps\\.js && node --check scripts/searchHandler\\.js$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^cd /Users/ibrahimgarba/Desktop/Yola\\\\ AI\\\\ Info\\\\ Hub && node server\\.js$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node -e \"const fs=require\\('fs'\\);const s=fs\\.readFileSync\\('templates/navi\\.html','utf8'\\);const active=s\\.split\\(/<!--\\|-->/\\)\\.filter\\(\\(_,i\\)=>i%2===0\\)\\.join\\(''\\);const cards=\\[\\.\\.\\.active\\.matchAll\\(/<article class=\\\\\"section4 hiding place-article\\\\\"\\[\\^>\\]\\*>/g\\)\\];const counts=\\{\\};for\\(const m of cards\\)\\{const lat=\\(m\\[0\\]\\.match\\(/data-lat=\\\\\"\\(\\[\\^\\\\\"\\]\\+\\)/\\)\\|\\|\\[\\]\\)\\[1\\],lng=\\(m\\[0\\]\\.match\\(/data-lng=\\\\\"\\(\\[\\^\\\\\"\\]\\+\\)/\\)\\|\\|\\[\\]\\)\\[1\\];const k=lat&&lng\\?lat\\+','\\+lng:'missing';counts\\[k\\]=\\(counts\\[k\\]\\|\\|0\\)\\+1\\}console\\.log\\(JSON\\.stringify\\(\\{cards:cards\\.length,counts\\},null,2\\)\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node <<'NODE'\nconst fs = require\\('fs'\\);\nconst path = 'templates/navi\\.html';\nlet html = fs\\.readFileSync\\(path, 'utf8'\\);\nconst active = html\\.split\\(/<!--\\|-->/\\)\\.filter\\(\\(_, index\\) => index % 2 === 0\\)\\.join\\(''\\);\nconst activeOpenings = \\[\\.\\.\\.active\\.matchAll\\(/<article class=\"section4 hiding place-article\"\\[\\^>\\]\\*>/g\\)\\]\\.map\\(match => match\\[0\\]\\);\nconst counts = new Map\\(\\);\nfor \\(const opening of activeOpenings\\) \\{\n  const lat = opening\\.match\\(/data-lat=\"\\(\\[\\^\"\\]\\+\\)\"/\\)\\?\\.\\[1\\];\n  const lng = opening\\.match\\(/data-lng=\"\\(\\[\\^\"\\]\\+\\)\"/\\)\\?\\.\\[1\\];\n  if \\(lat && lng\\) \\{\n    const pair = `\\$\\{lat\\},\\$\\{lng\\}`;\n    counts\\.set\\(pair, \\(counts\\.get\\(pair\\) \\|\\| 0\\) \\+ 1\\);\n  \\}\n\\}\nlet updated = 0;\nhtml = html\\.replace\\(/<article class=\"section4 hiding place-article\"\\[\\^>\\]\\*>/g, \\(opening, offset\\) => \\{\n  const before = html\\.slice\\(0, offset\\);\n  const isCommented = before\\.lastIndexOf\\('<!--'\\) > before\\.lastIndexOf\\('-->'\\);\n  if \\(isCommented\\) return opening;\n  const lat = opening\\.match\\(/data-lat=\"\\(\\[\\^\"\\]\\+\\)\"/\\)\\?\\.\\[1\\];\n  const lng = opening\\.match\\(/data-lng=\"\\(\\[\\^\"\\]\\+\\)\"/\\)\\?\\.\\[1\\];\n  if \\(!lat \\|\\| !lng \\|\\| counts\\.get\\(`\\$\\{lat\\},\\$\\{lng\\}`\\) <= 1\\) return opening;\n  updated \\+= 1;\n  return opening\n    \\.replace\\(/ data-lat=\"\\[\\^\"\\]\\+\"/, ''\\)\n    \\.replace\\(/ data-lng=\"\\[\\^\"\\]\\+\"/, ''\\);\n\\}\\);\nconst obsoleteHref = ' href=\"https://www\\.google\\.com/maps/search/\\?api=1&query=Yola\\+City\\+Centre\\+Adamawa\"';\nconst removedLinks = \\(html\\.match\\(new RegExp\\(obsoleteHref\\.replace\\(/\\[\\.\\*\\+\\?\\^\\$\\{\\}\\(\\)\\|\\[\\\\\\]\\\\\\\\\\]/g, '\\\\\\\\\\$&'\\), 'g'\\)\\) \\|\\| \\[\\]\\)\\.length;\nhtml = html\\.replaceAll\\(obsoleteHref, ''\\);\nfs\\.writeFileSync\\(path, html\\);\nconsole\\.log\\(JSON\\.stringify\\(\\{removedRepeatedCoordinatePairs: updated, removedGoogleMapHrefs: removedLinks\\}\\)\\);\nNODE\nnode -e \"const fs=require\\('fs'\\);const s=fs\\.readFileSync\\('templates/navi\\.html','utf8'\\);const active=s\\.split\\(/<!--\\|-->/\\)\\.filter\\(\\(_,i\\)=>i%2===0\\)\\.join\\(''\\);const cards=\\[\\.\\.\\.active\\.matchAll\\(/<article class=\\\\\"section4 hiding place-article\\\\\"\\[\\^>\\]\\*>/g\\)\\];const missing=cards\\.filter\\(m=>!\\(/data-lat=\\\\\"\\[\\^\\\\\"\\]\\+\\\\\"/\\.test\\(m\\[0\\]\\)&&/data-lng=\\\\\"\\[\\^\\\\\"\\]\\+\\\\\"/\\.test\\(m\\[0\\]\\)\\)\\)\\.length;const hrefs=\\(active\\.match\\(/href=\\\\\"https:\\\\/\\\\/www\\\\\\.google\\\\\\.com\\\\/maps\\\\/search/g\\)\\|\\|\\[\\]\\)\\.length;console\\.log\\(JSON\\.stringify\\(\\{activeCards:cards\\.length,missingCoordinates:missing,remainingGoogleMapHrefs:hrefs\\}\\)\\);\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node -e \"const fs=require\\('fs'\\);const s=fs\\.readFileSync\\('templates/navi\\.html','utf8'\\);const active=s\\.split\\(/<!--\\|-->/\\)\\.filter\\(\\(_,i\\)=>i%2===0\\)\\.join\\(''\\);const cards=\\[\\.\\.\\.active\\.matchAll\\(/<article class=\\\\\"section4 hiding place-article\\\\\"\\[\\^>\\]\\*>/g\\)\\];const withCoords=cards\\.filter\\(m=>/data-lat=\\\\\"\\[\\^\\\\\"\\]\\+\\\\\" data-lng=\\\\\"\\[\\^\\\\\"\\]\\+\\\\\"/\\.test\\(m\\[0\\]\\)\\);const hrefs=\\(active\\.match\\(/href=\\\\\"https:\\\\/\\\\/www\\\\\\.google\\\\\\.com\\\\/maps\\\\/search/g\\)\\|\\|\\[\\]\\)\\.length;console\\.log\\(\\{activeCards:cards\\.length,withCoordinates:withCoords\\.length,withoutCoordinates:cards\\.length-withCoords\\.length,googleMapHrefs:hrefs\\}\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^node --check components/naviinfo/scripts/maps\\.js && node --check server\\.js$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }

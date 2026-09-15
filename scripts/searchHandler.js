@@ -4,15 +4,8 @@
  */
 
 let currentFilter = 'All';
-let isInitialized = false;
-let initTimeout;
 
 function initializeSearchHandlers() {
-  if (isInitialized) return;
-  isInitialized = true;
-
-  clearTimeout(initTimeout);
-
   initSearchBar();
   initFilterChips();
   addDataAttributesToItems();
@@ -39,11 +32,54 @@ function initializeSearchHandlers() {
     console.warn('searchhandler init: ', err);
   }
 
-  // Reset flag after a delay to allow reinitialization on page changes
-  initTimeout = setTimeout(() => {
-    isInitialized = false;
-  }, 500);
 }
+
+function handleFilterChipClick(event) {
+  const chip = event.target.closest('.filter-chips .chip');
+  if (!chip) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  activateFilterChip(chip);
+}
+
+function setSectionVisibility(section, visible) {
+  section.hidden = !visible;
+  section.style.display = visible ? 'block' : 'none';
+}
+
+function activateFilterChip(chip) {
+  if (!chip) return;
+
+  const filterRail = chip.closest('.filter-chips');
+  if (!filterRail) return;
+
+  filterRail.querySelectorAll('.chip').forEach(c => {
+    c.classList.remove('active');
+    c.setAttribute('aria-selected', 'false');
+  });
+  chip.classList.add('active');
+  chip.setAttribute('aria-selected', 'true');
+
+  currentFilter = String(chip.dataset.filter || chip.textContent || '').trim();
+  const searchInput = document.querySelector('.search-bar input');
+  performSearch(searchInput ? searchInput.value : '', currentFilter);
+}
+
+window.showNavigationMap = function(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  const chip = document.querySelector('.filter-chips .chip[data-filter="Maps"]');
+  if (chip) activateFilterChip(chip);
+  const mapSection = document.querySelector('.section3[data-category="Maps"]');
+  if (mapSection) setSectionVisibility(mapSection, true);
+  return false;
+};
+
+document.addEventListener('click', handleFilterChipClick, true);
 
 document.addEventListener('DOMContentLoaded', initializeSearchHandlers);
 
@@ -53,7 +89,6 @@ const searchObserver = new MutationObserver(function(mutations) {
   const hasSearchBar = document.querySelector('.search-bar input');
 
   if (mainContent && (hasFilterChips || hasSearchBar)) {
-    isInitialized = false;
     initializeSearchHandlers();
   }
 });
@@ -71,7 +106,7 @@ function addDataAttributesToItems() {
     if (!titleElement) return;
 
     const categoryName = titleElement.textContent.trim();
-    const items = section3.querySelectorAll('.section4');
+    const items = section3.querySelectorAll('.pro-card, .section4');
 
     items.forEach(item => {
       item.setAttribute('data-category', categoryName);
@@ -82,48 +117,21 @@ function addDataAttributesToItems() {
 function initSearchBar() {
   const searchInput = document.querySelector('.search-bar input');
   if (!searchInput) return;
+  if (searchInput.dataset.searchHandlerAttached === 'true') return;
 
-  const newSearchInput = searchInput.cloneNode(true);
-  searchInput.parentNode.replaceChild(newSearchInput, searchInput);
-
-  newSearchInput.addEventListener('input', function(e) {
+  searchInput.dataset.searchHandlerAttached = 'true';
+  searchInput.addEventListener('input', function(e) {
     performSearch(e.target.value, currentFilter);
   });
 }
 
 function initFilterChips() {
-  const filterChips = document.querySelectorAll('.filter-chips .chip');
-  if (!filterChips || filterChips.length === 0) return;
+  const filterRail = document.querySelector('.filter-chips');
+  if (!filterRail) return;
 
-  filterChips.forEach((chip) => {
-    const newChip = chip.cloneNode(true);
-    chip.parentNode.replaceChild(newChip, chip);
-
-    // ensure ARIA state is present for accessibility and consistency
-    if (!newChip.hasAttribute('role')) newChip.setAttribute('role', 'tab');
-    if (!newChip.hasAttribute('aria-selected')) newChip.setAttribute('aria-selected', 'false');
-
-    newChip.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const allChips = document.querySelectorAll('.filter-chips .chip');
-      allChips.forEach(c => {
-        c.classList.remove('active');
-        c.setAttribute('aria-selected', 'false');
-      });
-      this.classList.add('active');
-      this.setAttribute('aria-selected', 'true');
-
-      // Normalize filter text for matching (trim and case-insensitive)
-      const rawFilter = this.dataset.filter || this.textContent || '';
-      const filterText = String(rawFilter).trim();
-      currentFilter = filterText;
-
-      const searchInput = document.querySelector('.search-bar input');
-      const searchTerm = searchInput ? searchInput.value : '';
-      performSearch(searchTerm, filterText);
-    });
+  filterRail.querySelectorAll('.chip').forEach(chip => {
+    if (!chip.hasAttribute('role')) chip.setAttribute('role', 'tab');
+    if (!chip.hasAttribute('aria-selected')) chip.setAttribute('aria-selected', 'false');
   });
 }
 
@@ -150,11 +158,11 @@ function performSearch(searchTerm, filterCategory) {
     }
 
     if (!sectionMatchesFilter) {
-      section3.style.display = 'none';
+      setSectionVisibility(section3, false);
       return;
     }
 
-    const items = section3.querySelectorAll('.section4');
+    const items = section3.querySelectorAll('.pro-card, .section4');
     let sectionVisibleCount = 0;
 
     items.forEach(item => {
@@ -178,10 +186,10 @@ function performSearch(searchTerm, filterCategory) {
     // If the section has no .section4 items (common for an interactive map section),
     // show the section when its category matches the filter so the map remains visible.
     if (items.length === 0) {
-      section3.style.display = 'block';
+      setSectionVisibility(section3, true);
       totalVisibleCount++;
     } else {
-      section3.style.display = sectionVisibleCount > 0 ? 'block' : 'none';
+      setSectionVisibility(section3, sectionVisibleCount > 0);
     }
   });
 

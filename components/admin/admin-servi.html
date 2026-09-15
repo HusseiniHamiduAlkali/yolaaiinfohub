@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ServiInfo Admin | Yola AI Info Hub</title>
+  <link rel="stylesheet" href="/styles/admin-schools.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <p class="eyebrow">Content administration</p>
+        <h1>ServiInfo professionals</h1>
+        <p class="muted">Manage listings, moderation status, and verification from MongoDB.</p>
+      </div>
+      <a class="back-link" href="/">Back to app</a>
+    </header>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+    <section class="admin-grid">
+      <aside class="panel records-panel">
+        <div class="panel-heading"><h2>Listings</h2><div><button id="approve-pending" class="button button-primary" type="button">Approve pending</button> <button id="new-record" class="button button-primary" type="button">New listing</button></div></div>
+        <label>Filter status<select id="status-filter"><option value="">All statuses</option><option>pending</option><option>published</option><option>draft</option><option>rejected</option><option>suspended</option></select></label>
+        <div id="records" class="records-list"><p class="muted">Loading listings...</p></div>
+      </aside>
+
+      <section class="panel editor-panel">
+        <div class="panel-heading"><div><h2 id="editor-title">New listing</h2><p class="muted">Required fields are marked by the browser.</p></div><button id="delete-record" class="button button-danger" type="button" hidden>Delete</button></div>
+        <form id="professional-form">
+          <input id="record-id" type="hidden">
+          <div class="form-grid">
+            <label>Display name<input id="display-name" required></label>
+            <label>Profession<input id="profession" required></label>
+            <label>Slug<input id="slug" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="auto-generated"></label>
+            <label>Category<select id="category" required></select></label>
+            <label>Areas<select id="areas" multiple required></select></label>
+            <label>Years experience<input id="years-experience" type="number" min="0" max="100" value="0"></label>
+            <label>Availability<select id="availability"><option value="available">Available</option><option value="busy">Busy</option><option value="closed">Closed</option></select></label>
+            <label>Moderation status<select id="record-status"><option>draft</option><option>pending</option><option>published</option><option>rejected</option><option>suspended</option></select></label>
+            <label>Verification<select id="verification-status"><option>unverified</option><option>pending</option><option>verified</option></select></label>
+            <label>Phone<input id="phone" type="tel"></label>
+            <label>Email<input id="email" type="email"></label>
+            <label>Image URL/path<input id="image" placeholder="Data/Images/servi/example.jpg"></label>
+            <label>Price label<input id="price" placeholder="N5,000 - N25,000"></label>
+            <label class="wide">Services/tags<input id="service-tags" placeholder="Repairs, Installation, Emergency service"></label>
+            <label class="wide">Opening hours<input id="hours" placeholder="Mon-Sat, 8am-6pm"></label>
+            <label class="wide">Bio<textarea id="bio" rows="5"></textarea></label>
+          </div>
+          <div class="form-actions"><button class="button button-primary" type="submit">Save listing</button><button id="reset-form" class="button" type="button">Reset</button></div>
+        </form>
+      </section>
+    </section>
+  </main>
+  <script src="/scripts/apiConfig.js"></script>
+  <script src="/components/admin/admin-servi.js"></script>
+</body>
+</html>
