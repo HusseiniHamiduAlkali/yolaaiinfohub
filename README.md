@@ -1,89 +1,225 @@
-# Responsive Multi-Section AI Web App
+# Yola AI Info Hub
 
-This project is a responsive web application built with HTML, CSS, and JavaScript. It features multiple sections (Home, EduInfo, AgroInfo, MediInfo, MapsInfo, CommunityInfo, AboutInfo), each with its own data and styles. The app includes AI chat areas, a responsive navbar/hamburger menu, and support for camera, microphone, and file uploads on the Home page.
+Yola AI Info Hub is a responsive multi-section web app for local information in Yola, Adamawa State, Nigeria. It combines public information directories, AI-assisted features, maps, authentication, and a database-backed ServiInfo professional directory.
 
-## Structure
-- `components/`: HTML for each section
-- `styles/`: CSS for each section
-- `Data/`: Local data for each section (to be populated by you)
-- `.github/copilot-instructions.md`: Copilot custom instructions
-- `.vscode/tasks.json`: VS Code tasks
+## Current architecture
 
-## Setup
-1. Populate the `Data` folders with your local data and images.
-2. Add your Gemini API key and Google Maps API key in the placeholders in the code.
-3. Open `index.html` to start the app.
+The project has two runtime surfaces:
 
-### School content administrator
+- **Frontend:** static HTML, CSS, JavaScript, templates, and local data. It runs through Five Server or Netlify.
+- **Backend:** Express and MongoDB in `server.js`. It provides authentication, sessions, AI/API proxies, content APIs, and ServiInfo administration.
 
-The school database manager is available at `http://localhost:4000/admin-schools.html` when the backend is running. Create a normal user account first, then set `CONTENT_ADMIN_BOOTSTRAP_SECRET` in `.env` and run:
+### Main directories
 
-```bash
-curl -X POST http://localhost:4000/api/admin/bootstrap-content-admin \
-   -H "Content-Type: application/json" \
-   -H "x-content-admin-secret: YOUR_BOOTSTRAP_SECRET" \
-   -d '{"email":"YOUR_ACCOUNT_EMAIL"}'
+```text
+index.html                 SPA entry point
+app.js                     Frontend section loading and application behavior
+components/                Section components and admin interfaces
+  admin/                    School and ServiInfo admin pages/controllers
+  AI/                       Chat and voice integrations
+  serviinfo/                ServiInfo pages, scripts, profile, and join surfaces
+Data/                      Section data, taxonomies, and images
+pages/                     Public standalone pages and authentication flows
+scripts/                   Shared frontend utilities and API configuration
+server/                    Mongoose models, auth helpers, and backend utilities
+templates/                 HTML templates injected into the SPA
+styles/                    Shared and section-specific styles
+api/                       Serverless/API support files
+netlify/                   Netlify functions
+test/                      Automated tests
+server.js                  Express backend entry point
+sw.js                      Service worker/offline support
+manifest.json              PWA metadata
+netlify.toml               Netlify build, headers, and redirects
+render.yaml                Render backend deployment configuration
 ```
 
-The bootstrap endpoint only works when no `admin` or `content-admin` user exists. After promotion, log in normally and open the admin page. Import the existing school records with `npm run import-schools:write` after confirming the dry run with `npm run import-schools`.
+### Main public sections
 
-### ServiInfo professional directory
+The SPA uses hash routes loaded from the section components:
 
-ServiInfo listings are stored in the MongoDB `professionals` collection. During local development, start the frontend with Five Server and open `http://127.0.0.1:5500/admin/servi` (use the actual Five Server port if different). In production, open `https://yolaaiinfohub.netlify.app/admin/servi`. The page is hosted by the frontend; it connects to the configured Render API backend for authenticated data. Content administrators can create and edit listings, publish or suspend them, and mark verified professionals. Public listings only include records with `status: published`.
+- `#/home` - home, AI chat, camera, microphone, and file tools
+- `#/eduinfo` - education information
+- `#/agroinfo` - agriculture information
+- `#/mediinfo` - medical information
+- `#/naviinfo` - maps and directions
+- `#/communityinfo` - community information
+- `#/ecoinfo` - economy and environmental information
+- `#/serviinfo` - ServiInfo professional directory
 
-To create the first administrator from a phone, open `http://127.0.0.1:5500/admin/setup` locally or `https://yolaaiinfohub.netlify.app/admin/setup` in production. Enter the account details and the private `CONTENT_ADMIN_BOOTSTRAP_SECRET` configured on the backend. This setup is one-time and is refused after an administrator exists. Verify the account email, then sign in and open the ServiInfo admin page.
+Standalone public pages are under `pages/`, including authentication, help, privacy, terms, reports, profiles, and verification.
 
-The public join form creates a `pending` listing for review; it cannot publish or verify records. New public profiles use `/servi/<slug>` URLs.
+## Local development
 
-To inspect the existing static cards before importing them:
+This project uses Node.js and npm. Node is managed with `nvm` in the current development setup.
+
+```bash
+nvm use 24.18.0
+npm install
+```
+
+Start the backend in one terminal and leave it running:
+
+```bash
+npm start
+```
+
+The backend listens on `http://127.0.0.1:4000` by default. Start Five Server from the project root for the frontend, normally at:
+
+```text
+http://127.0.0.1:5500/
+```
+
+Use the same hostname consistently for browser testing so session cookies work:
+
+- Frontend: `http://127.0.0.1:5500`
+- Backend: `http://127.0.0.1:4000`
+
+The frontend API base is configured by `scripts/apiConfig.js`. Production requests use the configured Render backend URL.
+
+## Authentication and administrators
+
+Open the normal account page at:
+
+```text
+http://127.0.0.1:5500/pages/auth.html
+```
+
+The backend stores users and sessions in MongoDB. The first content administrator can be created, or an existing account can be promoted, from the mobile setup page:
+
+```text
+http://127.0.0.1:5500/admin/setup.html
+```
+
+The setup page requires the backend-only `CONTENT_ADMIN_BOOTSTRAP_SECRET`. It is never placed in frontend JavaScript. After creating or promoting the account, verify the email if required, sign out, and sign in again.
+
+Production setup page:
+
+```text
+https://yolaaiinfohub.netlify.app/admin/setup
+```
+
+## ServiInfo directory
+
+ServiInfo records are stored in MongoDB in the `professionals` collection.
+
+Public routes:
+
+- `#/serviinfo` - directory and filters
+- `/servi/<slug>` - published professional profile
+- `/components/serviinfo/servi-join.html` - public listing submission form
+- `/components/serviinfo/servi-profile.html` - canonical profile component/template
+
+Admin route:
+
+```text
+http://127.0.0.1:5500/admin/servi.html
+https://yolaaiinfohub.netlify.app/admin/servi
+```
+
+Admins can create, edit, publish, reject, suspend, verify, and delete listings. The **Approve pending** action publishes pending and draft records in bulk. Review imported placeholder records before approving them.
+
+### Import existing cards
+
+Preview the legacy static cards without writing to MongoDB:
 
 ```bash
 npm run import-professionals
 ```
 
-After reviewing the dry-run summary and configuring `MONGO_URI`, import or update the records with:
+Import or update them by slug:
 
 ```bash
 npm run import-professionals:write
 ```
 
-The importer is idempotent by slug. Placeholder phone numbers and records with no recorded experience are imported as drafts so they are not presented as trusted public listings automatically.
+The importer is idempotent. Records with placeholder phone numbers or incomplete experience data are imported as drafts for review.
 
-Tip: To avoid external CDN/CORS/MIME issues with TomTom's Web SDK, install it locally so the backend can serve it:
+## Other content administration
 
-   npm install @tomtom-international/web-sdk-maps
+The existing school content manager is available at:
 
-If the package is present, the server will serve the SDK at `/vendor/tomtom` and the app will prefer that local copy before trying CDN sources.
+```text
+http://127.0.0.1:4000/components/admin/admin-schools.html
+```
 
+School imports use:
 
-### Navigation & Maps API Key (TomTom)
-The navigation section uses TomTom services for route drawing and distance/time metrics. The API key is read from environment variables (`.env` / `.env.production`) on the backend and exposed to the front‑end via a small endpoint.
+```bash
+npm run import-schools
+npm run import-schools:write
+```
 
-*Put your TomTom API key in the `.env` file as `TOMTOM_API_KEY` (or `MAPS_API_KEY` for fallback).*  When running locally a lightweight Node server (`server.js`) must be started so the front‑end can fetch the key at `http://localhost:4000/api/tomtom-key`.
+## Configuration
 
-The client code automatically determines where to fetch the key:
+Copy the required development values into `.env`. Important backend settings include:
 
-1. When `window.API_BASE` is set or the hostname is `localhost`/`127.0.0.1`, it prefixes the request with `http://localhost:4000`.
-2. Otherwise it uses the same‑origin path (`/api/tomtom-key` or `/api/maps-key`), which works with Netlify functions in production.
-3. If the fetch fails (for example because the backend isn't running), the code will log a warning and fall back to any value already assigned to `window.TOMTOM_API_KEY` or `window.NAVI_MAP_API_KEY`—you can set this manually in the browser console for quick testing.
+- `MONGO_URI` - MongoDB connection string
+- `SESSION_SECRET` - session signing secret
+- `JWT_SECRET` - token signing secret
+- `CONTENT_ADMIN_BOOTSTRAP_SECRET` - admin setup secret
+- `FRONTEND_URL` and `CORS_ORIGINS` - allowed frontend origins
+- `GEMINI_API_KEY` or `AI_API_KEY` - AI backend configuration
+- `BREVO_API_KEY` and sender settings - email verification and notifications
+- `TOMTOM_API_KEY` or map configuration - navigation features
 
-**Local testing tips:**
+Never commit `.env` or expose secrets in frontend files. Production secrets belong in Render environment variables and Netlify environment configuration where applicable.
 
-- Run `node server.js` in a separate terminal; the server will serve the maps key and other API routes.
-- If the server does not stay running (due to database connection issues), you can still test navigation by manually assigning `window.TOMTOM_API_KEY = '<your-key>'` before loading the page, or by editing `index.html` to include a `<script>` that sets it.
+## Deployment
 
-This mirrors how the Gemini key is handled: the front‑end never embeds it directly but relies on a backend proxy for security.
+### Frontend
 
-## Features
-- Responsive design for PC, tablet, and mobile
-- Navbar/hamburger menu
-- AI chat in every section
-- Home page: camera, microphone, and file upload
-- MapsInfo: Google Maps directions
-- FAQ lists in info sections
+Netlify publishes the repository root using `netlify.toml`:
 
-## Deploy to Render
-This project is automatically deployed to Render when changes are pushed to the main branch.
+- Build command: `npm install && npm run build`
+- Publish directory: repository root
+- Production frontend: `https://yolaaiinfohub.netlify.app`
 
----
-Replace placeholder API keys and data as needed.
+The Netlify redirects provide clean routes for `/admin/setup`, `/admin/servi`, and `/servi/*`.
+
+### Backend
+
+Render runs `server.js` using `render.yaml`:
+
+```bash
+npm install
+npm start
+```
+
+The backend requires MongoDB and production environment variables. CORS must include the deployed Netlify origin, and credentialed requests must remain enabled for login and admin sessions.
+
+## API overview
+
+Public API routes include:
+
+- `GET /api/content/professionals`
+- `GET /api/content/professionals/:slug`
+- `POST /api/content/professionals/submissions`
+- `POST /api/login`
+- `GET /api/me`
+
+Admin ServiInfo routes require an authenticated `admin` or `content-admin` session:
+
+- `GET /api/admin/content/professionals`
+- `POST /api/admin/content/professionals`
+- `PUT /api/admin/content/professionals/:id`
+- `PATCH /api/admin/content/professionals/:id/moderation`
+- `DELETE /api/admin/content/professionals/:id`
+
+## Tests and checks
+
+Useful checks include:
+
+```bash
+node --check server.js
+node --check components/admin/admin-servi.js
+npm run import-professionals
+```
+
+Before publishing ServiInfo records, verify public filtering, profile URLs, admin authorization, pending submissions, and mobile layout behavior.
+
+## SEO and sitemap
+
+`sitemap.xml` contains public frontend routes only. Authentication, API, admin, setup, server, and implementation paths are excluded from crawling. Published dynamic `/servi/<slug>` URLs should be added to the sitemap as the directory grows.
+
+`robots.txt` points crawlers to the deployed sitemap at `https://yolaaiinfohub.netlify.app/sitemap.xml`.
