@@ -78,9 +78,9 @@
     };
   }
 
-  // Voice API Key placeholder - set via environment variable or backend proxy
-  // Supported services: Google Voice API, Gemini Live API, or similar voice service
-  window.VOICE_API_KEY = window.VOICE_API_KEY || null;
+  // Voice calls are proxied through the backend so the Gemini key stays server-side.
+  window.VOICE_API_KEY = window.VOICE_API_KEY || window.GEMINI_API_KEY || window.GEMINI_LIVE_API_KEY || null;
+  window.GEMINI_LIVE_MODEL = window.GEMINI_LIVE_MODEL || 'gemini-2.5-flash-native-audio-latest';
 
   // Helper to call backend proxy for Gemini
   window.callGemini = async function(payload) {

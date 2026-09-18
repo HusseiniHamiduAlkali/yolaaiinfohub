@@ -93,7 +93,7 @@ const state = {
   activeId: null,
   attachments: [],
   starMode: false,
-  liveCall: { active: false, muted: false, timer: null, seconds: 0, recorder: null, stream: null, chunks: [], loopTimer: null },
+  liveCall: { active: false, muted: false, timer: null, seconds: 0, stream: null, socket: null, inputContext: null, outputContext: null, source: null, processor: null, inputReady: false, greetingPending: false, userAudioEnabled: false, micEnableTimer: null, playbackStarted: false, outputTime: 0 },
   currentAbort: null,
 };
 
@@ -735,28 +735,247 @@ async function startLiveCall() {
     showToast('Microphone access is not available in this browser.');
     return;
   }
-  if (typeof MediaRecorder === 'undefined') {
-    showToast('Live audio capture is not supported in this browser.');
+  if (!window.AudioContext && !window.webkitAudioContext) {
+    showToast('Live audio is not supported in this browser.');
     return;
   }
   if (state.liveCall.active) return endLiveCall();
+
+  const lc = state.liveCall;
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    state.liveCall.active = true;
-    state.liveCall.stream = stream;
-    state.liveCall.seconds = 0;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    lc.inputContext = new AudioContextClass();
+    lc.outputContext = new AudioContextClass();
+    await Promise.all([lc.inputContext.resume(), lc.outputContext.resume()]);
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+    });
+    const socket = new WebSocket(buildLiveSocketUrl());
+    lc.active = true;
+    lc.userAudioEnabled = false;
+    lc.stream = stream;
+    lc.socket = socket;
+    lc.seconds = 0;
     $('#live-call-bar')?.removeAttribute('hidden');
     updateCallDuration();
-    state.liveCall.timer = setInterval(() => {
-      state.liveCall.seconds++;
+    lc.timer = setInterval(() => {
+      lc.seconds++;
       updateCallDuration();
     }, 1000);
-    recordChunk();
-    showToast('Live call started — speak whenever you like.');
+
+    socket.addEventListener('open', () => showToast('Connecting to Gemini Live…'));
+    socket.addEventListener('message', async (event) => {
+      const data = typeof event.data === 'string' ? event.data : await event.data.text();
+      handleLiveMessage(lc, data);
+    });
+    socket.addEventListener('error', () => showToast('Gemini Live connection failed.'));
+    socket.addEventListener('close', () => { if (lc.active) endLiveCall(); });
   } catch (e) {
     console.error(e);
+    streamCleanup(lc);
     showToast('Cannot access microphone or live audio capture.');
   }
+}
+
+function buildLiveSocketUrl() {
+  const base = getApiBase();
+  const url = new URL(base ? `${base}/api/live` : '/api/live', window.location.href);
+  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+  return url.toString();
+}
+
+function setupLiveAudioInput(lc) {
+  if (lc.inputReady || !lc.inputContext || !lc.stream) return;
+  if (lc.source) lc.source.disconnect();
+  const context = lc.inputContext;
+  lc.source = context.createMediaStreamSource(lc.stream);
+  const silentOutput = context.createGain();
+  silentOutput.gain.value = 0;
+  if (context.audioWorklet && typeof AudioWorkletNode !== 'undefined') {
+    const workletCode = `class YolaMicProcessor extends AudioWorkletProcessor {
+      process(inputs, outputs) {
+        const input = inputs[0] && inputs[0][0];
+        if (input && input.length) this.port.postMessage(input.slice(0));
+        const output = outputs[0] && outputs[0][0];
+        if (output) output.fill(0);
+        return true;
+      }
+    }
+    registerProcessor('yola-mic-processor', YolaMicProcessor);`;
+    const moduleUrl = URL.createObjectURL(new Blob([workletCode], { type: 'application/javascript' }));
+    context.audioWorklet.addModule(moduleUrl).then(() => {
+      URL.revokeObjectURL(moduleUrl);
+      if (!lc.active || lc.inputReady) return;
+      lc.processor = new AudioWorkletNode(context, 'yola-mic-processor');
+      lc.processor.port.onmessage = (event) => sendLivePcm(lc, event.data, context.sampleRate);
+      lc.source.connect(lc.processor);
+      lc.processor.connect(silentOutput);
+      silentOutput.connect(context.destination);
+      lc.inputReady = true;
+      lc.userAudioEnabled = true;
+    }).catch((error) => {
+      URL.revokeObjectURL(moduleUrl);
+      console.error('AudioWorklet setup failed:', error);
+      setupScriptProcessorFallback(lc, context, silentOutput);
+    });
+    return;
+  }
+  setupScriptProcessorFallback(lc, context, silentOutput);
+}
+
+function sendLivePcm(lc, input, sampleRate) {
+  if (!lc.active || lc.muted || !lc.userAudioEnabled || !lc.socket || lc.socket.readyState !== WebSocket.OPEN) return;
+  const pcm = resampleToPcm16(input, sampleRate, 16000);
+  if (pcm.length) {
+    lc.socket.send(JSON.stringify({ realtimeInput: { audio: { data: arrayBufferToBase64(pcm), mimeType: 'audio/pcm;rate=16000' } } }));
+    const status = $('#live-status');
+    if (status) status.textContent = 'Listening…';
+  }
+}
+
+function setupScriptProcessorFallback(lc, context, silentOutput) {
+  if (!lc.active || lc.inputReady) return;
+  lc.processor = context.createScriptProcessor(2048, 1, 1);
+  lc.processor.onaudioprocess = (event) => {
+    sendLivePcm(lc, event.inputBuffer.getChannelData(0), event.inputBuffer.sampleRate);
+  };
+  lc.source.connect(lc.processor);
+  lc.processor.connect(silentOutput);
+  silentOutput.connect(context.destination);
+  lc.inputReady = true;
+  lc.userAudioEnabled = true;
+}
+
+function resampleToPcm16(samples, inputRate, outputRate) {
+  const ratio = inputRate / outputRate;
+  const output = new Int16Array(Math.floor(samples.length / ratio));
+  for (let index = 0; index < output.length; index++) {
+    const sourceIndex = Math.min(Math.floor(index * ratio), samples.length - 1);
+    const sample = Math.max(-1, Math.min(1, samples[sourceIndex]));
+    output[index] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+  }
+  return output.buffer;
+}
+
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let index = 0; index < bytes.length; index += 0x8000) binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+  return btoa(binary);
+}
+
+function base64ToArrayBuffer(value) {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index);
+  return bytes.buffer;
+}
+
+function handleLiveMessage(lc, rawData) {
+  let message;
+  try { message = JSON.parse(rawData); } catch { return; }
+  if (message.type === 'live-ready') {
+    const configuredModel = window.GEMINI_LIVE_MODEL || 'gemini-2.5-flash-native-audio-latest';
+    const model = configuredModel.startsWith('models/') ? configuredModel : `models/${configuredModel}`;
+    lc.socket.send(JSON.stringify({
+      setup: {
+        model,
+        generationConfig: { responseModalities: ['AUDIO'] },
+        realtimeInputConfig: {
+          automaticActivityDetection: {
+            disabled: false,
+            prefixPaddingMs: 40,
+            silenceDurationMs: 700
+          }
+        },
+        systemInstruction: { parts: [{ text: 'You are Yola AI Info Hub voice assistant. Be concise, helpful, and speak naturally.' }] }
+      }
+    }));
+    showToast('Live call started — speak whenever you like.');
+    return;
+  }
+  if (message.type === 'live-error') {
+    showToast(message.error || 'Gemini Live is unavailable.');
+    return;
+  }
+  if (message.error) {
+    console.error('Gemini Live protocol error:', message.error);
+    showToast(message.error.message || 'Gemini Live rejected the audio session.');
+    return;
+  }
+  if (message.setupComplete) {
+    lc.greetingPending = true;
+    lc.userAudioEnabled = false;
+    lc.socket.send(JSON.stringify({
+      clientContent: {
+        turns: [{ role: 'user', parts: [{ text: 'Hello there. How may I help you?' }] }],
+        turnComplete: true
+      }
+    }));
+    const status = $('#live-status');
+    if (status) status.textContent = 'Speaking…';
+    return;
+  }
+  const content = message.serverContent;
+  if (!content) return;
+  if (content.interrupted) {
+    lc.outputTime = lc.outputContext ? lc.outputContext.currentTime : 0;
+    return;
+  }
+  for (const part of content.modelTurn?.parts || []) {
+    if (part.inlineData?.data) {
+      playLiveAudio(lc, base64ToArrayBuffer(part.inlineData.data), part.inlineData.mimeType);
+    }
+  }
+  if (content.modelTurn) {
+    const status = $('#live-status');
+    if (status) status.textContent = 'Speaking…';
+  }
+  if (content.turnComplete) {
+    if (lc.greetingPending) {
+      lc.greetingPending = false;
+      const outputContext = lc.outputContext;
+      const drainBufferMs = 120;
+      const delay = outputContext
+        ? Math.max(120, (lc.outputTime - outputContext.currentTime + 0.08) * 1000 + drainBufferMs)
+        : 250;
+      clearTimeout(lc.micEnableTimer);
+      lc.micEnableTimer = setTimeout(() => {
+        lc.micEnableTimer = null;
+        if (!lc.active) return;
+        if (!lc.inputReady) {
+          setupLiveAudioInput(lc);
+        } else {
+          lc.userAudioEnabled = true;
+        }
+        const status = $('#live-status');
+        if (status) status.textContent = 'Listening…';
+      }, delay);
+    } else {
+      lc.userAudioEnabled = true;
+      const status = $('#live-status');
+      if (status) status.textContent = 'Listening…';
+    }
+  }
+}
+
+function playLiveAudio(lc, pcmBuffer, mimeType) {
+  if (!lc.outputContext || !lc.active) return;
+  lc.outputContext.resume().catch((error) => console.error('Unable to resume live audio output:', error));
+  const samples = new Int16Array(pcmBuffer);
+  const rateMatch = String(mimeType || '').match(/rate=(\d+)/i);
+  const sampleRate = rateMatch ? Number(rateMatch[1]) : 24000;
+  const audioBuffer = lc.outputContext.createBuffer(1, samples.length, sampleRate);
+  const channel = audioBuffer.getChannelData(0);
+  for (let index = 0; index < samples.length; index++) channel[index] = samples[index] / 0x8000;
+  const source = lc.outputContext.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(lc.outputContext.destination);
+  const startupBuffer = lc.playbackStarted ? 0 : 0.035;
+  const startAt = Math.max(lc.outputContext.currentTime + startupBuffer, lc.outputTime || 0);
+  source.start(startAt);
+  lc.outputTime = startAt + audioBuffer.duration;
+  lc.playbackStarted = true;
 }
 
 function updateCallDuration() {
@@ -765,32 +984,6 @@ function updateCallDuration() {
   const ss = String(s % 60).padStart(2, '0');
   const el = $('#call-duration');
   if (el) el.textContent = `${mm}:${ss}`;
-}
-
-function recordChunk() {
-  const lc = state.liveCall;
-  if (!lc.active || lc.muted) {
-    lc.loopTimer = setTimeout(recordChunk, 800);
-    return;
-  }
-  lc.chunks = [];
-  const rec = new MediaRecorder(lc.stream);
-  lc.recorder = rec;
-  rec.ondataavailable = (e) => lc.chunks.push(e.data);
-  rec.onstop = async () => {
-    const blob = new Blob(lc.chunks, { type: rec.mimeType || 'audio/webm' });
-    if (blob.size > 3000) {
-      await transcribeAndInsert(blob);
-    } else if (lc.active) {
-      recordChunk();
-    }
-  };
-  rec.start();
-  const status = $('#live-status');
-  if (status) status.textContent = 'Listening…';
-  setTimeout(() => {
-    if (rec.state === 'recording') rec.stop();
-  }, 4000);
 }
 
 function toggleMute() {
@@ -806,13 +999,47 @@ function endLiveCall() {
   lc.active = false;
   lc.muted = false;
   clearInterval(lc.timer);
-  clearTimeout(lc.loopTimer);
-  if (lc.recorder && lc.recorder.state === 'recording') lc.recorder.stop();
+  clearTimeout(lc.micEnableTimer);
+  if (lc.socket && lc.socket.readyState === WebSocket.OPEN) {
+    lc.socket.send(JSON.stringify({ realtimeInput: { audioStreamEnd: true } }));
+    lc.socket.close();
+  }
+  if (lc.processor) lc.processor.disconnect();
+  if (lc.source) lc.source.disconnect();
+  if (lc.inputContext && lc.inputContext.state !== 'closed') lc.inputContext.close();
+  if (lc.outputContext && lc.outputContext.state !== 'closed') lc.outputContext.close();
   if (lc.stream) lc.stream.getTracks().forEach((t) => t.stop());
   lc.stream = null;
+  lc.socket = null;
+  lc.inputContext = null;
+  lc.outputContext = null;
+  lc.processor = null;
+  lc.source = null;
+  lc.inputReady = false;
+  lc.greetingPending = false;
+  lc.userAudioEnabled = false;
+  lc.micEnableTimer = null;
+  lc.playbackStarted = false;
+  lc.outputTime = 0;
   $('#live-call-bar')?.setAttribute('hidden', '');
   const btn = $('#live-mute-btn');
   if (btn) btn.textContent = 'Mute';
+}
+
+function streamCleanup(lc) {
+  lc.active = false;
+  clearTimeout(lc.micEnableTimer);
+  if (lc.stream) lc.stream.getTracks().forEach((track) => track.stop());
+  if (lc.inputContext && lc.inputContext.state !== 'closed') lc.inputContext.close();
+  if (lc.outputContext && lc.outputContext.state !== 'closed') lc.outputContext.close();
+  lc.stream = null;
+  lc.inputReady = false;
+  lc.inputContext = null;
+  lc.outputContext = null;
+  lc.greetingPending = false;
+  lc.userAudioEnabled = false;
+  lc.micEnableTimer = null;
+  lc.playbackStarted = false;
 }
 
 async function speakAndContinue(text) {

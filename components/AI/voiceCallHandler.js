@@ -1,6 +1,7 @@
 
-// API Key placeholder - set via environment variable or backend proxy
-window.VOICE_API_KEY = window.VOICE_API_KEY || null;
+// Voice calls are proxied through the backend so the Gemini key stays server-side.
+window.VOICE_API_KEY = window.VOICE_API_KEY || window.GEMINI_API_KEY || window.GEMINI_LIVE_API_KEY || null;
+window.GEMINI_LIVE_MODEL = window.GEMINI_LIVE_MODEL || 'gemini-2.5-flash-native-audio-latest';
 
 // Voice Call Manager
 window.VoiceCallManager = window.VoiceCallManager || {
@@ -18,10 +19,9 @@ window.VoiceCallManager = window.VoiceCallManager || {
         return false;
       }
 
-      // Check if API key is configured
+      // Server-side Gemini config handles the live key; the browser only captures mic audio.
       if (!window.VOICE_API_KEY) {
-        alert('Voice API not configured. Please set VOICE_API_KEY in your environment variables or admin panel.');
-        return false;
+        console.warn('Voice API key missing on the client; the server will use the configured Gemini key when available.');
       }
 
       // Request microphone permission
@@ -92,9 +92,8 @@ window.VoiceCallManager = window.VoiceCallManager || {
       const formData = new FormData();
       formData.append('audio', audioBlob, 'voice-message.webm');
       formData.append('section', section);
-      formData.append('voiceApiKey', window.VOICE_API_KEY);
 
-      // Call backend proxy for voice API
+      // Call backend proxy for voice API without exposing the Gemini key to the browser.
       const response = await fetch((window.API_BASE || '') + '/api/voice-call', {
         method: 'POST',
         credentials: 'include',
@@ -104,32 +103,57 @@ window.VoiceCallManager = window.VoiceCallManager || {
       const result = await response.json();
       
       if (result.success) {
-        // Play AI response
-        await this._playAIResponse(section, result.audioResponse);
+        await this._playAIResponse(section, result.audioResponse || null, result.text || result.transcript || 'Voice assistant is ready.');
       } else {
         console.error('Voice API error:', result.error);
+        this._playAIResponse(section, null, 'Voice assistant is unavailable right now.');
       }
     } catch (err) {
       console.error('Failed to send audio to AI:', err);
     }
   },
 
-  // Play AI voice response
-  _playAIResponse: async function(section, audioUrl) {
+  // Play AI voice response with a speech-synthesis fallback.
+  _playAIResponse: async function(section, audioUrl, fallbackText) {
     try {
-      const audio = new Audio(audioUrl);
-      audio.play();
-      
-      // Show playing indicator
       const indicator = document.querySelector(`#${section}-voice-indicator`);
+      if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        await audio.play();
+        
+        if (indicator) {
+          indicator.classList.add('playing');
+          audio.addEventListener('ended', () => {
+            indicator.classList.remove('playing');
+          });
+        }
+        return;
+      }
+
+      const text = String(fallbackText || '').trim();
+      if (text && 'speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        if (indicator) {
+          indicator.classList.add('playing');
+          utterance.onend = () => indicator.classList.remove('playing');
+          utterance.onerror = () => indicator.classList.remove('playing');
+        }
+        window.speechSynthesis.speak(utterance);
+        return;
+      }
+
       if (indicator) {
-        indicator.classList.add('playing');
-        audio.addEventListener('ended', () => {
-          indicator.classList.remove('playing');
-        });
+        indicator.classList.remove('playing');
       }
     } catch (err) {
       console.error('Failed to play AI response:', err);
+      if (fallbackText) {
+        this._addSystemMessage(section, `Voice response: ${fallbackText}`);
+      }
     }
   },
 

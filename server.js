@@ -32,6 +32,8 @@ const validator = require('express-validator');
 const helmet = require('helmet');
 const fetch = require('node-fetch');
 const fileUpload = require('express-fileupload');
+const WebSocket = require('ws');
+const { WebSocketServer } = WebSocket;
 const {
   getEmailVerificationError,
   getVerificationReminderMessage,
@@ -385,38 +387,62 @@ app.post('/api/transcribe', async (req, res) => {
 
     const mimeType = uploadedFile.mimetype || 'audio/webm';
     const audioBase64 = uploadedFile.data.toString('base64');
-    const modelCandidates = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+    const modelCandidates = [
+      'gemini-3.6-flash',
+      'gemini-3.5-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.1-flash-lite',
+      'gemini-2.5-flash',
+      'gemini-2.5-flash-lite'
+    ];
 
+    let lastError = null;
     for (const model of modelCandidates) {
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const response = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            role: 'user',
-            parts: [
-              { text: 'Transcribe the speech in this audio clip. Return only the spoken text with no extra commentary.' },
-              { inline_data: { mime_type: mimeType, data: audioBase64 } }
-            ]
-          }]
-        })
-      });
+      try {
+        const response = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              role: 'user',
+              parts: [
+                { text: 'Transcribe the speech in this audio clip. Return only the spoken text with no extra commentary.' },
+                { inline_data: { mime_type: mimeType, data: audioBase64 } }
+              ]
+            }]
+          })
+        });
 
-      const rawText = await response.text();
-      let data = null;
-      try { data = rawText ? JSON.parse(rawText) : null; } catch (error) { data = { raw: rawText }; }
+        const rawText = await response.text();
+        let data = null;
+        try { data = rawText ? JSON.parse(rawText) : null; } catch (error) { data = { raw: rawText }; }
 
-      if (response.ok) {
-        const transcription = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-        return res.json({ text: transcription || 'Audio received. Please speak more clearly.' });
+        if (response.ok) {
+          const transcription = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+          return res.json({ text: transcription || 'Audio received. Please speak more clearly.' });
+        }
+
+        lastError = data;
+        const retryable = [429, 500, 503].includes(response.status) || data?.error?.status === 'UNAVAILABLE' || data?.error?.code === 503 || data?.error?.code === 429;
+        if (retryable) {
+          console.warn(`Transcription model ${model} unavailable (${response.status}); retrying with another model.`);
+          continue;
+        }
+
+        if (data?.error?.code === 404) continue;
+        return res.status(response.status).json({ error: 'Transcription failed', details: data });
+      } catch (error) {
+        console.warn(`Transcription request to ${model} failed:`, error && error.message ? error.message : error);
+        lastError = error;
       }
-
-      if (data?.error?.code === 404) continue;
-      return res.status(response.status).json({ error: 'Transcription failed', details: data });
     }
 
-    return res.status(502).json({ error: 'Transcription failed' });
+    return res.json({
+      text: 'Audio received. Please speak more clearly.',
+      fallback: true,
+      details: lastError || null
+    });
   } catch (error) {
     console.error('Transcription error:', error);
     return res.status(500).json({ error: error.message || 'Transcription failed' });
@@ -526,6 +552,119 @@ app.post('/api/tts', (req, res) => {
   } catch (error) {
     console.error('TTS error:', error);
     return res.status(500).json({ error: error.message || 'TTS failed' });
+  }
+});
+
+app.post('/api/voice-call', async (req, res) => {
+  try {
+    const voiceApiKey = process.env.VOICE_API_KEY || process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
+    const liveModel = process.env.GEMINI_LIVE_MODEL || process.env.GEMINI_DEFAULT_MODEL || 'gemini-2.5-flash-native-audio-latest';
+    const section = String(req.body?.section || req.query?.section || 'general');
+
+    if (!voiceApiKey) {
+      return res.status(500).json({
+        success: false,
+        error: 'Voice API key not configured on the server.'
+      });
+    }
+
+    const uploadedAudio = req.files && req.files.audio ? req.files.audio : null;
+    let audioBase64 = '';
+    let mimeType = 'audio/webm';
+
+    if (uploadedAudio && uploadedAudio.data) {
+      mimeType = uploadedAudio.mimetype || mimeType;
+      audioBase64 = Buffer.isBuffer(uploadedAudio.data)
+        ? uploadedAudio.data.toString('base64')
+        : String(uploadedAudio.data || '');
+    } else {
+      const payloadAudio = req.body?.audio || req.body?.audioData || req.body?.base64Audio || '';
+      const match = String(payloadAudio || '').match(/^data:(audio\/[a-zA-Z0-9.+-]+);base64,(.+)$/i);
+      if (match) {
+        mimeType = match[1] || mimeType;
+        audioBase64 = match[2] || '';
+      } else {
+        audioBase64 = String(payloadAudio || '').trim();
+      }
+    }
+
+    if (!audioBase64) {
+      return res.status(400).json({
+        success: false,
+        error: 'No audio payload provided.'
+      });
+    }
+
+    const modelCandidates = [
+      'gemini-3.6-flash',
+      'gemini-3.5-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.1-flash-lite',
+      'gemini-2.5-flash',
+      'gemini-2.5-flash-lite'
+    ].filter((modelName, index, array) => array.indexOf(modelName) === index);
+
+    let transcript = '';
+    let lastError = null;
+
+    for (const modelName of modelCandidates) {
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${voiceApiKey}`;
+      const response = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            role: 'user',
+            parts: [
+              { text: 'Transcribe this spoken audio and respond briefly in plain language. Return only the spoken transcript and reply text, with no extra commentary.' },
+              { inline_data: { mime_type: mimeType, data: audioBase64 } }
+            ]
+          }]
+        })
+      });
+
+      const rawText = await response.text();
+      let data = null;
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch (error) {
+        data = { raw: rawText };
+      }
+
+      if (response.ok) {
+        const candidateText = data?.candidates?.[0]?.content?.parts
+          ?.map((part) => typeof part?.text === 'string' ? part.text : '')
+          .join(' ')
+          .trim();
+        transcript = candidateText || 'Voice call complete.';
+        return res.json({
+          success: true,
+          section,
+          model: modelName,
+          text: transcript,
+          transcript,
+          audioResponse: null
+        });
+      }
+
+      lastError = data;
+      if (data?.error?.code === 404) {
+        continue;
+      }
+      break;
+    }
+
+    return res.status(502).json({
+      success: false,
+      error: 'Voice transcription failed',
+      details: lastError
+    });
+  } catch (error) {
+    console.error('Voice call route error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Voice call failed'
+    });
   }
 });
 
@@ -2992,6 +3131,54 @@ if (fs.existsSync(tomtomDist)) {
 function startServer(portToUse = PORT) {
   const server = app.listen(portToUse, HOST, () => {
     console.log(`Server running on http://${HOST}:${portToUse}`);
+  });
+
+  server.once('listening', () => {
+    const liveServer = new WebSocketServer({ server, path: '/api/live' });
+    liveServer.on('connection', (client) => {
+      const apiKey = process.env.GEMINI_API_KEY || process.env.VOICE_API_KEY;
+      if (!apiKey) {
+        client.close(1011, 'Gemini API key is not configured');
+        return;
+      }
+
+      const upstreamUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${encodeURIComponent(apiKey)}`;
+      const upstream = new WebSocket(upstreamUrl);
+      let clientClosed = false;
+
+      upstream.on('open', () => {
+        if (client.readyState === WebSocket.OPEN) client.send(JSON.stringify({ type: 'live-ready' }));
+      });
+      upstream.on('message', (data, isBinary) => {
+        if (!isBinary) {
+          try {
+            const message = JSON.parse(data.toString());
+            if (message.error) console.error('Gemini Live protocol error:', message.error.message || message.error);
+            if (message.serverContent?.modelTurn) console.log('Gemini Live model audio turn received.');
+          } catch (error) {
+            console.warn('Gemini Live returned an unparseable text message:', error.message);
+          }
+        }
+        if (client.readyState === WebSocket.OPEN) client.send(data, { binary: isBinary });
+      });
+      upstream.on('error', (error) => {
+        console.error('Gemini Live upstream error:', error.message);
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: 'live-error', error: 'Gemini Live connection failed.' }));
+          client.close(1011, 'Gemini Live connection failed');
+        }
+      });
+      upstream.on('close', () => {
+        if (!clientClosed && client.readyState === WebSocket.OPEN) client.close(1011, 'Gemini Live connection closed');
+      });
+      client.on('message', (data, isBinary) => {
+        if (upstream.readyState === WebSocket.OPEN) upstream.send(data, { binary: isBinary });
+      });
+      client.on('close', () => {
+        clientClosed = true;
+        if (upstream.readyState === WebSocket.OPEN || upstream.readyState === WebSocket.CONNECTING) upstream.close();
+      });
+    });
   });
 
   server.on('error', (error) => {

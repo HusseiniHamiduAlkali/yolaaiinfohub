@@ -3,6 +3,17 @@
 window.GEMINI_API_KEY = window.GEMINI_API_KEY || null;
 window.MAPS_API_KEY = window.MAPS_API_KEY || null;
 
+if (!window.updateAuthUI || typeof window.updateAuthUI !== 'function') {
+  window.updateAuthUI = function(user) {
+    window.currentUser = user || null;
+    if (user) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('currentUser');
+    }
+  };
+}
+
 // Ensure navbar is loaded (skip if already rendered by index.html)
 function ensureNavbarLoaded() {
   return new Promise((resolve) => {
