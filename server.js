@@ -558,7 +558,7 @@ app.post('/api/tts', (req, res) => {
 app.post('/api/voice-call', async (req, res) => {
   try {
     const voiceApiKey = process.env.VOICE_API_KEY || process.env.GEMINI_API_KEY || process.env.AI_API_KEY;
-    const liveModel = process.env.GEMINI_LIVE_MODEL || process.env.GEMINI_DEFAULT_MODEL || 'gemini-2.5-flash-native-audio-latest';
+    const liveModel = process.env.AI_LIVE_MODEL || process.env.VOICE_MODEL || process.env.DEFAULT_CHAT_MODEL || 'gemini-2.5-flash';
     const section = String(req.body?.section || req.query?.section || 'general');
 
     if (!voiceApiKey) {

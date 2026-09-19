@@ -875,7 +875,7 @@ function handleLiveMessage(lc, rawData) {
   let message;
   try { message = JSON.parse(rawData); } catch { return; }
   if (message.type === 'live-ready') {
-    const configuredModel = window.GEMINI_LIVE_MODEL || 'gemini-2.5-flash-native-audio-latest';
+    const configuredModel = window.AI_LIVE_MODEL || 'gemini-2.5-flash';
     const model = configuredModel.startsWith('models/') ? configuredModel : `models/${configuredModel}`;
     lc.socket.send(JSON.stringify({
       setup: {

@@ -80,7 +80,7 @@
 
   // Voice calls are proxied through the backend so the Gemini key stays server-side.
   window.VOICE_API_KEY = window.VOICE_API_KEY || window.GEMINI_API_KEY || window.GEMINI_LIVE_API_KEY || null;
-  window.GEMINI_LIVE_MODEL = window.GEMINI_LIVE_MODEL || 'gemini-2.5-flash-native-audio-latest';
+  window.AI_LIVE_MODEL = window.AI_LIVE_MODEL || 'gemini-2.5-flash';
 
   // Helper to call backend proxy for Gemini
   window.callGemini = async function(payload) {
