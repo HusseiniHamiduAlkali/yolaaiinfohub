@@ -28,12 +28,14 @@
     window.__APP_API_BASE__ ||
     window.__API_BASE__
   )) || null;
-  const prodBase = injected || envProdBase || directEnvBase || 'https://yolaaiinfohub-authentication.onrender.com';
+  const renderBackendBase = 'https://yolaaiinfohub-authentication.onrender.com';
+  const isProductionStaticHost = /netlify\.app|yolaaiinfohub/i.test(location.hostname || '');
+  const prodBase = injected || envProdBase || directEnvBase || (isProductionStaticHost ? renderBackendBase : renderBackendBase);
   const localHostBase = isLocalHost(location.hostname)
     ? `http://${location.hostname || 'localhost'}:4000`
     : DEFAULT_LOCAL;
   const initialBase = window.API_BASE || injected ||
-    (isLocalHost(location.hostname) ? localHostBase : prodBase || DEFAULT_LOCAL);
+    (isLocalHost(location.hostname) ? localHostBase : prodBase || renderBackendBase);
   window.API_BASE = initialBase;
   window.API_BASE_CANDIDATES = isLocalHost(location.hostname)
     ? Array.from(new Set([initialBase, ...LOCAL_PORT_CANDIDATES.filter((candidate) => candidate !== initialBase && candidate.includes(location.hostname || 'localhost'))]))

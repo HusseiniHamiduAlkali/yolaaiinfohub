@@ -16,7 +16,11 @@ function getApiBase() {
     if (stored) return String(stored).replace(/\/$/, '');
 
     const { protocol, hostname, port } = window.location;
+    const isProductionStaticHost = /netlify\.app|yolaaiinfohub/i.test(hostname || '');
     const isLocalHost = ['localhost', '127.0.0.1', '::1', '0.0.0.0'].includes(hostname) || hostname.startsWith('192.') || hostname.startsWith('10.');
+    if (isProductionStaticHost) {
+      return 'https://yolaaiinfohub-authentication.onrender.com';
+    }
     if (isLocalHost) {
       if (port === '4000') return `${protocol}//${hostname}:${port}`;
       const fallbackHost = hostname === '127.0.0.1' || hostname === '0.0.0.0' ? '127.0.0.1' : 'localhost';
@@ -743,6 +747,12 @@ async function startLiveCall() {
 
   const lc = state.liveCall;
   try {
+    const socketUrl = buildLiveSocketUrl();
+    if (!socketUrl) {
+      showToast('Live voice is unavailable on this host. The Render backend must be active for Gemini Live.');
+      return;
+    }
+
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     lc.inputContext = new AudioContextClass();
     lc.outputContext = new AudioContextClass();
@@ -750,7 +760,7 @@ async function startLiveCall() {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
     });
-    const socket = new WebSocket(buildLiveSocketUrl());
+    const socket = new WebSocket(socketUrl);
     lc.active = true;
     lc.userAudioEnabled = false;
     lc.stream = stream;
@@ -779,9 +789,20 @@ async function startLiveCall() {
 
 function buildLiveSocketUrl() {
   const base = getApiBase();
-  const url = new URL(base ? `${base}/api/live` : '/api/live', window.location.href);
-  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
-  return url.toString();
+  if (!base) return '';
+
+  try {
+    const parsed = new URL(base);
+    const isProductionStaticHost = /netlify\.app|yolaaiinfohub/i.test(window.location.hostname || '');
+    const isBackendHost = /onrender\.com|localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(parsed.hostname || '');
+    if (isProductionStaticHost && !isBackendHost) return '';
+
+    const url = new URL(`${parsed.origin}/api/live`);
+    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+    return url.toString();
+  } catch {
+    return '';
+  }
 }
 
 function setupLiveAudioInput(lc) {
