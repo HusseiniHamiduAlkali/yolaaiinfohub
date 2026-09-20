@@ -100,6 +100,20 @@ const state = {
   liveCall: { active: false, muted: false, timer: null, seconds: 0, stream: null, socket: null, inputContext: null, outputContext: null, source: null, processor: null, inputReady: false, greetingPending: false, userAudioEnabled: false, micEnableTimer: null, playbackStarted: false, outputTime: 0, sentAudioChunks: 0, receivedAudioChunks: 0 },
   currentAbort: null,
 };
+window.__yolaLiveDebug = () => {
+  const liveCall = state.liveCall;
+  return {
+    active: liveCall.active,
+    inputReady: liveCall.inputReady,
+    userAudioEnabled: liveCall.userAudioEnabled,
+    sentAudioChunks: liveCall.sentAudioChunks,
+    receivedAudioChunks: liveCall.receivedAudioChunks,
+    inputContextState: liveCall.inputContext?.state || null,
+    outputContextState: liveCall.outputContext?.state || null,
+    microphoneTrackState: liveCall.stream?.getAudioTracks?.()[0]?.readyState || null,
+    microphoneTrackEnabled: liveCall.stream?.getAudioTracks?.()[0]?.enabled ?? null
+  };
+};
 
 function newId() {
   return 't_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
@@ -864,6 +878,16 @@ function sendLivePcm(lc, input, sampleRate) {
     lc.sentAudioChunks++;
     const status = $('#live-status');
     if (status && lc.sentAudioChunks === 1) status.textContent = 'Listening…';
+    if (lc.sentAudioChunks === 1) console.info('Gemini Live microphone input started', window.__yolaLiveDebug());
+    lc.inputContext.resume().catch((error) => console.error('Unable to resume live microphone input:', error));
+        setTimeout(() => {
+          if (!lc.active || lc.sentAudioChunks > 0) return;
+          console.warn('AudioWorklet produced no live microphone frames; switching to ScriptProcessor.');
+          if (lc.processor) lc.processor.disconnect();
+          lc.processor = null;
+          lc.inputReady = false;
+          setupScriptProcessorFallback(lc, context, silentOutput);
+        }, 1200);
   }
 }
 
