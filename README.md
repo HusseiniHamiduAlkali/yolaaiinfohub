@@ -161,7 +161,7 @@ Copy the required development values into `.env`. Important backend settings inc
 - `FRONTEND_URL` and `CORS_ORIGINS` - allowed frontend origins
 - `GEMINI_API_KEY` or `AI_API_KEY` - AI backend configuration
 - `BREVO_API_KEY` and sender settings - email verification and notifications
-- `TOMTOM_API_KEY` or map configuration - navigation features
+- `MAPS_API_KEY` - Google Maps Platform browser key for map display, Places, satellite imagery, and Street View links
 
 Never commit `.env` or expose secrets in frontend files. Production secrets belong in Render environment variables and Netlify environment configuration where applicable.
 

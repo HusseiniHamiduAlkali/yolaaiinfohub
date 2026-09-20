@@ -32,7 +32,6 @@
   <link rel="stylesheet" href="/components/naviinfo/styles/yola-maps.css">
   <link rel="stylesheet" href="fontawesome/css/all.min.css">
   <!--<link rel="stylesheet" href="Other_features/styles/atmospheric-conditions.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous">
   <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
@@ -41,8 +40,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" crossorigin="anonymous">-->
   
   <script src="scripts/apiConfig.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="scripts/googleMaps.js"></script>
 </head>
 <body>
   <div id="navbar"></div>
@@ -94,21 +92,8 @@
     })();
   </script>
         
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js" defer onerror="console.debug('TensorFlow loaded (source map warnings are expected and safe)')"></script>
-  <script>
-    // Only preload TomTom when a real TomTom key is configured. The app is intentionally using the free MapLibre/OpenFreeMap stack.
-    window.ensureTomTomSDK = function(){
-      if (!window.TOMTOM_API_KEY && !window.NAVI_MAP_API_KEY) {
-        return Promise.resolve();
-      }
-      if (window.tomtomSDKLoading) return window.tomtomSDKLoading;
-      window.tomtomSDKLoading = Promise.resolve();
-      return window.tomtomSDKLoading;
-    };
-  </script>
   <script src="/components/ecoinfo/scripts/aetherflow.js"></script>
-  <script src="Other_features/scripts/tomtomMap.js" defer></script>
   <script src="scripts/i18n.js" defer></script>
   <script src="scripts/learnmore-links.js?t=20260308" defer></script>
   <script src="scripts/dark-mode.js?t=20260308" defer></script>
@@ -127,13 +112,11 @@
   <script src="components/weatherinfo.js.js"></script>
   <script src="components/dealzinfo.js"></script>
   <script src="components/naviinfo.js?t=20260308" defer></script>
-  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" defer></script>
   <script src="components/ecoinfo.js?t=20260308" defer></script>
   <script src="components/serviinfo.js?t=20260308" defer></script>
   <script src="components/communityinfo.js?t=20260308" defer></script>
   <script src="scripts/details-navigation.js?t=20260308" defer></script>
   <script src="Data/NaviInfo/place-coordinates.js"></script>
-  <script src="/components/naviinfo/scripts/maps.js?v=20260912-webgl-detect"></script>
   <script src="pages/scripts/pages.js"></script>
   <script src="components/serviinfo/scripts/serviDirectory.js"></script>
   <script src="components/serviinfo/scripts/serviFiltersHandler.js"></script>
@@ -242,7 +225,7 @@
       });
 
       if (section === 'naviinfo') {
-        return promise.then(() => window.ensureTomTomSDK().catch(e => { console.warn('TomTom load failed', e); }));
+        return promise.then(() => window.ensureGoogleMapsSDK().catch(e => { console.warn('Google Maps load failed', e); }));
       } else {
         return promise;
       }

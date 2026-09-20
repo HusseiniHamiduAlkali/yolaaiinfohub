@@ -100,45 +100,6 @@
         var(--cream-soft);
 }
 
-.yola-map-marker {
-    width: 18px;
-    height: 18px;
-    border: 3px solid #fff;
-    border-radius: 50% 50% 50% 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
-    transform: rotate(-45deg);
-}
-
-.yola-map-marker::after {
-    content: "";
-    display: block;
-    width: 5px;
-    height: 5px;
-    margin: 4px auto;
-    border-radius: 50%;
-    background: #fff;
-}
-
-.yola-map-marker-label {
-    position: absolute;
-    left: 14px;
-    top: -9px;
-    min-width: max-content;
-    max-width: 190px;
-    padding: 3px 6px;
-    border: 1px solid rgba(6, 78, 59, 0.18);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.94);
-    color: #17352d;
-    font: 600 10px/1.2 "Plus Jakarta Sans", system-ui, sans-serif;
-    overflow: hidden;
-    pointer-events: none;
-    text-overflow: ellipsis;
-    transform: rotate(45deg);
-    transform-origin: left center;
-    white-space: nowrap;
-}
-
 .maplibregl-ctrl-group {
     border: 1px solid var(--line);
     box-shadow: var(--shadow-sm);
@@ -915,20 +876,70 @@
 /* Info window */
 .map-infowindow {
     font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-    max-width: 220px;
+    width: 280px;
+    max-width: min(280px, 72vw);
+    color: var(--ink);
 }
 
 .map-infowindow strong {
     display: block;
-    font-size: 14.5px;
+    font-size: 16px;
     color: var(--emerald-800);
-    margin-bottom: 3px;
+    margin: 10px 0 4px;
 }
 
-.map-infowindow span {
+.map-place-photo {
+    display: block;
+    width: 100%;
+    height: 116px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.map-place-address {
+    display: block;
     font-size: 12.5px;
     color: var(--muted);
+    line-height: 1.4;
 }
+
+.map-place-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.map-place-meta span { color: var(--muted); }
+.map-place-meta .map-place-rating { color: #b98500; }
+.map-place-meta .map-place-hours { color: var(--emerald-700); }
+
+.map-place-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: var(--emerald-700);
+    font-size: 12px;
+}
+
+.map-place-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px solid var(--line);
+}
+
+.map-place-actions a {
+    color: var(--emerald-800);
+    font-size: 11px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.map-place-actions a:hover { color: var(--gold-500); }
 
 /* ------------------------------------------------------------
    Animations

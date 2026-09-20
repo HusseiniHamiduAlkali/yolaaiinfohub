@@ -48,7 +48,7 @@ window.renderSection = function() {
     return fetch('templates/navi.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
         if (typeof window.initializeSearchHandlers === 'function') window.initializeSearchHandlers();
-        if (typeof window.initYolaMap === 'function') window.initYolaMap();
+        if (typeof window.initYolaGoogleMap === 'function') window.initYolaGoogleMap();
     
     
       // Scroll reveal for service cards in the servi template
@@ -105,11 +105,9 @@ window.renderSection = function() {
    1. PASTE YOUR GOOGLE MAPS API KEY HERE
    Enable: Maps JavaScript API, Places API (New),
            Geocoding API, Directions API
-   Restrict the key by HTTP referrer to your own domain.
+    Restrict the key by HTTP referrer to your own domain.
    ------------------------------------------------------------ */
-var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
-
-(function () {
+;(function () {
     'use strict';
 
     /* --------------------------------------------------------
@@ -117,6 +115,8 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
        -------------------------------------------------------- */
     var DEFAULT_CENTER = { lat: 9.2035, lng: 12.4954 }; // Yola, Adamawa State
     var DEFAULT_ZOOM = 13;
+    var MIN_ZOOM = 7;
+    var MAX_ZOOM = 21;
 
     var MAP_STYLE = [
         { elementType: 'geometry', stylers: [{ color: '#f6f2e4' }] },
@@ -124,7 +124,9 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
         { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
         { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#c9a84c' }] },
         { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#eef0dd' }] },
-        { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#6b7a74' }] },
+        { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'on' }] },
+        { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#3d4d47' }] },
+        { featureType: 'poi', elementType: 'labels.icon', stylers: [{ visibility: 'on' }] },
         { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#d6e7d4' }] },
         { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
         { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#fdf7e6' }] },
@@ -147,14 +149,11 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
        -------------------------------------------------------- */
     var map = null;
     var geocoder = null;
-    var placesService = null;
-    var directionsService = null;
-    var directionsRenderer = null;
+    var placeApi = null;
+    var routeApi = null;
+    var routePolyline = null;
+    var routeOutline = null;
     var infoWindow = null;
-
-    var searchMarker = null;
-    var resultMarkers = [];
-    var userMarker = null;
 
     var travelMode = 'DRIVING';
     var activeCategory = null;
@@ -203,29 +202,15 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
     }
 
     function loadMapsApi() {
-        if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === 'YOUR_API_KEY_HERE') {
-            showOverlay(null, null);
+        if (!window.YolaGoogleMaps || typeof window.YolaGoogleMaps.load !== 'function') {
+            showOverlay('Map failed to load', 'The shared Google Maps loader is unavailable.');
             return;
         }
-
-        window.gm_authFailure = function () {
-            showOverlay(
-                'Map could not be authorised',
-                'Google rejected this API key. Check that billing is enabled, the required APIs are turned on, and that this domain is in the key\'s HTTP referrer allowlist.'
-            );
-        };
-
-        window.initMap = initMap;
-
-        var script = document.createElement('script');
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=' +
-            encodeURIComponent(GOOGLE_MAPS_API_KEY) +
-            '&libraries=places,geometry&loading=async&callback=initMap';
-        script.async = true;
-        script.onerror = function () {
-            showOverlay('Map failed to load', 'The Google Maps script could not be downloaded. Check your internet connection and try again.');
-        };
-        document.head.appendChild(script);
+        window.YolaGoogleMaps.load()
+            .then(initMap)
+            .catch(function (error) {
+                showOverlay('Map failed to load', error.message || 'Google Maps is unavailable.');
+            });
     }
 
     /* --------------------------------------------------------
@@ -238,6 +223,9 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
         map = new google.maps.Map(el, {
             center: DEFAULT_CENTER,
             zoom: DEFAULT_ZOOM,
+            minZoom: MIN_ZOOM,
+            maxZoom: MAX_ZOOM,
+            mapTypeId: 'roadmap',
             styles: MAP_STYLE,
             disableDefaultUI: true,
             gestureHandling: 'greedy',
@@ -245,21 +233,10 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
         });
 
         geocoder = new google.maps.Geocoder();
-        placesService = new google.maps.places.PlacesService(map);
-        directionsService = new google.maps.DirectionsService();
-        directionsRenderer = new google.maps.DirectionsRenderer({
-            map: map,
-            suppressMarkers: false,
-            polylineOptions: {
-                strokeColor: COLORS.emeraldLight,
-                strokeOpacity: 0.9,
-                strokeWeight: 6
-            },
-            markerOptions: {
-                icon: pinIcon(COLORS.emerald)
-            }
+        placeApi = google.maps.places.Place;
+        infoWindow = new google.maps.InfoWindow({
+            headerDisabled: true
         });
-        infoWindow = new google.maps.InfoWindow();
 
         hide($('mapLoader'));
 
@@ -274,29 +251,6 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
         });
 
         toast('Map ready — search a place or tap the map.');
-    }
-
-    function pinIcon(fill) {
-        return {
-            path: 'M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8z',
-            fillColor: fill,
-            fillOpacity: 1,
-            strokeColor: COLORS.cream,
-            strokeWeight: 2,
-            scale: 1.6,
-            anchor: new google.maps.Point(12, 22)
-        };
-    }
-
-    function dotIcon(fill) {
-        return {
-            path: google.maps.SymbolPath.CIRCLE,
-            fillColor: fill,
-            fillOpacity: 1,
-            strokeColor: '#ffffff',
-            strokeWeight: 3,
-            scale: 8
-        };
     }
 
     /* --------------------------------------------------------
@@ -354,19 +308,7 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
     }
 
     function legacyPredictions(text, bias, callback) {
-        if (!google.maps.places.AutocompleteService) { callback([]); return; }
-        var svc = new google.maps.places.AutocompleteService();
-        svc.getPlacePredictions({ input: text, bounds: bias || undefined }, function (preds, status) {
-            if (status !== google.maps.places.PlacesServiceStatus.OK || !preds) { callback([]); return; }
-            callback(preds.map(function (p) {
-                return {
-                    id: p.place_id,
-                    main: p.structured_formatting ? p.structured_formatting.main_text : p.description,
-                    sub: p.structured_formatting ? p.structured_formatting.secondary_text : '',
-                    newApi: false
-                };
-            }));
-        });
+        callback([]);
     }
 
     function renderSuggestions(listEl, inputEl, items, onPick) {
@@ -429,37 +371,166 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
     /* --------------------------------------------------------
        Place details
        -------------------------------------------------------- */
-    function fetchPlaceDetails(placeId) {
-        if (!placesService) return;
-        placesService.getDetails({
-            placeId: placeId,
-            fields: ['name', 'formatted_address', 'geometry', 'rating', 'user_ratings_total',
-                     'opening_hours', 'formatted_phone_number', 'website', 'photos', 'types']
-        }, function (place, status) {
-            if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
-                toast('Could not load details for that place.');
-                return;
+    function fetchPlaceDetails(placeId, fallbackPlace) {
+        if (!placeApi || !placeId) return;
+        var place = new placeApi({ id: placeId });
+        place.fetchFields({ fields: placeFields() })
+            .then(function () { focusPlace(place); })
+            .catch(function () {
+                if (fallbackPlace) focusPlace(fallbackPlace);
+                else toast('Could not load details for that place.');
+            });
+    }
+
+    function placeFields() {
+        return ['id', 'displayName', 'formattedAddress', 'location', 'rating', 'userRatingCount',
+            'regularOpeningHours', 'nationalPhoneNumber', 'websiteURI', 'photos', 'types'];
+    }
+
+    function placeName(place) {
+        if (!place) return 'Selected place';
+        if (place.displayName) {
+            if (typeof place.displayName === 'string') return place.displayName;
+            if (place.displayName.text) return place.displayName.text;
+        }
+        if (place.name) return place.name;
+        if (place.address_components && place.address_components.length) {
+            var preferred = ['establishment', 'point_of_interest', 'premise', 'street_number', 'route', 'locality'];
+            for (var i = 0; i < preferred.length; i++) {
+                for (var j = 0; j < place.address_components.length; j++) {
+                    var component = place.address_components[j];
+                    if (component.types && component.types.indexOf(preferred[i]) !== -1) {
+                        return component.long_name;
+                    }
+                }
             }
-            focusPlace(place);
-        });
+        }
+        if (place.formatted_address || place.formattedAddress) {
+            return (place.formatted_address || place.formattedAddress).split(',')[0];
+        }
+        return 'Selected place';
+    }
+
+    function placeAddress(place) {
+        return place && (place.formattedAddress || place.formatted_address || place.vicinity) || '';
+    }
+
+    function placeLocation(place) {
+        return place && (place.location || place.geometry && place.geometry.location) || null;
+    }
+
+    function placePhotoUrl(place) {
+        if (!place || !place.photos || !place.photos.length) return '';
+        var photo = place.photos[0];
+        try {
+            return photo.getURI ? photo.getURI({ maxWidth: 640, maxHeight: 360 }) : photo.getUrl({ maxWidth: 640, maxHeight: 360 });
+        } catch (err) {
+            return '';
+        }
+    }
+
+    function placeMapUrl(place) {
+        var loc = placeLocation(place);
+        if (!loc) return '';
+        return 'https://www.google.com/maps/search/?api=1&query=' +
+            encodeURIComponent(locationLat(loc) + ',' + locationLng(loc));
+    }
+
+    function placeType(place) {
+        return place && place.types && place.types.length
+            ? place.types[0].replace(/_/g, ' ')
+            : '';
+    }
+
+    function geocoderResultToPlace(result, fallbackLocation) {
+        var location = result && result.geometry && result.geometry.location || fallbackLocation;
+        return {
+            place_id: result && result.place_id,
+            name: placeName(result),
+            formatted_address: result && result.formatted_address || '',
+            geometry: location ? { location: location } : null,
+            types: result && result.types || []
+        };
+    }
+
+    function placeHoursLabel(place) {
+        var openingHours = place && (place.opening_hours || place.regularOpeningHours);
+        if (!openingHours || typeof openingHours.isOpen !== 'function') return '';
+        return openingHours.isOpen() ? 'Open now' : 'Closed';
+    }
+
+    function markerPreviewContent(place) {
+        var photoUrl = placePhotoUrl(place);
+        var rating = typeof place.rating === 'number'
+            ? '<span class="map-place-rating">★ ' + place.rating.toFixed(1) +
+                (place.userRatingCount ? ' (' + escapeHtml(place.userRatingCount) + ')' : '') + '</span>'
+            : '';
+        var hours = placeHoursLabel(place);
+        var type = placeType(place);
+        var loc = placeLocation(place);
+        var mapUrl = placeMapUrl(place);
+        var phone = place.nationalPhoneNumber || place.formatted_phone_number || '';
+        var website = place.websiteURI || place.website || '';
+        var content = '<div class="map-infowindow map-place-details">';
+
+        if (photoUrl) content += '<img class="map-place-photo" src="' + escapeHtml(photoUrl) + '" alt="">';
+        content += '<strong>' + escapeHtml(placeName(place)) + '</strong>' +
+            '<span class="map-place-address">' + escapeHtml(placeAddress(place)) + '</span>';
+        if (rating || hours || type) {
+            content += '<div class="map-place-meta">' + rating +
+                (hours ? '<span class="map-place-hours">' + escapeHtml(hours) + '</span>' : '') +
+                (type ? '<span>' + escapeHtml(type) + '</span>' : '') + '</div>';
+        }
+        if (phone) content += '<a class="map-place-link" href="tel:' + escapeHtml(phone.replace(/\s/g, '')) + '">' + escapeHtml(phone) + '</a>';
+        content += '<div class="map-place-actions">';
+        if (loc) content += '<a href="https://www.google.com/maps/dir/?api=1&destination=' +
+            encodeURIComponent(locationLat(loc) + ',' + locationLng(loc)) + '" target="_blank" rel="noopener">Directions</a>';
+        if (website) content += '<a href="' + escapeHtml(website) + '" target="_blank" rel="noopener">Website</a>';
+        if (mapUrl) content += '<a href="' + escapeHtml(mapUrl) + '" target="_blank" rel="noopener">View on Google Maps</a>';
+        content += '</div></div>';
+        return content;
+    }
+
+    function showMarkerPreview(position, place) {
+        if (!infoWindow || !position) return;
+        infoWindow.setContent(markerPreviewContent(place));
+        infoWindow.setPosition(position);
+        infoWindow.open(map);
+    }
+
+    function placeToLegacyShape(place) {
+        var loc = placeLocation(place);
+        return {
+            place_id: place.id,
+            name: placeName(place),
+            formatted_address: placeAddress(place),
+            geometry: loc ? { location: loc } : null,
+            rating: place.rating,
+            user_ratings_total: place.userRatingCount,
+            opening_hours: place.regularOpeningHours ? { isOpen: function () { return place.regularOpeningHours.isOpen(); } } : null,
+            formatted_phone_number: place.nationalPhoneNumber,
+            website: place.websiteURI,
+            photos: place.photos,
+            types: place.types,
+            _place: place
+        };
     }
 
     function focusPlace(place) {
-        var loc = place.geometry && place.geometry.location;
+        var loc = placeLocation(place);
         if (!loc) return;
+
+        destination = {
+            lat: locationLat(loc),
+            lng: locationLng(loc),
+            label: placeName(place) || placeAddress(place)
+        };
+        if ($('destInput')) $('destInput').value = destination.label;
 
         map.panTo(loc);
         map.setZoom(Math.max(map.getZoom(), 16));
 
-        if (searchMarker) searchMarker.setMap(null);
-        searchMarker = new google.maps.Marker({
-            map: map,
-            position: loc,
-            icon: pinIcon(COLORS.gold),
-            title: place.name || '',
-            animation: google.maps.Animation.DROP
-        });
-
+        showMarkerPreview(loc, place);
         renderPlaceCard(place);
         newSessionToken();
     }
@@ -468,13 +539,13 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
         var card = $('placeCard');
         if (!card) return;
 
-        $('placeName').textContent = place.name || 'Selected place';
-        $('placeAddress').textContent = place.formatted_address || place.vicinity || '';
+        $('placeName').textContent = placeName(place);
+        $('placeAddress').textContent = placeAddress(place);
 
         // photo
         var photoEl = $('placePhoto');
         if (place.photos && place.photos.length) {
-            photoEl.style.backgroundImage = 'url("' + place.photos[0].getUrl({ maxWidth: 640, maxHeight: 360 }) + '")';
+            photoEl.style.backgroundImage = 'url("' + (place.photos[0].getURI ? place.photos[0].getURI({ maxWidth: 640, maxHeight: 360 }) : place.photos[0].getUrl({ maxWidth: 640, maxHeight: 360 })) + '")';
             show(photoEl);
         } else {
             photoEl.style.backgroundImage = '';
@@ -487,11 +558,11 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
 
         if (typeof place.rating === 'number') {
             meta.appendChild(pill('fa-star', place.rating.toFixed(1) +
-                (place.user_ratings_total ? ' (' + place.user_ratings_total + ')' : '')));
+                (place.userRatingCount ? ' (' + place.userRatingCount + ')' : '')));
         }
 
-        if (place.opening_hours && typeof place.opening_hours.isOpen === 'function') {
-            var openNow = place.opening_hours.isOpen();
+        if (place.regularOpeningHours && typeof place.regularOpeningHours.isOpen === 'function') {
+            var openNow = place.regularOpeningHours.isOpen();
             if (typeof openNow === 'boolean') {
                 var p = pill(openNow ? 'fa-door-open' : 'fa-door-closed', openNow ? 'Open now' : 'Closed');
                 p.classList.add(openNow ? 'is-open' : 'is-closed');
@@ -505,18 +576,18 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
 
         // links
         var site = $('placeWebsite');
-        if (place.website) { site.href = place.website; show(site); } else { hide(site); }
+        if (place.websiteURI) { site.href = place.websiteURI; show(site); } else { hide(site); }
 
         var phone = $('placePhone');
-        if (place.formatted_phone_number) {
-            phone.href = 'tel:' + place.formatted_phone_number.replace(/\s/g, '');
+        if (place.nationalPhoneNumber) {
+            phone.href = 'tel:' + place.nationalPhoneNumber.replace(/\s/g, '');
             show(phone);
         } else { hide(phone); }
 
         // directions button
-        var loc = place.geometry.location;
+        var loc = placeLocation(place);
         $('placeDirections').onclick = function () {
-            destination = { lat: loc.lat(), lng: loc.lng(), label: place.name || place.formatted_address };
+            destination = { lat: locationLat(loc), lng: locationLng(loc), label: placeName(place) || placeAddress(place) };
             $('destInput').value = destination.label;
             switchTab('route');
             if (!origin) useMyLocation(true);
@@ -538,42 +609,62 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
        Text search and nearby categories
        -------------------------------------------------------- */
     function textSearch(query) {
-        if (!query || !placesService) return;
-        placesService.textSearch({
-            query: query,
-            location: map.getCenter(),
-            radius: 30000
-        }, function (results, status) {
-            if (status !== google.maps.places.PlacesServiceStatus.OK || !results || !results.length) {
+        if (!query || !placeApi) return;
+        placeApi.searchByText({
+            textQuery: query,
+            fields: placeFields(),
+            locationBias: { center: map.getCenter(), radius: 30000 },
+            maxResultCount: 20
+        }).then(function (response) {
+            var results = (response.places || []).map(placeToLegacyShape);
+            if (!results.length) {
                 renderResults([], query);
                 toast('No places matched "' + query + '".');
                 return;
             }
             renderResults(results, query);
             fitToResults(results);
+        }).catch(function () {
+            renderResults([], query);
+            toast('Could not search places right now.');
         });
     }
 
     function nearbySearch(type, label) {
-        if (!placesService) return;
-        placesService.nearbySearch({
-            location: map.getCenter(),
-            radius: 8000,
-            type: type
-        }, function (results, status) {
-            if (status !== google.maps.places.PlacesServiceStatus.OK || !results || !results.length) {
+        if (!placeApi) return;
+        placeApi.searchNearby({
+            fields: placeFields(),
+            locationRestriction: {
+                center: map.getCenter(),
+                radius: 8000
+            },
+            includedPrimaryTypes: [type],
+            maxResultCount: 20
+        }).then(function (response) {
+            var results = (response.places || []).map(placeToLegacyShape);
+            if (!results.length) {
                 renderResults([], label);
                 toast('Nothing found nearby for ' + label + '.');
                 return;
             }
             renderResults(results, label);
             fitToResults(results);
+        }).catch(function () {
+            renderResults([], label);
+            toast('Nearby places are unavailable right now.');
         });
     }
 
+    function locationLat(location) {
+        return typeof location.lat === 'function' ? location.lat() : location.lat;
+    }
+
+    function locationLng(location) {
+        return typeof location.lng === 'function' ? location.lng() : location.lng;
+    }
+
     function clearResultMarkers() {
-        resultMarkers.forEach(function (m) { m.setMap(null); });
-        resultMarkers = [];
+        // Search results are represented by Google's native POI markers only.
     }
 
     function renderResults(results, label) {
@@ -598,28 +689,6 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
             var loc = place.geometry && place.geometry.location;
             if (!loc) return;
 
-            var marker = new google.maps.Marker({
-                map: map,
-                position: loc,
-                icon: pinIcon(COLORS.emeraldLight),
-                title: place.name,
-                label: {
-                    text: String(i + 1),
-                    color: COLORS.cream,
-                    fontSize: '11px',
-                    fontWeight: '700'
-                }
-            });
-            marker.addListener('click', function () {
-                infoWindow.setContent(
-                    '<div class="map-infowindow"><strong>' + escapeHtml(place.name || '') + '</strong>' +
-                    '<span>' + escapeHtml(place.formatted_address || place.vicinity || '') + '</span></div>'
-                );
-                infoWindow.open(map, marker);
-                if (place.place_id) fetchPlaceDetails(place.place_id);
-            });
-            resultMarkers.push(marker);
-
             var li = document.createElement('li');
             li.className = 'result-item';
             li.innerHTML = '<span class="result-index">' + (i + 1) + '</span>' +
@@ -635,7 +704,9 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
                 li.classList.add('is-active');
                 map.panTo(loc);
                 map.setZoom(Math.max(map.getZoom(), 16));
-                google.maps.event.trigger(marker, 'click');
+                showMarkerPreview(loc, place);
+                renderPlaceCard(place);
+                if (place.place_id) fetchPlaceDetails(place.place_id);
             });
 
             list.appendChild(li);
@@ -650,7 +721,7 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
         results.slice(0, 20).forEach(function (p) {
             if (p.geometry && p.geometry.location) { bounds.extend(p.geometry.location); count++; }
         });
-        if (count) map.fitBounds(bounds, 60);
+        if (count) map.fitBounds(bounds, 100);
     }
 
     function escapeHtml(str) {
@@ -663,29 +734,31 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
        Map click -> reverse geocode
        -------------------------------------------------------- */
     function handleMapClick(latLng) {
-        if (!geocoder) return;
-        geocoder.geocode({ location: latLng }, function (results, status) {
-            var label = (status === 'OK' && results && results[0])
-                ? results[0].formatted_address
-                : latLng.lat().toFixed(5) + ', ' + latLng.lng().toFixed(5);
+        var label = latLng.lat().toFixed(5) + ', ' + latLng.lng().toFixed(5);
+        destination = { lat: latLng.lat(), lng: latLng.lng(), label: label };
+        $('destInput').value = label;
 
-            destination = { lat: latLng.lat(), lng: latLng.lng(), label: label };
-            $('destInput').value = label;
+        infoWindow.setContent('<div class="map-infowindow map-place-details"><strong>Loading place details…</strong><span class="map-place-address">' +
+            escapeHtml(label) + '</span></div>');
+        infoWindow.setPosition(latLng);
+        infoWindow.open(map);
 
-            if (searchMarker) searchMarker.setMap(null);
-            searchMarker = new google.maps.Marker({
-                map: map,
-                position: latLng,
-                icon: pinIcon(COLORS.gold),
-                animation: google.maps.Animation.DROP
+        if (geocoder) {
+            geocoder.geocode({ location: latLng }, function (results, status) {
+                if (status === 'OK' && results && results.length) {
+                    var fallbackPlace = geocoderResultToPlace(results[0], latLng);
+                    if (results[0].place_id) {
+                        fetchPlaceDetails(results[0].place_id, fallbackPlace);
+                    } else {
+                        focusPlace(fallbackPlace);
+                    }
+                } else {
+                    infoWindow.setContent('<div class="map-infowindow map-place-details"><strong>' + escapeHtml(label) + '</strong><span class="map-place-address">' +
+                        escapeHtml(label) + '</span></div>');
+                }
             });
-
-            infoWindow.setContent('<div class="map-infowindow"><strong>Destination set</strong><span>' +
-                escapeHtml(label) + '</span></div>');
-            infoWindow.open(map, searchMarker);
-
-            toast('Destination set. Open Directions to plan the route.');
-        });
+        }
+        toast('Destination set. Distance and time will be estimated locally.');
     }
 
     /* --------------------------------------------------------
@@ -702,15 +775,6 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
             origin = { lat: latLng.lat, lng: latLng.lng, label: 'My location' };
             $('originInput').value = 'My location';
 
-            if (userMarker) userMarker.setMap(null);
-            userMarker = new google.maps.Marker({
-                map: map,
-                position: latLng,
-                icon: dotIcon(COLORS.emeraldLight),
-                title: 'You are here',
-                zIndex: 999
-            });
-
             map.panTo(latLng);
             map.setZoom(Math.max(map.getZoom(), 15));
             toast('Location found.');
@@ -725,8 +789,6 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
        Directions
        -------------------------------------------------------- */
     function calculateRoute() {
-        if (!directionsService) return;
-
         var originValue = origin || $('originInput').value.trim();
         var destValue = destination || $('destInput').value.trim();
 
@@ -735,72 +797,146 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
             return;
         }
 
-        var request = {
-            origin: origin ? { lat: origin.lat, lng: origin.lng } : $('originInput').value.trim(),
-            destination: destination ? { lat: destination.lat, lng: destination.lng } : $('destInput').value.trim(),
-            travelMode: google.maps.TravelMode[travelMode],
-            provideRouteAlternatives: false
-        };
+        var start = resolveRoutePoint(originValue);
+        var end = resolveRoutePoint(destValue);
+        if (!start || !end) {
+            toast('Choose locations from the map or Places suggestions first.');
+            return;
+        }
 
-        if (travelMode === 'TRANSIT') request.transitOptions = { departureTime: new Date() };
+        var distanceMeters = haversineMeters(start, end);
+        var durationMillis = distanceMeters / speedMetersPerSecond(travelMode) * 1000;
+        clearResultMarkers();
+        drawEstimatedRoute(start, end);
+        renderEstimatedRoute(distanceMeters, durationMillis);
+    }
 
-        directionsService.route(request, function (result, status) {
-            if (status !== 'OK' || !result) {
-                var msg = status === 'ZERO_RESULTS'
-                    ? 'No route found between those points for this travel mode.'
-                    : 'Could not calculate the route (' + status + ').';
-                toast(msg);
-                return;
-            }
+    function routePoint(value) {
+        if (value && typeof value.lat === 'number') {
+            return { location: { latLng: { latitude: value.lat, longitude: value.lng } } };
+        }
+        return { address: value };
+    }
 
-            clearResultMarkers();
-            if (searchMarker) { searchMarker.setMap(null); searchMarker = null; }
+    function routeTravelMode(mode) {
+        return { DRIVING: 'DRIVE', WALKING: 'WALK', BICYCLING: 'BICYCLE', TRANSIT: 'TRANSIT' }[mode] || 'DRIVE';
+    }
 
-            directionsRenderer.setMap(map);
-            directionsRenderer.setDirections(result);
-            renderSteps(result.routes[0]);
+    function resolveRoutePoint(value) {
+        if (value && typeof value.lat === 'number' && typeof value.lng === 'number') return value;
+        return null;
+    }
+
+    function haversineMeters(start, end) {
+        var radius = 6371000;
+        var lat1 = start.lat * Math.PI / 180;
+        var lat2 = end.lat * Math.PI / 180;
+        var dLat = (end.lat - start.lat) * Math.PI / 180;
+        var dLng = (end.lng - start.lng) * Math.PI / 180;
+        var a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+        return 2 * radius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function speedMetersPerSecond(mode) {
+        return { DRIVING: 11.1, WALKING: 1.4, BICYCLING: 4.2 }[mode] || 11.1;
+    }
+
+    function drawEstimatedRoute(start, end) {
+        if (routePolyline) routePolyline.setMap(null);
+        if (routeOutline) routeOutline.setMap(null);
+        routeOutline = new google.maps.Polyline({
+            map: map,
+            path: [start, end],
+            strokeColor: '#ffffff',
+            strokeOpacity: 0.98,
+            strokeWeight: 12,
+            zIndex: 99
         });
+        routePolyline = new google.maps.Polyline({
+            map: map,
+            path: [start, end],
+            strokeColor: '#d62828',
+            strokeOpacity: 1,
+            strokeWeight: 7,
+            zIndex: 100
+        });
+        var bounds = new google.maps.LatLngBounds();
+        bounds.extend(start);
+        bounds.extend(end);
+        map.fitBounds(bounds, 100);
+    }
+
+    function renderEstimatedRoute(distanceMeters, durationMillis) {
+        $('routeDuration').textContent = formatDuration(durationMillis);
+        $('routeDistance').textContent = formatDistance(distanceMeters) + ' est.';
+        show($('routeSummary'));
+        $('stepsList').innerHTML = '<li class="step-item"><span>Estimated direct distance and travel time</span><span class="step-meta">Road routing requires Google Routes API and billing.</span></li>';
+        toast('Estimate ready. This line is not a road route.');
+    }
+
+    function drawRoute(route) {
+        if (routePolyline) routePolyline.setMap(null);
+        routePolyline = new google.maps.Polyline({
+            map: map,
+            path: route.path || [],
+            strokeColor: COLORS.emeraldLight,
+            strokeOpacity: 0.9,
+            strokeWeight: 6
+        });
+        if (route.path && route.path.length) {
+            var bounds = new google.maps.LatLngBounds();
+            route.path.forEach(function (point) { bounds.extend(point); });
+            map.fitBounds(bounds, 60);
+        }
     }
 
     function renderSteps(route) {
-        var leg = route.legs[0];
+        var leg = route.legs && route.legs[0];
         if (!leg) return;
 
-        $('routeDuration').textContent = leg.duration ? leg.duration.text : '—';
-        $('routeDistance').textContent = leg.distance ? leg.distance.text : '—';
+        $('routeDuration').textContent = formatDuration(route.durationMillis);
+        $('routeDistance').textContent = formatDistance(route.distanceMeters);
         show($('routeSummary'));
 
         var list = $('stepsList');
         list.innerHTML = '';
 
-        leg.steps.forEach(function (step) {
+        (leg.steps || []).forEach(function (step) {
             var li = document.createElement('li');
             li.className = 'step-item';
             var text = document.createElement('span');
-            text.innerHTML = step.instructions; // Google-provided, sanitized markup
+            text.textContent = step.navigationInstruction && step.navigationInstruction.instructions || 'Continue';
             li.appendChild(text);
 
             var meta = document.createElement('span');
             meta.className = 'step-meta';
-            meta.textContent = [step.distance && step.distance.text, step.duration && step.duration.text]
+            meta.textContent = [formatDistance(step.distanceMeters), formatDuration(step.staticDurationMillis)]
                 .filter(Boolean).join(' · ');
             li.appendChild(meta);
             list.appendChild(li);
         });
 
-        toast('Route ready — ' + (leg.distance ? leg.distance.text : '') +
-            (leg.duration ? ', about ' + leg.duration.text : '') + '.');
+        toast('Route ready — ' + formatDistance(route.distanceMeters) +
+            ', about ' + formatDuration(route.durationMillis) + '.');
+    }
+
+    function formatDistance(meters) {
+        return Number.isFinite(Number(meters)) ? (Number(meters) / 1000).toFixed(1) + ' km' : '—';
+    }
+
+    function formatDuration(milliseconds) {
+        return Number.isFinite(Number(milliseconds)) ? Math.round(Number(milliseconds) / 60000) + ' min' : '—';
     }
 
     function clearRoute() {
-        if (directionsRenderer) directionsRenderer.setMap(null);
+        if (routePolyline) { routePolyline.setMap(null); routePolyline = null; }
+        if (routeOutline) { routeOutline.setMap(null); routeOutline = null; }
         $('stepsList').innerHTML = '';
         hide($('routeSummary'));
         origin = null;
         destination = null;
         $('originInput').value = '';
         $('destInput').value = '';
-        if (userMarker) { userMarker.setMap(null); userMarker = null; }
         toast('Route cleared.');
     }
 
@@ -901,7 +1037,7 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
         // Place card
         on($('placeClose'), 'click', function () {
             hide($('placeCard'));
-            if (searchMarker) { searchMarker.setMap(null); searchMarker = null; }
+            if (infoWindow) infoWindow.close();
         });
 
         on($('resultsClear'), 'click', function () {
@@ -943,13 +1079,22 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
 
         // Map controls
         on($('ctrlLocate'), 'click', function () { useMyLocation(false); });
+        on($('ctrlRoute'), 'click', function () {
+            if (!destination) {
+                toast('Select a place first.');
+                return;
+            }
+            switchTab('route');
+            useMyLocation(true);
+        });
         on($('ctrlZoomIn'), 'click', function () { if (map) map.setZoom(map.getZoom() + 1); });
         on($('ctrlZoomOut'), 'click', function () { if (map) map.setZoom(map.getZoom() - 1); });
+        on($('ctrl3D'), 'click', openStreetView);
 
         on($('ctrlType'), 'click', function () {
             if (!map) return;
             var btn = $('ctrlType');
-            var satellite = map.getMapTypeId() === 'hybrid';
+            var satellite = map.getMapTypeId() === 'hybrid' || map.getMapTypeId() === 'satellite';
             map.setMapTypeId(satellite ? 'roadmap' : 'hybrid');
             btn.classList.toggle('is-active', !satellite);
             btn.innerHTML = satellite
@@ -981,12 +1126,21 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
         });
     }
 
+    function openStreetView() {
+        if (!map) return;
+        var point = destination || { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+        var url = 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' + point.lat + ',' + point.lng;
+        window.open(url, '_blank', 'noopener');
+    }
+
     function resolvePlaceLatLng(placeId, cb) {
-        if (!placesService) return;
-        placesService.getDetails({ placeId: placeId, fields: ['geometry', 'name', 'formatted_address'] },
-            function (place, status) {
-                if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !place.geometry) return;
-                cb(place.geometry.location, place.name || place.formatted_address);
+        if (!placeApi) return;
+        var place = new placeApi({ id: placeId });
+        place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] })
+            .then(function () {
+                var loc = placeLocation(place);
+                if (!loc) return;
+                cb(loc, placeName(place) || placeAddress(place));
                 newSessionToken();
             });
     }
@@ -994,7 +1148,12 @@ var GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
     /* --------------------------------------------------------
        Go
        -------------------------------------------------------- */
-    document.addEventListener('DOMContentLoaded', function () {});
+    window.initYolaGoogleMap = function () {
+        var mapElement = $('map');
+        if (!mapElement) return;
+        wireUp();
+        loadMapsApi();
+    };
 })();
 
 

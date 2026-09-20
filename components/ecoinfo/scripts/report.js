@@ -14,17 +14,18 @@ let coords = null;
 /* ---------------- map ---------------- */
 
 function initMap() {
-  if (typeof L === "undefined") {
-    $("#map").innerHTML =
-      '<div style="padding:20px" class="muted small">Map library unavailable offline — enter the location description and coordinates manually.</div>';
-    return;
-  }
-  map = L.map("map").setView([YOLA.lat, YOLA.lon], 12);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "© OpenStreetMap contributors",
-  }).addTo(map);
-  map.on("click", (e) => setCoords(e.latlng.lat, e.latlng.lng));
+  window.YolaGoogleMaps.load().then(() => {
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: YOLA.lat, lng: YOLA.lon },
+      zoom: 12,
+      mapTypeControl: true,
+      fullscreenControl: true,
+      streetViewControl: true,
+    });
+    map.addListener("click", (event) => setCoords(event.latLng.lat(), event.latLng.lng()));
+  }).catch((error) => {
+    $("#map").innerHTML = `<div style="padding:20px" class="muted small">${error.message || "Google Maps is unavailable."}</div>`;
+  });
 }
 
 function setCoords(lat, lon) {
@@ -33,12 +34,13 @@ function setCoords(lat, lon) {
   $("#lon").value = coords.lon;
   $("#coord-readout").textContent = `${coords.lat}, ${coords.lon}`;
   if (map) {
-    if (marker) marker.setLatLng([lat, lon]);
-    else marker = L.marker([lat, lon], { draggable: true }).addTo(map).on("dragend", (e) => {
-      const p = e.target.getLatLng();
-      setCoords(p.lat, p.lng);
-    });
-    map.panTo([lat, lon]);
+    if (marker) marker.setPosition({ lat, lng: lon });
+    else marker = new google.maps.Marker({ map, position: { lat, lng: lon }, draggable: true });
+    if (!marker.get("yolaDragWired")) {
+      marker.addListener("dragend", (event) => setCoords(event.latLng.lat(), event.latLng.lng()));
+      marker.set("yolaDragWired", true);
+    }
+    map.panTo({ lat, lng: lon });
   }
 }
 
@@ -49,7 +51,8 @@ $("#locate")?.addEventListener("click", () => {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       setCoords(pos.coords.latitude, pos.coords.longitude);
-      if (map) map.setView([pos.coords.latitude, pos.coords.longitude], 16);
+      if (map) map.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      if (map) map.setZoom(16);
       toast("Location captured.");
       $("#locate").disabled = false;
       $("#locate").textContent = "Use my location";

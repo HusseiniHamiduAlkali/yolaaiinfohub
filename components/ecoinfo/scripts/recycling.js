@@ -8,17 +8,23 @@ const YOLA = { lat: 9.2035, lon: 12.4954 };
 let centres = [];
 let user = null;
 let map = null;
-let layer = null;
+let markers = [];
 let material = new URLSearchParams(location.search).get("material") || "";
 
-function initMap() {
-  if (typeof L === "undefined") return;
-  map = L.map("map").setView([YOLA.lat, YOLA.lon], 12);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "© OpenStreetMap contributors",
-  }).addTo(map);
-  layer = L.layerGroup().addTo(map);
+async function initMap() {
+  try {
+    await window.YolaGoogleMaps.load();
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: YOLA.lat, lng: YOLA.lon },
+      zoom: 12,
+      mapTypeControl: true,
+      fullscreenControl: true,
+      streetViewControl: true,
+    });
+    render();
+  } catch (error) {
+    toast(error.message || "Google Maps is unavailable.", "err");
+  }
 }
 
 function matches(c) {
@@ -54,7 +60,7 @@ function render() {
         <p class="small muted" style="margin:.3rem 0">🕒 ${escapeHtml(c.hours)}</p>
         <p class="small" style="margin:.3rem 0">${escapeHtml(c.notes)}</p>
         <div class="hero-actions" style="margin-top:12px">
-          <a class="btn btn-emerald btn-sm" href="https://www.openstreetmap.org/?mlat=${c.lat}&mlon=${c.lon}#map=16/${c.lat}/${c.lon}" target="_blank" rel="noopener">Directions</a>
+          <a class="btn btn-emerald btn-sm" href="https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lon}" target="_blank" rel="noopener">Directions</a>
           <a class="btn btn-ghost btn-sm" href="tel:${escapeHtml(c.phone.replace(/\s/g, ""))}">Call</a>
         </div>
       </article>`,
@@ -62,15 +68,28 @@ function render() {
         .join("")
     : '<p class="muted">No centre matches that material yet. Try “all materials”, or report the gap on the community page.</p>';
 
-  if (map && layer) {
-    layer.clearLayers();
+  if (map) {
+    markers.forEach((marker) => marker.setMap(null));
+    markers = [];
     rows.forEach((c) =>
-      L.marker([c.lat, c.lon])
-        .addTo(layer)
-        .bindPopup(`<strong>${escapeHtml(c.name)}</strong><br>${escapeHtml(c.type)}<br>${escapeHtml(c.hours)}`),
+      markers.push(new google.maps.Marker({
+        map,
+        position: { lat: c.lat, lng: c.lon },
+        title: c.name,
+      })),
     );
-    if (user) L.circleMarker([user.lat, user.lon], { radius: 8, color: "#c9a84c" }).addTo(layer).bindPopup("You are here");
-    if (rows.length) map.fitBounds(rows.map((c) => [c.lat, c.lon]), { padding: [40, 40], maxZoom: 14 });
+    if (user) markers.push(new google.maps.Marker({
+      map,
+      position: { lat: user.lat, lng: user.lon },
+      title: "You are here",
+      icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#c9a84c", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2 },
+    }));
+    if (rows.length) {
+      const bounds = new google.maps.LatLngBounds();
+      rows.forEach((c) => bounds.extend({ lat: c.lat, lng: c.lon }));
+      if (user) bounds.extend({ lat: user.lat, lng: user.lon });
+      map.fitBounds(bounds, 40);
+    }
   }
 }
 

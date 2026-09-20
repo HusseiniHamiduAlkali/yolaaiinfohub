@@ -197,7 +197,7 @@ function openDetail(id) {
           ? `<div class="thumbs">${r.photos.map((p) => `<div class="thumb"><img src="${p}" alt="Evidence"></div>`).join("")}</div>`
           : '<p class="small muted">No photo evidence attached.</p>'
       }
-      <p class="small muted">Location: ${r.lat ? `${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)} · <a href="https://www.openstreetmap.org/?mlat=${r.lat}&mlon=${r.lon}#map=17/${r.lat}/${r.lon}" target="_blank" rel="noopener">open map</a>` : "not provided"}</p>
+      <p class="small muted">Location: ${r.lat ? `${Number(r.lat).toFixed(5)}, ${Number(r.lon).toFixed(5)} · <a href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}" target="_blank" rel="noopener">open map</a>` : "not provided"}</p>
 
       <div class="grid grid-2" style="margin-top:12px">
         <div class="field">

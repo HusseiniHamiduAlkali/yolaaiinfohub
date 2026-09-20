@@ -60,7 +60,7 @@ Change the seeded password before using this anywhere real.
 ## Data sources
 
 - **Weather & air quality** — Open-Meteo forecast and air-quality APIs (free, keyless).
-- **Maps** — Leaflet with OpenStreetMap tiles.
+- **Maps** — Google Maps Platform using the shared `MAPS_API_KEY` loader.
 - **Local content** — editable JSON in `data/`: recycling centres, waste categories,
   collection schedule, tips and emission factors.
 
