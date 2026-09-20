@@ -97,7 +97,7 @@ const state = {
   activeId: null,
   attachments: [],
   starMode: false,
-  liveCall: { active: false, muted: false, timer: null, seconds: 0, stream: null, socket: null, inputContext: null, outputContext: null, source: null, processor: null, inputReady: false, greetingPending: false, userAudioEnabled: false, micEnableTimer: null, playbackStarted: false, outputTime: 0 },
+  liveCall: { active: false, muted: false, timer: null, seconds: 0, stream: null, socket: null, inputContext: null, outputContext: null, source: null, processor: null, inputReady: false, greetingPending: false, userAudioEnabled: false, micEnableTimer: null, playbackStarted: false, outputTime: 0, sentAudioChunks: 0, receivedAudioChunks: 0 },
   currentAbort: null,
 };
 
@@ -763,6 +763,8 @@ async function startLiveCall() {
     const socket = new WebSocket(socketUrl);
     lc.active = true;
     lc.userAudioEnabled = false;
+    lc.sentAudioChunks = 0;
+    lc.receivedAudioChunks = 0;
     lc.stream = stream;
     lc.socket = socket;
     lc.seconds = 0;
@@ -772,6 +774,13 @@ async function startLiveCall() {
       lc.seconds++;
       updateCallDuration();
     }, 1000);
+    lc.audioCheckTimer = setTimeout(() => {
+      if (lc.active && lc.inputReady && lc.sentAudioChunks === 0) {
+        const status = $('#live-status');
+        if (status) status.textContent = 'Microphone is not sending audio';
+        console.warn('Gemini Live microphone produced no audio chunks.');
+      }
+    }, 2500);
 
     socket.addEventListener('open', () => showToast('Connecting to Gemini Live…'));
     socket.addEventListener('message', async (event) => {
@@ -852,8 +861,9 @@ function sendLivePcm(lc, input, sampleRate) {
   const pcm = resampleToPcm16(input, sampleRate, 16000);
   if (pcm.length) {
     lc.socket.send(JSON.stringify({ realtimeInput: { audio: { data: arrayBufferToBase64(pcm), mimeType: 'audio/pcm;rate=16000' } } }));
+    lc.sentAudioChunks++;
     const status = $('#live-status');
-    if (status) status.textContent = 'Listening…';
+    if (status && lc.sentAudioChunks === 1) status.textContent = 'Listening…';
   }
 }
 
@@ -949,6 +959,7 @@ function handleLiveMessage(lc, rawData) {
   }
   for (const part of content.modelTurn?.parts || []) {
     if (part.inlineData?.data) {
+      lc.receivedAudioChunks++;
       playLiveAudio(lc, base64ToArrayBuffer(part.inlineData.data), part.inlineData.mimeType);
     }
   }
@@ -1021,9 +1032,11 @@ function toggleMute() {
 
 function endLiveCall() {
   const lc = state.liveCall;
+  if (lc.active) console.info('Gemini Live call ended', { sentAudioChunks: lc.sentAudioChunks, receivedAudioChunks: lc.receivedAudioChunks });
   lc.active = false;
   lc.muted = false;
   clearInterval(lc.timer);
+  clearTimeout(lc.audioCheckTimer);
   clearTimeout(lc.micEnableTimer);
   if (lc.socket && lc.socket.readyState === WebSocket.OPEN) {
     lc.socket.send(JSON.stringify({ realtimeInput: { audioStreamEnd: true } }));

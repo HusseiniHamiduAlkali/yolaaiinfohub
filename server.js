@@ -3145,11 +3145,14 @@ function startServer(portToUse = PORT) {
       const upstreamUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${encodeURIComponent(apiKey)}`;
       const upstream = new WebSocket(upstreamUrl);
       let clientClosed = false;
+      let clientMessages = 0;
+      let upstreamMessages = 0;
 
       upstream.on('open', () => {
         if (client.readyState === WebSocket.OPEN) client.send(JSON.stringify({ type: 'live-ready' }));
       });
       upstream.on('message', (data, isBinary) => {
+        upstreamMessages++;
         if (!isBinary) {
           try {
             const message = JSON.parse(data.toString());
@@ -3168,13 +3171,16 @@ function startServer(portToUse = PORT) {
           client.close(1011, 'Gemini Live connection failed');
         }
       });
-      upstream.on('close', () => {
+      upstream.on('close', (code, reason) => {
+        console.warn('Gemini Live upstream closed:', { code, reason: reason.toString(), clientMessages, upstreamMessages });
         if (!clientClosed && client.readyState === WebSocket.OPEN) client.close(1011, 'Gemini Live connection closed');
       });
       client.on('message', (data, isBinary) => {
+        clientMessages++;
         if (upstream.readyState === WebSocket.OPEN) upstream.send(data, { binary: isBinary });
       });
-      client.on('close', () => {
+      client.on('close', (code, reason) => {
+        console.warn('Gemini Live client closed:', { code, reason: reason.toString(), clientMessages, upstreamMessages });
         clientClosed = true;
         if (upstream.readyState === WebSocket.OPEN || upstream.readyState === WebSocket.CONNECTING) upstream.close();
       });
