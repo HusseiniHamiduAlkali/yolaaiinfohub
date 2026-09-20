@@ -779,7 +779,10 @@ async function startLiveCall() {
       handleLiveMessage(lc, data);
     });
     socket.addEventListener('error', () => showToast('Gemini Live connection failed.'));
-    socket.addEventListener('close', () => { if (lc.active) endLiveCall(); });
+    socket.addEventListener('close', (event) => {
+      console.warn('Gemini Live socket closed before session started:', event.code, event.reason || 'no reason');
+      if (lc.active) endLiveCall();
+    });
   } catch (e) {
     console.error(e);
     streamCleanup(lc);
@@ -896,11 +899,12 @@ function handleLiveMessage(lc, rawData) {
   let message;
   try { message = JSON.parse(rawData); } catch { return; }
   if (message.type === 'live-ready') {
-    const configuredModel = window.AI_LIVE_MODEL || 'gemini-2.5-flash';
+    const configuredModel = window.AI_LIVE_MODEL || 'gemini-3.8-live';
     const model = configuredModel.startsWith('models/') ? configuredModel : `models/${configuredModel}`;
+    const safeModel = /gemini-(3\.8-live|3\.5-live-translate-preview)/.test(model) ? model : 'models/gemini-3.8-live';
     lc.socket.send(JSON.stringify({
       setup: {
-        model,
+        model: safeModel,
         generationConfig: { responseModalities: ['AUDIO'] },
         realtimeInputConfig: {
           automaticActivityDetection: {

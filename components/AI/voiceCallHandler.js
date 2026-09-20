@@ -1,7 +1,7 @@
 
 // Voice calls are proxied through the backend so the Gemini key stays server-side.
 window.VOICE_API_KEY = window.VOICE_API_KEY || window.GEMINI_API_KEY || window.GEMINI_LIVE_API_KEY || null;
-window.AI_LIVE_MODEL = window.AI_LIVE_MODEL || 'gemini-2.5-flash';
+window.AI_LIVE_MODEL = window.AI_LIVE_MODEL || 'gemini-3.8-live';
 
 // Voice Call Manager
 window.VoiceCallManager = window.VoiceCallManager || {
