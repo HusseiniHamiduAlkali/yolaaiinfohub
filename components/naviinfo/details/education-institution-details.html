@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Education details | Yola AI Info Hub</title>
+  <script src="/scripts/apiConfig.js"></script>
+  <script>
+    (function () {
+      var id = new URLSearchParams(location.search).get('id');
+      var apiBase = typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE || '');
+      if (!id) { location.replace('/?section=naviinfo'); return; }
+      fetch(apiBase + '/api/content/navigation-places/' + encodeURIComponent(id))
+        .then(function (response) { if (!response.ok) throw new Error('Not found'); return response.json(); })
+        .then(function (payload) {
+          var item = payload.item || payload;
+          var searchable = [item.category, item.subcategory, item.displayName].filter(Boolean).join(' ').toLowerCase();
+          var isLearning = /library|knowledge center|learning center|learning hub|educational hub/.test(searchable);
+          var isTechnical = /college|polytechnic|monotechnic|health technology|nursing sciences|legal studies|institute of technology/.test(searchable) && !/university|primary school|secondary school|library|knowledge center/.test(searchable);
+          var isUniversity = /university|universities|polytechnic|institute of technology/.test(searchable) && !/school|library|knowledge center/.test(searchable);
+          var target = isLearning ? 'learning-hub-details.html' : (isTechnical ? 'technical-institution-details.html' : (isUniversity ? 'university-details.html' : 'primary-secondaryschool-details.html'));
+          location.replace('/components/naviinfo/details/' + target + '?id=' + encodeURIComponent(id));
+        })
+        .catch(function () { location.replace('/?section=naviinfo'); });
+    }());
+  </script>
+</head>
+<body>
+  <main>
+    <p>Opening education details...</p>
+    <a href="/?section=naviinfo">Return to the education directory</a>
+  </main>
+</body>
+</html>

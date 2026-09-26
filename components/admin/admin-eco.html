@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="styles/eco.css">
+<link rel="stylesheet" href="/components/ecoinfo/styles/eco.css">
 <link rel="stylesheet" href="/pages/styles/pages.css">
 </head>
 <body>
@@ -23,7 +23,7 @@
             <div href="../index.html" class="nav-logo">
                 <img src="../../Data/Images/jippujam.jpg" alt="Yola AI Info Hub">
                 <!--<span data-i18n="app_title">Yola AI Info Hub</span>-->
-                <span class="navbar-appname"><img src="../../Data/images/app-name-small.png" style="width:93%; height:58px;" ></img></span>
+                <span class="navbar-appname"><img src="/Data/Images/app-name-small.png" style="width:93%; height:58px;" alt="Yola AI Info Hub"></span>
             </div>
             <a href="../../index.html" style="color: #fff;" class="return home">
                 <i class="fas fa-home" style="font-size: x-large;"></i>
@@ -35,7 +35,7 @@
   <header class="site-header controls eco-mobile-nav">
     <div class="header-inner">
       <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
-      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/ecoinfo/admin.html" class="active" aria-current="page">Admin</a></nav>
+      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="/components/ecoinfo/index.html">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/admin/admin-eco.html" class="active" aria-current="page">Admin</a></nav>
     </div>
   </header>
 
@@ -49,14 +49,14 @@
         </div>
     </div>
     <div>
-      <div class="eyebrow">Restricted area</div>
+      <div class="eyebrow">Administration</div>
       <h1>Waste management console</h1>
       <p class="lead">Triage incoming dumping reports, assign crews, record the action taken and keep residents informed.</p>
     </div>
   </div>
   <header class="site-header">
     <div class="container header-inner">
-      <nav class="nav" id="primary-nav" aria-label="Primary"><a href="../../index.html?section=ecoinfo">Dashboard</a><a href="atmosphere.html">Atmosphere</a><a href="classify.html">AI Classifier</a><a href="report.html">Report Dumping</a><a href="recycling.html">Recycling</a><a href="schedule.html">Schedule</a><a href="learn.html">Learn</a><a href="community.html">Community</a><a href="admin.html" class="active" aria-current="page">Admin</a></nav>
+      <nav class="nav" id="eco-secondary-nav" aria-label="EcoInfo"><a href="/components/ecoinfo/index.html">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/admin/admin-eco.html" class="active" aria-current="page">Admin</a></nav>
     </div>
   </header>
 </section>
@@ -64,39 +64,16 @@
 <section class="section">
   <div class="container">
 
-    <div class="card hidden" style="padding:26px;max-width:460px" id="login-card">
-      <div class="eyebrow">Sign in</div>
-      <h2 style="margin:.4rem 0 1rem">Officer access</h2>
-      <div class="banner banner-info hidden" id="offline-note">
-        <span>ℹ️</span><span>The EcoInfo service is not running. Use demo mode to explore the console with sample reports.</span>
-      </div>
-      <form id="login-form">
-        <div class="field">
-          <label class="label" for="email">Work email</label>
-          <input class="input" id="email" type="email" autocomplete="username" placeholder="officer@adsepa.ng">
-        </div>
-        <div class="field">
-          <label class="label" for="password">Password</label>
-          <input class="input" id="password" type="password" autocomplete="current-password">
-        </div>
-        <p class="error" id="login-error"></p>
-        <div class="hero-actions">
-          <button class="btn btn-gold" type="submit" id="login-btn">Sign in</button>
-          <button class="btn btn-ghost" type="button" id="demo-btn">Explore demo mode</button>
-        </div>
-      </form>
-    </div>
-
-    <div id="console" class="hidden">
+    <div id="console">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
         <div>
-          <div class="eyebrow">Signed in as</div>
-          <strong id="who"></strong>
+          <div class="eyebrow">Administration</div>
+          <strong id="who">EcoInfo admin console</strong>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-ghost btn-sm" id="refresh">Refresh</button>
           <button class="btn btn-ghost btn-sm" id="export">Export CSV</button>
-          <button class="btn btn-ghost btn-sm" id="logout">Sign out</button>
+          <a class="btn btn-ghost btn-sm" id="logout" href="/components/admin/admin-dashboard.html">Back to admin dashboard</a>
         </div>
       </div>
 
@@ -222,6 +199,6 @@
         </div>
     </footer>
 
-<script type="module" src="scripts/admin.js"></script>
+<script type="module" src="/components/ecoinfo/scripts/admin.js?v=direct-admin-console"></script>
 </body>
 </html>

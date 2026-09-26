@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#04322a">
+  <title>Admin dashboard | Yola AI Info Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --green-950: #04322a;
+      --green-900: #064e3b;
+      --green-700: #0d7a5f;
+      --green-600: #17997a;
+      --gold-500: #c9a84c;
+      --gold-200: #f0d78c;
+      --cream: #f5f0e0;
+      --paper: #fff;
+      --ink: #142520;
+      --muted: #6b7a74;
+      --line: rgba(6, 78, 59, .14);
+      --shadow: 0 10px 28px rgba(6, 78, 59, .08);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background: #f8f7f0;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; background: linear-gradient(180deg, #f5f0e0 0, #fff 390px); }
+    button, input, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    .app { min-height: 100vh; }
+    .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 20; display: flex; flex-direction: column; width: 264px; color: var(--cream); background: linear-gradient(165deg, var(--green-950), var(--green-900) 72%, #09634d); }
+    .brand { display: flex; gap: 12px; align-items: center; padding: 23px 22px; border-bottom: 1px solid rgba(245,240,224,.13); }
+    .brand-mark { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 11px; color: var(--green-950); background: linear-gradient(135deg, var(--gold-500), var(--gold-200)); }
+    .brand-mark svg { width: 23px; height: 23px; }
+    .brand-name { font: 600 17px/1.2 "Fraunces", Georgia, serif; }
+    .brand-subtitle { margin-top: 4px; color: var(--gold-200); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .nav { display: grid; gap: 5px; padding: 20px 12px; }
+    .nav-label { padding: 5px 12px 8px; color: rgba(245,240,224,.47); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .nav a, .nav button { display: flex; min-height: 43px; align-items: center; gap: 11px; padding: 10px 12px; border: 0; border-radius: 8px; color: rgba(245,240,224,.8); background: transparent; font-size: 13px; font-weight: 600; text-align: left; text-decoration: none; cursor: pointer; }
+    .nav a:hover, .nav button:hover, .nav .current { color: var(--gold-200); background: rgba(245,240,224,.09); }
+    .nav .current { box-shadow: inset 2px 0 var(--gold-500); }
+    .nav svg { width: 17px; height: 17px; }
+    .sidebar-bottom { margin-top: auto; padding: 17px 20px; border-top: 1px solid rgba(245,240,224,.13); }
+    .sidebar-bottom a { color: var(--gold-200); font-size: 12px; font-weight: 600; text-decoration: none; }
+    .main { min-height: 100vh; margin-left: 264px; }
+    .topbar { position: sticky; top: 0; z-index: 10; display: flex; min-height: 68px; align-items: center; gap: 16px; padding: 12px clamp(18px, 3vw, 38px); border-bottom: 1px solid var(--line); background: rgba(255,255,255,.92); backdrop-filter: blur(12px); }
+    .topbar::before { position: absolute; inset: 0 0 auto; height: 3px; background: linear-gradient(90deg, var(--gold-500), var(--green-700), var(--gold-500)); content: ""; }
+    .menu-button { display: none; }
+    .top-search { position: relative; width: min(420px, 100%); }
+    .top-search svg { position: absolute; top: 50%; left: 13px; width: 17px; height: 17px; color: var(--muted); transform: translateY(-50%); }
+    .top-search input { width: 100%; min-height: 40px; padding: 8px 13px 8px 39px; border: 1px solid var(--line); border-radius: 999px; outline: 0; color: var(--ink); background: #faf8f0; font-size: 13px; }
+    .top-search input:focus, input:focus, select:focus { border-color: var(--green-600); box-shadow: 0 0 0 3px rgba(23,153,122,.12); outline: 0; }
+    .top-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .button { display: inline-flex; min-height: 39px; align-items: center; justify-content: center; gap: 8px; padding: 8px 13px; border: 1px solid var(--line); border-radius: 7px; color: var(--green-900); background: var(--paper); font-size: 12px; font-weight: 700; text-decoration: none; cursor: pointer; transition: background .18s, border-color .18s, transform .18s; }
+    .button:hover { border-color: var(--green-700); background: #f2f8f4; }
+    .button:disabled { opacity: .48; cursor: not-allowed; }
+    .button svg { width: 15px; height: 15px; }
+    .button-primary { border-color: var(--gold-500); color: var(--green-950); background: var(--gold-500); }
+    .button-primary:hover { border-color: #b79437; background: #d7b85d; }
+    .button-danger { border-color: rgba(185,28,28,.22); color: #9b2828; }
+    .content { width: min(1500px, 100%); margin: auto; padding: 28px clamp(18px, 3vw, 40px) 48px; }
+    .page-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 23px; }
+    .eyebrow { margin: 0 0 6px; color: var(--gold-500); font-size: 10px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    h1, h2, p { margin-top: 0; }
+    h1, h2 { font-family: "Fraunces", Georgia, serif; font-weight: 600; }
+    h1 { margin-bottom: 5px; color: var(--green-900); font-size: 30px; }
+    h2 { margin-bottom: 3px; color: var(--green-900); font-size: 18px; }
+    .subhead, .muted { margin-bottom: 0; color: var(--muted); font-size: 12px; }
+    .notice { display: none; margin: 0 0 18px; padding: 12px 14px; border: 1px solid #cae8d5; border-radius: 7px; color: #07553f; background: #eaf7ef; font-size: 13px; }
+    .notice.show { display: block; }
+    .notice.error { border-color: #f1c4bd; color: #8c261f; background: #fff0ee; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 19px; }
+    .stat { position: relative; overflow: hidden; min-height: 133px; padding: 19px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); box-shadow: 0 3px 12px rgba(6,78,59,.04); }
+    .stat::before { position: absolute; inset: 0 0 auto; height: 3px; background: linear-gradient(90deg, var(--gold-500), var(--green-700)); content: ""; }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .stat-icon { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 9px; color: var(--gold-200); background: var(--green-900); }
+    .stat-icon.gold { color: var(--green-950); background: var(--gold-500); }
+    .stat-icon svg { width: 19px; height: 19px; }
+    .stat-label { margin: 13px 0 0; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .stat-value { margin: 1px 0 0; color: var(--green-900); font: 600 28px/1.1 "Fraunces", Georgia, serif; }
+    .tools, .panel { border: 1px solid var(--line); border-radius: 10px; background: var(--paper); box-shadow: 0 4px 16px rgba(6,78,59,.045); }
+    .tools { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 19px; padding: 17px 20px; }
+    .tools h2 { margin: 0; font-size: 17px; }
+    .tool-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tool-links a { display: inline-flex; min-height: 34px; align-items: center; padding: 7px 10px; border: 1px solid rgba(13,122,95,.14); border-radius: 6px; color: var(--green-900); background: #f0f7f2; font-size: 11px; font-weight: 700; text-decoration: none; }
+    .tool-links a:hover { border-color: var(--gold-500); background: #faf6ea; }
+    .chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; margin-bottom: 19px; }
+    .panel { min-width: 0; padding: 19px 20px; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .panel-head h2 { font-size: 17px; }
+    .live { display: inline-flex; align-items: center; gap: 6px; color: var(--green-700); font-size: 10px; font-weight: 700; }
+    .live::before { width: 7px; height: 7px; border-radius: 50%; background: var(--green-600); content: ""; }
+    .chart { display: flex; min-height: 181px; align-items: stretch; gap: clamp(5px, 1.1vw, 13px); padding: 26px 3px 0; border-bottom: 1px solid var(--line); }
+    .chart-col { display: flex; min-width: 0; flex: 1; flex-direction: column; align-items: center; justify-content: end; gap: 7px; }
+    .chart-bar-area { display: flex; width: 100%; height: 132px; align-items: end; justify-content: center; }
+    .chart-bar { position: relative; width: min(28px, 80%); min-height: 3px; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, var(--green-600), var(--green-700)); transition: height .35s ease; }
+    .chart-col:nth-child(even) .chart-bar { background: linear-gradient(180deg, #d9bd6a, var(--gold-500)); }
+    .chart-bar:hover { filter: brightness(1.08); }
+    .chart-value { position: absolute; top: -19px; left: 50%; color: var(--green-900); font-size: 9px; font-weight: 700; opacity: 0; transform: translateX(-50%); }
+    .chart-bar:hover .chart-value { opacity: 1; }
+    .chart-label { overflow: hidden; max-width: 100%; color: var(--muted); font-size: 9px; white-space: nowrap; text-overflow: ellipsis; }
+    .chart-total { margin: 10px 0 0; color: var(--muted); font-size: 11px; }
+    .content-grid { display: grid; grid-template-columns: minmax(0, 2.25fr) minmax(245px, .75fr); gap: 17px; align-items: start; }
+    .users-panel { padding-bottom: 15px; }
+    .filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0; }
+    input, select { min-height: 37px; border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; color: var(--ink); background: #fff; font-size: 11px; }
+    .filters input { min-width: 180px; flex: 1 1 210px; }
+    .filters select { min-width: 108px; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+    th { color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    tbody tr:hover { background: rgba(6,78,59,.025); }
+    td strong, td span:not(.badge) { display: block; }
+    td strong { color: var(--green-900); font-size: 11px; }
+    td span:not(.badge) { margin-top: 3px; color: var(--muted); font-size: 9px; overflow-wrap: anywhere; }
+    .badge { display: inline-block; padding: 4px 7px; border-radius: 99px; color: var(--green-900); background: rgba(13,122,95,.1); font-size: 9px; font-weight: 800; white-space: nowrap; }
+    .badge.suspended, .badge.pending { color: #745818; background: rgba(201,168,76,.18); }
+    .badge.user { color: var(--muted); background: rgba(107,122,116,.12); }
+    .badge.admin { color: var(--green-950); background: linear-gradient(135deg, var(--gold-500), var(--gold-200)); }
+    .badge.moderator { color: var(--green-900); background: rgba(13,122,95,.12); }
+    .badge.banned { color: #8a1d1d; background: rgba(185,28,28,.1); }
+    .table-wrap { overflow: auto; }
+    .table-wrap .button { min-height: 30px; padding: 5px 9px; font-size: 10px; }
+    .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 9px; padding-top: 13px; }
+    .pagination span { min-width: 90px; color: var(--muted); font-size: 10px; text-align: center; }
+    .activity-list { margin: 8px 0 0; padding: 0; list-style: none; }
+    .activity-list li { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .activity-list li:last-child { border-bottom: 0; }
+    .activity-list strong { display: block; color: var(--green-900); font-size: 11px; }
+    .activity-list span { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; overflow-wrap: anywhere; }
+    .activity-list .empty { color: var(--muted); }
+    .overlay { position: fixed; inset: 0; z-index: 29; display: none; background: rgba(4,50,42,.52); }
+    .overlay.show { display: block; }
+    dialog { width: min(440px, calc(100% - 28px)); padding: 0; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); box-shadow: 0 24px 65px rgba(0,0,0,.25); }
+    dialog::backdrop { background: rgba(4,50,42,.5); backdrop-filter: blur(3px); }
+    dialog form { padding: 24px; }
+    .dialog-title { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+    .dialog-title h2 { margin: 0 0 6px; font-size: 21px; }
+    .icon-button { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--line); border-radius: 7px; color: var(--green-900); background: #fff; font-size: 20px; cursor: pointer; }
+    dialog label { display: grid; gap: 6px; margin-top: 16px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    dialog select { width: 100%; }
+    .dialog-actions { display: flex; justify-content: end; gap: 9px; margin-top: 23px; }
+    .mobile-overlay { display: none; }
+    [hidden] { display: none !important; }
+    @media (max-width: 1100px) { .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .content-grid { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 760px) {
+      .sidebar { transform: translateX(-100%); transition: transform .25s ease; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-button { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 7px; color: var(--green-900); background: #fff; cursor: pointer; }
+      .menu-button svg { width: 18px; height: 18px; }
+      .mobile-overlay.show { position: fixed; inset: 0; z-index: 19; display: block; background: rgba(4,50,42,.48); }
+      .chart-grid { grid-template-columns: 1fr; }
+      .tools { align-items: flex-start; flex-direction: column; }
+      .content { padding-top: 22px; }
+    }
+    @media (max-width: 520px) {
+      .topbar { min-height: 60px; gap: 9px; padding: 10px 12px; }
+      .top-actions .button { padding: 7px 9px; font-size: 10px; }
+      .top-actions .button svg { display: none; }
+      .content { padding: 20px 12px 34px; }
+      .page-head { align-items: flex-start; flex-direction: column; margin-bottom: 18px; }
+      h1 { font-size: 26px; }
+      .stat-grid { gap: 9px; }
+      .stat { min-height: 116px; padding: 14px; }
+      .stat-value { font-size: 24px; }
+      .stat-icon { width: 33px; height: 33px; }
+      .panel { padding: 15px 12px; }
+      .filters input { flex-basis: 100%; }
+      .filters select { flex: 1; }
+      th, td { padding: 9px 6px; }
+      th:nth-child(2), td:nth-child(2) { display: none; }
+      .top-search input { min-height: 37px; font-size: 11px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="/" aria-label="Yola AI Info Hub home" style="text-decoration:none">
+        <span class="brand-mark"><i data-lucide="sparkles" aria-hidden="true"></i></span>
+        <span><span class="brand-name">Yola AI Info Hub</span><span class="brand-subtitle" style="display:block">Admin panel</span></span>
+      </a>
+      <nav class="nav" aria-label="Administration">
+        <span class="nav-label">Overview</span>
+        <a class="current" href="#overview"><i data-lucide="layout-dashboard" aria-hidden="true"></i>Dashboard</a>
+        <a href="#users"><i data-lucide="users" aria-hidden="true"></i>User management</a>
+        <span class="nav-label">Content tools</span>
+        <a href="/components/admin/admin-navi.html"><i data-lucide="map-pin" aria-hidden="true"></i>Navi admin</a>
+        <a href="/components/admin/admin-servi.html"><i data-lucide="briefcase-business" aria-hidden="true"></i>Services admin</a>
+        <a href="/components/admin/admin-schools.html"><i data-lucide="graduation-cap" aria-hidden="true"></i>Schools admin</a>
+        <a href="/components/admin/admin-eco.html"><i data-lucide="recycle" aria-hidden="true"></i>EcoInfo admin</a>
+        <a href="/pages/admin-setup.html"><i data-lucide="user-round-plus" aria-hidden="true"></i>Admin setup</a>
+      </nav>
+      <div class="sidebar-bottom"><a href="/">← Return to Yola AI Info Hub</a></div>
+    </aside>
+    <button class="mobile-overlay" id="mobile-overlay" aria-label="Close navigation"></button>
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-button" id="menu-button" type="button" aria-label="Open navigation" aria-expanded="false"><i data-lucide="menu" aria-hidden="true"></i></button>
+        <label class="top-search"><i data-lucide="search" aria-hidden="true"></i><input id="quick-search" type="search" placeholder="Search users by name or email" aria-label="Search users"></label>
+        <div class="top-actions"><a class="button" href="/"><i data-lucide="external-link" aria-hidden="true"></i>View site</a><button class="button button-danger" id="sign-out" type="button"><i data-lucide="log-out" aria-hidden="true"></i>Sign out</button></div>
+      </header>
+      <div class="content" id="overview">
+        <div class="page-head"><div><p class="eyebrow">Yola AI Info Hub · Administration</p><h1>Dashboard</h1><p class="subhead">Account activity, site content, and administration tools.</p></div></div>
+        <div id="notice" class="notice" role="status" aria-live="polite"></div>
+        <section id="dashboard" hidden>
+          <section class="stat-grid" aria-label="Dashboard totals">
+            <article class="stat"><div class="stat-top"><span class="stat-icon"><i data-lucide="users" aria-hidden="true"></i></span></div><p class="stat-label">Registered users</p><p class="stat-value" id="total-users">—</p></article>
+            <article class="stat"><div class="stat-top"><span class="stat-icon gold"><i data-lucide="user-check" aria-hidden="true"></i></span></div><p class="stat-label">Active accounts</p><p class="stat-value" id="active-users">—</p></article>
+            <article class="stat"><div class="stat-top"><span class="stat-icon"><i data-lucide="user-round-x" aria-hidden="true"></i></span></div><p class="stat-label">Suspended accounts</p><p class="stat-value" id="suspended-users">—</p></article>
+            <article class="stat"><div class="stat-top"><span class="stat-icon gold"><i data-lucide="files" aria-hidden="true"></i></span></div><p class="stat-label">Content records</p><p class="stat-value" id="content-items">—</p></article>
+          </section>
+          <section class="tools" aria-labelledby="tools-title"><div><p class="eyebrow">Quick access</p><h2 id="tools-title">Administration tools</h2></div><div class="tool-links"><a href="/components/admin/admin-navi.html">Navi admin</a><a href="/components/admin/admin-servi.html">Services admin</a><a href="/components/admin/admin-schools.html">Schools admin</a><a href="/components/admin/admin-eco.html">EcoInfo admin</a><a href="/pages/admin-setup.html">Admin setup</a></div></section>
+          <section class="chart-grid" aria-label="Account activity charts">
+            <article class="panel"><div class="panel-head"><div><h2>New registrations</h2><p class="muted">Last 30 days</p></div><span class="live">Live</span></div><div id="registration-chart" class="chart" aria-label="New registrations in the last 30 days"></div></article>
+            <article class="panel"><div class="panel-head"><div><h2>Users last active</h2><p class="muted">Last recorded sign-in, last 30 days</p></div><span class="live">Live</span></div><div id="activity-chart" class="chart" aria-label="Users with a last sign-in in the last 30 days"></div></article>
+          </section>
+          <section class="content-grid">
+            <article class="panel users-panel" id="users"><div class="panel-head"><div><h2>User management</h2><p class="muted" id="user-count">Loading users…</p></div></div>
+              <form id="filters" class="filters"><input id="search" name="search" type="search" placeholder="Search name, username or email" aria-label="Search users"><select id="role" name="role" aria-label="Filter by role"><option value="">All roles</option><option value="user">User</option><option value="content-admin">Content admin</option><option value="moderator">Moderator</option><option value="admin">Admin</option></select><select id="status" name="status" aria-label="Filter by status"><option value="">All statuses</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select><button class="button button-primary" type="submit"><i data-lucide="list-filter" aria-hidden="true"></i>Filter</button></form>
+              <div class="table-wrap"><table><thead><tr><th scope="col">User</th><th scope="col">Role</th><th scope="col">Status</th><th scope="col">Last visit</th><th scope="col">Manage</th></tr></thead><tbody id="users-table"></tbody></table></div>
+              <nav class="pagination" aria-label="User list pages"><button class="button" id="previous" type="button"><i data-lucide="chevron-left" aria-hidden="true"></i>Previous</button><span id="page-info"></span><button class="button" id="next" type="button">Next<i data-lucide="chevron-right" aria-hidden="true"></i></button></nav>
+            </article>
+            <aside class="panel"><div class="panel-head"><div><h2>Recent activity</h2><p class="muted">Most recent recorded sign-ins.</p></div><i data-lucide="activity" aria-hidden="true" style="color:var(--gold-500)"></i></div><ol id="recent-activity" class="activity-list"></ol></aside>
+          </section>
+        </section>
+      </div>
+    </main>
+  </div>
+  <dialog id="manage-user" aria-labelledby="manage-name"><form method="dialog" id="manage-form"><div class="dialog-title"><div><h2 id="manage-name">Manage user</h2><p id="manage-email" class="muted"></p></div><button class="icon-button" value="cancel" aria-label="Close">×</button></div><label>Role<select id="manage-role"><option value="user">User</option><option value="content-admin">Content admin</option><option value="moderator">Moderator</option><option value="admin">Admin</option></select></label><label>Account status<select id="manage-status"><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></label><div class="dialog-actions"><button class="button" value="cancel">Cancel</button><button class="button button-primary" id="save-user" value="default">Save changes</button></div></form></dialog>
+
+  <script src="/components/admin/scripts/admin-dashboard.js" defer></script>
+</body>
+</html>

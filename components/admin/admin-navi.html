@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NaviInfo Admin | Yola AI Info Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/components/admin/admin-content.css">
+</head>
+<body>
+  <header class="admin-header">
+    <div>
+      <p class="eyebrow">Content administration</p>
+      <h1>NaviInfo places</h1>
+      <p class="muted">Manage navigation entries, moderation state, and map metadata from MongoDB.</p>
+    </div>
+    <a class="back-link" href="/">Back to app</a>
+  </header>
+
+  <main class="admin-shell">
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+
+    <section class="admin-grid">
+      <aside class="panel records-panel">
+        <div class="panel-heading">
+          <h2>Listings</h2>
+          <div class="panel-actions">
+            <button id="approve-pending" class="button button-primary" type="button">Approve pending</button>
+            <button id="new-record" class="button button-primary" type="button">New listing</button>
+          </div>
+        </div>
+
+        <label>
+          Filter status
+          <select id="status-filter">
+            <option value="">All statuses</option>
+            <option>pending</option>
+            <option>published</option>
+            <option>draft</option>
+            <option>rejected</option>
+            <option>suspended</option>
+          </select>
+        </label>
+
+        <div class="admin-tools" aria-labelledby="restaurant-tools-title">
+          <h3 id="restaurant-tools-title">Restaurant content</h3>
+          <p class="muted">Add sample gallery and menu data to restaurant listings.</p>
+          <button id="seed-restaurant-media" class="button button-primary" type="button">Fill missing restaurant media</button>
+          <button id="replace-restaurant-media" class="button button-danger" type="button">Replace seeded media</button>
+        </div>
+
+        <div id="records" class="records-list"><p class="muted">Loading listings...</p></div>
+      </aside>
+
+      <section class="panel editor-panel">
+        <div class="panel-heading">
+          <div>
+            <h2 id="editor-title">New listing</h2>
+            <p class="muted">Required fields are marked by the browser.</p>
+          </div>
+          <button id="delete-record" class="button button-danger" type="button" hidden>Delete</button>
+        </div>
+
+        <form id="navi-form">
+          <input id="record-id" type="hidden">
+          <div class="form-grid">
+            <label>Display name<input id="display-name" required></label>
+            <label>Category<select id="category" required></select></label>
+            <label>Subcategory<input id="subcategory" placeholder="Primary School or Secondary School"></label>
+            <label>Slug<input id="slug" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="auto-generated"></label>
+            <label>Area<input id="area" value="Yola"></label>
+            <label>Address<input id="address" placeholder="Yola, Adamawa State"></label>
+            <label>Opening hours<input id="opening-hours" placeholder="Mon-Sat, 8am-6pm"></label>
+            <label>Phone<input id="phone" type="tel"></label>
+            <label>Email<input id="email" type="email"></label>
+            <label>Website<input id="website" type="url"></label>
+            <label>Primary image URL/path<input id="image" placeholder="Data/Images/transport/example.jpg"></label>
+            <label>Hero image URL/path<input id="hero-image" placeholder="Data/Images/transport/hero.jpg"></label>
+            <label>Gallery image URLs<input id="gallery-images" placeholder="https://..., https://..."></label>
+            <label>Gallery captions<input id="gallery-captions" placeholder="Store front, lounge bar, chef plating"></label>
+            <label>Latitude<input id="lat" type="number" step="any"></label>
+            <label>Longitude<input id="lng" type="number" step="any"></label>
+            <label>Moderation status<select id="record-status"><option>draft</option><option>pending</option><option>published</option><option>rejected</option><option>suspended</option></select></label>
+            <label>Verification<select id="verification-status"><option>unverified</option><option>pending</option><option>verified</option></select></label>
+            <label>Rating average<input id="rating-average" type="number" min="0" max="5" step="0.1" value="0"></label>
+            <label>Review count<input id="review-count" type="number" min="0" value="0"></label>
+            <label class="wide">Tags<input id="tags" placeholder="Yola, transport, bus"></label>
+            <label class="wide">Highlights<input id="highlights" placeholder="Family friendly, open late, breakfast specials"></label>
+            <label class="wide">Services<input id="services" placeholder="Bus stop, route assistance, dispatch support"></label>
+            <label class="wide">Menu items (JSON)<textarea id="menu-items" rows="8" placeholder='[{"name":"Chicken suya","category":"main","description":"Grilled chicken with onions and pepper","price":"3500","currency":"NGN","image":"https://images.pexels.com/..."}]'></textarea></label>
+            <label class="wide">Description<textarea id="description" rows="5"></textarea></label>
+            <div class="wide school-profile-field profile-editor" id="school-profile-editor"></div>
+            <div class="wide university-profile-field profile-editor" id="university-profile-editor"></div>
+            <div class="wide technical-profile-field profile-editor" id="technical-profile-editor"></div>
+            <div class="wide learning-profile-field profile-editor" id="learning-profile-editor"></div>
+            <div class="wide healthcare-profile-field profile-editor" id="healthcare-profile-wrap" hidden>
+              <label>Healthcare details page<select id="healthcare-profile-type"><option value="primaryCare">Primary healthcare centre</option><option value="secondaryHospital">Secondary / specialist hospital</option><option value="pharmacy">Pharmacy</option></select></label>
+              <div id="primaryCare-profile-editor"></div>
+              <div id="secondaryHospital-profile-editor"></div>
+              <div id="pharmacy-profile-editor"></div>
+            </div>
+            <textarea id="school-profile" hidden></textarea>
+            <textarea id="university-profile" hidden></textarea>
+            <textarea id="technical-profile" hidden></textarea>
+            <textarea id="learning-profile" hidden></textarea>
+            <textarea id="healthcare-profile" hidden></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">Save listing</button>
+            <button id="reset-form" class="button" type="button">Reset</button>
+            <a id="school-preview" class="button" href="#" target="_blank" rel="noopener" hidden>Preview school details</a>
+            <a id="university-preview" class="button" href="#" target="_blank" rel="noopener" hidden>Preview university details</a>
+            <a id="technical-preview" class="button" href="#" target="_blank" rel="noopener" hidden>Preview technical details</a>
+            <a id="learning-preview" class="button" href="#" target="_blank" rel="noopener" hidden>Preview learning hub</a>
+            <a id="healthcare-preview" class="button" href="#" target="_blank" rel="noopener" hidden>Preview healthcare details</a>
+          </div>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <script src="/scripts/apiConfig.js"></script>
+  <script src="/components/admin/admin-navi.js"></script>
+</body>
+</html>

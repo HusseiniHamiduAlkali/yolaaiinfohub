@@ -7,7 +7,12 @@ const professionalSchema = new mongoose.Schema({
   bio: { type: String, trim: true, default: '', maxlength: 3000 },
   category: { type: String, required: true, trim: true, index: true },
   serviceTags: { type: [String], default: [] },
+  services: {
+    type: [{ name: { type: String, trim: true, maxlength: 160 }, price: { type: String, trim: true, maxlength: 80 } }],
+    default: []
+  },
   areas: { type: [String], default: [] },
+  languages: { type: [String], default: [] },
   yearsExperience: { type: Number, min: 0, max: 100, default: 0 },
   pricing: {
     label: { type: String, trim: true, default: '' },
@@ -29,6 +34,15 @@ const professionalSchema = new mongoose.Schema({
   verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   ratingAverage: { type: Number, min: 0, max: 5, default: 0 },
   reviewCount: { type: Number, min: 0, default: 0 },
+  reviews: {
+    type: [{
+      reviewer: { type: String, trim: true, maxlength: 120 },
+      rating: { type: Number, min: 1, max: 5 },
+      date: { type: String, trim: true, maxlength: 40 },
+      comment: { type: String, trim: true, maxlength: 1000 }
+    }],
+    default: []
+  },
   status: { type: String, enum: ['draft', 'pending', 'published', 'rejected', 'suspended'], default: 'draft', index: true },
   legacySource: { type: String, trim: true, default: '' },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

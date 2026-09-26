@@ -20,6 +20,7 @@ function content(block, selector) {
 
 function parseCards() {
   const cards = [];
+  const slugCounts = new Map();
   const cardPattern = /<article\s+class="pro-card[^"]*"[\s\S]*?<\/article>/gi;
   let match;
   while ((match = cardPattern.exec(template))) {
@@ -29,15 +30,21 @@ function parseCards() {
     if (!displayName || !categories.includes(category)) continue;
     const phoneMatch = block.match(/href="tel:([^"?]+)"/i);
     const phone = phoneMatch ? phoneMatch[1] : '';
+    const priceMatch = block.match(/fa-naira-sign[^>]*><\/i>\s*([^<]+)/i);
+    const priceLabel = priceMatch ? priceMatch[1].replace(/\s+/g, ' ').trim() : '';
     const placeholder = !phone || /8000000000/.test(phone) || Number(attribute(block, 'exp')) === 0;
+    const baseSlug = slugify(displayName);
+    const count = (slugCounts.get(baseSlug) || 0) + 1;
+    slugCounts.set(baseSlug, count);
+    const slug = count === 1 ? baseSlug : `${baseSlug}-${count}`;
     cards.push({
-      slug: slugify(displayName), displayName, profession: attribute(block, 'role') || content(block, 'p'),
+      slug, displayName, profession: attribute(block, 'role') || content(block, 'p'),
       category, serviceTags: attribute(block, 'tags').split(',').map(value => value.trim()).filter(Boolean),
       areas: [normalizeArea(attribute(block, 'area') || 'All of Yola')], yearsExperience: Number(attribute(block, 'exp')) || 0,
-      pricing: { label: content(block, 'span') }, availability: attribute(block, 'open') === 'true' ? 'available' : 'busy',
+      pricing: { label: priceLabel }, availability: attribute(block, 'open') === 'true' ? 'available' : 'busy',
       image: (block.match(/<img[^>]+src="([^"]+)"/i) || [])[1] || '',
       contact: { phone }, ratingAverage: Number(attribute(block, 'rating')) || 0, reviewCount: Number(attribute(block, 'reviews')) || 0,
-      status: placeholder ? 'draft' : 'published', legacySource: 'templates/servi.html'
+      status: 'published', legacySource: placeholder ? 'templates/servi.html (placeholder contact data)' : 'templates/servi.html'
     });
   }
   return cards;

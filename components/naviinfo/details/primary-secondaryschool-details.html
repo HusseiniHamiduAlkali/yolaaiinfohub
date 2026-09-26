@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Standalone primary and secondary school details-page template for Yola AI Info Hub.">
+    <title>
+      School Name Here | School details
+    </title>
+    <style>
+      :root{--green:#0b3d2e;--deep:#06291f;--gold:#c9a961;--cream:#f5edd8;--paper:#fffdf7;--ink:#1a2e23;--muted:#65746b;--line:#e4d7b9;--serif:Georgia,'Times New Roman',serif;--sans:Arial,sans-serif}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.6 var(--sans)}h1,h2,h3{font-family:var(--serif);line-height:1.12}h2{font-size:clamp(1.75rem,4vw,2.7rem)}a{color:inherit}.wrap{width:min(1080px,calc(100% - 30px));margin:auto}.eyebrow{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;font-weight:bold;color:var(--gold)}.top{background:var(--deep);color:var(--cream);padding:15px 0}.top .wrap{display:flex;justify-content:space-between}.top a{text-decoration:none;font-size:.88rem}.top a:hover{text-decoration:underline}.hero{padding:78px 0 115px;text-align:center;color:white;background:linear-gradient(#06291fb8,#06291fb8),url('https://images.pexels.com/photos/159775/library-la-trobe-study-students-159775.jpeg?auto=compress&cs=tinysrgb&w=1600') center/cover}.crest{width:88px;height:88px;border:2px solid var(--gold);border-radius:50%;margin:auto;display:grid;place-items:center;font:2rem var(--serif);color:var(--gold);background:#0b3d2ed9}.hero h1{font-size:clamp(2.8rem,7vw,5.2rem);margin:16px 0}.school-type{display:inline-block;border-radius:100px;background:var(--gold);color:var(--deep);padding:7px 13px;font-size:.75rem;font-weight:bold;letter-spacing:.08em;text-transform:uppercase}.main{margin-top:-52px;position:relative; padding: 0 50px}.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.stat{background:var(--paper);border-radius:18px;padding:22px;text-align:center;box-shadow:0 12px 24px #06291f1a;transition:.25s}.stat:hover{transform:rotate(-1deg) translateY(-7px)}.stat i{display:grid;place-items:center;margin:auto auto 8px;width:42px;height:42px;border-radius:50%;background:var(--gold);font-style:normal}.stat b{display:block;font:1.7rem var(--serif);color:var(--green)}section{padding:60px 0}.welcome{text-align:center;max-width:670px;margin:auto}.mission{display:grid;grid-template-columns:1fr 1fr;gap:20px}.soft-card{background:var(--paper);padding:30px;border-radius:24px;border:1px solid var(--line)}.soft-card .leaf{color:var(--gold);font-size:2rem}.levels{display:grid;gap:12px}.level{background:white;border:1px solid var(--line);border-radius:16px;overflow:hidden}.level summary{padding:20px;cursor:pointer;font:bold 1.1rem var(--serif);color:var(--green)}.level p{padding:0 20px 20px;margin:0;color:var(--muted)}.curriculum{background:var(--green);color:white;text-align:center}.curriculum h2{color:var(--cream)}.subjects{display:flex;justify-content:center;flex-wrap:wrap;gap:14px}.subject{width:126px;height:126px;border-radius:50%;background:#ffffff12;border:1px solid #c9a96180;display:grid;place-items:center;padding:15px;transition:.2s}.subject:hover{background:var(--gold);color:var(--deep);transform:scale(1.06)}.masonry{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px}.tile{min-height:180px;border-radius:18px;background:center/cover;overflow:hidden;position:relative}.tile:first-child{grid-row:span 2}.tile span{position:absolute;bottom:0;left:0;right:0;padding:12px;color:white;background:#06291fbd;transform:translateY(100%);transition:.25s}.tile:hover span{transform:none}.staff{display:flex;gap:16px;overflow:auto;padding-bottom:12px}.teacher{min-width:250px;border-radius:16px;background:white;padding:20px;border-top:4px solid var(--gold)}.teacher small{color:var(--muted)}.admission-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}.checklist{padding:0;list-style:none}.checklist li{padding:12px 0;border-bottom:1px solid var(--line)}.checklist li:before{content:'✓';color:var(--green);font-weight:bold;margin-right:10px}.flow{border-left:2px solid var(--gold);padding-left:25px}.flow div{position:relative;padding:0 0 23px}.flow b{position:absolute;left:-40px;top:0;width:27px;height:27px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-size:.8rem}.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.price{background:white;border:1px solid var(--line);border-radius:18px;padding:25px}.price.featured{background:var(--green);color:white;transform:translateY(-10px)}.price strong{font:1.7rem var(--serif);color:var(--gold)}.activities{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.activity{background:white;border-radius:14px;text-align:center;padding:16px;transition:.2s}.activity:hover{transform:translateY(-6px);background:var(--gold)}.activity b{display:block;font-size:1.5rem}.calendar{background:var(--paper)}.months{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.month{border-left:2px solid var(--gold);padding:8px 12px}.award-grid{display:flex;gap:16px;flex-wrap:wrap}.award{width:170px;height:170px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;text-align:center;padding:18px;background:white}.quote{background:var(--deep);color:var(--cream);border-radius:24px;padding:38px;text-align:center;max-width:760px;margin:auto}.quote blockquote{font:1.4rem/1.5 var(--serif);margin:0}.dots{margin-top:20px;color:var(--gold)}.overlap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:24px}.overlap .tile{margin:0 -10px;transform:rotate(var(--r));border:7px solid var(--cream);box-shadow:0 8px 20px #06291f33}.contact{background:linear-gradient(#06291fa8,#06291fa8),url('https://images.pexels.com/photos/4386393/pexels-photo-4386393.jpeg?auto=compress&cs=tinysrgb&w=1600') center/cover;padding:85px 0}.contact-card{max-width:630px;margin:auto;border-radius:24px;background:var(--paper);padding:34px;text-align:center}.contact-card p{color:var(--muted)}.button{display:inline-block;text-decoration:none;background:var(--gold);color:var(--deep);font-weight:bold;padding:12px 16px;border-radius:8px}footer{padding:28px 0;background:var(--deep);color:var(--cream);text-align:center;border-top:3px solid var(--gold)}@keyframes float{50%{transform:translateY(-8px)}}.crest{animation:float 3s ease-in-out infinite}@media(max-width:740px){.stat-grid,.mission,.admission-grid,.pricing{grid-template-columns:1fr 1fr}.activities{grid-template-columns:repeat(3,1fr)}.months{grid-template-columns:1fr 1fr}.masonry{grid-template-columns:1fr 1fr}.tile:first-child{grid-column:1/-1;grid-row:auto}.overlap{grid-template-columns:1fr 1fr}}@media(max-width:430px){.stat-grid,.mission,.admission-grid,.pricing,.months,.masonry,.overlap{grid-template-columns:1fr}.activities{grid-template-columns:1fr 1fr}.main{margin-top:-30px}section{padding:46px 0}}
+      /* Refinement pass: less exaggerated rounding and more breathing room. */
+      .stat{border-radius:14px;padding:24px}.soft-card{border-radius:18px;padding:32px}.level{border-radius:14px}.tile{border-radius:14px}.teacher{border-radius:14px;padding:22px}.price{border-radius:14px;padding:28px}.activity{border-radius:12px;padding:18px}.quote{border-radius:18px;padding:42px}.contact-card{border-radius:18px;padding:38px}.button{border-radius:10px;padding:13px 19px;transition:transform .2s ease,box-shadow .2s ease}.button:hover{transform:translateY(-2px);box-shadow:0 8px 18px #0002}@media(max-width:740px){.top .wrap{gap:10px;flex-wrap:wrap}.main{padding:0 20px}}@media(max-width:430px){.soft-card,.contact-card{padding:24px}.quote{padding:28px}.main{padding:0 10px}}
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap">
+        <a href="/">
+          Yola AI Info Hub
+        </a>
+        <a href="/?section=naviinfo">
+          ← Education directory
+        </a>
+      </div>
+    </header>
+    <section class="hero">
+      <div class="wrap">
+        <div class="crest">
+          SN
+        </div>
+        <h1>
+          School Name Here
+        </h1>
+        <p>
+          “Nurturing curious minds and confident futures.”
+        </p>
+        <span class="school-type">
+          Private day school · Placeholder
+        </span>
+      </div>
+    </section>
+    <main class="main">
+      <div class="wrap stat-grid">
+        <article class="stat">
+          <i>
+            ◉
+          </i>
+          <b>
+            680
+          </b>
+          <small>
+            Students
+          </small>
+        </article>
+        <article class="stat">
+          <i>
+            ♢
+          </i>
+          <b>
+            48
+          </b>
+          <small>
+            Teachers
+          </small>
+        </article>
+        <article class="stat">
+          <i>
+            ★
+          </i>
+          <b>
+            18
+          </b>
+          <small>
+            Years of care
+          </small>
+        </article>
+        <article class="stat">
+          <i>
+            ⌂
+          </i>
+          <b>
+            4
+          </b>
+          <small>
+            School levels
+          </small>
+        </article>
+      </div>
+      <section>
+        <div class="welcome">
+          <span class="eyebrow">
+            Welcome
+          </span>
+          <h2>
+            A warm place to learn, grow and belong.
+          </h2>
+          <p>
+            School Name Here is placeholder content ready to be replaced with your verified school profile. Share what makes the school community, teaching and care distinctive.
+          </p>
+        </div>
+      </section>
+      <section>
+        <div class="mission">
+          <article class="soft-card">
+            <span class="leaf">
+              ❦
+            </span>
+            <h2>
+              Our mission
+            </h2>
+            <p>
+              To provide a joyful, inclusive education that equips every child for meaningful contribution.
+            </p>
+          </article>
+          <article class="soft-card">
+            <span class="leaf">
+              ❦
+            </span>
+            <h2>
+              Our vision
+            </h2>
+            <p>
+              To be a trusted community of thoughtful learners, compassionate leaders and lifelong explorers.
+            </p>
+          </article>
+        </div>
+      </section>
+      <section>
+        <span class="eyebrow">
+          Learning journey
+        </span>
+        <h2>
+          School levels
+        </h2>
+        <div class="levels">
+          <details class="level" open>
+            <summary>
+              Nursery &amp; early years
+            </summary>
+            <p>
+              Play-based foundations in language, movement, creativity and social development.
+            </p>
+          </details>
+          <details class="level">
+            <summary>
+              Primary school
+            </summary>
+            <p>
+              Strong literacy, numeracy, discovery and character education.
+            </p>
+          </details>
+          <details class="level">
+            <summary>
+              Junior secondary
+            </summary>
+            <p>
+              Broad subject exploration and confident transition to secondary learning.
+            </p>
+          </details>
+          <details class="level">
+            <summary>
+              Senior secondary
+            </summary>
+            <p>
+              Focused academic preparation, guidance and leadership opportunities.
+            </p>
+          </details>
+        </div>
+      </section>
+      <section class="curriculum">
+        <div class="wrap">
+          <span class="eyebrow">
+            How we learn
+          </span>
+          <h2>
+            A balanced curriculum
+          </h2>
+          <div class="subjects">
+            <div class="subject">
+              🔬
+              <br>
+              Sciences
+            </div>
+            <div class="subject">
+              📚
+              <br>
+              Languages
+            </div>
+            <div class="subject">
+              ➗
+              <br>
+              Mathematics
+            </div>
+            <div class="subject">
+              🎨
+              <br>
+              Arts
+            </div>
+            <div class="subject">
+              🌍
+              <br>
+              Humanities
+            </div>
+            <div class="subject">
+              💻
+              <br>
+              Digital skills
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <span class="eyebrow">
+          Our spaces
+        </span>
+        <h2>
+          Facilities made for young minds
+        </h2>
+        <div class="masonry">
+          <div class="tile" style="background-image:url('https://images.pexels.com/photos/256490/pexels-photo-256490.jpeg?auto=compress&cs=tinysrgb&w=1000')">
+            <span>
+              Library
+            </span>
+          </div>
+          <div class="tile" style="background-image:url('https://images.pexels.com/photos/8471926/pexels-photo-8471926.jpeg?auto=compress&cs=tinysrgb&w=700')">
+            <span>
+              Classrooms
+            </span>
+          </div>
+          <div class="tile" style="background-image:url('https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=700')">
+            <span>
+              Creative studio
+            </span>
+          </div>
+        </div>
+      </section>
+      <section>
+        <span class="eyebrow">
+          People
+        </span>
+        <h2>
+          Meet the teaching team
+        </h2>
+        <div class="staff">
+          <article class="teacher">
+            <h3>
+              Teacher Name
+            </h3>
+            <small>
+              Early years · Placeholder
+            </small>
+            <p>
+              Supporting the first joyful steps into learning.
+            </p>
+          </article>
+          <article class="teacher">
+            <h3>
+              Teacher Name
+            </h3>
+            <small>
+              Primary · Placeholder
+            </small>
+            <p>
+              Building strong foundations for curious learners.
+            </p>
+          </article>
+          <article class="teacher">
+            <h3>
+              Teacher Name
+            </h3>
+            <small>
+              Secondary · Placeholder
+            </small>
+            <p>
+              Guiding achievement, confidence and purpose.
+            </p>
+          </article>
+        </div>
+      </section>
+      <section>
+        <div class="admission-grid">
+          <div>
+            <span class="eyebrow">
+              Join us
+            </span>
+            <h2>
+              Admissions checklist
+            </h2>
+            <ul class="checklist">
+              <li>
+                Completed application form
+              </li>
+              <li>
+                Child’s birth certificate
+              </li>
+              <li>
+                Previous school record where applicable
+              </li>
+              <li>
+                Parent or guardian identification
+              </li>
+            </ul>
+          </div>
+          <div class="flow">
+            <div>
+              <b>
+                1
+              </b>
+              <h3>
+                Enquire
+              </h3>
+              <p>
+                Book a visit or request an information pack.
+              </p>
+            </div>
+            <div>
+              <b>
+                2
+              </b>
+              <h3>
+                Apply
+              </h3>
+              <p>
+                Send the required documents and application.
+              </p>
+            </div>
+            <div>
+              <b>
+                3
+              </b>
+              <h3>
+                Meet us
+              </h3>
+              <p>
+                Complete an age-appropriate assessment or interview.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <span class="eyebrow">
+          Fee guide
+        </span>
+        <h2>
+          Simple, clear fee structure
+        </h2>
+        <div class="pricing">
+          <article class="price">
+            <h3>
+              Early years
+            </h3>
+            <strong>
+              ₦[amount]
+            </strong>
+            <p>
+              Per term · Placeholder
+            </p>
+          </article>
+          <article class="price featured">
+            <h3>
+              Primary
+            </h3>
+            <strong>
+              ₦[amount]
+            </strong>
+            <p>
+              Per term · Placeholder
+            </p>
+          </article>
+          <article class="price">
+            <h3>
+              Secondary
+            </h3>
+            <strong>
+              ₦[amount]
+            </strong>
+            <p>
+              Per term · Placeholder
+            </p>
+          </article>
+        </div>
+      </section>
+      <section>
+        <span class="eyebrow">
+          Life outside class
+        </span>
+        <h2>
+          Activities for every interest
+        </h2>
+        <div class="activities">
+          <div class="activity">
+            <b>
+              ⚽
+            </b>
+            Sport
+          </div>
+          <div class="activity">
+            <b>
+              🎭
+            </b>
+            Drama
+          </div>
+          <div class="activity">
+            <b>
+              ♟
+            </b>
+            Chess
+          </div>
+          <div class="activity">
+            <b>
+              🎵
+            </b>
+            Music
+          </div>
+          <div class="activity">
+            <b>
+              🌱
+            </b>
+            Eco club
+          </div>
+          <div class="activity">
+            <b>
+              🧪
+            </b>
+            STEM club
+          </div>
+        </div>
+      </section>
+      <section class="calendar">
+        <span class="eyebrow">
+          What’s ahead
+        </span>
+        <h2>
+          School calendar
+        </h2>
+        <div class="months">
+          <div class="month">
+            <b>
+              September
+            </b>
+            <br>
+            New term welcome
+          </div>
+          <div class="month">
+            <b>
+              November
+            </b>
+            <br>
+            Learning showcase
+          </div>
+          <div class="month">
+            <b>
+              March
+            </b>
+            <br>
+            Sports festival
+          </div>
+          <div class="month">
+            <b>
+              July
+            </b>
+            <br>
+            Celebration day
+          </div>
+        </div>
+      </section>
+      <section>
+        <span class="eyebrow">
+          Proud moments
+        </span>
+        <h2>
+          Achievements &amp; awards
+        </h2>
+        <div class="award-grid">
+          <div class="award">
+            🏅
+            <br>
+            <b>
+              Academic award
+            </b>
+            <small>
+              Placeholder
+            </small>
+          </div>
+          <div class="award">
+            🏆
+            <br>
+            <b>
+              Sport award
+            </b>
+            <small>
+              Placeholder
+            </small>
+          </div>
+          <div class="award">
+            🌟
+            <br>
+            <b>
+              Community award
+            </b>
+            <small>
+              Placeholder
+            </small>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="quote">
+          <blockquote id="quote">
+            “The school makes every child feel seen, supported and excited to learn.”
+          </blockquote>
+          <p id="author">
+            — Parent testimonial · Placeholder
+          </p>
+          <div class="dots">
+            ● ○ ○
+          </div>
+        </div>
+      </section>
+      <section>
+        <span class="eyebrow">
+          A glimpse of our days
+        </span>
+        <h2>
+          School gallery
+        </h2>
+        <div class="overlap">
+          <div class="tile" style="--r:-3deg;background-image:url('https://images.pexels.com/photos/3662667/pexels-photo-3662667.jpeg?auto=compress&cs=tinysrgb&w=600')">
+          </div>
+          <div class="tile" style="--r:2deg;background-image:url('https://images.pexels.com/photos/8923053/pexels-photo-8923053.jpeg?auto=compress&cs=tinysrgb&w=600')">
+          </div>
+          <div class="tile" style="--r:-2deg;background-image:url('https://images.pexels.com/photos/8422132/pexels-photo-8422132.jpeg?auto=compress&cs=tinysrgb&w=600')">
+          </div>
+          <div class="tile" style="--r:3deg;background-image:url('https://images.pexels.com/photos/8471977/pexels-photo-8471977.jpeg?auto=compress&cs=tinysrgb&w=600')">
+          </div>
+        </div>
+      </section>
+    </main>
+    <section class="contact">
+      <div class="contact-card">
+        <span class="eyebrow">
+          Come and see
+        </span>
+        <h2>
+          Contact School Name Here
+        </h2>
+        <p>
+          School Address Here, Yola, Adamawa State
+          <br>
+          +234 [phone] · hello@school.example
+        </p>
+        <a class="button" href="mailto:hello@school.example">
+          Request an information pack
+        </a>
+      </div>
+    </section>
+    <footer>
+      <div class="wrap">
+        School Name Here · School crest placeholder · Verify all school data before publishing.
+      </div>
+    </footer>
+    <script src="/scripts/apiConfig.js"></script>
+    <script>
+      (function () {
+        'use strict';
+
+        var esc = function (value) {
+          var node = document.createElement('div');
+          node.textContent = value == null ? '' : String(value);
+          return node.innerHTML;
+        };
+        var text = function (value, fallback) { return value ? String(value) : (fallback || ''); };
+        var list = function (value) { return Array.isArray(value) ? value : []; };
+        var apiBase = typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE || '');
+        var id = new URLSearchParams(location.search).get('id');
+
+        function section(title, content, className) {
+          return content ? '<section class="' + (className || '') + '"><div class="wrap">' + content + '</div></section>' : '';
+        }
+
+        function cards(items, className, render) {
+          return list(items).length ? '<div class="' + className + '">' + items.map(render).join('') + '</div>' : '';
+        }
+
+        function render(record) {
+          var profile = record.schoolProfile || {};
+          var stats = profile.stats || {};
+          var contact = record.contact || {};
+          var levels = list(profile.levels);
+          var subjects = list(profile.subjects);
+          var facilities = list(profile.facilities);
+          var staff = list(profile.staff);
+          var admissions = profile.admissions || {};
+          var fees = list(profile.fees);
+          var activities = list(profile.activities);
+          var calendar = list(profile.calendar);
+          var awards = list(profile.awards);
+          var testimonials = list(profile.testimonials);
+          var gallery = list(profile.gallery);
+          var hero = profile.heroImage || record.heroImage || record.image;
+          var heroStyle = hero ? ' style="background-image:linear-gradient(#06291fb8,#06291fb8),url(\'' + esc(hero).replace(/'/g, '%27') + '\')"' : '';
+          var statItems = [['◉', stats.students, 'Students'], ['♢', stats.teachers, 'Teachers'], ['★', stats.years, 'Years of care'], ['⌂', stats.levels, 'School levels']].filter(function (item) { return item[1]; });
+          var title = esc(record.displayName || 'School details');
+          document.title = (record.displayName || 'School') + ' | School details';
+          document.body.innerHTML = '<header class="top"><div class="wrap"><a href="/">Yola AI Info Hub</a><a href="/?section=naviinfo">← Education directory</a></div></header>' +
+            '<section class="hero"' + heroStyle + '><div class="wrap"><div class="crest">' + esc(profile.crest || (record.displayName || 'SN').split(/\s+/).slice(0, 2).map(function (word) { return word[0]; }).join('').toUpperCase()) + '</div><h1>' + title + '</h1><p>' + esc(profile.tagline || record.description || '') + '</p><span class="school-type">' + esc(profile.schoolType || record.subcategory || record.category || 'School') + '</span></div></section>' +
+            '<main class="main"><div class="wrap stat-grid">' + cards(statItems, '', function (item) { return '<article class="stat"><i>' + item[0] + '</i><b>' + esc(item[1]) + '</b><small>' + item[2] + '</small></article>'; }) + '</div>' +
+            section('Welcome', '<div class="welcome"><span class="eyebrow">Welcome</span><h2>' + title + '</h2><p>' + esc(record.description || profile.tagline || 'School information is being prepared.') + '</p></div>') +
+            section('Mission and vision', cards([{ title: 'Our mission', body: profile.mission }, { title: 'Our vision', body: profile.vision }].filter(function (item) { return item.body; }), 'mission', function (item) { return '<article class="soft-card"><span class="leaf">❦</span><h2>' + item.title + '</h2><p>' + esc(item.body) + '</p></article>'; })) +
+            section('Learning journey', levels.length ? '<span class="eyebrow">Learning journey</span><h2>School levels</h2><div class="levels">' + levels.map(function (item, index) { return '<details class="level"' + (!index ? ' open' : '') + '><summary>' + esc(item.name) + '</summary><p>' + esc(item.description) + '</p></details>'; }).join('') + '</div>' : '') +
+            (subjects.length ? '<section class="curriculum"><div class="wrap"><span class="eyebrow">How we learn</span><h2>A balanced curriculum</h2><div class="subjects">' + subjects.map(function (item) { return '<div class="subject">' + esc(item.icon || '•') + '<br>' + esc(item.name) + '</div>'; }).join('') + '</div></div></section>' : '') +
+            section('Facilities', facilities.length ? '<span class="eyebrow">Our spaces</span><h2>Facilities made for young minds</h2><div class="masonry">' + facilities.map(function (item) { return '<div class="tile"' + (item.image ? ' style="background-image:url(\'' + esc(item.image).replace(/'/g, '%27') + '\')"' : '') + '><span>' + esc(item.name) + '</span></div>'; }).join('') + '</div>' : '') +
+            section('People', staff.length ? '<span class="eyebrow">People</span><h2>Meet the teaching team</h2><div class="staff">' + staff.map(function (item) { return '<article class="teacher"><h3>' + esc(item.name) + '</h3><small>' + esc(item.role) + '</small><p>' + esc(item.bio) + '</p></article>'; }).join('') + '</div>' : '') +
+            section('Admissions', (list(admissions.checklist).length || list(admissions.steps).length) ? '<div class="admission-grid"><div><span class="eyebrow">Join us</span><h2>Admissions</h2><ul class="checklist">' + list(admissions.checklist).map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('') + '</ul></div><div class="flow">' + list(admissions.steps).map(function (item, index) { return '<div><b>' + (index + 1) + '</b><h3>' + esc(item.title) + '</h3><p>' + esc(item.description) + '</p></div>'; }).join('') + '</div></div>' : '') +
+            section('Fees', fees.length ? '<span class="eyebrow">Fee guide</span><h2>Simple, clear fee structure</h2><div class="pricing">' + fees.map(function (item) { return '<article class="price' + (item.featured ? ' featured' : '') + '"><h3>' + esc(item.name) + '</h3><strong>' + esc(item.amount) + '</strong><p>' + esc(item.note) + '</p></article>'; }).join('') + '</div>' : '') +
+            section('Activities', activities.length ? '<span class="eyebrow">Life outside class</span><h2>Activities for every interest</h2><div class="activities">' + activities.map(function (item) { return '<div class="activity"><b>' + esc(item.icon || '•') + '</b>' + esc(item.name) + '</div>'; }).join('') + '</div>' : '') +
+            section('Calendar', calendar.length ? '<span class="eyebrow">What is ahead</span><h2>School calendar</h2><div class="months">' + calendar.map(function (item) { return '<div class="month"><b>' + esc(item.month) + '</b><br>' + esc(item.event) + '</div>'; }).join('') + '</div>' : '', 'calendar') +
+            section('Awards', awards.length ? '<span class="eyebrow">Proud moments</span><h2>Achievements and awards</h2><div class="award-grid">' + awards.map(function (item) { return '<div class="award">' + esc(item.icon || '★') + '<br><b>' + esc(item.name) + '</b><small>' + esc(item.detail) + '</small></div>'; }).join('') + '</div>' : '') +
+            (testimonials.length ? '<section><div class="quote"><blockquote id="quote"></blockquote><p id="author"></p><div class="dots">● ○ ○</div></div></section>' : '') +
+            section('Gallery', gallery.length ? '<span class="eyebrow">A glimpse of our days</span><h2>School gallery</h2><div class="overlap">' + gallery.map(function (item, index) { return '<div class="tile" style="--r:' + (index % 2 ? '2' : '-2') + 'deg;background-image:url(\'' + esc(item.image).replace(/'/g, '%27') + '\')" title="' + esc(item.caption) + '"></div>'; }).join('') + '</div>' : '') +
+            '</main><section class="contact"><div class="contact-card"><span class="eyebrow">Come and see</span><h2>Contact ' + title + '</h2><p>' + esc(record.address || 'Address not provided') + '<br>' + esc(contact.phone || '') + (contact.phone && contact.email ? ' · ' : '') + esc(contact.email || '') + '</p>' + (contact.email ? '<a class="button" href="mailto:' + encodeURIComponent(contact.email) + '">Request an information pack</a>' : '') + '</div></section><footer><div class="wrap">' + title + ' · Yola AI Info Hub</div></footer>';
+
+          if (testimonials.length) {
+            var quote = document.getElementById('quote');
+            var author = document.getElementById('author');
+            var index = 0;
+            var showQuote = function () { quote.textContent = '“' + testimonials[index].quote + '”'; author.textContent = testimonials[index].author ? '— ' + testimonials[index].author : ''; };
+            showQuote();
+            if (testimonials.length > 1) setInterval(function () { index = (index + 1) % testimonials.length; showQuote(); }, 4500);
+          }
+        }
+
+        if (!id) {
+          document.body.innerHTML = '<main class="wrap" style="padding:5rem 0"><h1>School not found</h1><p>No school id was provided.</p><a class="button" href="/?section=naviinfo">Return to directory</a></main>';
+          return;
+        }
+
+        fetch(apiBase + '/api/content/navigation-places/' + encodeURIComponent(id), { credentials: 'include' })
+          .then(function (response) { if (!response.ok) throw new Error('School not found'); return response.json(); })
+          .then(function (data) { render(data.item || data); })
+          .catch(function () { document.body.innerHTML = '<main class="wrap" style="padding:5rem 0"><h1>School details unavailable</h1><p>This school may be unpublished or the link may be out of date.</p><a class="button" href="/?section=naviinfo">Return to directory</a></main>'; });
+      }());
+    </script>
+  </body>
+</html>

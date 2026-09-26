@@ -17,7 +17,7 @@
   for = "/api/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Methods = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type"
 
 [[headers]]
@@ -29,6 +29,18 @@
   for = "*.css"
   [headers.values]
     Content-Type = "text/css; charset=utf-8"
+
+[[redirects]]
+  from = "/pages/admin-dashboard.html"
+  to = "/components/admin/admin-dashboard.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/components/ecoinfo/admin.html"
+  to = "/components/admin/admin-eco.html"
+  status = 301
+  force = true
 
 [[redirects]]
   from = "/api/gemini"

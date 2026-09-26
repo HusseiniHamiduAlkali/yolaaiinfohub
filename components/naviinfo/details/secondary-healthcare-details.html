@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modibbo Adama Specialist Hospital — Yola AI Info Hub</title>
+<meta name="description" content="Secondary Hospital details — Modibbo Adama Specialist Hospital, Yola. Departments, services, emergency information, doctors, facilities, hours and location.">
+<style>
+/* ==================== RESET & BASE ==================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --emerald-900:#04322a;--emerald-800:#064e3b;--emerald-700:#0d7a5f;--emerald-600:#17997a;
+  --gold-500:#c9a84c;--gold-400:#d9bd6a;--gold-300:#e5cf7a;--gold-200:#f0d78c;
+  --cream:#f5f0e0;--cream-soft:#faf6ea;--cream-dark:#ede7d8;--paper:#ffffff;
+  --ink:#142520;--ink-soft:#3d4d47;--muted:#6b7a74;--line:rgba(6,78,59,0.12);
+  --shadow-sm:0 2px 6px rgba(6,78,59,0.06);
+  --shadow-md:0 10px 30px -12px rgba(6,78,59,0.25);
+  --shadow-lg:0 24px 60px -20px rgba(6,78,59,0.35);
+  --shadow-gold:0 12px 30px -14px rgba(201,168,76,0.5);
+  --radius-sm:10px;--radius-md:16px;--radius-lg:22px;--radius-xl:28px;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --transition:all .35s cubic-bezier(.25,.46,.45,.94);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--sans);background:linear-gradient(180deg,var(--cream-soft) 0%,var(--paper) 40%);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+ul{list-style:none}
+section{position:relative}
+
+/* ==================== NAVIGATION ==================== */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:14px 0;transition:var(--transition)}
+nav.scrolled{background:rgba(4,50,42,0.96);backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(6,78,59,0.3),var(--shadow-md);padding:10px 0}
+.nav-container{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.nav-logo{font-family:var(--serif);font-size:1.35rem;font-weight:700;color:var(--gold-300);letter-spacing:.02em;transition:var(--transition);display:flex;align-items:center;gap:10px}
+.nav-logo svg{width:28px;height:28px;color:var(--gold-400)}
+nav.scrolled .nav-logo{font-size:1.2rem}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,240,224,0.75);position:relative;padding:4px 0;transition:var(--transition)}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold-400);transition:width .35s ease}
+.nav-links a:hover,.nav-links a.active{color:var(--gold-300)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-back{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:rgba(245,240,224,0.6);transition:var(--transition)}
+.nav-back:hover{color:var(--gold-300)}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-burger span{width:26px;height:2px;background:var(--cream);transition:var(--transition);border-radius:2px}
+.nav-burger.open span:nth-child(1){transform:rotate(45deg) translate(2px,-2px)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:rotate(-45deg) translate(2px,2px)}
+
+/* ==================== HERO ==================== */
+#hero{position:relative;min-height:520px;display:flex;align-items:center;overflow:hidden;padding-top:70px}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.3}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,rgba(4,50,42,0.92) 0%,rgba(6,78,59,0.78) 50%,rgba(13,122,95,0.5) 100%)}
+.hero-content{position:relative;z-index:2;max-width:1300px;margin:0 auto;padding:40px 32px;width:100%}
+.hero-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:center}
+.hero-left{opacity:0;animation:fadeUp .8s .3s forwards}
+.hero-badges{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.badge-emergency{background:rgba(220,38,38,0.2);color:#fca5a5;border:1px solid rgba(220,38,38,0.35)}
+.badge-verified{background:rgba(13,122,95,0.25);color:#6ee7b7;border:1px solid rgba(13,122,95,0.4)}
+.badge svg{width:14px;height:14px}
+.hero h1{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;color:var(--cream);line-height:1.1;letter-spacing:-.01em;margin-bottom:10px}
+.hero-type{font-size:1.1rem;color:var(--gold-300);font-weight:600;margin-bottom:16px}
+.hero-loc{display:flex;align-items:center;gap:8px;color:rgba(245,240,224,0.7);font-size:.92rem;margin-bottom:28px}
+.hero-loc svg{width:18px;height:18px;color:var(--gold-400)}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.btn{padding:13px 28px;border-radius:999px;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;transition:var(--transition);display:inline-flex;align-items:center;gap:10px}
+.btn-gold{background:linear-gradient(135deg,var(--gold-400),var(--gold-500));color:var(--emerald-900);box-shadow:0 4px 18px rgba(201,168,76,0.35)}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(201,168,76,0.5)}
+.btn-outline{border:2px solid rgba(245,240,224,0.3);color:var(--cream);background:transparent}
+.btn-outline:hover{background:rgba(245,240,224,0.1);border-color:var(--gold-400);color:var(--gold-300)}
+.btn-icon{width:48px;height:48px;border-radius:50%;border:2px solid rgba(245,240,224,0.3);color:var(--cream);display:inline-flex;align-items:center;justify-content:center;transition:var(--transition)}
+.btn-icon:hover{background:rgba(245,240,224,0.1);border-color:var(--gold-400);color:var(--gold-300)}
+.btn-icon.saved{background:var(--gold-400);color:var(--emerald-900);border-color:var(--gold-400)}
+.btn-icon svg{width:20px;height:20px}
+.hero-right{opacity:0;animation:fadeUp .8s .5s forwards}
+.hero-img-wrap{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);border:4px solid rgba(245,240,224,0.1)}
+.hero-img-wrap img{width:100%;height:380px;object-fit:cover}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* ==================== STATS STRIP ==================== */
+#stats{background:var(--paper);border-bottom:1px solid var(--line)}
+.stats-grid{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);padding:0 32px}
+.stat-item{display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px 16px;text-align:center;position:relative}
+.stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:var(--line)}
+.stat-icon{width:52px;height:52px;border-radius:50%;background:rgba(13,122,95,0.08);display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.stat-item:hover .stat-icon{background:rgba(13,122,95,0.15);transform:scale(1.1)}
+.stat-icon svg{width:24px;height:24px;color:var(--emerald-700)}
+.stat-label{font-family:var(--sans);font-weight:700;color:var(--ink);font-size:.92rem}
+
+/* ==================== SECTIONS SHARED ==================== */
+.section-pad{padding:80px 0}
+.section-container{max-width:1300px;margin:0 auto;padding:0 32px}
+.section-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(13,122,95,0.08);color:var(--emerald-700);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:12px}
+.section-eyebrow::before{content:'';width:20px;height:2px;background:linear-gradient(90deg,var(--gold-500),var(--emerald-700));border-radius:999px}
+.section-title{font-family:var(--serif);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;color:var(--emerald-800);line-height:1.2}
+.section-divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold-500),transparent);margin:16px 0 0}
+.section-head{text-align:center;margin-bottom:48px}
+.section-head.left{text-align:left}
+.bg-cream{background:var(--cream-soft)}
+.bg-emerald{background:var(--emerald-900);color:var(--cream)}
+
+/* ==================== ABOUT ==================== */
+.about-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:40px}
+.about-text p{color:var(--ink-soft);line-height:1.8;margin-bottom:16px}
+.about-facts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
+.fact-card{background:var(--cream-soft);border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px 18px}
+.fact-card h4{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-700);font-weight:700;margin-bottom:6px}
+.fact-card p{font-size:.92rem;color:var(--ink);font-weight:600;line-height:1.5}
+.about-history{background:var(--emerald-900);border-radius:var(--radius-md);padding:28px;color:var(--cream)}
+.about-history h3{font-family:var(--serif);font-size:1.3rem;color:var(--gold-300);margin-bottom:12px}
+.about-history p{color:rgba(245,240,224,0.85);font-size:.92rem;line-height:1.7}
+
+/* ==================== DEPARTMENTS ==================== */
+.dept-filters{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:36px}
+.filter-btn{padding:9px 22px;border-radius:999px;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--ink-soft);border:1px solid var(--line);background:var(--paper);transition:var(--transition)}
+.filter-btn:hover{border-color:var(--gold-400);color:var(--gold-500)}
+.filter-btn.active{background:var(--emerald-800);color:var(--cream);border-color:var(--emerald-800);box-shadow:var(--shadow-md)}
+.dept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.dept-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;transition:var(--transition)}
+.dept-card:hover{box-shadow:var(--shadow-md);border-color:rgba(201,168,76,0.3)}
+.dept-head{padding:20px;cursor:pointer;display:flex;align-items:flex-start;gap:16px}
+.dept-icon{width:48px;height:48px;border-radius:var(--radius-sm);background:rgba(13,122,95,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--transition)}
+.dept-card:hover .dept-icon{background:rgba(13,122,95,0.15)}
+.dept-icon svg{width:24px;height:24px;color:var(--emerald-700)}
+.dept-info{flex:1}
+.dept-info h3{font-family:var(--serif);font-size:1.15rem;color:var(--emerald-800);margin-bottom:4px}
+.dept-info p{font-size:.85rem;color:var(--ink-soft);line-height:1.5}
+.dept-toggle{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;transition:var(--transition);color:var(--emerald-700);flex-shrink:0}
+.dept-card.active .dept-toggle{background:var(--gold-400);color:var(--emerald-900);border-color:var(--gold-400);transform:rotate(180deg)}
+.dept-detail{max-height:0;overflow:hidden;transition:max-height .45s ease}
+.dept-detail-inner{padding:0 20px 20px;border-top:1px solid var(--line);margin-top:0;padding-top:16px}
+.dept-detail-row{display:flex;align-items:center;gap:10px;font-size:.88rem;margin-bottom:10px}
+.dept-detail-row svg{width:16px;height:16px;color:var(--emerald-600);flex-shrink:0}
+.dept-detail-row span:first-of-type{color:var(--muted)}
+.dept-detail-row a{color:var(--emerald-700);font-weight:600}
+
+/* ==================== SERVICES ==================== */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.svc-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:22px;transition:var(--transition)}
+.svc-card:hover{box-shadow:var(--shadow-md);border-color:rgba(201,168,76,0.3);transform:translateY(-4px)}
+.svc-icon{width:48px;height:48px;border-radius:var(--radius-sm);background:rgba(13,122,95,0.08);display:flex;align-items:center;justify-content:center;margin-bottom:16px;transition:var(--transition)}
+.svc-card:hover .svc-icon{background:rgba(201,168,76,0.12)}
+.svc-icon svg{width:24px;height:24px;color:var(--emerald-700);transition:var(--transition)}
+.svc-card:hover .svc-icon svg{color:var(--gold-500)}
+.svc-card h3{font-family:var(--serif);font-size:1.1rem;color:var(--emerald-800);margin-bottom:8px}
+.svc-card p{font-size:.88rem;color:var(--ink-soft);line-height:1.6}
+
+/* ==================== EMERGENCY ==================== */
+#emergency{background:linear-gradient(180deg,rgba(254,226,226,0.3),rgba(254,226,226,0.1));border-top:1px solid rgba(220,38,38,0.15);border-bottom:1px solid rgba(220,38,38,0.15)}
+.emergency-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:32px}
+.emergency-main{background:var(--paper);border:2px solid rgba(220,38,38,0.2);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-md)}
+.emergency-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.emergency-icon{width:56px;height:56px;border-radius:50%;background:rgba(220,38,38,0.1);display:flex;align-items:center;justify-content:center;animation:pulseRing 2s ease-in-out infinite}
+.emergency-icon svg{width:28px;height:28px;color:#dc2626}
+@keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,0.2)}50%{box-shadow:0 0 0 12px rgba(220,38,38,0)}}
+.emergency-header h3{font-family:var(--serif);font-size:1.6rem;color:#b91c1c}
+.emergency-header p{font-size:.88rem;color:var(--ink-soft)}
+.emergency-call{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:16px;border-radius:var(--radius-sm);background:#dc2626;color:#fff;font-family:var(--sans);font-weight:700;font-size:1.2rem;transition:var(--transition);text-decoration:none}
+.emergency-call:hover{background:#b91c1c;transform:translateY(-2px);box-shadow:0 8px 24px rgba(220,38,38,0.35)}
+.emergency-call svg{width:24px;height:24px}
+.emergency-status{display:flex;align-items:center;gap:10px;margin-top:16px;font-size:.9rem}
+.status-dot{width:10px;height:10px;border-radius:50%}
+.status-dot.green{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.5)}
+.emergency-note{font-size:.88rem;color:var(--ink-soft);margin-top:12px;line-height:1.6}
+.emergency-side{display:flex;flex-direction:column;gap:16px}
+.info-panel{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;border-radius:var(--radius-md)}
+.info-panel.alert{background:rgba(254,243,199,0.5);border:1px solid rgba(202,138,4,0.2)}
+.info-panel.shield{background:rgba(220,252,231,0.5);border:1px solid rgba(22,163,74,0.2)}
+.info-panel-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.info-panel.alert .info-panel-icon{background:rgba(202,138,4,0.15)}
+.info-panel.shield .info-panel-icon{background:rgba(22,163,74,0.15)}
+.info-panel.alert .info-panel-icon svg{color:#a16207;width:22px;height:22px}
+.info-panel.shield .info-panel-icon svg{color:var(--emerald-700);width:22px;height:22px}
+.info-panel h4{font-family:var(--sans);font-weight:700;font-size:1rem;margin-bottom:4px}
+.info-panel.alert h4{color:#92400e}
+.info-panel.shield h4{color:var(--emerald-800)}
+.info-panel p{font-size:.85rem;line-height:1.6}
+.info-panel.alert p{color:#78350f}
+.info-panel.shield p{color:var(--emerald-900)}
+
+/* ==================== DOCTORS ==================== */
+.doctor-scroll{display:flex;gap:20px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.doctor-scroll::-webkit-scrollbar{height:6px}
+.doctor-scroll::-webkit-scrollbar-track{background:var(--cream-soft);border-radius:999px}
+.doctor-scroll::-webkit-scrollbar-thumb{background:var(--emerald-700);border-radius:999px}
+.doctor-card{flex:0 0 280px;scroll-snap-align:start;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;transition:var(--transition)}
+.doctor-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-6px)}
+.doctor-img{height:220px;overflow:hidden}
+.doctor-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.doctor-card:hover .doctor-img img{transform:scale(1.08)}
+.doctor-body{padding:18px}
+.doctor-body h3{font-family:var(--sans);font-weight:700;font-size:1.05rem;color:var(--ink)}
+.doctor-title{color:var(--emerald-700);font-weight:600;font-size:.85rem;margin-top:4px}
+.doctor-qual{font-size:.82rem;color:var(--ink-soft);margin-top:10px}
+.doctor-meta{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.doctor-meta svg{width:16px;height:16px;color:var(--emerald-600);flex-shrink:0}
+.doctor-meta span{font-size:.82rem;color:var(--muted)}
+.doctor-meta .avail{margin-left:auto;font-size:.72rem;color:var(--emerald-700);font-weight:600}
+
+/* ==================== FACILITIES ==================== */
+.fac-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.fac-card{background:var(--cream-soft);border:1px solid var(--line);border-radius:var(--radius-sm);padding:20px;text-align:center;transition:var(--transition)}
+.fac-card:hover{box-shadow:var(--shadow-sm);border-color:rgba(201,168,76,0.3);transform:translateY(-3px)}
+.fac-icon{width:48px;height:48px;border-radius:50%;background:rgba(13,122,95,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.fac-icon svg{width:24px;height:24px;color:var(--emerald-700)}
+.fac-card h3{font-family:var(--sans);font-weight:700;font-size:.88rem;color:var(--ink)}
+.fac-card p{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* ==================== GALLERY ==================== */
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.gallery-item{border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;position:relative;aspect-ratio:1;box-shadow:var(--shadow-sm);transition:var(--transition)}
+.gallery-item:hover{transform:scale(1.03);box-shadow:var(--shadow-md)}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.gallery-item:hover img{transform:scale(1.12)}
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,50,42,0.8),transparent 60%);opacity:0;transition:opacity .4s ease;display:flex;align-items:flex-end;padding:16px}
+.gallery-item:hover .gallery-overlay{opacity:1}
+.gallery-overlay span{color:var(--cream);font-family:var(--serif);font-size:.9rem}
+.lightbox{position:fixed;inset:0;background:rgba(4,50,42,0.95);z-index:5000;display:none;align-items:center;justify-content:center;padding:40px;backdrop-filter:blur(8px)}
+.lightbox.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lightbox-content{max-width:800px;max-height:85vh;position:relative;border-radius:var(--radius-md);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.lightbox-content img{width:100%;max-height:80vh;object-fit:contain}
+.lightbox-close{position:absolute;top:-44px;right:0;width:40px;height:40px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;color:var(--emerald-800);font-size:1.4rem;transition:var(--transition);cursor:pointer}
+.lightbox-close:hover{background:var(--gold-400);color:var(--emerald-900);transform:rotate(90deg)}
+.lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:var(--cream);cursor:pointer;transition:var(--transition);border:1px solid rgba(255,255,255,0.2)}
+.lightbox-nav:hover{background:var(--gold-400);color:var(--emerald-900)}
+.lightbox-nav.prev{left:20px}
+.lightbox-nav.next{right:20px}
+.lightbox-nav svg{width:24px;height:24px}
+
+/* ==================== HOURS ==================== */
+.hours-table{max-width:640px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
+.hours-row{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--line)}
+.hours-row:last-child{border-bottom:none}
+.hours-row.highlight{background:rgba(13,122,95,0.04)}
+.hours-label{font-weight:600;color:var(--ink);font-size:.92rem}
+.hours-value{font-size:.88rem;color:var(--ink-soft)}
+.hours-value.emergency{color:var(--emerald-700);font-weight:700}
+
+/* ==================== LOCATION ==================== */
+.location-grid{display:grid;grid-template-columns:3fr 2fr;gap:24px}
+.location-map{border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-md);min-height:400px;background:var(--cream-dark);position:relative}
+.location-map iframe{width:100%;height:100%;border:0;position:absolute;inset:0}
+.location-side{display:flex;flex-direction:column;gap:16px}
+.loc-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:22px;box-shadow:var(--shadow-sm)}
+.loc-card h3{font-family:var(--sans);font-weight:700;font-size:1.05rem;color:var(--ink);margin-bottom:8px}
+.loc-card p{font-size:.9rem;color:var(--ink-soft);line-height:1.6}
+.loc-copy{display:inline-flex;align-items:center;gap:6px;color:var(--emerald-600);font-size:.82rem;font-weight:600;cursor:pointer;transition:var(--transition);margin-top:10px}
+.loc-copy:hover{color:var(--emerald-800)}
+.loc-copy svg{width:16px;height:16px}
+.loc-card .coords{font-size:.78rem;color:var(--muted);margin-top:8px}
+.btn-directions{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--emerald-800);color:var(--cream);font-weight:700;font-size:.88rem;transition:var(--transition)}
+.btn-directions:hover{background:var(--emerald-900);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+
+/* ==================== CONTACT ==================== */
+#contact{background:var(--emerald-900);color:var(--cream)}
+#contact .section-title{color:var(--cream)}
+#contact .section-eyebrow{background:rgba(201,168,76,0.15);color:var(--gold-300)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px;margin:0 auto}
+.contact-card{background:rgba(6,78,59,0.4);border:1px solid rgba(13,122,95,0.4);border-radius:var(--radius-md);padding:20px;display:flex;align-items:center;gap:16px;transition:var(--transition)}
+.contact-card:hover{background:rgba(6,78,59,0.6)}
+.contact-icon{width:48px;height:48px;border-radius:50%;background:rgba(201,168,76,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-icon svg{width:22px;height:22px;color:var(--gold-300)}
+.contact-info{flex:1;min-width:0}
+.contact-info .label{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-300);font-weight:700;margin-bottom:2px}
+.contact-info a{color:var(--cream);font-weight:600;font-size:.92rem;transition:var(--transition);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.contact-info a:hover{color:var(--gold-200)}
+.contact-copy{color:rgba(245,240,224,0.5);cursor:pointer;transition:var(--transition);flex-shrink:0}
+.contact-copy:hover{color:var(--gold-300)}
+.contact-copy svg{width:18px;height:18px}
+
+/* ==================== FAQS ==================== */
+.faq-list{max-width:820px;margin:0 auto}
+.faq-item{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:12px;overflow:hidden;transition:var(--transition)}
+.faq-item:hover{border-color:rgba(201,168,76,0.3);box-shadow:var(--shadow-sm)}
+.faq-item.active{border-color:var(--gold-400);box-shadow:var(--shadow-md)}
+.faq-q{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:16px;transition:var(--transition)}
+.faq-q:hover{background:var(--cream-soft)}
+.faq-q h3{font-family:var(--sans);font-weight:700;font-size:.98rem;color:var(--ink)}
+.faq-toggle{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;transition:var(--transition);color:var(--emerald-700);flex-shrink:0}
+.faq-item.active .faq-toggle{background:var(--gold-400);color:var(--emerald-900);border-color:var(--gold-400);transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s ease}
+.faq-a-inner{padding:0 24px 22px}
+.faq-a p{font-size:.92rem;color:var(--ink-soft);line-height:1.7}
+
+/* ==================== FOOTER ==================== */
+footer{background:var(--emerald-900);color:rgba(245,240,224,0.7);padding:60px 0 0;border-top:1px solid rgba(13,122,95,0.3)}
+.footer-grid{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:40px;padding:0 32px}
+.footer-brand h3{font-family:var(--serif);font-size:1.5rem;color:var(--gold-300);margin-bottom:12px}
+.footer-brand p{font-size:.88rem;line-height:1.7;max-width:300px}
+.footer-col h4{font-family:var(--sans);font-weight:700;font-size:.85rem;color:var(--gold-200);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.footer-col ul li{margin-bottom:10px}
+.footer-col a{font-size:.85rem;opacity:.7;transition:var(--transition);cursor:pointer}
+.footer-col a:hover{opacity:1;color:var(--gold-200);padding-left:4px}
+.footer-bottom{max-width:1300px;margin:48px auto 0;padding:24px 32px;border-top:1px solid rgba(13,122,95,0.3);text-align:center}
+.footer-bottom p{font-size:.8rem;opacity:.5}
+
+/* Back to top */
+.back-to-top{position:fixed;bottom:30px;right:30px;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold-400),var(--gold-500));color:var(--emerald-900);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-gold);z-index:900;opacity:0;visibility:hidden;transform:translateY(20px);transition:var(--transition);cursor:pointer}
+.back-to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+.back-to-top:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(201,168,76,0.6)}
+.back-to-top svg{width:22px;height:22px}
+
+/* Reveal animation */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+@media(prefers-reduced-motion:reduce){
+  .reveal{transition:none!important;opacity:1!important;transform:none!important}
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media(max-width:1024px){
+  .hero-grid{grid-template-columns:1fr;gap:32px}
+  .hero-img-wrap{display:none}
+  .about-grid{grid-template-columns:1fr;gap:28px}
+  .dept-grid{grid-template-columns:repeat(2,1fr)}
+  .svc-grid{grid-template-columns:repeat(2,1fr)}
+  .fac-grid{grid-template-columns:repeat(3,1fr)}
+  .gallery-grid{grid-template-columns:repeat(3,1fr)}
+  .emergency-grid{grid-template-columns:1fr}
+  .location-grid{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:768px){
+  .nav-links{display:none;position:fixed;top:0;right:0;height:100vh;width:280px;background:var(--emerald-900);flex-direction:column;justify-content:center;padding:40px;gap:24px;box-shadow:var(--shadow-lg)}
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:.95rem}
+  .nav-burger{display:flex}
+  .nav-back{display:none}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat-item::after{display:none}
+  .dept-grid{grid-template-columns:1fr;max-width:480px;margin:0 auto}
+  .svc-grid{grid-template-columns:1fr;max-width:480px;margin:0 auto}
+  .fac-grid{grid-template-columns:repeat(2,1fr)}
+  .gallery-grid{grid-template-columns:repeat(2,1fr)}
+  .about-facts{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:minmax(0,1fr)}
+  .contact-card{width:100%;min-width:0}
+  .contact-info{min-width:0;overflow:hidden}
+  .contact-info a{white-space:normal;overflow-wrap:anywhere}
+  .footer-grid{grid-template-columns:1fr;gap:28px;padding:0 24px}
+  .section-pad{padding:60px 0}
+  .section-container{padding:0 24px}
+  .hero-content{padding:24px}
+}
+@media(max-width:480px){
+  .nav-container{padding:0 20px}
+  .stats-grid{grid-template-columns:1fr;gap:0}
+  .stat-item{padding:24px 16px}
+  .gallery-grid{grid-template-columns:1fr;max-width:400px;margin:0 auto}
+  .hero-actions{flex-direction:column;width:100%}
+  .hero-actions .btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav id="nav">
+  <div class="nav-container">
+    <a href="#" class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/><path d="M12 7v8M8 11h8"/></svg>
+      Yola AI Info Hub
+    </a>
+    <a href="#" class="nav-back" id="backToHub">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Hub
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#departments" class="nav-link">Departments</a></li>
+      <li><a href="#services" class="nav-link">Services</a></li>
+      <li><a href="#emergency" class="nav-link">Emergency</a></li>
+      <li><a href="#doctors" class="nav-link">Doctors</a></li>
+      <li><a href="#facilities" class="nav-link">Facilities</a></li>
+      <li><a href="#hours" class="nav-link">Hours</a></li>
+      <li><a href="#location" class="nav-link">Location</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
+      <li><a href="#faqs" class="nav-link">FAQs</a></li>
+    </ul>
+    <div class="nav-burger" id="navBurger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-bg">
+    <img src="https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Hospital building" loading="eager">
+  </div>
+  <div class="hero-content">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="hero-badges">
+          <span class="badge badge-emergency">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 2a3 3 0 0 0-3 3v1H6a3 3 0 0 0-3 3v3a3 3 0 0 0 3 3h2v1a3 3 0 0 0 3 3h2a3 3 0 0 0 3-3v-1h2a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-2V5a3 3 0 0 0-3-3h-2z"/><path d="M12 8v4M10 10h4"/></svg>
+            Emergency Available
+          </span>
+          <span class="badge badge-verified">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/><path d="M9 12l2 2 4-4"/></svg>
+            Verified
+          </span>
+        </div>
+        <h1>Modibbo Adama Specialist Hospital</h1>
+        <p class="hero-type">Secondary Hospital · Tertiary Care</p>
+        <p class="hero-loc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Jimeta, Yola · Adamawa State
+        </p>
+        <div class="hero-actions">
+          <a href="tel:+2347001234500" class="btn btn-gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Call Hospital
+          </a>
+          <a href="https://www.google.com/maps/search/?api=1&query=9.2035,12.4955" target="_blank" rel="noopener" class="btn btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            Directions
+          </a>
+          <button class="btn-icon" id="shareBtn" aria-label="Share">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          <button class="btn-icon" id="saveBtn" aria-label="Save">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-img-wrap">
+          <img src="https://images.pexels.com/photos/1692693/pexels-photo-1692693.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Hospital aerial view" loading="eager">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS STRIP ===== -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 2a3 3 0 0 0-3 3v1H6a3 3 0 0 0-3 3v3a3 3 0 0 0 3 3h2v1a3 3 0 0 0 3 3h2a3 3 0 0 0 3-3v-1h2a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-2V5a3 3 0 0 0-3-3h-2z"/><path d="M12 8v4M10 10h4"/></svg></div>
+      <span class="stat-label">24/7 Emergency</span>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg></div>
+      <span class="stat-label">Specialist Care</span>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg></div>
+      <span class="stat-label">12 Departments</span>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <span class="stat-label">48 Doctors</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about" class="section-pad">
+  <div class="section-container">
+    <div class="section-head left reveal">
+      <span class="section-eyebrow">Profile</span>
+      <h2 class="section-title">About the Hospital</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>Modibbo Adama Specialist Hospital is the premier secondary referral facility in Adamawa State, providing comprehensive specialist medical care to the Yola metropolitan area and surrounding communities. Established in 1995, the hospital serves as a critical bridge between primary healthcare centres and the state teaching hospital.</p>
+        <p>The hospital serves over 200,000 patients annually, offering 24-hour emergency services, specialist outpatient clinics, advanced diagnostic services, and surgical care across multiple disciplines.</p>
+        <div class="about-facts">
+          <div class="fact-card"><h4>Ownership</h4><p>State Government</p></div>
+          <div class="fact-card"><h4>Level of Care</h4><p>Secondary / Tertiary</p></div>
+          <div class="fact-card"><h4>Catchment Area</h4><p>Yola Metro & 15 LGAs</p></div>
+          <div class="fact-card"><h4>Accreditation</h4><p>Adamawa MoH · NMA</p></div>
+        </div>
+      </div>
+      <div class="about-history reveal reveal-delay-1">
+        <h3>Our History</h3>
+        <p>Founded in 1995 as a regional medical centre, the hospital was upgraded to specialist status in 2012 following major infrastructure investment. Today it serves as a teaching affiliate and a model for secondary care delivery in northeastern Nigeria.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DEPARTMENTS ===== -->
+<section id="departments" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Clinical Units</span>
+      <h2 class="section-title">Departments & Specialties</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="dept-filters reveal">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="emergency">Emergency</button>
+      <button class="filter-btn" data-filter="specialist">Specialist</button>
+      <button class="filter-btn" data-filter="general">General</button>
+      <button class="filter-btn" data-filter="diagnostic">Diagnostic</button>
+    </div>
+    <div class="dept-grid" id="deptGrid">
+      <!-- Cards populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section id="services" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">What We Offer</span>
+      <h2 class="section-title">Hospital Services</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="svc-grid" id="svcGrid"></div>
+  </div>
+</section>
+
+<!-- ===== EMERGENCY ===== -->
+<section id="emergency" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow" style="background:rgba(220,38,38,0.08);color:#b91c1c">24-Hour Service</span>
+      <h2 class="section-title" style="color:#991b1b">Emergency Information</h2>
+      <div class="section-divider" style="background:linear-gradient(90deg,transparent,#dc2626,transparent)"></div>
+    </div>
+    <div class="emergency-grid">
+      <div class="emergency-main reveal">
+        <div class="emergency-header">
+          <div class="emergency-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 2a3 3 0 0 0-3 3v1H6a3 3 0 0 0-3 3v3a3 3 0 0 0 3 3h2v1a3 3 0 0 0 3 3h2a3 3 0 0 0 3-3v-1h2a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-2V5a3 3 0 0 0-3-3h-2z"/><path d="M12 8v4M10 10h4"/></svg>
+          </div>
+          <div>
+            <h3>Emergency Department</h3>
+            <p>Open 24 hours, every day</p>
+          </div>
+        </div>
+        <a href="tel:+2347001234500" class="emergency-call">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          +234 700 123 4500
+        </a>
+        <div class="emergency-status">
+          <span class="status-dot green"></span>
+          <span style="font-weight:600;color:var(--ink)">Ambulance Service Available — 24 hours</span>
+        </div>
+        <p class="emergency-note">Call the emergency line to request ambulance dispatch. In a life-threatening emergency, proceed directly to the Emergency Department. Bring current medications and identification if possible.</p>
+      </div>
+      <div class="emergency-side">
+        <div class="info-panel alert reveal reveal-delay-1">
+          <div class="info-panel-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <h4>In an Emergency</h4>
+            <p>Call the emergency line or proceed directly to the Emergency Department. Bring any current medications and identification if possible. Do not delay seeking care.</p>
+          </div>
+        </div>
+        <div class="info-panel shield reveal reveal-delay-2">
+          <div class="info-panel-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/></svg>
+          </div>
+          <div>
+            <h4>Important Notice</h4>
+            <p>This information is for reference only. Always seek immediate medical attention in emergencies. Call ahead if possible so the team can prepare.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DOCTORS ===== -->
+<section id="doctors" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Our Doctors</span>
+      <h2 class="section-title">Medical Professionals</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="doctor-scroll reveal" id="doctorScroll"></div>
+  </div>
+</section>
+
+<!-- ===== FACILITIES ===== -->
+<section id="facilities" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Infrastructure</span>
+      <h2 class="section-title">Hospital Facilities</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="fac-grid reveal" id="facGrid"></div>
+  </div>
+</section>
+
+<!-- ===== GALLERY ===== -->
+<section id="gallery" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Photos</span>
+      <h2 class="section-title">Hospital Gallery</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="gallery-grid reveal" id="galleryGrid"></div>
+  </div>
+</section>
+
+<!-- ===== HOURS ===== -->
+<section id="hours" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Operating Times</span>
+      <h2 class="section-title">Hospital Hours</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="hours-table reveal" id="hoursTable"></div>
+  </div>
+</section>
+
+<!-- ===== LOCATION ===== -->
+<section id="location" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Find Us</span>
+      <h2 class="section-title">Location & Directions</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="location-grid">
+      <div class="location-map reveal">
+        <iframe title="Hospital location map" src="https://www.openstreetmap.org/export/embed.html?bbox=12.4855,9.1935,12.5055,9.2135&layer=mapnik&marker=9.2035,12.4955" loading="lazy"></iframe>
+      </div>
+      <div class="location-side">
+        <div class="loc-card reveal reveal-delay-1">
+          <h3>Address</h3>
+          <p>Specialist Hospital Road, Jimeta<br>Yola, Adamawa State</p>
+          <div class="loc-copy" id="copyAddress">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copyLabel">Copy address</span>
+          </div>
+        </div>
+        <div class="loc-card reveal reveal-delay-2">
+          <h3>Landmark</h3>
+          <p>Opposite Jimeta Main Market</p>
+          <p class="coords">Coordinates: 9.2035°N, 12.4955°E</p>
+        </div>
+        <a href="https://www.google.com/maps/search/?api=1&query=9.2035,12.4955" target="_blank" rel="noopener" class="btn-directions reveal reveal-delay-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          Get Directions
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Get In Touch</span>
+      <h2 class="section-title">Contact Information</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="contact-grid reveal">
+      <div class="contact-card">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div class="contact-info"><span class="label">Phone</span><a href="tel:+2347001234500">+234 700 123 4500</a></div>
+        <div class="contact-copy" data-copy="+234 700 123 4500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div class="contact-info"><span class="label">Emergency</span><a href="tel:+2347001234500">+234 700 123 4500</a></div>
+        <div class="contact-copy" data-copy="+234 700 123 4500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="contact-info"><span class="label">Email</span><a href="mailto:info@modibboadamahospital.gov.ng">info@modibboadamahospital.gov.ng</a></div>
+        <div class="contact-copy" data-copy="info@modibboadamahospital.gov.ng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="contact-info"><span class="label">Website</span><a href="https://www.modibboadamahospital.gov.ng" target="_blank" rel="noopener">www.modibboadamahospital.gov.ng</a></div>
+        <div class="contact-copy" data-copy="www.modibboadamahospital.gov.ng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQS ===== -->
+<section id="faqs" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Patient Information</span>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="faq-list reveal" id="faqList"></div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>Yola AI Info Hub</h3>
+      <p>Your trusted directory for healthcare facilities across Yola and Adamawa State. Information verified and regularly updated.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Healthcare</h4>
+      <ul>
+        <li><a href="secondary-hospital-details.html">Secondary Hospital</a></li>
+        <li><a href="primary-healthcare-details.html">Primary Health Centre</a></li>
+        <li><a href="pharmacy-details.html">Pharmacy</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#departments">Departments</a></li>
+        <li><a href="#emergency">Emergency</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>About This Data</h4>
+      <p style="font-size:.85rem;opacity:.7;line-height:1.6">Information is for reference only. Always confirm details directly with the facility before visiting.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Yola AI Info Hub · Healthcare Directory · Golden Emerald Design System</p>
+  </div>
+</footer>
+
+<!-- ===== BACK TO TOP ===== -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-close" id="lightboxClose">&times;</div>
+  <div class="lightbox-nav prev" id="lbPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+  <div class="lightbox-content"><img id="lightboxImg" src="" alt=""></div>
+  <div class="lightbox-nav next" id="lbNext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+</div>
+
+<script>
+/* ===== DATA ===== */
+var departments=[
+  {id:'cardiology',name:'Cardiology',icon:'heart',cat:'specialist',desc:'Diagnosis and treatment of heart and cardiovascular conditions, including ECG, echocardiography, and cardiac monitoring.',head:'Dr. Aisha Mohammed',phone:'+234 700 123 4501',hours:'Mon–Fri, 8:00 AM – 4:00 PM'},
+  {id:'emergency',name:'Emergency Medicine',icon:'siren',cat:'emergency',desc:'24-hour acute care, trauma response, and emergency resuscitation services.',head:'Dr. Ibrahim Musa',phone:'+234 700 123 4500',hours:'24 Hours Daily'},
+  {id:'paediatrics',name:'Paediatrics',icon:'baby',cat:'specialist',desc:'Medical care for infants, children, and adolescents including vaccinations and growth monitoring.',head:'Dr. Fatima Yakubu',phone:'+234 700 123 4502',hours:'Mon–Fri, 8:00 AM – 4:00 PM'},
+  {id:'obgyn',name:'Obstetrics & Gynaecology',icon:'baby',cat:'specialist',desc:'Maternity care, antenatal services, delivery, and women\u2019s reproductive health.',head:'Dr. Halima Suleiman',phone:'+234 700 123 4503',hours:'Mon–Sat, 8:00 AM – 6:00 PM'},
+  {id:'surgery',name:'General Surgery',icon:'scissors',cat:'general',desc:'Elective and emergency surgical procedures including appendectomy, hernia repair, and trauma surgery.',head:'Dr. Emmanuel Okoro',phone:'+234 700 123 4504',hours:'Mon–Fri, 8:00 AM – 4:00 PM'},
+  {id:'internal',name:'Internal Medicine',icon:'activity',cat:'general',desc:'Diagnosis and management of adult diseases including diabetes, hypertension, and infectious diseases.',head:'Dr. Samuel Adamu',phone:'+234 700 123 4505',hours:'Mon–Fri, 8:00 AM – 4:00 PM'},
+  {id:'radiology',name:'Radiology & Imaging',icon:'scan',cat:'diagnostic',desc:'X-ray, ultrasound, and diagnostic imaging services with digital reporting.',head:'Dr. Grace Bello',phone:'+234 700 123 4506',hours:'Mon–Sat, 8:00 AM – 6:00 PM'},
+  {id:'laboratory',name:'Laboratory Services',icon:'test',cat:'diagnostic',desc:'Full-range pathology, haematology, biochemistry, and microbiology testing.',head:'Mr. John Tor',phone:'+234 700 123 4507',hours:'Mon–Sat, 7:00 AM – 8:00 PM'}
+];
+
+var services=[
+  {name:'Outpatient Consultation',desc:'General and specialist outpatient clinics across all major disciplines.',icon:'stethoscope'},
+  {name:'Emergency Services',desc:'Round-the-clock emergency care with dedicated resuscitation and trauma bays.',icon:'siren'},
+  {name:'Laboratory Services',desc:'Comprehensive diagnostic testing with same-day results for most panels.',icon:'test'},
+  {name:'Radiology & Imaging',desc:'X-ray, ultrasound, and advanced diagnostic imaging.',icon:'scan'},
+  {name:'Surgical Services',desc:'Elective and emergency surgery across multiple specialties.',icon:'scissors'},
+  {name:'In-house Pharmacy',desc:'Full-service hospital pharmacy dispensing prescription and OTC medications.',icon:'pill'}
+];
+
+var doctors=[
+  {name:'Dr. Aisha Mohammed',title:'Consultant Cardiologist',qual:'MBBS, FWACP (Cardiology)',dept:'Cardiology',avail:'Mon–Fri',img:'https://images.pexels.com/photos/18788957/pexels-photo-18788957.jpeg?auto=compress&cs=tinysrgb&h=400&w=400'},
+  {name:'Dr. Ibrahim Musa',title:'Emergency Medicine Consultant',qual:'MBBS, FWACP (Emergency)',dept:'Emergency',avail:'24 Hours',img:'https://images.pexels.com/photos/5531446/pexels-photo-5531446.jpeg?auto=compress&cs=tinysrgb&h=400&w=400'},
+  {name:'Dr. Fatima Yakubu',title:'Consultant Paediatrician',qual:'MBBS, FWACP (Paediatrics)',dept:'Paediatrics',avail:'Mon–Fri',img:'https://images.pexels.com/photos/32115905/pexels-photo-32115905.jpeg?auto=compress&cs=tinysrgb&h=400&w=400'},
+  {name:'Dr. Emmanuel Okoro',title:'Consultant Surgeon',qual:'MBBS, FWACS (Surgery)',dept:'Surgery',avail:'Mon–Fri',img:'https://images.pexels.com/photos/28755708/pexels-photo-28755708.jpeg?auto=compress&cs=tinysrgb&h=400&w=400'}
+];
+
+var facilities=[
+  {name:'Operating Theatres',desc:'3 modern theatres',icon:'scissors'},
+  {name:'Intensive Care Unit',desc:'6-bed ICU',icon:'heart'},
+  {name:'Maternity Ward',desc:'Delivery suites',icon:'baby'},
+  {name:'Laboratory',desc:'Full diagnostics',icon:'test'},
+  {name:'Pharmacy',desc:'24-hour service',icon:'pill'},
+  {name:'Imaging Centre',desc:'X-ray & ultrasound',icon:'scan'},
+  {name:'Blood Bank',desc:'Transfusion services',icon:'droplet'},
+  {name:'Ambulance Service',desc:'24-hour dispatch',icon:'truck'}
+];
+
+var galleryImages=[
+  {src:'https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',cap:'Hospital Entrance'},
+  {src:'https://images.pexels.com/photos/1692693/pexels-photo-1692693.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',cap:'Aerial View'},
+  {src:'https://images.pexels.com/photos/24193873/pexels-photo-24193873.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',cap:'Surgical Theatre'},
+  {src:'https://images.pexels.com/photos/4769133/pexels-photo-4769133.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',cap:'Operating Room'},
+  {src:'https://images.pexels.com/photos/19563295/pexels-photo-19563295.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',cap:'Surgical Lights'},
+  {src:'https://images.pexels.com/photos/17092745/pexels-photo-17092745.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',cap:'Modern Equipment'},
+  {src:'https://images.pexels.com/photos/11119419/pexels-photo-11119419.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',cap:'Medical Team'},
+  {src:'https://images.pexels.com/photos/6129450/pexels-photo-6129450.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',cap:'Patient Care'}
+];
+
+var hoursData=[
+  {label:'General Services',val:'8:00 AM – 5:00 PM',em:false},
+  {label:'Emergency',val:'24 Hours Daily',em:true},
+  {label:'Outpatient',val:'8:00 AM – 4:00 PM',em:false},
+  {label:'Laboratory',val:'7:00 AM – 8:00 PM',em:false},
+  {label:'Radiology',val:'8:00 AM – 6:00 PM',em:false},
+  {label:'Pharmacy',val:'24 Hours Daily',em:true},
+  {label:'Visiting Hours',val:'12:00–2:00 PM & 4:00–6:00 PM',em:false}
+];
+
+var faqs=[
+  {q:'Do I need an appointment to see a specialist?',a:'Yes, specialist consultations require an appointment. You can book by calling the relevant department directly or visiting the outpatient reception during working hours.'},
+  {q:'What documents should I bring?',a:'Bring a valid form of identification, any previous medical records or test results, a list of current medications, and your health insurance card if applicable.'},
+  {q:'Is emergency care available 24 hours?',a:'Yes. The Emergency Department operates 24 hours a day, 7 days a week, including public holidays. Ambulance services are also available round the clock.'},
+  {q:'What insurance plans do you accept?',a:'The hospital accepts most major health insurance plans, including NHIS. Please contact the billing office to confirm your specific plan is accepted.'},
+  {q:'What are the visiting hours?',a:'Visiting hours are 12:00 PM to 2:00 PM and 4:00 PM to 6:00 PM daily. ICU visits may be restricted; please check with the ward nurse.'}
+];
+
+/* ===== ICONS ===== */
+function svgIcon(name){
+  var icons={
+    heart:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+    siren:'<path d="M7 18v-6a5 5 0 0 1 10 0v6"/><path d="M5 21a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2zM12 2a3 3 0 0 0-3 3v3a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>',
+    baby:'<path d="M9 12h.01M15 12h.01M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M12 3a17 17 0 0 0 14 9 17 17 0 0 0-14 9 17 17 0 0 0-14-9 17 17 0 0 0 14-9z"/>',
+    scissors:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
+    activity:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+    scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/>',
+    test:'<path d="M9 2v6l4 6-4 6v2"/><path d="M15 2v6l-4 6 4 6v2"/><circle cx="9" cy="2" r="1"/><circle cx="15" cy="2" r="1"/>',
+    pill:'<path d="M10.5 20.5L3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7z"/><path d="M8.5 8.5l7 7"/>',
+    stethoscope:'<path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/>',
+    truck:'<path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+    droplet:'<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
+    user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    phone:'<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>',
+    clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
+  };
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+icons[name]+'</svg>';
+}
+
+/* ===== RENDER DEPARTMENTS ===== */
+function renderDepts(filter){
+  var grid=document.getElementById('deptGrid');
+  var html='';
+  departments.forEach(function(d){
+    if(filter!=='all'&&d.cat!==filter) return;
+    html+='<div class="dept-card" data-cat="'+d.cat+'">'+
+      '<div class="dept-head" onclick="toggleDept(this)">'+
+        '<div class="dept-icon">'+svgIcon(d.icon)+'</div>'+
+        '<div class="dept-info"><h3>'+d.name+'</h3><p>'+d.desc+'</p></div>'+
+        '<div class="dept-toggle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>'+
+      '</div>'+
+      '<div class="dept-detail"><div class="dept-detail-inner">'+
+        '<div class="dept-detail-row">'+svgIcon('user')+'<span>Head:</span><span style="font-weight:600;color:var(--ink)">'+d.head+'</span></div>'+
+        '<div class="dept-detail-row">'+svgIcon('phone')+'<span>Tel:</span><a href="tel:'+d.phone.replace(/\s/g,'')+'">'+d.phone+'</a></div>'+
+        '<div class="dept-detail-row">'+svgIcon('clock')+'<span>Hours:</span><span style="font-weight:600;color:var(--ink)">'+d.hours+'</span></div>'+
+      '</div></div>'+
+    '</div>';
+  });
+  grid.innerHTML=html;
+}
+
+function toggleDept(head){
+  var card=head.parentElement;
+  var detail=card.querySelector('.dept-detail');
+  var isActive=card.classList.contains('active');
+  document.querySelectorAll('.dept-card.active').forEach(function(c){
+    c.classList.remove('active');
+    c.querySelector('.dept-detail').style.maxHeight='0';
+  });
+  if(!isActive){
+    card.classList.add('active');
+    detail.style.maxHeight=detail.scrollHeight+'px';
+  }
+}
+
+/* ===== RENDER SERVICES ===== */
+(function(){
+  var html='';
+  services.forEach(function(s){
+    html+='<div class="svc-card"><div class="svc-icon">'+svgIcon(s.icon)+'</div><h3>'+s.name+'</h3><p>'+s.desc+'</p></div>';
+  });
+  document.getElementById('svcGrid').innerHTML=html;
+})();
+
+/* ===== RENDER DOCTORS ===== */
+(function(){
+  var html='';
+  doctors.forEach(function(d){
+    html+='<div class="doctor-card">'+
+      '<div class="doctor-img"><img src="'+d.img+'" alt="'+d.name+'" loading="lazy"></div>'+
+      '<div class="doctor-body">'+
+        '<h3>'+d.name+'</h3>'+
+        '<p class="doctor-title">'+d.title+'</p>'+
+        '<p class="doctor-qual">'+d.qual+'</p>'+
+        '<div class="doctor-meta">'+svgIcon('stethoscope')+'<span>'+d.dept+'</span><span class="avail">'+d.avail+'</span></div>'+
+      '</div>'+
+    '</div>';
+  });
+  document.getElementById('doctorScroll').innerHTML=html;
+})();
+
+/* ===== RENDER FACILITIES ===== */
+(function(){
+  var html='';
+  facilities.forEach(function(f){
+    html+='<div class="fac-card"><div class="fac-icon">'+svgIcon(f.icon)+'</div><h3>'+f.name+'</h3><p>'+f.desc+'</p></div>';
+  });
+  document.getElementById('facGrid').innerHTML=html;
+})();
+
+/* ===== RENDER GALLERY ===== */
+(function(){
+  var html='';
+  galleryImages.forEach(function(img,i){
+    html+='<div class="gallery-item" onclick="openLightbox('+i+')"><img src="'+img.src+'" alt="'+img.cap+'" loading="lazy"><div class="gallery-overlay"><span>'+img.cap+'</span></div></div>';
+  });
+  document.getElementById('galleryGrid').innerHTML=html;
+})();
+
+/* ===== RENDER HOURS ===== */
+(function(){
+  var html='';
+  hoursData.forEach(function(h){
+    html+='<div class="hours-row'+(h.em?' highlight':'')+'"><span class="hours-label">'+h.label+'</span><span class="hours-value'+(h.em?' emergency':'')+'">'+h.val+'</span></div>';
+  });
+  document.getElementById('hoursTable').innerHTML=html;
+})();
+
+/* ===== RENDER FAQS ===== */
+(function(){
+  var html='';
+  faqs.forEach(function(f,i){
+    html+='<div class="faq-item'+(i===0?' active':'')+'">'+
+      '<div class="faq-q" onclick="toggleFaq(this)"><h3>'+f.q+'</h3>'+
+      '<div class="faq-toggle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>'+
+      '<div class="faq-a"'+(i===0?' style="max-height:300px"':'')+'><div class="faq-a-inner"><p>'+f.a+'</p></div></div>'+
+    '</div>';
+  });
+  document.getElementById('faqList').innerHTML=html;
+})();
+
+function toggleFaq(q){
+  var item=q.parentElement;
+  var a=item.querySelector('.faq-a');
+  var isActive=item.classList.contains('active');
+  document.querySelectorAll('.faq-item.active').forEach(function(f){
+    f.classList.remove('active');
+    f.querySelector('.faq-a').style.maxHeight='0';
+  });
+  if(!isActive){
+    item.classList.add('active');
+    a.style.maxHeight=a.scrollHeight+'px';
+  }
+}
+
+/* ===== NAV SCROLL ===== */
+var nav=document.getElementById('nav');
+var backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',function(){
+  if(window.scrollY>60){nav.classList.add('scrolled');backToTop.classList.add('show');}
+  else{nav.classList.remove('scrolled');backToTop.classList.remove('show');}
+  updateActiveNav();
+});
+
+/* ===== ACTIVE NAV ===== */
+var navSections=document.querySelectorAll('section[id]');
+var navLinks=document.querySelectorAll('.nav-link');
+function updateActiveNav(){
+  var pos=window.scrollY+120;
+  navSections.forEach(function(sec){
+    if(pos>=sec.offsetTop&&pos<sec.offsetTop+sec.offsetHeight){
+      navLinks.forEach(function(l){l.classList.remove('active');});
+      var active=document.querySelector('.nav-link[href="#'+sec.id+'"]');
+      if(active)active.classList.add('active');
+    }
+  });
+}
+
+/* ===== MOBILE MENU ===== */
+var burger=document.getElementById('navBurger');
+var navLinksEl=document.getElementById('navLinks');
+burger.addEventListener('click',function(){burger.classList.toggle('open');navLinksEl.classList.toggle('open');});
+navLinksEl.querySelectorAll('a').forEach(function(link){
+  link.addEventListener('click',function(){burger.classList.remove('open');navLinksEl.classList.remove('open');});
+});
+
+/* ===== DEPARTMENT FILTERS ===== */
+renderDepts('all');
+document.querySelectorAll('.filter-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    renderDepts(btn.getAttribute('data-filter'));
+  });
+});
+
+/* ===== REVEAL ===== */
+var revealObs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);}
+  });
+},{threshold:0.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(function(el){revealObs.observe(el);});
+
+/* ===== BACK TO TOP ===== */
+backToTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+
+/* ===== SMOOTH SCROLL ===== */
+document.querySelectorAll('a[href^="#"]').forEach(function(link){
+  link.addEventListener('click',function(e){
+    var href=this.getAttribute('href');
+    if(href==='#')return;
+    var target=document.querySelector(href);
+    if(target){e.preventDefault();window.scrollTo({top:target.offsetTop-70,behavior:'smooth'});}
+  });
+});
+
+/* ===== SHARE / SAVE ===== */
+document.getElementById('shareBtn').addEventListener('click',function(){
+  if(navigator.share){navigator.share({title:'Modibbo Adama Specialist Hospital',url:window.location.href});}
+  else{navigator.clipboard.writeText(window.location.href);alert('Link copied to clipboard!');}
+});
+var saved=false;
+document.getElementById('saveBtn').addEventListener('click',function(){
+  saved=!saved;
+  this.classList.toggle('saved');
+});
+
+/* ===== COPY ADDRESS ===== */
+document.getElementById('copyAddress').addEventListener('click',function(){
+  navigator.clipboard.writeText('Specialist Hospital Road, Jimeta, Yola, Adamawa State');
+  var label=document.getElementById('copyLabel');
+  label.textContent='Copied!';
+  setTimeout(function(){label.textContent='Copy address';},2000);
+});
+
+/* ===== CONTACT COPY ===== */
+document.querySelectorAll('.contact-copy').forEach(function(el){
+  el.addEventListener('click',function(){
+    navigator.clipboard.writeText(this.getAttribute('data-copy'));
+    var svg=this.querySelector('svg');
+    var original=svg.innerHTML;
+    svg.innerHTML='<polyline points="20 6 9 17 4 12"/>';
+    setTimeout(function(){svg.innerHTML=original;},2000);
+  });
+});
+
+/* ===== LIGHTBOX ===== */
+var lbIdx=0;
+function openLightbox(i){
+  lbIdx=i;
+  document.getElementById('lightboxImg').src=galleryImages[i].src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('lightboxClose').addEventListener('click',closeLightbox);
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox();});
+document.getElementById('lbPrev').addEventListener('click',function(){lbIdx=(lbIdx-1+galleryImages.length)%galleryImages.length;openLightbox(lbIdx);});
+document.getElementById('lbNext').addEventListener('click',function(){lbIdx=(lbIdx+1)%galleryImages.length;openLightbox(lbIdx);});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeLightbox();
+  if(e.key==='ArrowLeft'&&document.getElementById('lightbox').classList.contains('open')){lbIdx=(lbIdx-1+galleryImages.length)%galleryImages.length;openLightbox(lbIdx);}
+  if(e.key==='ArrowRight'&&document.getElementById('lightbox').classList.contains('open')){lbIdx=(lbIdx+1)%galleryImages.length;openLightbox(lbIdx);}
+});
+</script>
+<script src="/components/naviinfo/details/healthcare-detail-loader.js"></script>
+</body>
+</html>

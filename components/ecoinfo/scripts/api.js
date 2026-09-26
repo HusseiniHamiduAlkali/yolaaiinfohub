@@ -1,7 +1,10 @@
-/* Backend client. Set API_BASE to wherever you run ecoinfo/server locally. */
+/* EcoInfo has its own API process; the Yola account API runs on a separate port. */
+const host = typeof window !== "undefined" ? window.location.hostname || "localhost" : "localhost";
+const localApi = `http://${host}:4002`;
 
-export const API_BASE =
-  (typeof window !== "undefined" && window.ECOINFO_API_BASE) || "http://localhost:4000";
+export const API_BASE = typeof window !== "undefined"
+  ? window.ECOINFO_API_BASE || window.ECOINFO_BACKEND_URL || localApi
+  : localApi;
 
 export let backendOnline = null; // null = unknown, true/false once probed
 

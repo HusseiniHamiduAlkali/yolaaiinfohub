@@ -12,18 +12,18 @@ window.getAPIBase = function() {
   // Development: use the current hostname so we don't mix 'localhost' and '127.0.0.1'
   // which cause separate cookie domains and inconsistent session state.
   const host = window.location.hostname || 'localhost';
-  return `http://${host}:4000`;
+  return `http://${host}:4002`;
 };
 
 window.API_BASE = window.API_BASE || window.getAPIBase();
 window.API_BASE_CANDIDATES = window.API_BASE_CANDIDATES || [
   window.API_BASE,
-  'http://localhost:4000',
-  'http://127.0.0.1:4000',
-  'http://localhost:4001',
-  'http://127.0.0.1:4001',
   'http://localhost:4002',
   'http://127.0.0.1:4002',
+  'http://localhost:4001',
+  'http://127.0.0.1:4001',
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
   'http://localhost:3000',
   'http://127.0.0.1:3000'
 ].filter((value, index, arr) => value && arr.indexOf(value) === index);

@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Standalone university details-page template for Yola AI Info Hub.">
+    <title>
+      University Name Here | University details
+    </title>
+    <style>
+      :root{--green:#0b3d2e;--deep:#06291f;--gold:#c9a961;--cream:#f5edd8;--paper:#fffdf7;--ink:#1a2e23;--muted:#617267;--line:#dfd2ae;--serif:Georgia,'Times New Roman',serif;--sans:Arial,sans-serif}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.65 var(--sans)}h1,h2,h3{font-family:var(--serif);line-height:1.1}h2{font-size:clamp(1.8rem,4vw,3rem);margin:0 0 18px}a{color:inherit}.shell{width:min(1160px,calc(100% - 32px));margin:auto}.eyebrow{color:var(--gold);font-size:.72rem;font-weight:bold;letter-spacing:.16em;text-transform:uppercase}.button{display:inline-block;padding:12px 18px;border:1px solid var(--gold);text-decoration:none;font-weight:bold}.button.gold{background:var(--gold);color:var(--deep)}.button:hover{transform:translateY(-2px)}
+      .hero{min-height:92vh;color:#fff;display:grid;align-items:end;background:linear-gradient(90deg,rgba(6,41,31,.91),rgba(6,41,31,.36)),url('https://images.pexels.com/photos/207692/pexels-photo-207692.jpeg?auto=compress&cs=tinysrgb&w=1800') center/cover fixed}.hero .shell{padding:64px 0 80px}.top{position:absolute;top:0;left:0;right:0;padding:22px 0;border-bottom:1px solid rgba(255,255,255,.25)}.top .shell{padding:0;display:flex;justify-content:space-between;align-items:center}.brand{font:700 1.05rem var(--serif);text-decoration:none}.back{font-size:.85rem;text-decoration:none}.back:hover{text-decoration:underline}.hero h1{font-size:clamp(3.3rem,9vw,7rem);max-width:11ch;margin:14px 0}.gold-line{width:130px;height:3px;background:var(--gold);margin:24px 0}.hero p{max-width:54ch;font-size:1.1rem}.hero-meta{display:flex;flex-wrap:wrap;gap:18px;margin:25px 0}.hero-meta span{border-left:1px solid var(--gold);padding-left:12px}.stats{background:var(--green);color:white}.stat-grid{display:grid;grid-template-columns:repeat(5,1fr)}.stat{padding:28px 20px;border-right:1px solid rgba(201,169,97,.35)}.stat:last-child{border:0}.stat b{display:block;font:2rem var(--serif);color:var(--gold)}.stat small{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em}
+      section{padding:86px 0}.intro{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}.photo{min-height:410px;background:center/cover;border:10px solid var(--paper);box-shadow:18px 18px 0 var(--gold)}.copy p{color:var(--muted)}.leaf{color:var(--gold);font:2rem var(--serif)}.faculty{background:var(--paper)}.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{padding:25px;border:1px solid var(--line);background:#fff;transition:.25s}.card:hover{transform:translateY(-7px);border-color:var(--gold);box-shadow:0 16px 30px #0b3d2e18}.card .icon{font-size:1.8rem;color:var(--gold)}.programs{background:var(--green);color:white}.programs h2{color:var(--cream)}.program-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.program{border-top:3px solid var(--gold);background:#ffffff11;padding:23px}.program details{border-top:1px solid #ffffff2e;margin-top:12px;padding-top:10px}.program summary{cursor:pointer;color:var(--gold)}.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;position:relative}.step{position:relative;padding:55px 16px 10px;border-top:2px solid var(--gold)}.step b{position:absolute;top:-21px;left:0;width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--deep);display:grid;place-items:center}.fees{width:100%;border-collapse:collapse;background:white}.fees th,.fees td{padding:14px;text-align:left;border-bottom:1px solid var(--line)}.fees th{background:var(--green);color:var(--cream)}.fees tr:nth-child(even){background:#fbf5e8}.badges{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}.badge{border:1px solid var(--gold);padding:20px;min-width:155px;text-align:center;background:var(--paper)}.gallery{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}.gallery figure{margin:0;min-height:190px;position:relative;overflow:hidden;background:center/cover}.gallery figure:first-child{grid-row:span 2}.gallery figcaption{position:absolute;bottom:0;left:0;right:0;padding:11px;background:#06291fcd;color:white;transform:translateY(100%);transition:.25s}.gallery figure:hover figcaption{transform:none}.alumni{overflow:auto;display:flex;gap:18px;padding:5px 0 18px}.person{min-width:210px;background:white;padding:16px}.avatar{width:82px;height:82px;border:3px solid var(--gold);border-radius:50%;background:center/cover}.research{background:var(--paper)}.partnerships{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}.node{border:1px solid var(--gold);border-radius:50%;width:128px;height:128px;display:grid;place-items:center;text-align:center;padding:10px;background:white}.connector{width:45px;border-top:1px solid var(--gold)}.life{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.life article{min-height:250px;padding:22px;display:flex;align-items:end;color:white;background:center/cover;box-shadow:inset 0 -120px 80px #06291fb8}.contact{background:var(--deep);color:white}.contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:35px}.map{min-height:270px;background:linear-gradient(135deg,#1b5b46,#0b3d2e);border:1px solid var(--gold);display:grid;place-items:center;color:var(--gold);font-family:var(--serif)}footer{background:#041d16;color:var(--cream);padding:32px 0;border-top:3px solid var(--gold)}.reveal{animation:rise .7s both}@keyframes rise{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:none}}@media(max-width:760px){.hero{background-attachment:scroll;min-height:760px}.stat-grid,.card-grid,.program-grid,.life{grid-template-columns:1fr 1fr}.intro,.contact-grid{grid-template-columns:1fr;gap:30px}.photo{min-height:290px}.timeline{grid-template-columns:1fr 1fr}.gallery{grid-template-columns:1fr 1fr}.gallery figure:first-child{grid-column:1/-1;grid-row:auto}.connector{display:none}}@media(max-width:460px){.stat-grid,.card-grid,.program-grid,.life,.timeline,.gallery{grid-template-columns:1fr}.stat{border-bottom:1px solid #ffffff22}.hero h1{font-size:3.2rem}section{padding:58px 0}}
+      /* Refinement pass: a calmer shared spacing and corner system. */
+      .button{border-radius:8px;padding:13px 20px;transition:transform .2s ease,box-shadow .2s ease}.button:hover{box-shadow:0 8px 18px #0003}
+      .photo,.card,.program,.badge,.person,.life article,.map{border-radius:14px}.photo{overflow:hidden;box-shadow:14px 14px 0 var(--gold)}.card{padding:28px}.program{padding:27px}.badge{padding:22px}.person{padding:20px}.life article{padding:26px}.map{padding:24px}
+      .gallery figure{border-radius:14px}.fees{border-radius:12px;overflow:hidden}.timeline{gap:20px}.step{padding:55px 20px 18px}.contact{padding:90px 0}
+      @media(max-width:760px){.card,.program{padding:22px}.contact{padding:68px 0}.hero .shell{padding-bottom:68px}}
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <nav class="top">
+        <div class="shell">
+          <a class="brand" href="/">
+            Yola AI Info Hub
+          </a>
+          <a class="back" href="/?section=naviinfo">
+            ← Education directory
+          </a>
+        </div>
+      </nav>
+      <div class="shell reveal">
+        <span class="eyebrow">
+          University profile · Placeholder data
+        </span>
+        <h1>
+          University Name Here
+        </h1>
+        <div class="gold-line">
+        </div>
+        <p>
+          “Knowledge, character and service for a changing world.”
+        </p>
+        <div class="hero-meta">
+          <span>
+            📍 Yola, Adamawa State
+          </span>
+          <span>
+            Established 1992
+          </span>
+          <span>
+            Public university
+          </span>
+        </div>
+        <a class="button gold" href="#contact">
+          Make an enquiry
+        </a>
+      </div>
+    </header>
+    <section class="stats">
+      <div class="shell stat-grid">
+        <div class="stat">
+          <b data-count="18340">
+            0
+          </b>
+          <small>
+            Students enrolled
+          </small>
+        </div>
+        <div class="stat">
+          <b data-count="12">
+            0
+          </b>
+          <small>
+            Faculties
+          </small>
+        </div>
+        <div class="stat">
+          <b data-count="97">
+            0
+          </b>
+          <small>
+            Programmes
+          </small>
+        </div>
+        <div class="stat">
+          <b>
+            Top 20
+          </b>
+          <small>
+            National ranking*
+          </small>
+        </div>
+        <div class="stat">
+          <b>
+            1992
+          </b>
+          <small>
+            Established
+          </small>
+        </div>
+      </div>
+    </section>
+    <main>
+      <section>
+        <div class="shell intro">
+          <div class="photo" style="background-image:url('https://images.pexels.com/photos/256381/pexels-photo-256381.jpeg?auto=compress&cs=tinysrgb&w=1200')">
+          </div>
+          <div class="copy">
+            <span class="eyebrow">
+              Our story
+            </span>
+            <h2>
+              A campus built for discovery.
+            </h2>
+            <span class="leaf">
+              ❦
+            </span>
+            <p>
+              University Name Here is a placeholder profile designed for database-driven content. Replace this summary with the institution’s history, values, academic strengths and community impact.
+            </p>
+            <p>
+              Our interdisciplinary community supports ambitious learners through teaching, research, mentoring and practical experience.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="faculty">
+        <div class="shell">
+          <span class="eyebrow">
+            Academic community
+          </span>
+          <h2>
+            Faculties &amp; colleges
+          </h2>
+          <div class="card-grid">
+            <article class="card">
+              <div class="icon">
+                ⌘
+              </div>
+              <h3>
+                Sciences
+              </h3>
+              <p>
+                Research-led programmes in life, physical and computing sciences.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon">
+                ⚖
+              </div>
+              <h3>
+                Arts &amp; Social Sciences
+              </h3>
+              <p>
+                Ideas, policy and culture explored with local relevance.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon">
+                ✦
+              </div>
+              <h3>
+                Engineering
+              </h3>
+              <p>
+                Design, infrastructure and technology for the future.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon">
+                ✚
+              </div>
+              <h3>
+                Health Sciences
+              </h3>
+              <p>
+                Professional learning and public-health innovation.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon">
+                ▤
+              </div>
+              <h3>
+                Agriculture
+              </h3>
+              <p>
+                Food systems and environmental stewardship.
+              </p>
+            </article>
+            <article class="card">
+              <div class="icon">
+                ◈
+              </div>
+              <h3>
+                Management Sciences
+              </h3>
+              <p>
+                Enterprise, leadership and public administration.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="programs">
+        <div class="shell">
+          <span class="eyebrow">
+            Study options
+          </span>
+          <h2>
+            Find your academic path
+          </h2>
+          <div class="program-grid">
+            <article class="program">
+              <h3>
+                Undergraduate
+              </h3>
+              <p>
+                Bachelor’s degrees with foundation and professional pathways.
+              </p>
+              <details>
+                <summary>
+                  Explore sample programmes
+                </summary>
+                <p>
+                  Computer Science · Economics · Nursing · Law
+                </p>
+              </details>
+            </article>
+            <article class="program">
+              <h3>
+                Postgraduate
+              </h3>
+              <p>
+                Master’s study for advanced professional and research skills.
+              </p>
+              <details>
+                <summary>
+                  Explore sample programmes
+                </summary>
+                <p>
+                  MSc Data Science · MBA · MEd · MPH
+                </p>
+              </details>
+            </article>
+            <article class="program">
+              <h3>
+                Doctoral
+              </h3>
+              <p>
+                Supervised research for original scholarly contribution.
+              </p>
+              <details>
+                <summary>
+                  Explore sample programmes
+                </summary>
+                <p>
+                  PhD programmes are subject to faculty availability.
+                </p>
+              </details>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="shell">
+          <span class="eyebrow">
+            How to apply
+          </span>
+          <h2>
+            Admissions in four steps
+          </h2>
+          <div class="timeline">
+            <div class="step">
+              <b>
+                1
+              </b>
+              <h3>
+                Explore
+              </h3>
+              <p>
+                Choose a programme and check its requirements.
+              </p>
+            </div>
+            <div class="step">
+              <b>
+                2
+              </b>
+              <h3>
+                Apply
+              </h3>
+              <p>
+                Submit your verified application online.
+              </p>
+            </div>
+            <div class="step">
+              <b>
+                3
+              </b>
+              <h3>
+                Screen
+              </h3>
+              <p>
+                Complete required examinations or screening.
+              </p>
+            </div>
+            <div class="step">
+              <b>
+                4
+              </b>
+              <h3>
+                Enrol
+              </h3>
+              <p>
+                Accept your offer and complete registration.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="faculty">
+        <div class="shell">
+          <span class="eyebrow">
+            Planning your study
+          </span>
+          <h2>
+            Sample tuition &amp; fees
+          </h2>
+          <table class="fees">
+            <thead>
+              <tr>
+                <th>
+                  Programme level
+                </th>
+                <th>
+                  Indicative annual fee
+                </th>
+                <th>
+                  Additional note
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  Undergraduate
+                </td>
+                <td>
+                  ₦[placeholder]
+                </td>
+                <td>
+                  Fees vary by faculty and residency.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Postgraduate
+                </td>
+                <td>
+                  ₦[placeholder]
+                </td>
+                <td>
+                  Confirm research and professional charges.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  International
+                </td>
+                <td>
+                  ₦[placeholder]
+                </td>
+                <td>
+                  Contact admissions for current schedule.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            <small>
+              *All amounts and rankings are placeholders. Confirm directly with the university.
+            </small>
+          </p>
+        </div>
+      </section>
+      <section>
+        <div class="shell">
+          <span class="eyebrow">
+            Recognition
+          </span>
+          <h2 style="text-align:center">
+            Accreditations &amp; rankings
+          </h2>
+          <div class="badges">
+            <div class="badge">
+              <b>
+                NUC
+              </b>
+              <br>
+              <small>
+                Accreditation placeholder
+              </small>
+            </div>
+            <div class="badge">
+              <b>
+                ISO
+              </b>
+              <br>
+              <small>
+                Quality standard placeholder
+              </small>
+            </div>
+            <div class="badge">
+              <b>
+                Research
+              </b>
+              <br>
+              <small>
+                Impact recognition placeholder
+              </small>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="faculty">
+        <div class="shell">
+          <span class="eyebrow">
+            Campus experience
+          </span>
+          <h2>
+            Spaces that bring learning to life
+          </h2>
+          <div class="gallery">
+            <figure style="background-image:url('https://images.pexels.com/photos/159740/library-la-trobe-study-students-159740.jpeg?auto=compress&cs=tinysrgb&w=1200')">
+              <figcaption>
+                Central library
+              </figcaption>
+            </figure>
+            <figure style="background-image:url('https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg?auto=compress&cs=tinysrgb&w=800')">
+              <figcaption>
+                Learning commons
+              </figcaption>
+            </figure>
+            <figure style="background-image:url('https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=800')">
+              <figcaption>
+                Science laboratory
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="shell">
+          <span class="eyebrow">
+            Community
+          </span>
+          <h2>
+            Notable alumni
+          </h2>
+          <div class="alumni">
+            <article class="person">
+              <div class="avatar" style="background-image:url('https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=300')">
+              </div>
+              <h3>
+                Alumni Name
+              </h3>
+              <p>
+                Public service · Class of [year]
+              </p>
+            </article>
+            <article class="person">
+              <div class="avatar" style="background-image:url('https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300')">
+              </div>
+              <h3>
+                Alumni Name
+              </h3>
+              <p>
+                Technology · Class of [year]
+              </p>
+            </article>
+            <article class="person">
+              <div class="avatar" style="background-image:url('https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=300')">
+              </div>
+              <h3>
+                Alumni Name
+              </h3>
+              <p>
+                Education · Class of [year]
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="research">
+        <div class="shell">
+          <span class="eyebrow">
+            Ideas in action
+          </span>
+          <h2>
+            Research &amp; innovation
+          </h2>
+          <div class="card-grid">
+            <article class="card">
+              <h3>
+                Climate-smart agriculture
+              </h3>
+              <p>
+                Placeholder highlight for a cross-faculty research initiative.
+              </p>
+            </article>
+            <article class="card">
+              <h3>
+                Digital health
+              </h3>
+              <p>
+                Placeholder highlight for an innovation lab or community partnership.
+              </p>
+            </article>
+            <article class="card">
+              <h3>
+                Entrepreneurship hub
+              </h3>
+              <p>
+                Placeholder highlight for student ventures and enterprise support.
+              </p>
+            </article>
+          </div>
+          <h3 style="margin-top:48px;text-align:center">
+            International partnerships
+          </h3>
+          <div class="partnerships">
+            <div class="node">
+              University
+              <br>
+              Name Here
+            </div>
+            <i class="connector">
+            </i>
+            <div class="node">
+              Partner
+              <br>
+              University
+            </div>
+            <i class="connector">
+            </i>
+            <div class="node">
+              Research
+              <br>
+              Network
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="shell">
+          <span class="eyebrow">
+            Beyond lectures
+          </span>
+          <h2>
+            Student life
+          </h2>
+          <div class="life">
+            <article style="background-image:url('https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=800')">
+              <h3>
+                Sport &amp; wellness
+              </h3>
+            </article>
+            <article style="background-image:url('https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=800')">
+              <h3>
+                Clubs &amp; societies
+              </h3>
+            </article>
+            <article style="background-image:url('https://images.pexels.com/photos/3184423/pexels-photo-3184423.jpeg?auto=compress&cs=tinysrgb&w=800')">
+              <h3>
+                Leadership &amp; service
+              </h3>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <section class="contact" id="contact">
+      <div class="shell contact-grid">
+        <div>
+          <span class="eyebrow">
+            Visit or enquire
+          </span>
+          <h2>
+            Contact the university
+          </h2>
+          <p>
+            <b>
+              Admissions Office
+            </b>
+            <br>
+            University Address Here, Yola, Adamawa State
+            <br>
+            +234 [phone number] · admissions@example.edu.ng
+          </p>
+          <a class="button gold" href="mailto:admissions@example.edu.ng">
+            Email admissions
+          </a>
+        </div>
+        <div class="map">
+          MAP PLACEHOLDER
+          <br>
+          <small>
+            Replace with your map embed
+          </small>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <div class="shell">
+        University Name Here · Directory profile template · Verify all details before publishing.
+      </div>
+    </footer>
+    <script src="/scripts/apiConfig.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        var id = new URLSearchParams(location.search).get('id');
+        var apiBase = typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE || '');
+        var esc = function (value) { var node = document.createElement('div'); node.textContent = value == null ? '' : String(value); return node.innerHTML; };
+        var list = function (value) { return Array.isArray(value) ? value : []; };
+        var value = function (item, fallback) { return item == null || item === '' ? (fallback || '') : item; };
+        var imageStyle = function (url) { return url ? ' style="background-image:url(\'' + esc(url).replace(/'/g, '%27') + '\')"' : ''; };
+        var section = function (className, content) { return '<section class="' + (className || '') + '">' + content + '</section>'; };
+
+        function defaults(record) {
+          var profile = record.universityProfile || {};
+          var stats = profile.stats || {};
+          return {
+            record: record,
+            profile: Object.assign({
+              tagline: record.description || 'Knowledge, character and service for a changing world.',
+              institutionType: record.subcategory || record.category || 'University',
+              established: 'Not provided',
+              stats: { students: 'Not provided', faculties: 'Not provided', programmes: 'Not provided', ranking: 'Not provided', established: 'Not provided' },
+              story: { heading: 'A campus built for discovery.', paragraphs: ['University profile information is being prepared.', 'Academic, research and community information will be added by the content administrator.'] },
+              faculties: [{ name: 'Academic faculty', icon: '✦', description: 'Faculty information will be verified and published here.' }],
+              programmes: [{ level: 'Undergraduate', description: 'Programme information will be verified and published here.', examples: ['Programme details pending'] }],
+              admissions: [{ title: 'Explore', description: 'Choose a programme and check its requirements.' }, { title: 'Apply', description: 'Submit your verified application online.' }, { title: 'Screen', description: 'Complete required examinations or screening.' }, { title: 'Enrol', description: 'Accept your offer and complete registration.' }],
+              fees: [{ level: 'Programme level', amount: 'Amount to verify', note: 'Confirm current fees with the institution.' }],
+              accreditations: [{ name: 'Accreditation', detail: 'Verify current status with the institution.' }],
+              gallery: [], alumni: [], research: [], partnerships: [], studentLife: []
+            }, profile),
+            stats: Object.assign({ students: 'Not provided', faculties: 'Not provided', programmes: 'Not provided', ranking: 'Not provided', established: 'Not provided' }, stats)
+          };
+        }
+
+        function render(record) {
+          var data = defaults(record), p = data.profile, s = data.stats, contact = record.contact || {};
+          var faculties = list(p.faculties), programmes = list(p.programmes), admissions = list(p.admissions), fees = list(p.fees), accreditations = list(p.accreditations), gallery = list(p.gallery), alumni = list(p.alumni), research = list(p.research), partnerships = list(p.partnerships), studentLife = list(p.studentLife), story = p.story || {};
+          var title = esc(record.displayName || 'University details');
+          var hero = p.heroImage || record.heroImage || record.image;
+          document.title = (record.displayName || 'University') + ' | University details';
+          var statData = [[s.students, 'Students enrolled'], [s.faculties, 'Faculties'], [s.programmes, 'Programmes'], [s.ranking, 'National ranking'], [s.established || p.established, 'Established']];
+          var statsHtml = statData.map(function (item) { return '<div class="stat"><b>' + esc(item[0]) + '</b><small>' + item[1] + '</small></div>'; }).join('');
+          var facultyHtml = faculties.map(function (item) { return '<article class="card"><div class="icon">' + esc(item.icon || '✦') + '</div><h3>' + esc(item.name) + '</h3><p>' + esc(item.description) + '</p></article>'; }).join('');
+          var programmeHtml = programmes.map(function (item) { return '<article class="program"><h3>' + esc(item.level) + '</h3><p>' + esc(item.description) + '</p><details><summary>Explore sample programmes</summary><p>' + esc(list(item.examples).join(' · ')) + '</p></details></article>'; }).join('');
+          var admissionHtml = admissions.map(function (item, index) { return '<div class="step"><b>' + (index + 1) + '</b><h3>' + esc(item.title) + '</h3><p>' + esc(item.description) + '</p></div>'; }).join('');
+          var feesHtml = fees.map(function (item) { return '<tr><td>' + esc(item.level) + '</td><td>' + esc(item.amount) + '</td><td>' + esc(item.note) + '</td></tr>'; }).join('');
+          var badgeHtml = accreditations.map(function (item) { return '<div class="badge"><b>' + esc(item.name) + '</b><br><small>' + esc(item.detail) + '</small></div>'; }).join('');
+          var galleryHtml = gallery.map(function (item) { return '<figure' + imageStyle(item.image) + '><figcaption>' + esc(item.caption) + '</figcaption></figure>'; }).join('');
+          var alumniHtml = alumni.map(function (item) { return '<article class="person"><div class="avatar"' + imageStyle(item.image) + '></div><h3>' + esc(item.name) + '</h3><p>' + esc(item.field) + (item.year ? ' · Class of ' + esc(item.year) : '') + '</p></article>'; }).join('');
+          var researchHtml = research.map(function (item) { return '<article class="card"><h3>' + esc(item.title) + '</h3><p>' + esc(item.description) + '</p></article>'; }).join('');
+          var partnerHtml = partnerships.map(function (item) { return '<div class="node">' + esc(item.name) + (item.detail ? '<br><small>' + esc(item.detail) + '</small>' : '') + '</div>'; }).join('<i class="connector"></i>');
+          var lifeHtml = studentLife.map(function (item) { return '<article' + imageStyle(item.image) + '><h3>' + esc(item.title) + '</h3></article>'; }).join('');
+          document.body.innerHTML = '<header class="hero"' + imageStyle(hero) + '><nav class="top"><div class="shell"><a class="brand" href="/">Yola AI Info Hub</a><a class="back" href="/?section=naviinfo">← Education directory</a></div></nav><div class="shell reveal"><span class="eyebrow">University profile</span><h1>' + title + '</h1><div class="gold-line"></div><p>“' + esc(p.tagline) + '”</p><div class="hero-meta"><span>📍 ' + esc(record.address || record.area || 'Yola, Adamawa State') + '</span><span>Established ' + esc(p.established) + '</span><span>' + esc(p.institutionType) + '</span></div><a class="button gold" href="#contact">Make an enquiry</a></div></header>' +
+            '<section class="stats"><div class="shell stat-grid">' + statsHtml + '</div></section><main>' +
+            section('', '<div class="shell intro"><div class="photo"' + imageStyle(story.image || hero) + '></div><div class="copy"><span class="eyebrow">Our story</span><h2>' + esc(story.heading) + '</h2><span class="leaf">❦</span>' + list(story.paragraphs).map(function (item) { return '<p>' + esc(item) + '</p>'; }).join('') + '</div></div>') +
+            section('faculty', '<div class="shell"><span class="eyebrow">Academic community</span><h2>Faculties and colleges</h2><div class="card-grid">' + facultyHtml + '</div></div>') +
+            section('programs', '<div class="shell"><span class="eyebrow">Study options</span><h2>Find your academic path</h2><div class="program-grid">' + programmeHtml + '</div></div>') +
+            section('', '<div class="shell"><span class="eyebrow">How to apply</span><h2>Admissions in four steps</h2><div class="timeline">' + admissionHtml + '</div></div>') +
+            section('faculty', '<div class="shell"><span class="eyebrow">Planning your study</span><h2>Sample tuition and fees</h2><table class="fees"><thead><tr><th>Programme level</th><th>Indicative annual fee</th><th>Additional note</th></tr></thead><tbody>' + feesHtml + '</tbody></table></div>') +
+            section('', '<div class="shell"><span class="eyebrow">Recognition</span><h2 style="text-align:center">Accreditations and rankings</h2><div class="badges">' + badgeHtml + '</div></div>') +
+            section('faculty', '<div class="shell"><span class="eyebrow">Campus experience</span><h2>Spaces that bring learning to life</h2><div class="gallery">' + galleryHtml + '</div></div>') +
+            section('', '<div class="shell"><span class="eyebrow">Community</span><h2>Notable alumni</h2><div class="alumni">' + alumniHtml + '</div></div>') +
+            section('research', '<div class="shell"><span class="eyebrow">Ideas in action</span><h2>Research and innovation</h2><div class="card-grid">' + researchHtml + '</div><h3 style="margin-top:48px;text-align:center">International partnerships</h3><div class="partnerships">' + partnerHtml + '</div></div>') +
+            section('', '<div class="shell"><span class="eyebrow">Beyond lectures</span><h2>Student life</h2><div class="life">' + lifeHtml + '</div></div>') +
+            '</main><section class="contact" id="contact"><div class="shell contact-grid"><div><span class="eyebrow">Visit or enquire</span><h2>Contact the university</h2><p><b>Admissions Office</b><br>' + esc(record.address || 'Address not provided') + '<br>' + esc(contact.phone || '') + (contact.phone && contact.email ? ' · ' : '') + esc(contact.email || '') + '</p>' + (contact.email ? '<a class="button gold" href="mailto:' + encodeURIComponent(contact.email) + '">Email admissions</a>' : '') + '</div><div class="map">MAP PLACEHOLDER<br><small>Replace with your map embed</small></div></div></section><footer><div class="shell">' + title + ' · Directory profile · Verify all details before publishing.</div></footer>';
+        }
+
+        if (!id) { document.body.innerHTML = '<main class="shell" style="padding:5rem 0"><h1>University not found</h1><a href="/?section=naviinfo">Return to directory</a></main>'; return; }
+        fetch(apiBase + '/api/content/navigation-places/' + encodeURIComponent(id), { credentials: 'include' })
+          .then(function (response) { if (!response.ok) throw new Error('University not found'); return response.json(); })
+          .then(function (data) { render(data.item || data); })
+          .catch(function () { document.body.innerHTML = '<main class="shell" style="padding:5rem 0"><h1>University details unavailable</h1><p>This institution may be unpublished or the link may be out of date.</p><a href="/?section=naviinfo">Return to directory</a></main>'; });
+      }());
+    </script>
+  </body>
+</html>

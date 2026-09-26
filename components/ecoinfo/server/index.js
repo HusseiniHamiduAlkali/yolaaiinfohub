@@ -18,8 +18,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = Number(process.env.PORT || 4000);
+const PORT = Number(process.env.PORT || 4002);
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
+const MAIN_API_BASES = (process.env.MAIN_API_BASE || "http://localhost:4000,http://localhost:4001")
+  .split(",")
+  .map(base => base.trim().replace(/\/$/, ""))
+  .filter(Boolean);
 
 const db = new Database(path.join(__dirname, "ecoinfo.db"));
 db.pragma("journal_mode = WAL");
@@ -68,13 +72,45 @@ function makeCode() {
 
 function auth(req, res, next) {
   const token = req.cookies?.eco_token;
-  if (!token) return res.status(401).json({ error: "Not signed in" });
-  try {
-    req.user = jwt.verify(token, JWT_SECRET);
-    next();
-  } catch {
-    res.status(401).json({ error: "Session expired" });
+  if (token) {
+    try {
+      req.user = jwt.verify(token, JWT_SECRET);
+      if (req.user.role !== "admin") return res.status(403).json({ error: "Administrator access required" });
+      return next();
+    } catch {
+      // A stale EcoInfo token may still have a valid Yola admin session.
+    }
   }
+
+  const sessionCookie = req.headers.cookie?.split(/;\s*/).find(cookie => cookie.startsWith("connect.sid="));
+  if (!sessionCookie) return res.status(401).json({ error: "Not signed in" });
+
+  (async () => {
+    for (const base of MAIN_API_BASES) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      try {
+        const response = await fetch(`${base}/api/me`, {
+          headers: { Cookie: sessionCookie },
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) continue;
+        const user = await response.json();
+        if (!user.loggedIn) continue;
+        if (user.accountStatus !== "active" || !["admin", "content-admin"].includes(user.role)) {
+          return res.status(403).json({ error: "Active administrator access required" });
+        }
+        req.user = { id: user.username, name: user.name, email: user.email, role: user.role };
+        return next();
+      } catch {
+        // Try the next configured main API address.
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+    return res.status(401).json({ error: "Sign in to the Yola administrator dashboard first" });
+  })();
 }
 
 function publicReport(r) {

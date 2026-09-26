@@ -16,7 +16,7 @@ Node backend adds persistence, officer accounts and real AI classification.
 | `schedule.html` | Ward collection schedule, calendar (.ics) export, personal waste log |
 | `learn.html` | Eco tip library, carbon footprint calculator with Nigerian emission factors, quiz |
 | `community.html` | Alerts, clean-up events, ward leaderboard, eco points and pledges |
-| `admin.html` | Officer console: triage reports, assign crews, record actions, export CSV, publish alerts |
+| `../admin/admin-eco.html` | Admin console: triage reports, assign crews, record actions, export CSV, publish alerts |
 
 ## Running
 
@@ -24,25 +24,27 @@ The pages use ES modules and `fetch` for the JSON data files, so open them throu
 server rather than `file://`:
 
 ```bash
-cd ecoinfo
-python3 -m http.server 8000     # then visit http://localhost:8000
+# From the repository root:
+python3 -m http.server 8000     # then visit /components/admin/admin-eco.html
 ```
 
 In this mode weather is live (Open-Meteo, no key needed), reports are queued in
 `localStorage`, and the classifier uses its built-in rules engine.
 
-## With the backend (persistence + AI + real admin login)
+## With the backend (persistence + AI + admin tools)
 
 ```bash
-cd ecoinfo/server
+cd components/ecoinfo/server
 cp .env.example .env            # set JWT_SECRET, optionally an AI key
 npm install
 npm run seed                    # creates officer@adsepa.ng / ecoinfo123 + samples
-npm start                       # serves the pages AND the API on :4000
+npm start                       # runs the EcoInfo API on :4002; Yola auth remains on :4000/:4001
 ```
 
-Visit <http://localhost:4000>. Reports now persist to SQLite (`server/ecoinfo.db`),
-tracking codes resolve for real, and `admin.html` accepts the seeded login.
+Visit your static site URL at `/components/admin/admin-eco.html`. The console opens directly,
+without an EcoInfo login or demo mode, and uses the existing Yola administrator API session
+for protected report updates and alerts. Reports persist to SQLite (`server/ecoinfo.db`),
+and tracking codes resolve for real.
 Change the seeded password before using this anywhere real.
 
 ### API

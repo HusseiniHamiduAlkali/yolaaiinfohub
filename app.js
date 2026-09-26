@@ -128,7 +128,7 @@ async function initializeApp() {
     // Then check authentication state
     // Note: index.html already does initial auth check and navbar render,
     // but we call this again to update UI if auth state changed since initial load
-  const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4000'; return ''; }catch(e){return 'http://localhost:4000'} })();
+  const API_BASE = window.API_BASE || (function(){ try{ const h=window.location.hostname; if(!h||h==='localhost'||h==='127.0.0.1'||h.startsWith('192.')||h.startsWith('10.')||h==='::1') return 'http://localhost:4002'; return ''; }catch(e){return 'http://localhost:4002'} })();
   try {
     const response = await fetch(`${API_BASE}/api/me`, {
       credentials: 'include'
@@ -275,6 +275,115 @@ function normalizeDetailsHref(href) {
   }
 
   return href;
+}
+
+function normalizeLegacySlug(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function isPrimarySecondarySchoolRecord(item) {
+  const category = [item && item.category, item && item.subcategory]
+    .filter(Boolean).join(' ').toLowerCase().replace(/[&_/-]+/g, ' ');
+  const searchable = [category, item && item.displayName]
+    .filter(Boolean).join(' ');
+  return /\b(schools?|primary|secondary|nursery|elementary|high school|grammar school|academy)\b/.test(searchable) &&
+    !/\b(university|college of education|polytechnic|library|knowledge center)\b/.test(searchable);
+}
+
+function isUniversityRecord(item) {
+  const searchable = [item && item.category, item && item.subcategory, item && item.displayName]
+    .filter(Boolean).join(' ').toLowerCase().replace(/[&_/-]+/g, ' ');
+  return /\b(universities|university|polytechnic|institute of technology)\b/.test(searchable) &&
+    !/\b(school|library|knowledge center)\b/.test(searchable);
+}
+
+function isTechnicalInstitutionRecord(item) {
+  const searchable = [item && item.category, item && item.subcategory, item && item.displayName]
+    .filter(Boolean).join(' ').toLowerCase().replace(/[&_/-]+/g, ' ');
+  return /\b(colleges?|polytechnics?|monotechnics?|college of health|health technology|nursing sciences?|legal studies|institute of technology)\b/.test(searchable) &&
+    !/\b(university|primary school|secondary school|nursery|elementary|library|knowledge center)\b/.test(searchable);
+}
+
+function isLearningHubRecord(item) {
+  const searchable = [item && item.category, item && item.subcategory, item && item.displayName]
+    .filter(Boolean).join(' ').toLowerCase().replace(/[&_/-]+/g, ' ');
+  return /\b(libraries?|library|knowledge centers?|learning centers?|learning hubs?|educational hubs?)\b/.test(searchable);
+}
+
+async function resolveLegacyNaviDetailHref(href) {
+  if (!href) return href;
+
+  const clean = href.split('?')[0].split('#')[0];
+  const isLegacyCategoryReference = /\/details\/(?:[^/]+\/)?(?:Navi|Edu|Medi)\//i.test(clean);
+  if (!isLegacyCategoryReference) return href;
+
+  const fileName = clean.split('/').pop() || '';
+  if (!/\.html$/i.test(fileName)) return href;
+
+  const requestedSlug = normalizeLegacySlug(fileName.replace(/\.html$/i, ''));
+  if (!requestedSlug) return href;
+
+  try {
+    const apiBase = typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE || '');
+    const response = await fetch(apiBase + '/api/content/navigation-places?limit=200', { credentials: 'include' });
+    if (!response.ok) return href;
+
+    const payload = await response.json();
+    const items = Array.isArray(payload && payload.items) ? payload.items : [];
+    const match = items.find(function (item) {
+      const slug = normalizeLegacySlug(item && (item.slug || item.displayName || ''));
+      const display = normalizeLegacySlug(item && item.displayName || '');
+      return slug === requestedSlug ||
+        display === requestedSlug ||
+        slug.includes(requestedSlug) ||
+        requestedSlug.includes(slug) ||
+        display.includes(requestedSlug) ||
+        requestedSlug.includes(display);
+    });
+
+    if (!match) return href;
+
+    const category = [match.category, match.subcategory]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    const slugText = String(match.slug || match.displayName || '').toLowerCase();
+    let targetTemplate = '/navi/' + encodeURIComponent(match.slug || match.id || '');
+
+    if (slugText.includes('chicken-cottage') || slugText.includes('chicken cottage')) {
+      targetTemplate = '/components/naviinfo/details/restaurant-details.html';
+    } else if (isPrimarySecondarySchoolRecord(match)) {
+      targetTemplate = '/components/naviinfo/details/primary-secondaryschool-details.html';
+    } else if (isTechnicalInstitutionRecord(match)) {
+      targetTemplate = '/components/naviinfo/details/technical-institution-details.html';
+    } else if (isLearningHubRecord(match)) {
+      targetTemplate = '/components/naviinfo/details/learning-hub-details.html';
+    } else if (isUniversityRecord(match)) {
+      targetTemplate = '/components/naviinfo/details/university-details.html';
+    } else if (category === 'educational' || category.indexOf('educational') !== -1) {
+      targetTemplate = '/components/naviinfo/details/education-institution-details.html';
+    } else if (category === 'health' || category.indexOf('health') !== -1 || category.indexOf('hospital') !== -1 || category.indexOf('pharmacy') !== -1) {
+      targetTemplate = '/components/naviinfo/details/health-facility-details.html';
+    } else if (category === 'hotels' || category === 'restaurants' || category.indexOf('hotel') !== -1 || category.indexOf('restaurant') !== -1 || category.indexOf('hospitality') !== -1 || category.indexOf('cafe') !== -1) {
+      targetTemplate = '/components/naviinfo/details/hospitality-details.html';
+    }
+
+    if (slugText.includes('restaurant') || slugText.includes('cafe') || slugText.includes('bakery') || slugText.includes('suya') || slugText.includes('shawarma') || slugText.includes('grill') || slugText.includes('icecream') || slugText.includes('ice-cream')) {
+      targetTemplate = '/components/naviinfo/details/restaurant-details.html';
+    }
+
+    const hasQuestion = targetTemplate.indexOf('?') !== -1;
+    return targetTemplate + (hasQuestion ? '&' : '?') + 'id=' + encodeURIComponent(match.slug || match.id || '');
+  } catch (err) {
+    console.warn('Unable to resolve legacy Navi detail URL:', err);
+    return href;
+  }
 }
 
 function getDetailRouteParts(href) {
@@ -531,20 +640,34 @@ function getDetailRouteParts(href) {
       e.preventDefault();
       const href = anchor.getAttribute('href') || '';
       const normalizedHref = normalizeDetailsHref(href);
-      if (!normalizedHref) return;
+      const legacyTarget = /\/details\/(?:[^/]+\/)?(?:Navi|Edu|Medi)\//i.test(normalizedHref)
+        ? resolveLegacyNaviDetailHref(normalizedHref)
+        : Promise.resolve(normalizedHref);
 
-      if (normalizedHref !== href) {
-        anchor.setAttribute('href', normalizedHref);
-      }
+      legacyTarget.then(function (resolvedHref) {
+        if (!resolvedHref) return;
 
-      const code = getCurrentAppCode();
-      const targetCode = getTargetLangCode(code);
-      if (targetCode === 'en') {
-        window.location.assign(normalizedHref);
-        return;
-      }
+        if (resolvedHref !== href) {
+          anchor.setAttribute('href', resolvedHref);
+        }
 
-      translateDetailPage(normalizedHref, targetCode);
+        const code = getCurrentAppCode();
+        const targetCode = getTargetLangCode(code);
+        if (targetCode === 'en') {
+          window.location.assign(resolvedHref);
+          return;
+        }
+
+        translateDetailPage(resolvedHref, targetCode);
+      }).catch(function () {
+        const code = getCurrentAppCode();
+        const targetCode = getTargetLangCode(code);
+        if (targetCode === 'en') {
+          window.location.assign(normalizedHref);
+          return;
+        }
+        translateDetailPage(normalizedHref, targetCode);
+      });
     } catch (err) {
       console.warn('Failed to open detail page:', err);
     }
@@ -573,5 +696,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       } catch (inner) { /* ignore */ }
     });
+
+    if (/\/details\/(?:[^/]+\/)?(?:Navi|Edu|Medi)\//i.test(window.location.pathname)) {
+      resolveLegacyNaviDetailHref(window.location.href).then(function (resolvedHref) {
+        if (resolvedHref && resolvedHref !== window.location.href) {
+          history.replaceState({}, '', resolvedHref);
+          window.location.replace(resolvedHref);
+        }
+      }).catch(function () {
+        // ignore resolution failures and allow the page to load normally
+      });
+    }
   } catch (e) { /* ignore */ }
 });

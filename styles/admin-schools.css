@@ -28,6 +28,10 @@ h2 { margin-bottom: 0; font-size: 1.35rem; }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 28px rgba(23, 33, 43, .06); padding: 22px; }
 .panel-heading { display: flex; justify-content: space-between; align-items: start; gap: 16px; margin-bottom: 20px; }
 .records-list { display: grid; gap: 8px; max-height: 70vh; overflow: auto; }
+.admin-tools { display: grid; gap: 8px; margin: 18px 0; padding: 14px; border: 1px solid var(--line); border-radius: 6px; background: #f8fbfa; }
+.admin-tools h3 { margin: 0; font: 700 14px Arial, sans-serif; }
+.admin-tools p { margin: 0; font: 13px/1.4 Arial, sans-serif; }
+.admin-tools .button { width: 100%; }
 .record { display: grid; gap: 3px; width: 100%; padding: 12px; text-align: left; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
 .record:hover, .record.active { border-color: var(--accent); background: #edf8f3; }
 .record span { color: var(--muted); font: 12px Arial, sans-serif; }
@@ -36,6 +40,7 @@ h2 { margin-bottom: 0; font-size: 1.35rem; }
 .button-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .button-primary:hover { background: var(--accent-dark); }
 .button-danger { color: var(--danger); border-color: #e8b4ae; }
+.button:disabled { cursor: wait; opacity: .6; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 label { display: grid; gap: 6px; color: var(--muted); font: 700 12px Arial, sans-serif; }
 .wide { grid-column: 1 / -1; }
@@ -44,11 +49,34 @@ textarea { resize: vertical; }
 input:focus, textarea:focus { outline: 2px solid rgba(8, 127, 91, .2); border-color: var(--accent); }
 .published { display: flex; grid-template-columns: auto 1fr; align-items: center; margin: 18px 0; }
 .published input { width: auto; }
-.form-actions { display: flex; gap: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+.form-actions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+.profile-editor { display: grid; gap: 16px; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: #f8fbfa; }
+.profile-editor[hidden], .profile-editor:empty { display: none; }
+.profile-heading { display: flex; justify-content: space-between; gap: 12px; align-items: start; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+.profile-heading h3 { margin: 0; color: var(--accent-dark); font: 700 18px Arial, sans-serif; }
+.profile-heading p { margin: 4px 0 0; color: var(--muted); font: 13px/1.4 Arial, sans-serif; }
+.profile-section { display: grid; gap: 10px; }
+.profile-section h4 { margin: 0; color: var(--ink); font: 700 13px Arial, sans-serif; text-transform: uppercase; letter-spacing: .05em; }
+.profile-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.profile-fields .wide { grid-column: 1 / -1; }
+.profile-repeaters { display: grid; gap: 10px; }
+.profile-item { display: grid; gap: 9px; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.profile-item-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.profile-item-head strong { color: var(--muted); font: 700 12px Arial, sans-serif; }
+.profile-remove { padding: 5px 8px; color: var(--danger); border-color: #e8b4ae; }
+.profile-add { justify-self: start; }
+@media (max-width: 800px) {
+  .profile-fields { grid-template-columns: 1fr; }
+  .profile-fields .wide { grid-column: auto; }
+}
 @media (max-width: 800px) {
   .admin-shell { padding: 28px 14px 48px; }
   .admin-header, .panel-heading { align-items: start; flex-direction: column; }
   .admin-grid, .form-grid { grid-template-columns: 1fr; }
   .wide { grid-column: auto; }
   .records-list { max-height: none; }
+  .panel { padding: 16px; }
+  .panel-heading > div { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+  .panel-heading > div .button { flex: 1 1 170px; }
+  #school-profile, #menu-items { min-height: 220px; font-size: 14px; }
 }

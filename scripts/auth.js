@@ -9,25 +9,25 @@ const API_BASE = window.API_BASE || (function() {
     // treat localhost/127.0.0.1 and typical LAN IPs as dev
     // Use the same hostname for the API so cookies set by the backend
     // match the frontend host (avoids localhost vs 127.0.0.1 mismatch).
-    if (!host) return 'http://localhost:4000';
+    if (!host) return 'http://localhost:4002';
     if (host === 'localhost' || host === '127.0.0.1' || host === '::1' || host.startsWith('192.') || host.startsWith('10.')) {
-      return `http://${host}:4000`;
+      return `http://${host}:4002`;
     }
     // otherwise use the configured production backend in production
     return window.__API_BASE__ || window.API_BASE_PROD_URL || '';
   } catch (e) {
-    return 'http://localhost:4000';
+    return 'http://localhost:4002';
   }
 })();
 
 window.API_BASE_CANDIDATES = window.API_BASE_CANDIDATES || [
   API_BASE,
-  'http://localhost:4000',
-  'http://127.0.0.1:4000',
-  'http://localhost:4001',
-  'http://127.0.0.1:4001',
   'http://localhost:4002',
   'http://127.0.0.1:4002',
+  'http://localhost:4001',
+  'http://127.0.0.1:4001',
+  'http://localhost:4000',
+  'http://127.0.0.1:4000',
   'http://localhost:3000',
   'http://127.0.0.1:3000'
 ].filter((value, index, arr) => value && arr.indexOf(value) === index);

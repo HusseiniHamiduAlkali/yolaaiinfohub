@@ -49,6 +49,10 @@ The SPA uses hash routes loaded from the section components:
 
 Standalone public pages are under `pages/`, including authentication, help, privacy, terms, reports, profiles, and verification.
 
+### Backend port and API base
+
+The backend listens only on the `PORT` environment variable (default `4000`). If that port is occupied, startup fails rather than silently switching ports. When the backend serves the frontend, browser API calls use the current origin. For a separately hosted frontend, configure/inject `API_BASE_URL` with the backend's public base URL and allow that frontend origin in `CORS_ORIGINS`.
+
 ## Local development
 
 This project uses Node.js and npm. Node is managed with `nvm` in the current development setup.
@@ -58,24 +62,15 @@ nvm use 24.18.0
 npm install
 ```
 
-Start the backend in one terminal and leave it running:
+Start the backend in one terminal and open the app from that same backend origin:
 
 ```bash
 npm start
 ```
 
-The backend listens on `http://127.0.0.1:4000` by default. Start Five Server from the project root for the frontend, normally at:
+The backend serves the frontend and API on the same port. The default is `http://127.0.0.1:4000`; if `PORT` is set to another value, use that port for the app URL as well. Do not start a separate static frontend server unless you also inject `API_BASE_URL` for that frontend.
 
-```text
-http://127.0.0.1:5500/
-```
-
-Use the same hostname consistently for browser testing so session cookies work:
-
-- Frontend: `http://127.0.0.1:5500`
-- Backend: `http://127.0.0.1:4000`
-
-The frontend API base is configured by `scripts/apiConfig.js`. Production requests use the configured Render backend URL.
+Use one hostname consistently for browser testing so session cookies remain same-origin.
 
 ## Authentication and administrators
 

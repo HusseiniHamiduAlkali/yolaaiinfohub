@@ -44,11 +44,14 @@ const { buildPasswordResetFallbackResponse } = require('./server/passwordResetUt
 const { sendEmailWithGmailSmtp } = require('./services/gmailMailer');
 const ContentItem = require('./server/contentItemModel');
 const Professional = require('./server/professionalModel');
+const NavigationPlace = require('./server/navigationPlaceModel');
+const restaurantMediaSeed = require('./Data/Images/restaurants/restaurant-media.json');
 const { categories: professionalCategories, areas: professionalAreas, normalizeArea, slugify } = require('./server/professionalTaxonomy');
 
 
 const app = express();
 const PORT = Number(process.env.PORT || 4000);
+const API_BASE_URL = String(process.env.API_BASE_URL || process.env.BACKEND_URL || process.env.BACK_END_URL || '').trim().replace(/\/$/, '');
 const HOST = process.env.HOST || '0.0.0.0';
 const DEFAULT_ALLOWED_ORIGINS = [
   'http://127.0.0.1:5500',
@@ -145,7 +148,7 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'x-content-admin-secret'],
   exposedHeaders: ['Set-Cookie', 'x-auth-token'],
   optionsSuccessStatus: 200
@@ -635,6 +638,70 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
+
+app.use((req, res, next) => {
+  const redirects = {
+    '/pages/admin-dashboard.html': '/components/admin/admin-dashboard.html',
+    '/components/ecoinfo/admin.html': '/components/admin/admin-eco.html'
+  };
+  const destination = redirects[req.path];
+  if (destination) return res.redirect(301, destination);
+  if (req.path === '/components/admin/admin-eco.html') {
+    const policy = res.getHeader('Content-Security-Policy');
+    if (typeof policy === 'string') {
+      const connectSource = policy.match(/(?:^|;)\s*connect-src\s+([^;]+)/);
+      const additions = 'http://localhost:* http://127.0.0.1:* https://yolaaiinfohub-authentication.onrender.com';
+      const ecoPolicy = connectSource
+        ? policy.replace(/(^|;)\s*connect-src\s+[^;]+/, (_match, prefix) => `${prefix}connect-src ${connectSource[1]} ${additions}`)
+        : `${policy};connect-src 'self' ${additions}`;
+      res.setHeader('Content-Security-Policy', ecoPolicy);
+    }
+    return next();
+  }
+  if (/^\/components\/naviinfo\/details\/(primary-healthcare-details|secondary-healthcare-details|pharmacy-details)\.html$/.test(req.path)) {
+    const policy = res.getHeader('Content-Security-Policy');
+    if (typeof policy === 'string') {
+      let detailPolicy = policy;
+      const sources = {
+        'img-src': 'https://images.pexels.com',
+        'frame-src': 'https://maps.google.com https://www.google.com https://www.openstreetmap.org'
+      };
+      Object.entries(sources).forEach(([directive, additions]) => {
+        const expression = new RegExp('(^|;)\\s*' + directive + '\\s+([^;]+)');
+        const match = detailPolicy.match(expression);
+        if (match) {
+          const existing = match[2].split(/\\s+/);
+          const merged = existing.concat(additions.split(' ').filter(source => !existing.includes(source))).join(' ');
+          detailPolicy = detailPolicy.replace(expression, (_value, prefix) => prefix + directive + ' ' + merged);
+        } else {
+          detailPolicy += ';' + directive + " 'self' " + additions;
+        }
+      });
+      res.setHeader('Content-Security-Policy', detailPolicy);
+    }
+    return next();
+  }
+  if (req.path !== '/components/admin/admin-dashboard.html') return next();
+
+  const policy = res.getHeader('Content-Security-Policy');
+
+  if (typeof policy === 'string') {
+    const scriptSource = policy.match(/(?:^|;)\s*script-src\s+([^;]+)/);
+    let dashboardPolicy = policy;
+    if (scriptSource) {
+      const additions = ['https://unpkg.com'].filter((source) => !scriptSource[1].includes(source));
+      dashboardPolicy = dashboardPolicy.replace(/(^|;)\s*script-src\s+[^;]+/, (_match, prefix) => `${prefix}script-src ${scriptSource[1]} ${additions.join(' ')}`);
+    }
+    const localApiSources = "'self' http://localhost:* http://127.0.0.1:*";
+    const connectSource = dashboardPolicy.match(/(?:^|;)\s*connect-src\s+([^;]+)/);
+    dashboardPolicy = connectSource
+      ? dashboardPolicy.replace(/(^|;)\s*connect-src\s+[^;]+/, (_match, prefix) => `${prefix}connect-src ${connectSource[1]} http://localhost:* http://127.0.0.1:*`)
+      : `${dashboardPolicy};connect-src ${localApiSources}`;
+    res.setHeader('Content-Security-Policy', dashboardPolicy);
+  }
+
+  next();
+});
 
 // Mount /api/gemini endpoint
 app.post('/api/gemini', async (req, res) => {
@@ -1729,6 +1796,144 @@ function requireContentAdmin(req, res, next) {
   });
 }
 
+// The established administrator accounts in this application use both `admin`
+// and `content-admin`. Keep the dashboard aligned with that existing access
+// model rather than rejecting valid administrators created by the setup flow.
+function requireAdmin(req, res, next) {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  User.findById(req.session.userId).select('role accountStatus name username').then(user => {
+    if (!user || user.accountStatus !== 'active' || !['admin', 'content-admin'].includes(user.role)) {
+      return res.status(403).json({ error: 'Administrator access required' });
+    }
+    req.admin = user;
+    next();
+  }).catch(error => {
+    console.error('Admin authorization error:', error);
+    res.status(500).json({ error: 'Unable to verify administrator access' });
+  });
+}
+
+function serializeAdminUser(user) {
+  return {
+    id: user._id,
+    username: user.username,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    accountStatus: user.accountStatus,
+    authProvider: user.authProvider,
+    emailVerified: Boolean(user.emailVerified),
+    phoneVerified: Boolean(user.phoneVerified),
+    createdAt: user.createdAt,
+    lastLogin: user.lastLogin || null
+  };
+}
+
+function dateSeries(days) {
+  const result = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (let offset = days - 1; offset >= 0; offset -= 1) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - offset);
+    result.push({ key: date.toISOString().slice(0, 10), label: date.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }), value: 0 });
+  }
+  return result;
+}
+
+app.get('/api/admin/dashboard/summary', requireAdmin, async (req, res) => {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+    thirtyDaysAgo.setHours(0, 0, 0, 0);
+    const [totalUsers, activeUsers, suspendedUsers, contentCounts, professionalCount, navigationPlaceCount, registrations, lastActive, recentActivity] = await Promise.all([
+      User.countDocuments(),
+      User.countDocuments({ accountStatus: 'active' }),
+      User.countDocuments({ accountStatus: 'suspended' }),
+      ContentItem.aggregate([{ $group: { _id: '$category', count: { $sum: 1 } } }]),
+      Professional.countDocuments(),
+      NavigationPlace.countDocuments(),
+      User.aggregate([{ $match: { createdAt: { $gte: thirtyDaysAgo } } }, { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, count: { $sum: 1 } } }]),
+      User.aggregate([{ $match: { lastLogin: { $gte: thirtyDaysAgo } } }, { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$lastLogin' } }, count: { $sum: 1 } } }]),
+      User.find({ lastLogin: { $ne: null } }).sort({ lastLogin: -1 }).limit(8).select('username name email role lastLogin').lean()
+    ]);
+
+    const registrationSeries = dateSeries(30);
+    const activeSeries = dateSeries(30);
+    const registrationMap = new Map(registrations.map(item => [item._id, item.count]));
+    const activeMap = new Map(lastActive.map(item => [item._id, item.count]));
+    registrationSeries.forEach(item => { item.value = registrationMap.get(item.key) || 0; });
+    activeSeries.forEach(item => { item.value = activeMap.get(item.key) || 0; });
+    const content = contentCounts.reduce((counts, item) => ({ ...counts, [item._id]: item.count }), { professionals: professionalCount, navigationPlaces: navigationPlaceCount });
+
+    res.json({
+      totals: { users: totalUsers, activeUsers, suspendedUsers, contentItems: contentCounts.reduce((sum, item) => sum + item.count, 0) + professionalCount + navigationPlaceCount, content },
+      charts: { registrations: registrationSeries, lastActive: activeSeries },
+      recentActivity: recentActivity.map(user => ({ username: user.username, name: user.name, email: user.email, role: user.role, lastLogin: user.lastLogin }))
+    });
+  } catch (error) {
+    console.error('Dashboard summary error:', error);
+    res.status(500).json({ error: 'Unable to load dashboard summary' });
+  }
+});
+
+app.get('/api/admin/dashboard/users', requireAdmin, async (req, res) => {
+  try {
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 20, 1), 100);
+    const search = String(req.query.search || '').trim();
+    const filter = {};
+    if (['user', 'admin', 'moderator', 'content-admin'].includes(req.query.role)) filter.role = req.query.role;
+    if (['active', 'suspended', 'pending'].includes(req.query.status)) filter.accountStatus = req.query.status;
+    if (search) {
+      const expression = new RegExp(escapeRegExp(search), 'i');
+      filter.$or = [{ username: expression }, { name: expression }, { email: expression }];
+    }
+    const [total, users] = await Promise.all([
+      User.countDocuments(filter),
+      User.find(filter).sort({ lastLogin: -1, createdAt: -1 }).skip((page - 1) * limit).limit(limit)
+        .select('username name email role accountStatus authProvider emailVerified phoneVerified createdAt lastLogin').lean()
+    ]);
+    res.json({ users: users.map(serializeAdminUser), pagination: { page, limit, total, pages: Math.max(Math.ceil(total / limit), 1) } });
+  } catch (error) {
+    console.error('Dashboard users error:', error);
+    res.status(500).json({ error: 'Unable to load users' });
+  }
+});
+
+app.patch('/api/admin/dashboard/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const target = await User.findById(req.params.id);
+    if (!target) return res.status(404).json({ error: 'User not found' });
+    if (target._id.toString() === req.admin._id.toString()) return res.status(400).json({ error: 'You cannot change your own role or account status here' });
+
+    const updates = {};
+    if (req.body.role !== undefined) {
+      if (!['user', 'admin', 'moderator', 'content-admin'].includes(req.body.role)) return res.status(400).json({ error: 'Invalid role' });
+      updates.role = req.body.role;
+    }
+    if (req.body.accountStatus !== undefined) {
+      if (!['active', 'suspended', 'pending'].includes(req.body.accountStatus)) return res.status(400).json({ error: 'Invalid account status' });
+      updates.accountStatus = req.body.accountStatus;
+    }
+    if (!Object.keys(updates).length) return res.status(400).json({ error: 'Provide a role or account status to update' });
+
+    if (target.role === 'admin' && (updates.role && updates.role !== 'admin' || updates.accountStatus && updates.accountStatus !== 'active')) {
+      const otherActiveAdmin = await User.exists({ _id: { $ne: target._id }, role: 'admin', accountStatus: 'active' });
+      if (!otherActiveAdmin) return res.status(400).json({ error: 'Keep at least one active full administrator account' });
+    }
+    const user = await User.findByIdAndUpdate(target._id, { $set: updates }, { new: true, runValidators: true })
+      .select('username name email role accountStatus authProvider emailVerified phoneVerified createdAt lastLogin').lean();
+    res.json({ user: serializeAdminUser(user) });
+  } catch (error) {
+    console.error('Dashboard user update error:', error);
+    res.status(500).json({ error: 'Unable to update user' });
+  }
+});
+
 function normalizeContentPayload(body = {}) {
   const payload = { ...body };
   payload.category = payload.category || 'school';
@@ -1791,18 +1996,17 @@ app.post('/api/admin/setup-first-admin', signupLimiter, validateSignup, async (r
       ]
     });
 
-    const existingAdmin = await User.exists({ role: { $in: ['admin', 'content-admin'] } });
-    if (existingAdmin && existingUser) {
+    const existingFullAdmin = await User.exists({ role: 'admin' });
+    if (existingFullAdmin) return res.status(409).json({ error: 'A full administrator already exists. Sign in with that account to access the dashboard.' });
+    if (existingUser) {
       const passwordMatches = await bcrypt.compare(password, existingUser.password);
       if (!passwordMatches) return res.status(403).json({ error: 'The account password does not match. Sign in with the existing account details.' });
       if (existingUser.accountStatus === 'suspended') return res.status(403).json({ error: 'This account is suspended' });
-      existingUser.role = 'content-admin';
+      existingUser.role = 'admin';
       existingUser.accountStatus = 'active';
       await existingUser.save();
-      return res.json({ success: true, promoted: true, email: existingUser.email, message: 'Existing account promoted to content-admin. Sign in again to access administration.' });
+      return res.json({ success: true, promoted: true, email: existingUser.email, message: 'Existing account promoted to full administrator. Sign in again to access the dashboard.' });
     }
-    if (existingAdmin) return res.status(409).json({ error: 'An administrator already exists. Use that account or provide the existing account email and password to promote it.' });
-    if (existingUser) return res.status(409).json({ error: 'An account with this username, email, or NIN already exists' });
 
     const hash = await bcrypt.hash(password, 10);
     const user = await User.create({
@@ -1815,7 +2019,7 @@ app.post('/api/admin/setup-first-admin', signupLimiter, validateSignup, async (r
       state,
       lga,
       password: hash,
-      role: 'content-admin',
+      role: 'admin',
       accountStatus: 'active',
       termsAccepted: true,
       termsAcceptedDate: new Date()
@@ -1931,7 +2135,9 @@ function serializeProfessional(professional) {
     bio: raw.bio || '',
     category: raw.category,
     serviceTags: raw.serviceTags || [],
+    services: raw.services || [],
     areas: raw.areas || [],
+    languages: raw.languages || [],
     yearsExperience: raw.yearsExperience || 0,
     pricing: raw.pricing || {},
     availability: raw.availability,
@@ -1941,7 +2147,7 @@ function serializeProfessional(professional) {
     verificationStatus: raw.verificationStatus,
     ratingAverage: raw.ratingAverage || 0,
     reviewCount: raw.reviewCount || 0,
-    status: raw.status,
+    reviews: raw.reviews || [],
     createdAt: raw.createdAt,
     updatedAt: raw.updatedAt
   };
@@ -1953,12 +2159,24 @@ function normalizeProfessionalPayload(body = {}, { admin = false } = {}) {
   const category = String(body.category || '').trim();
   const areas = (Array.isArray(body.areas) ? body.areas : [body.area]).filter(Boolean).map(normalizeArea);
   const serviceTags = (Array.isArray(body.serviceTags) ? body.serviceTags : String(body.skills || '').split(',')).map(value => String(value).trim()).filter(Boolean);
+  const services = (Array.isArray(body.services) ? body.services : []).map(service => {
+    if (typeof service === 'string') return { name: service.trim(), price: '' };
+    return { name: String(service?.name || '').trim(), price: String(service?.price || '').trim() };
+  }).filter(service => service.name);
+  const languages = (Array.isArray(body.languages) ? body.languages : String(body.language || '').split(',')).map(value => String(value).trim()).filter(Boolean);
   if (!displayName || !profession || !category || !areas.length) throw new Error('Name, profession, category, and at least one area are required');
   if (!professionalCategories.includes(category)) throw new Error('Invalid professional category');
   if (areas.some(area => !professionalAreas.includes(area))) throw new Error('Invalid professional area');
 
   const rawSlug = String(body.slug || slugify(displayName)).trim().toLowerCase();
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(rawSlug)) throw new Error('Slug must contain lowercase letters, numbers, and hyphens only');
+  const yearsExperience = Number(body.yearsExperience ?? body.experience ?? 0);
+  const pricingFrom = body.pricing?.from === '' || body.pricing?.from == null ? undefined : Number(body.pricing.from);
+  const pricingTo = body.pricing?.to === '' || body.pricing?.to == null ? undefined : Number(body.pricing.to);
+  if (!Number.isFinite(yearsExperience) || yearsExperience < 0 || yearsExperience > 100) throw new Error('Years of experience must be between 0 and 100');
+  if (pricingFrom !== undefined && (!Number.isFinite(pricingFrom) || pricingFrom < 0)) throw new Error('Pricing minimum must be a valid non-negative number');
+  if (pricingTo !== undefined && (!Number.isFinite(pricingTo) || pricingTo < 0)) throw new Error('Pricing maximum must be a valid non-negative number');
+  if (pricingFrom !== undefined && pricingTo !== undefined && pricingFrom > pricingTo) throw new Error('Pricing minimum cannot exceed pricing maximum');
   const payload = {
     slug: rawSlug,
     displayName,
@@ -1966,12 +2184,14 @@ function normalizeProfessionalPayload(body = {}, { admin = false } = {}) {
     bio: String(body.bio || '').trim(),
     category,
     serviceTags,
+    services,
     areas,
-    yearsExperience: Number(body.yearsExperience ?? body.experience ?? 0),
+    languages,
+    yearsExperience,
     pricing: {
       label: String(body.pricing?.label || body.price || '').trim(),
-      from: body.pricing?.from === '' || body.pricing?.from == null ? undefined : Number(body.pricing.from),
-      to: body.pricing?.to === '' || body.pricing?.to == null ? undefined : Number(body.pricing.to),
+      from: pricingFrom,
+      to: pricingTo,
       currency: String(body.pricing?.currency || 'NGN').trim().toUpperCase()
     },
     availability: ['available', 'busy', 'closed'].includes(body.availability) ? body.availability : 'available',
@@ -1989,6 +2209,14 @@ function normalizeProfessionalPayload(body = {}, { admin = false } = {}) {
     payload.verificationStatus = ['unverified', 'pending', 'verified'].includes(body.verificationStatus) ? body.verificationStatus : 'unverified';
     payload.ratingAverage = Number(body.ratingAverage || 0);
     payload.reviewCount = Number(body.reviewCount || 0);
+    if (!Number.isFinite(payload.ratingAverage) || payload.ratingAverage < 0 || payload.ratingAverage > 5) throw new Error('Rating must be between 0 and 5');
+    if (!Number.isFinite(payload.reviewCount) || payload.reviewCount < 0) throw new Error('Review count must be a non-negative number');
+    payload.reviews = Array.isArray(body.reviews) ? body.reviews.map(review => ({
+      reviewer: String(review?.reviewer || '').trim(),
+      rating: Number(review?.rating || 0),
+      date: String(review?.date || '').trim(),
+      comment: String(review?.comment || '').trim()
+    })).filter(review => review.reviewer && review.comment && review.rating >= 1 && review.rating <= 5) : [];
     payload.legacySource = String(body.legacySource || '').trim();
   } else {
     payload.status = 'pending';
@@ -2042,6 +2270,515 @@ app.get('/api/content/professionals', async (req, res) => {
   } catch (error) {
     console.error('Professional list error:', error);
     res.status(500).json({ error: 'Unable to load professionals' });
+  }
+});
+
+function toStringList(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item || '').trim()).filter(Boolean);
+  }
+  return String(value || '').split(/[\n,]+/).map((item) => item.trim()).filter(Boolean);
+}
+
+function toMenuItems(value) {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => {
+    if (!item || typeof item !== 'object') return null;
+    const name = String(item.name || item.title || '').trim();
+    if (!name) return null;
+    return {
+      name,
+      category: String(item.category || 'main').trim() || 'main',
+      description: String(item.description || '').trim(),
+      price: String(item.price || '').trim(),
+      currency: String(item.currency || 'NGN').trim() || 'NGN',
+      calories: String(item.calories || '').trim(),
+      image: String(item.image || '').trim()
+    };
+  }).filter(Boolean);
+}
+
+function serializeNavigationPlace(place) {
+  const raw = place.toObject ? place.toObject() : place;
+  return {
+    id: raw._id,
+    slug: raw.slug,
+    displayName: raw.displayName,
+    category: raw.category,
+    subcategory: raw.subcategory || raw.category,
+    description: raw.description || '',
+    address: raw.address || '',
+    area: raw.area || 'Yola',
+    coordinates: raw.coordinates || { lat: null, lng: null },
+    tags: raw.tags || [],
+    services: raw.services || [],
+    highlights: raw.highlights || raw.tags || [],
+    openingHours: raw.openingHours || '',
+    image: raw.image || raw.heroImage || '',
+    heroImage: raw.heroImage || raw.image || '',
+    galleryImages: raw.galleryImages || [],
+    galleryCaptions: raw.galleryCaptions || [],
+    menuItems: raw.menuItems || [],
+    contact: raw.contact || {},
+    schoolProfile: toSchoolProfile(raw.schoolProfile),
+    universityProfile: toUniversityProfile(raw.universityProfile),
+    technicalProfile: toTechnicalProfile(raw.technicalProfile),
+    learningProfile: toLearningProfile(raw.learningProfile),
+    healthcareProfile: toHealthcareProfile(raw.healthcareProfile),
+    verificationStatus: raw.verificationStatus,
+    ratingAverage: raw.ratingAverage || 0,
+    reviewCount: raw.reviewCount || 0,
+    status: raw.status,
+    createdAt: raw.createdAt,
+    updatedAt: raw.updatedAt
+  };
+}
+
+function toSchoolProfile(value = {}) {
+  const profile = value && typeof value === 'object' ? value : {};
+  const text = (item, max) => String(item || '').trim().slice(0, max);
+  const list = (items, mapper) => Array.isArray(items) ? items.map(mapper).filter(Boolean) : [];
+  const levels = list(profile.levels, item => item && text(item.name, 120) ? { name: text(item.name, 120), description: text(item.description, 1000) } : null);
+  const subjects = list(profile.subjects, item => item && text(item.name, 120) ? { name: text(item.name, 120), icon: text(item.icon, 20) } : null);
+  const facilities = list(profile.facilities, item => item && text(item.name, 120) ? { name: text(item.name, 120), image: text(item.image, 1000) } : null);
+  const staff = list(profile.staff, item => item && text(item.name, 120) ? { name: text(item.name, 120), role: text(item.role, 120), bio: text(item.bio, 1000) } : null);
+  const fees = list(profile.fees, item => item && text(item.name, 120) ? { name: text(item.name, 120), amount: text(item.amount, 80), note: text(item.note, 200), featured: item.featured === true } : null);
+  const activities = list(profile.activities, item => item && text(item.name, 120) ? { name: text(item.name, 120), icon: text(item.icon, 20) } : null);
+  const calendar = list(profile.calendar, item => item && text(item.month, 60) ? { month: text(item.month, 60), event: text(item.event, 200) } : null);
+  const awards = list(profile.awards, item => item && text(item.name, 120) ? { name: text(item.name, 120), detail: text(item.detail, 200), icon: text(item.icon, 20) } : null);
+  const testimonials = list(profile.testimonials, item => item && text(item.quote, 1000) ? { quote: text(item.quote, 1000), author: text(item.author, 120) } : null);
+  const gallery = list(profile.gallery, item => item && text(item.image, 1000) ? { image: text(item.image, 1000), caption: text(item.caption, 200) } : null);
+  return {
+    tagline: text(profile.tagline, 300) || 'Nurturing curious minds and confident futures.',
+    schoolType: text(profile.schoolType, 120) || 'Primary and secondary school',
+    crest: text(profile.crest, 1000) || 'SN',
+    heroImage: text(profile.heroImage, 1000),
+    stats: {
+      students: text(profile.stats && profile.stats.students, 40) || '680',
+      teachers: text(profile.stats && profile.stats.teachers, 40) || '48',
+      years: text(profile.stats && profile.stats.years, 40) || '18',
+      levels: text(profile.stats && profile.stats.levels, 40) || '4'
+    },
+    mission: text(profile.mission, 2000) || 'To provide a joyful, inclusive education that equips every child for meaningful contribution.',
+    vision: text(profile.vision, 2000) || 'To be a trusted community of thoughtful learners, compassionate leaders and lifelong explorers.',
+    levels: levels.length ? levels : [
+      { name: 'Nursery and early years', description: 'Play-based foundations in language, movement, creativity and social development.' },
+      { name: 'Primary school', description: 'Strong literacy, numeracy, discovery and character education.' },
+      { name: 'Junior secondary', description: 'Broad subject exploration and confident transition to secondary learning.' },
+      { name: 'Senior secondary', description: 'Focused academic preparation, guidance and leadership opportunities.' }
+    ],
+    subjects: subjects.length ? subjects : ['Sciences', 'Languages', 'Mathematics', 'Arts', 'Humanities', 'Digital skills'].map(name => ({ name, icon: '•' })),
+    facilities: facilities.length ? facilities : ['Library', 'Classrooms', 'Creative studio'].map(name => ({ name, image: '' })),
+    staff: staff.length ? staff : [
+      { name: 'Teacher Name', role: 'Early years', bio: 'Supporting the first joyful steps into learning.' },
+      { name: 'Teacher Name', role: 'Primary', bio: 'Building strong foundations for curious learners.' },
+      { name: 'Teacher Name', role: 'Secondary', bio: 'Guiding achievement, confidence and purpose.' }
+    ],
+    admissions: {
+      checklist: Array.isArray(profile.admissions && profile.admissions.checklist) && profile.admissions.checklist.length ? profile.admissions.checklist.map(item => text(item, 300)).filter(Boolean) : ['Completed application form', 'Child birth certificate', 'Previous school record where applicable', 'Parent or guardian identification'],
+      steps: list(profile.admissions && profile.admissions.steps, item => item && text(item.title, 120) ? { title: text(item.title, 120), description: text(item.description, 500) } : null).length ? list(profile.admissions && profile.admissions.steps, item => item && text(item.title, 120) ? { title: text(item.title, 120), description: text(item.description, 500) } : null) : [
+        { title: 'Enquire', description: 'Book a visit or request an information pack.' },
+        { title: 'Apply', description: 'Send the required documents and application.' },
+        { title: 'Meet us', description: 'Complete an age-appropriate assessment or interview.' }
+      ]
+    },
+    fees: fees.length ? fees : ['Early years', 'Primary', 'Secondary'].map(name => ({ name, amount: '₦[amount]', note: 'Per term · Verify with school', featured: name === 'Primary' })),
+    activities: activities.length ? activities : ['Sport', 'Drama', 'Chess', 'Music', 'Eco club', 'STEM club'].map(name => ({ name, icon: '•' })),
+    calendar: calendar.length ? calendar : [{ month: 'September', event: 'New term welcome' }, { month: 'November', event: 'Learning showcase' }, { month: 'March', event: 'Sports festival' }, { month: 'July', event: 'Celebration day' }],
+    awards: awards.length ? awards : [{ name: 'Academic award', detail: 'Verify with school', icon: '★' }, { name: 'Sport award', detail: 'Verify with school', icon: '★' }, { name: 'Community award', detail: 'Verify with school', icon: '★' }],
+    testimonials: testimonials.length ? testimonials : [{ quote: 'The school makes every child feel seen, supported and excited to learn.', author: 'Parent testimonial · Placeholder' }],
+    gallery: gallery.length ? gallery : [{ image: '', caption: 'School life' }, { image: '', caption: 'Learning spaces' }, { image: '', caption: 'Community moments' }, { image: '', caption: 'Activities' }]
+  };
+}
+
+function toUniversityProfile(value = {}) {
+  const profile = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const text = (item, max) => String(item || '').trim().slice(0, max);
+  const list = (items, mapper) => Array.isArray(items) ? items.map(mapper).filter(Boolean) : [];
+  const paragraphs = Array.isArray(profile.story && profile.story.paragraphs)
+    ? profile.story.paragraphs.map(item => text(item, 2000)).filter(Boolean)
+    : [];
+  return {
+    tagline: text(profile.tagline, 300),
+    institutionType: text(profile.institutionType, 120),
+    logo: text(profile.logo, 1000),
+    heroImage: text(profile.heroImage, 1000),
+    established: text(profile.established, 40),
+    stats: {
+      students: text(profile.stats && profile.stats.students, 40),
+      faculties: text(profile.stats && profile.stats.faculties, 40),
+      programmes: text(profile.stats && profile.stats.programmes, 40),
+      ranking: text(profile.stats && profile.stats.ranking, 80),
+      established: text(profile.stats && profile.stats.established, 40)
+    },
+    story: {
+      image: text(profile.story && profile.story.image, 1000),
+      heading: text(profile.story && profile.story.heading, 300),
+      paragraphs
+    },
+    faculties: list(profile.faculties, item => item && text(item.name, 160) ? { name: text(item.name, 160), icon: text(item.icon, 20), description: text(item.description, 1000) } : null),
+    programmes: list(profile.programmes, item => item && text(item.level, 120) ? { level: text(item.level, 120), description: text(item.description, 1000), examples: Array.isArray(item.examples) ? item.examples.map(example => text(example, 160)).filter(Boolean) : [] } : null),
+    admissions: list(profile.admissions, item => item && text(item.title, 120) ? { title: text(item.title, 120), description: text(item.description, 500) } : null),
+    fees: list(profile.fees, item => item && text(item.level, 120) ? { level: text(item.level, 120), amount: text(item.amount, 80), note: text(item.note, 300) } : null),
+    accreditations: list(profile.accreditations, item => item && text(item.name, 120) ? { name: text(item.name, 120), detail: text(item.detail, 300) } : null),
+    gallery: list(profile.gallery, item => item && text(item.image, 1000) ? { image: text(item.image, 1000), caption: text(item.caption, 200) } : null),
+    alumni: list(profile.alumni, item => item && text(item.name, 120) ? { name: text(item.name, 120), field: text(item.field, 160), year: text(item.year, 40), image: text(item.image, 1000) } : null),
+    research: list(profile.research, item => item && text(item.title, 160) ? { title: text(item.title, 160), description: text(item.description, 1000) } : null),
+    partnerships: list(profile.partnerships, item => item && text(item.name, 160) ? { name: text(item.name, 160), detail: text(item.detail, 300) } : null),
+    studentLife: list(profile.studentLife, item => item && text(item.title, 160) ? { title: text(item.title, 160), image: text(item.image, 1000) } : null)
+  };
+}
+
+function toTechnicalProfile(value = {}) {
+  const profile = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const text = (item, max) => String(item || '').trim().slice(0, max);
+  const list = (items, mapper) => Array.isArray(items) ? items.map(mapper).filter(Boolean) : [];
+  return {
+    tagline: text(profile.tagline, 300),
+    institutionType: text(profile.institutionType, 120),
+    crest: text(profile.crest, 1000),
+    heroImage: text(profile.heroImage, 1000),
+    established: text(profile.established, 40),
+    stats: {
+      programmes: text(profile.stats && profile.stats.programmes, 40),
+      students: text(profile.stats && profile.stats.students, 40),
+      accreditation: text(profile.stats && profile.stats.accreditation, 120)
+    },
+    overview: {
+      heading: text(profile.overview && profile.overview.heading, 300),
+      paragraphs: Array.isArray(profile.overview && profile.overview.paragraphs) ? profile.overview.paragraphs.map(item => text(item, 2000)).filter(Boolean) : [],
+      image: text(profile.overview && profile.overview.image, 1000)
+    },
+    programmes: list(profile.programmes, item => item && text(item.level, 80) && text(item.name, 180) ? { level: text(item.level, 80), name: text(item.name, 180), duration: text(item.duration, 80), entryRoute: text(item.entryRoute, 300) } : null),
+    departments: list(profile.departments, item => item && text(item.name, 160) ? { name: text(item.name, 160), description: text(item.description, 1000) } : null),
+    accreditation: list(profile.accreditation, item => item && text(item.name, 160) ? { name: text(item.name, 160), status: text(item.status, 80), detail: text(item.detail, 500) } : null),
+    admissions: list(profile.admissions, item => item && text(item.title, 160) ? { title: text(item.title, 160), description: text(item.description, 800) } : null),
+    fees: list(profile.fees, item => item && text(item.name, 160) ? { name: text(item.name, 160), amount: text(item.amount, 100), note: text(item.note, 300) } : null),
+    facilities: list(profile.facilities, item => item && text(item.name, 160) ? { name: text(item.name, 160), image: text(item.image, 1000), description: text(item.description, 800) } : null),
+    industry: {
+      heading: text(profile.industry && profile.industry.heading, 200),
+      description: text(profile.industry && profile.industry.description, 1200),
+      placement: text(profile.industry && profile.industry.placement, 120)
+    },
+    careers: list(profile.careers, item => item && text(item.title, 160) ? { stage: text(item.stage, 80), title: text(item.title, 160), description: text(item.description, 500) } : null),
+    services: list(profile.services, item => item && text(item.name, 160) ? { name: text(item.name, 160), icon: text(item.icon, 30), description: text(item.description, 500) } : null),
+    gallery: list(profile.gallery, item => item && text(item.image, 1000) ? { image: text(item.image, 1000), caption: text(item.caption, 200) } : null),
+    brochure: text(profile.brochure, 1000),
+    footerNote: text(profile.footerNote, 500)
+  };
+}
+
+function toLearningProfile(value = {}) {
+  const profile = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const text = (item, max) => String(item || '').trim().slice(0, max);
+  const list = (items, mapper) => Array.isArray(items) ? items.map(mapper).filter(Boolean) : [];
+  return {
+    tagline: text(profile.tagline, 300), institutionType: text(profile.institutionType, 120), logo: text(profile.logo, 1000), heroImage: text(profile.heroImage, 1000),
+    stats: { collection: text(profile.stats && profile.stats.collection, 40), seats: text(profile.stats && profile.stats.seats, 40), events: text(profile.stats && profile.stats.events, 40), openDays: text(profile.stats && profile.stats.openDays, 40) },
+    mission: { heading: text(profile.mission && profile.mission.heading, 300), paragraphs: Array.isArray(profile.mission && profile.mission.paragraphs) ? profile.mission.paragraphs.map(item => text(item, 1500)).filter(Boolean) : [] },
+    services: list(profile.services, item => item && text(item.name, 160) ? { name: text(item.name, 160), icon: text(item.icon, 30), description: text(item.description, 600) } : null),
+    resources: list(profile.resources, item => item && text(item.name, 160) ? { count: text(item.count, 40), name: text(item.name, 160), description: text(item.description, 600) } : null),
+    events: list(profile.events, item => item && text(item.title, 180) ? { day: text(item.day, 10), month: text(item.month, 20), tag: text(item.tag, 40), title: text(item.title, 180), description: text(item.description, 600) } : null),
+    membership: list(profile.membership, item => item && text(item.name, 160) ? { name: text(item.name, 160), price: text(item.price, 80), description: text(item.description, 600), benefits: Array.isArray(item.benefits) ? item.benefits.map(value => text(value, 200)).filter(Boolean) : [] } : null),
+    spaces: list(profile.spaces, item => item && text(item.name, 160) ? { name: text(item.name, 160), image: text(item.image, 1000), description: text(item.description, 600) } : null),
+    hours: list(profile.hours, item => item && text(item.day, 80) ? { day: text(item.day, 80), hours: text(item.hours, 100), services: text(item.services, 200) } : null),
+    registration: list(profile.registration, item => item && text(item.title, 160) ? { step: text(item.step, 20), title: text(item.title, 160), description: text(item.description, 500) } : null),
+    digital: list(profile.digital, item => item && text(item.title, 160) ? { title: text(item.title, 160), url: text(item.url, 1000), description: text(item.description, 500) } : null),
+    outreach: list(profile.outreach, item => item && text(item.title, 160) ? { title: text(item.title, 160), image: text(item.image, 1000), description: text(item.description, 500) } : null),
+    gallery: list(profile.gallery, item => item && text(item.image, 1000) ? { image: text(item.image, 1000), caption: text(item.caption, 200) } : null),
+    footerNote: text(profile.footerNote, 500)
+  };
+}
+
+function toHealthcareProfile(value = {}) {
+  const profile = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const clean = (item, depth = 0) => {
+    if (depth > 8 || item == null) return item;
+    if (typeof item === 'string') return item.trim().slice(0, 4000);
+    if (typeof item === 'number' || typeof item === 'boolean') return item;
+    if (Array.isArray(item)) return item.slice(0, 100).map(entry => clean(entry, depth + 1));
+    if (typeof item === 'object') {
+      return Object.fromEntries(Object.entries(item).slice(0, 80).map(([key, entry]) => [key, clean(entry, depth + 1)]));
+    }
+    return '';
+  };
+  const type = ['primaryCare', 'secondaryHospital', 'pharmacy'].includes(profile.type) ? profile.type : 'primaryCare';
+  const allowed = ['primaryCare', 'secondaryHospital', 'pharmacy'];
+  const result = { type };
+  allowed.forEach(key => {
+    if (profile[key] && typeof profile[key] === 'object' && !Array.isArray(profile[key])) result[key] = clean(profile[key]);
+  });
+  return result;
+}
+
+function buildNavigationFilter(query = {}, includeUnpublished = false) {
+  const filter = includeUnpublished ? {} : { status: 'published' };
+  const search = String(query.search || '').trim();
+  const category = String(query.category || '').trim();
+  if (search) {
+    const regex = new RegExp(escapeRegExp(search), 'i');
+    filter.$or = [
+      { displayName: regex }, { description: regex }, { tags: regex }, { category: regex }, { area: regex }
+    ];
+  }
+  if (category && category !== 'All') {
+    filter.category = category;
+  }
+  return filter;
+}
+
+app.get('/api/content/navigation-places', async (req, res) => {
+  try {
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 100, 1), 200);
+    const filter = buildNavigationFilter(req.query);
+    const [items, total] = await Promise.all([
+      NavigationPlace.find(filter).sort({ displayName: 1 }).skip((page - 1) * limit).limit(limit),
+      NavigationPlace.countDocuments(filter)
+    ]);
+    res.json({ items: items.map(serializeNavigationPlace), page, limit, total });
+  } catch (error) {
+    console.error('Navigation place list error:', error);
+    res.status(500).json({ error: 'Unable to load navigation places' });
+  }
+});
+
+app.get('/api/content/navigation-places/:slug', async (req, res) => {
+  try {
+    const place = await NavigationPlace.findOne({ slug: req.params.slug, status: 'published' });
+    if (!place) return res.status(404).json({ error: 'Navigation place not found' });
+    res.json({ item: serializeNavigationPlace(place) });
+  } catch (error) {
+    console.error('Navigation place detail error:', error);
+    res.status(500).json({ error: 'Unable to load navigation place' });
+  }
+});
+
+app.post('/api/content/navigation-places/submissions', async (req, res) => {
+  try {
+    const payload = {
+      slug: String(req.body.slug || slugify(req.body.displayName || 'navigation-place')).trim().toLowerCase(),
+      displayName: String(req.body.displayName || '').trim(),
+      category: String(req.body.category || 'Others').trim() || 'Others',
+      subcategory: String(req.body.subcategory || req.body.category || 'Others').trim(),
+      description: String(req.body.description || '').trim(),
+      address: String(req.body.address || '').trim(),
+      area: String(req.body.area || 'Yola').trim(),
+      coordinates: {
+        lat: req.body.coordinates && req.body.coordinates.lat != null ? Number(req.body.coordinates.lat) : null,
+        lng: req.body.coordinates && req.body.coordinates.lng != null ? Number(req.body.coordinates.lng) : null
+      },
+      tags: toStringList(req.body.tags),
+      services: toStringList(req.body.services),
+      highlights: toStringList(req.body.highlights || req.body.tags),
+      openingHours: String(req.body.openingHours || '').trim(),
+      image: String(req.body.image || req.body.heroImage || '').trim(),
+      heroImage: String(req.body.heroImage || req.body.image || '').trim(),
+      galleryImages: toStringList(req.body.galleryImages),
+      galleryCaptions: toStringList(req.body.galleryCaptions),
+      menuItems: toMenuItems(req.body.menuItems),
+      contact: {
+        phone: String(req.body.contact?.phone || req.body.phone || '').trim(),
+        email: String(req.body.contact?.email || req.body.email || '').trim(),
+        website: String(req.body.contact?.website || req.body.website || '').trim()
+      },
+      verificationStatus: 'unverified',
+      status: 'pending'
+    };
+    if (!payload.displayName || !payload.category) throw new Error('Display name and category are required');
+    const place = await NavigationPlace.create(payload);
+    res.status(201).json({ item: serializeNavigationPlace(place), message: 'Place submitted for review' });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'A place with this slug already exists' });
+    res.status(400).json({ error: error.message || 'Unable to submit place' });
+  }
+});
+
+app.get('/api/admin/content/navigation-places', requireContentAdmin, async (req, res) => {
+  try {
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 100, 1), 200);
+    const filter = buildNavigationFilter(req.query, true);
+    const [items, total] = await Promise.all([
+      NavigationPlace.find(filter).sort({ updatedAt: -1 }).skip((page - 1) * limit).limit(limit),
+      NavigationPlace.countDocuments(filter)
+    ]);
+    res.json({ items, page, limit, total });
+  } catch (error) {
+    console.error('Admin navigation place list error:', error);
+    res.status(500).json({ error: 'Unable to load navigation place records' });
+  }
+});
+
+app.post('/api/admin/content/navigation-places/seed-restaurant-media', requireContentAdmin, async (req, res) => {
+  try {
+    const force = req.body && req.body.force === true;
+    const results = { updated: [], skipped: [], missing: [] };
+
+    for (const entry of restaurantMediaSeed) {
+      const existing = await NavigationPlace.findOne({ slug: entry.slug }).select('heroImage galleryImages menuItems');
+      if (!existing) {
+        results.missing.push(entry.slug);
+        continue;
+      }
+
+      const update = {};
+      if (force || !existing.heroImage) update.heroImage = entry.heroImage;
+      if (force || !existing.galleryImages?.length) {
+        update.galleryImages = entry.galleryImages;
+        update.galleryCaptions = entry.galleryCaptions;
+      }
+      if (force || !existing.menuItems?.length) update.menuItems = entry.menuItems;
+      if (!Object.keys(update).length) {
+        results.skipped.push(entry.slug);
+        continue;
+      }
+
+      await NavigationPlace.updateOne({ slug: entry.slug }, { $set: update });
+      results.updated.push(entry.slug);
+    }
+
+    res.json({
+      message: force ? 'Restaurant media replaced for seeded listings.' : 'Missing restaurant media filled.',
+      ...results
+    });
+  } catch (error) {
+    console.error('Restaurant media seed error:', error);
+    res.status(500).json({ error: 'Unable to update restaurant media' });
+  }
+});
+
+app.post('/api/admin/content/navigation-places', requireContentAdmin, async (req, res) => {
+  try {
+    const payload = {
+      slug: String(req.body.slug || slugify(req.body.displayName || 'navigation-place')).trim().toLowerCase(),
+      displayName: String(req.body.displayName || '').trim(),
+      category: String(req.body.category || 'Others').trim() || 'Others',
+      subcategory: String(req.body.subcategory || req.body.category || 'Others').trim(),
+      description: String(req.body.description || '').trim(),
+      address: String(req.body.address || '').trim(),
+      area: String(req.body.area || 'Yola').trim(),
+      coordinates: {
+        lat: req.body.coordinates && req.body.coordinates.lat != null ? Number(req.body.coordinates.lat) : null,
+        lng: req.body.coordinates && req.body.coordinates.lng != null ? Number(req.body.coordinates.lng) : null
+      },
+      tags: toStringList(req.body.tags),
+      services: toStringList(req.body.services),
+      highlights: toStringList(req.body.highlights || req.body.tags),
+      openingHours: String(req.body.openingHours || '').trim(),
+      image: String(req.body.image || req.body.heroImage || '').trim(),
+      heroImage: String(req.body.heroImage || req.body.image || '').trim(),
+      galleryImages: toStringList(req.body.galleryImages),
+      galleryCaptions: toStringList(req.body.galleryCaptions),
+      menuItems: toMenuItems(req.body.menuItems),
+      contact: {
+        phone: String(req.body.contact?.phone || req.body.phone || '').trim(),
+        email: String(req.body.contact?.email || req.body.email || '').trim(),
+        website: String(req.body.contact?.website || req.body.website || '').trim()
+      },
+      schoolProfile: toSchoolProfile(req.body.schoolProfile),
+      universityProfile: toUniversityProfile(req.body.universityProfile),
+      technicalProfile: toTechnicalProfile(req.body.technicalProfile),
+      learningProfile: toLearningProfile(req.body.learningProfile),
+      healthcareProfile: toHealthcareProfile(req.body.healthcareProfile),
+      verificationStatus: ['unverified', 'pending', 'verified'].includes(req.body.verificationStatus) ? req.body.verificationStatus : 'unverified',
+      status: ['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status) ? req.body.status : 'draft',
+      ratingAverage: Number(req.body.ratingAverage || 0),
+      reviewCount: Number(req.body.reviewCount || 0),
+      legacySource: String(req.body.legacySource || '').trim(),
+      createdBy: req.session.userId,
+      updatedBy: req.session.userId
+    };
+    if (!payload.displayName) throw new Error('Display name is required');
+    const place = await NavigationPlace.create(payload);
+    res.status(201).json({ item: place });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'A navigation place with this slug already exists' });
+    res.status(400).json({ error: error.message || 'Unable to create navigation place' });
+  }
+});
+
+app.put('/api/admin/content/navigation-places/:id', requireContentAdmin, async (req, res) => {
+  try {
+    const payload = {
+      slug: String(req.body.slug || slugify(req.body.displayName || 'navigation-place')).trim().toLowerCase(),
+      displayName: String(req.body.displayName || '').trim(),
+      category: String(req.body.category || 'Others').trim() || 'Others',
+      subcategory: String(req.body.subcategory || req.body.category || 'Others').trim(),
+      description: String(req.body.description || '').trim(),
+      address: String(req.body.address || '').trim(),
+      area: String(req.body.area || 'Yola').trim(),
+      coordinates: {
+        lat: req.body.coordinates && req.body.coordinates.lat != null ? Number(req.body.coordinates.lat) : null,
+        lng: req.body.coordinates && req.body.coordinates.lng != null ? Number(req.body.coordinates.lng) : null
+      },
+      tags: toStringList(req.body.tags),
+      services: toStringList(req.body.services),
+      highlights: toStringList(req.body.highlights || req.body.tags),
+      openingHours: String(req.body.openingHours || '').trim(),
+      image: String(req.body.image || req.body.heroImage || '').trim(),
+      heroImage: String(req.body.heroImage || req.body.image || '').trim(),
+      galleryImages: toStringList(req.body.galleryImages),
+      galleryCaptions: toStringList(req.body.galleryCaptions),
+      menuItems: toMenuItems(req.body.menuItems),
+      contact: {
+        phone: String(req.body.contact?.phone || req.body.phone || '').trim(),
+        email: String(req.body.contact?.email || req.body.email || '').trim(),
+        website: String(req.body.contact?.website || req.body.website || '').trim()
+      },
+      schoolProfile: toSchoolProfile(req.body.schoolProfile),
+      verificationStatus: ['unverified', 'pending', 'verified'].includes(req.body.verificationStatus) ? req.body.verificationStatus : 'unverified',
+      status: ['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status) ? req.body.status : 'draft',
+      ratingAverage: Number(req.body.ratingAverage || 0),
+      reviewCount: Number(req.body.reviewCount || 0),
+      legacySource: String(req.body.legacySource || '').trim(),
+      updatedBy: req.session.userId
+    };
+    if (Object.prototype.hasOwnProperty.call(req.body, 'universityProfile')) {
+      payload.universityProfile = toUniversityProfile(req.body.universityProfile);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, 'technicalProfile')) {
+      payload.technicalProfile = toTechnicalProfile(req.body.technicalProfile);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, 'learningProfile')) {
+      payload.learningProfile = toLearningProfile(req.body.learningProfile);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, 'healthcareProfile')) {
+      payload.healthcareProfile = toHealthcareProfile(req.body.healthcareProfile);
+    }
+    const place = await NavigationPlace.findByIdAndUpdate(req.params.id, payload, { new: true, runValidators: true });
+    if (!place) return res.status(404).json({ error: 'Navigation place not found' });
+    res.json({ item: place });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ error: 'A navigation place with this slug already exists' });
+    res.status(400).json({ error: error.message || 'Unable to update navigation place' });
+  }
+});
+
+app.patch('/api/admin/content/navigation-places/:id/moderation', requireContentAdmin, async (req, res) => {
+  try {
+    const updates = {};
+    if (['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status)) updates.status = req.body.status;
+    if (['unverified', 'pending', 'verified'].includes(req.body.verificationStatus)) updates.verificationStatus = req.body.verificationStatus;
+    if (!Object.keys(updates).length) return res.status(400).json({ error: 'A valid status or verificationStatus is required' });
+    updates.updatedBy = req.session.userId;
+    const place = await NavigationPlace.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+    if (!place) return res.status(404).json({ error: 'Navigation place not found' });
+    res.json({ item: place });
+  } catch (error) {
+    console.error('Moderate navigation place error:', error);
+    res.status(500).json({ error: 'Unable to update moderation status' });
+  }
+});
+
+app.delete('/api/admin/content/navigation-places/:id', requireContentAdmin, async (req, res) => {
+  try {
+    const result = await NavigationPlace.deleteOne({ _id: req.params.id });
+    if (!result.deletedCount) return res.status(404).json({ error: 'Navigation place not found' });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Delete navigation place error:', error);
+    res.status(500).json({ error: 'Unable to delete navigation place' });
   }
 });
 
@@ -3015,6 +3752,15 @@ app.post('/api/send-feedback', async (req, res) => {
 app.get('/servi/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, 'components', 'serviinfo', 'servi-profile.html'));
 });
+app.get('/navi/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, 'components', 'naviinfo', 'navi-profile.html'));
+});
+app.get('/api/config', (req, res) => {
+  const protocol = req.get('x-forwarded-proto') || req.protocol;
+  const origin = `${protocol}://${req.get('host')}`;
+  res.set('Cache-Control', 'no-store');
+  res.json({ apiBaseUrl: API_BASE_URL || origin, port: PORT });
+});
 app.use(express.static(__dirname));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -3101,13 +3847,6 @@ function startServer(portToUse = PORT) {
   });
 
   server.on('error', (error) => {
-    if (error && error.code === 'EADDRINUSE') {
-      const nextPort = portToUse + 1;
-      console.warn(`Port ${portToUse} is already in use. Retrying on ${nextPort}...`);
-      startServer(nextPort);
-      return;
-    }
-
     console.error('Server startup error:', error);
     process.exit(1);
   });

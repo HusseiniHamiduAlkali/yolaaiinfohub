@@ -26,6 +26,10 @@
     }).join('');
   }
 
+  function profileUrl(slug) {
+    return '/components/serviinfo/servi-profile.html?slug=' + encodeURIComponent(slug);
+  }
+
   function cardTemplate(item) {
     var rating = Number(item.ratingAverage || 0).toFixed(1);
     var isAvailable = item.availability === 'available';
@@ -33,20 +37,24 @@
     var area = item.areas && item.areas.length ? item.areas[0] : 'Yola';
     var tags = (item.serviceTags || []).slice(0, 4);
     var image = item.image
-      ? '<img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.displayName) + '" loading="lazy">'
-      : escapeHtml(initials(item.displayName));
+      ? '<img src="/' + escapeHtml(item.image).replace(/^\/+/, '') + '" alt="' + escapeHtml(item.displayName) + '" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">'
+      : '';
     return '<article class="pro-card" data-name="' + escapeHtml(item.displayName) + '" data-role="' + escapeHtml(item.profession) + '" data-category="' + escapeHtml(item.category) + '" data-rating="' + rating + '" data-reviews="' + Number(item.reviewCount || 0) + '" data-exp="' + Number(item.yearsExperience || 0) + '" data-area="' + escapeHtml(area) + '" data-verified="' + isVerified + '" data-open="' + isAvailable + '" data-tags="' + escapeHtml(tags.join(', ')) + '">' +
-      '<div class="pro-head"><div class="avatar" data-initials="' + escapeHtml(item.displayName) + '"><div class="img-placeholder">' + image + '</div></div><div class="pro-id"><h3 class="pro-name">' + escapeHtml(item.displayName) + (isVerified ? ' <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i>' : '') + '</h3><p class="pro-role">' + escapeHtml(item.profession) + '</p></div></div>' +
+      '<div class="pro-head"><div class="avatar" data-initials="' + escapeHtml(item.displayName) + '">' + image + '<span class="avatar-initials"' + (item.image ? ' hidden' : '') + '>' + escapeHtml(initials(item.displayName)) + '</span></div><div class="pro-id"><h3 class="pro-name">' + escapeHtml(item.displayName) + (isVerified ? ' <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i>' : '') + '</h3><p class="pro-role">' + escapeHtml(item.profession) + '</p></div></div>' +
       '<span class="badge ' + (isAvailable ? 'badge-open' : 'badge-closed') + '">' + (isAvailable ? 'Available' : 'Busy') + '</span>' +
       '<div class="rating-line"><span class="stars" role="img" aria-label="' + rating + ' out of 5 stars">' + stars(item.ratingAverage) + '</span><span class="rating-value">' + rating + '</span><span>(' + Number(item.reviewCount || 0) + ' reviews)</span></div>' +
       '<div class="pro-meta"><span><i class="fas fa-briefcase" aria-hidden="true"></i> ' + Number(item.yearsExperience || 0) + ' yrs experience</span><span><i class="fas fa-location-dot" aria-hidden="true"></i> ' + escapeHtml(area) + '</span>' + (item.pricing && item.pricing.label ? '<span><i class="fas fa-naira-sign" aria-hidden="true"></i> ' + escapeHtml(item.pricing.label) + '</span>' : '') + '</div>' +
       '<div class="tag-row">' + tags.map(function (tag) { return '<span class="tag">' + escapeHtml(tag) + '</span>'; }).join('') + '</div>' +
-      '<div class="pro-actions"><a class="btn btn-primary" href="/servi/' + escapeHtml(item.slug) + '">View profile</a>' + (item.contact && item.contact.phone ? '<a class="btn btn-secondary" href="tel:' + escapeHtml(item.contact.phone) + '">Contact</a>' : '') + '</div></article>';
+      '<div class="pro-actions"><a class="btn btn-primary" href="' + profileUrl(item.slug) + '">View profile</a>' + (item.contact && item.contact.phone ? '<a class="btn btn-secondary" href="tel:' + escapeHtml(item.contact.phone) + '">Contact</a>' : '') + '</div></article>';
   }
 
   function load() {
     var directory = document.getElementById('directory');
     if (!directory || directory.dataset.apiLoaded === 'true') return Promise.resolve(false);
+    var errorState = document.getElementById('directoryError');
+    Array.prototype.forEach.call(directory.querySelectorAll('.section4-container'), function (container) {
+      container.innerHTML = '';
+    });
     return fetch(apiBase() + '/api/content/professionals?limit=200', { credentials: 'include' })
       .then(function (response) {
         if (!response.ok) throw new Error('Professional directory request failed');
@@ -57,7 +65,6 @@
         Array.prototype.forEach.call(directory.querySelectorAll('.section3[data-category]'), function (group) {
           groups[group.dataset.category] = group;
           var container = group.querySelector('.section4-container');
-          if (container) container.innerHTML = '';
         });
         (data.items || []).forEach(function (item) {
           var group = groups[item.category];
@@ -65,12 +72,20 @@
           var container = group.querySelector('.section4-container');
           if (container) container.insertAdjacentHTML('beforeend', cardTemplate(item));
         });
+        if (errorState) errorState.hidden = true;
         directory.dataset.apiLoaded = 'true';
         if (window.initServiFilters) window.initServiFilters();
         return true;
       })
       .catch(function (error) {
-        console.warn('Using static ServiInfo cards:', error.message);
+        Array.prototype.forEach.call(directory.querySelectorAll('.section4-container'), function (container) {
+          container.innerHTML = '';
+        });
+        if (errorState) {
+          errorState.hidden = false;
+          errorState.textContent = 'The professional directory is temporarily unavailable. Please try again shortly.';
+        }
+        console.error('Unable to load database-backed ServiInfo directory:', error);
         return false;
       });
   }

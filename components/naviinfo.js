@@ -47,11 +47,12 @@ window.renderSection = function() {
   }
     return fetch('templates/navi.html').then(r => r.text()).then(html => {
     document.getElementById('main-content').innerHTML = html;
-        if (typeof window.initializeSearchHandlers === 'function') window.initializeSearchHandlers();
-        if (typeof window.initYolaGoogleMap === 'function') window.initYolaGoogleMap();
-    
-    
-      // Scroll reveal for service cards in the servi template
+
+    const naviDirectoryLoad = window.loadNaviDirectory ? window.loadNaviDirectory() : Promise.resolve(false);
+    return naviDirectoryLoad.then(function () {
+      if (typeof window.initializeSearchHandlers === 'function') window.initializeSearchHandlers();
+      if (typeof window.initYolaGoogleMap === 'function') window.initYolaGoogleMap();
+
       if ('IntersectionObserver' in window) {
         const revealCards = document.querySelectorAll('.section4');
         let lastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
@@ -86,8 +87,7 @@ window.renderSection = function() {
           revealCards.forEach(card => cardObserver.observe(card));
         }
       }
-
-    
+    });
   }).catch(err => {
     console.error('Failed to load navi template:', err);
     document.getElementById('main-content').innerHTML = '<p>Failed to load content.</p>';

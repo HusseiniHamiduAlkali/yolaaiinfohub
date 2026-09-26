@@ -1,6 +1,6 @@
-/* Admin console: login, report triage, status/assignment updates, stats, alerts. */
+/* Admin console: report triage, status/assignment updates, stats, alerts. */
 
-import { $, $$, autoInit, escapeHtml, fmtDate, store, timeAgo, toast } from "./ui.js";
+import { $, $$, autoInit, escapeHtml, fmtDate, timeAgo, toast } from "./ui.js";
 import { api } from "./api.js";
 
 autoInit();
@@ -8,98 +8,20 @@ autoInit();
 const STATUSES = ["submitted", "reviewing", "assigned", "resolved", "rejected"];
 let reports = [];
 let filters = { status: "", severity: "", q: "" };
-let demoMode = false;
-
-/* ---------------- auth ---------------- */
-
-async function boot() {
-  try {
-    const me = await api.me();
-    showConsole(me);
-  } catch (err) {
-    if (err.offline) {
-      $("#offline-note").classList.remove("hidden");
-    }
-    $("#login-card").classList.remove("hidden");
-  }
-}
-
-$("#login-form")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const btn = $("#login-btn");
-  btn.disabled = true;
-  try {
-    const me = await api.login($("#email").value.trim(), $("#password").value);
-    toast("Signed in.");
-    showConsole(me);
-  } catch (err) {
-    $("#login-error").textContent = err.offline
-      ? "EcoInfo service offline. Use demo mode to explore the console with sample data."
-      : err.message;
-  } finally {
-    btn.disabled = false;
-  }
-});
-
-$("#demo-btn")?.addEventListener("click", () => {
-  demoMode = true;
-  showConsole({ email: "demo.officer@adsepa.ng", name: "Demo Officer", role: "admin" });
-  toast("Demo mode — changes stay on this device.");
-});
-
-$("#logout")?.addEventListener("click", async () => {
-  try { await api.logout(); } catch { /* offline */ }
-  location.reload();
-});
-
-function showConsole(me) {
-  $("#login-card").classList.add("hidden");
-  $("#console").classList.remove("hidden");
-  $("#who").textContent = `${me.name || me.email}${demoMode ? " · demo" : ""}`;
-  loadReports();
-}
 
 /* ---------------- data ---------------- */
-
-function demoReports() {
-  const saved = store.get("admin-demo-reports", null);
-  if (saved) return saved;
-  const base = [
-    ["YEC-2026-A31KD", "Household mixed", "high", "Behind Karewa market drainage", "Jimeta North", "submitted"],
-    ["YEC-2026-B72LM", "Construction rubble", "medium", "Ngurore road culvert", "Yolde Pate", "reviewing"],
-    ["YEC-2026-C18QP", "Plastic and nylon", "high", "Doubeli junction open plot", "Doubeli", "assigned"],
-    ["YEC-2026-D55RT", "E-waste", "medium", "Near MAUTECH gate", "MAUTECH", "resolved"],
-    ["YEC-2026-E90VZ", "Organic market waste", "low", "Yola town abattoir lane", "Yola Town", "submitted"],
-    ["YEC-2026-F13WX", "Medical waste", "high", "Clinic backyard, Luggere", "Luggere", "reviewing"],
-  ];
-  const list = base.map(([code, wasteType, severity, landmark, ward, status], i) => ({
-    id: i + 1,
-    code, wasteType, severity, landmark, ward, status,
-    description: `${wasteType} dumped and left uncollected near ${landmark}.`,
-    createdAt: new Date(Date.now() - (i + 1) * 8.4e7).toISOString(),
-    lat: 9.19 + Math.random() * 0.12,
-    lon: 12.43 + Math.random() * 0.09,
-    photos: [],
-    officerNote: status === "resolved" ? "Cleared by Crew C and site levelled." : "",
-    assignee: status === "assigned" ? "Crew C" : "",
-  }));
-  store.set("admin-demo-reports", list);
-  return list;
-}
 
 async function loadReports() {
   const body = $("#rows");
   body.innerHTML = `<tr><td colspan="7"><div class="skeleton" style="height:18px"></div></td></tr>`;
-  if (demoMode) {
-    reports = demoReports();
-  } else {
-    try {
-      reports = await api.adminReports();
-    } catch (err) {
-      toast(err.message, "err");
-      demoMode = true;
-      reports = demoReports();
-    }
+  try {
+    reports = await api.adminReports();
+  } catch (err) {
+    reports = [];
+    renderStats();
+    $("#rows").innerHTML = `<tr><td colspan="7" class="muted small" style="padding:20px">Unable to load EcoInfo reports. Check the EcoInfo service and administrator API access. ${escapeHtml(err.message)}</td></tr>`;
+    toast(err.message, "err");
+    return;
   }
   renderStats();
   renderTable();
@@ -231,15 +153,12 @@ async function save(r, extra) {
     officerNote: $("#d-note").value.trim(),
     ...extra,
   };
-  Object.assign(r, patch);
-  if (demoMode) {
-    store.set("admin-demo-reports", reports);
-  } else {
-    try {
-      await api.updateReport(r.id, patch);
-    } catch (err) {
-      toast(err.message, "err");
-    }
+  try {
+    const updated = await api.updateReport(r.id, patch);
+    Object.assign(r, updated);
+  } catch (err) {
+    toast(err.message, "err");
+    return;
   }
   toast(`${r.code} updated → ${r.status}`);
   renderStats();
@@ -271,15 +190,13 @@ $("#alert-form")?.addEventListener("submit", async (e) => {
   const payload = { title: $("#a-title").value.trim(), body: $("#a-body").value.trim(), level: $("#a-level").value };
   if (!payload.title || !payload.body) return toast("Title and message are required.", "err");
   try {
-    if (demoMode) throw new Error("demo");
     await api.publishAlert(payload);
-  } catch {
-    const local = store.get("alerts", []);
-    local.unshift({ ...payload, at: new Date().toISOString() });
-    store.set("alerts", local.slice(0, 10));
+    toast("Alert published to the community page.");
+  } catch (err) {
+    toast(err.message || "Unable to publish alert. The EcoInfo service may be unavailable.", "err");
+    return;
   }
-  toast("Alert published to the community page.");
   e.target.reset();
 });
 
-boot();
+loadReports();

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenCare Pharmacy — Yola AI Info Hub</title>
+<meta name="description" content="Pharmacy & Pharmaceutical Centre details — GreenCare Pharmacy, Yola. Medicine categories, search, services, pharmacists, health checks, delivery, hours and location.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --emerald-900:#04322a;--emerald-800:#064e3b;--emerald-700:#0d7a5f;--emerald-600:#17997a;
+  --gold-500:#c9a84c;--gold-400:#d9bd6a;--gold-300:#e5cf7a;--gold-200:#f0d78c;
+  --cream:#f5f0e0;--cream-soft:#faf6ea;--cream-dark:#ede7d8;--paper:#ffffff;
+  --ink:#142520;--ink-soft:#3d4d47;--muted:#6b7a74;--line:rgba(6,78,59,0.12);
+  --shadow-sm:0 2px 6px rgba(6,78,59,0.06);--shadow-md:0 10px 30px -12px rgba(6,78,59,0.25);
+  --shadow-lg:0 24px 60px -20px rgba(6,78,59,0.35);--shadow-gold:0 12px 30px -14px rgba(201,168,76,0.5);
+  --radius-sm:10px;--radius-md:16px;--radius-lg:22px;--radius-xl:28px;
+  --serif:"Fraunces",Georgia,serif;--sans:"Plus Jakarta Sans",system-ui,sans-serif;
+  --transition:all .35s cubic-bezier(.25,.46,.45,.94);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--sans);background:linear-gradient(180deg,var(--cream-soft) 0%,var(--paper) 40%);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{max-width:100%;display:block}button{font-family:inherit;cursor:pointer;border:none;background:none}ul{list-style:none}section{position:relative}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:14px 0;transition:var(--transition)}
+nav.scrolled{background:rgba(4,50,42,0.96);backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(6,78,59,0.3),var(--shadow-md);padding:10px 0}
+.nav-container{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.nav-logo{font-family:var(--serif);font-size:1.35rem;font-weight:700;color:var(--gold-300);display:flex;align-items:center;gap:10px;transition:var(--transition)}
+.nav-logo svg{width:28px;height:28px;color:var(--gold-400)}
+nav.scrolled .nav-logo{font-size:1.2rem}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,240,224,0.75);position:relative;padding:4px 0;transition:var(--transition)}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold-400);transition:width .35s ease}
+.nav-links a:hover,.nav-links a.active{color:var(--gold-300)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-back{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:rgba(245,240,224,0.6);transition:var(--transition)}
+.nav-back:hover{color:var(--gold-300)}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-burger span{width:26px;height:2px;background:var(--cream);transition:var(--transition);border-radius:2px}
+.nav-burger.open span:nth-child(1){transform:rotate(45deg) translate(2px,-2px)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:rotate(-45deg) translate(2px,2px)}
+
+/* HERO */
+#hero{position:relative;overflow:hidden;padding-top:80px;padding-bottom:40px}
+.hero-bg{position:absolute;inset:0;z-index:0;background:linear-gradient(135deg,var(--emerald-800) 0%,var(--emerald-700) 50%,var(--emerald-600) 100%)}
+.hero-glow{position:absolute;top:-80px;right:-80px;width:450px;height:450px;background:radial-gradient(circle,rgba(201,168,76,0.12),transparent 70%);pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:700px;margin:0 auto;padding:48px 32px;text-align:center}
+.hero-icon{width:80px;height:80px;margin:0 auto 20px;border-radius:20px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;opacity:0;animation:fadeUp .8s .2s forwards}
+.hero-icon svg{width:40px;height:40px;color:var(--gold-300)}
+.hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3.2rem);font-weight:700;color:var(--cream);line-height:1.15;margin-bottom:8px;opacity:0;animation:fadeUp .8s .4s forwards}
+.hero-type{font-size:1.1rem;color:var(--gold-300);font-weight:600;margin-bottom:16px;opacity:0;animation:fadeUp .8s .5s forwards}
+.hero-loc{display:flex;align-items:center;justify-content:center;gap:8px;color:rgba(245,240,224,0.7);font-size:.92rem;margin-bottom:20px;opacity:0;animation:fadeUp .8s .6s forwards}
+.hero-loc svg{width:18px;height:18px;color:var(--gold-400)}
+.hero-badges{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;opacity:0;animation:fadeUp .8s .7s forwards}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.badge-open{background:rgba(34,197,94,0.2);color:#86efac;border:1px solid rgba(34,197,94,0.35)}
+.badge-open .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.badge-verified{background:rgba(13,122,95,0.25);color:#6ee7b7;border:1px solid rgba(13,122,95,0.4)}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .8s .8s forwards}
+.btn{padding:12px 26px;border-radius:999px;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;transition:var(--transition);display:inline-flex;align-items:center;gap:10px}
+.btn-gold{background:linear-gradient(135deg,var(--gold-400),var(--gold-500));color:var(--emerald-900);box-shadow:0 4px 18px rgba(201,168,76,0.35)}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(201,168,76,0.5)}
+.btn-outline{border:2px solid rgba(245,240,224,0.3);color:var(--cream);background:transparent}
+.btn-outline:hover{background:rgba(245,240,224,0.1);border-color:var(--gold-400);color:var(--gold-300)}
+.btn-wa{background:rgba(37,211,102,0.2);border:1px solid rgba(37,211,102,0.4);color:#86efac}
+.btn-wa:hover{background:rgba(37,211,102,0.3);transform:translateY(-2px)}
+.btn-icon{width:46px;height:46px;border-radius:50%;border:2px solid rgba(245,240,224,0.3);color:var(--cream);display:inline-flex;align-items:center;justify-content:center;transition:var(--transition)}
+.btn-icon:hover{background:rgba(245,240,224,0.1);border-color:var(--gold-400);color:var(--gold-300)}
+.btn-icon svg{width:20px;height:20px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATUS PANEL */
+#status{background:var(--paper);border-bottom:1px solid var(--line);padding:28px 0}
+.status-container{max-width:1100px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.status-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius-sm);background:var(--cream-soft);border:1px solid var(--line);transition:var(--transition)}
+.status-item:hover{border-color:rgba(201,168,76,0.3);box-shadow:var(--shadow-sm)}
+.status-icon{width:40px;height:40px;border-radius:50%;background:rgba(13,122,95,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.status-icon svg{width:20px;height:20px;color:var(--emerald-700)}
+.status-info h4{font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.status-info p{font-size:.88rem;font-weight:700;color:var(--ink)}
+.status-info p.yes{color:var(--emerald-700)}
+
+/* SHARED SECTION */
+.section-pad{padding:80px 0}
+.section-container{max-width:1200px;margin:0 auto;padding:0 32px}
+.section-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(13,122,95,0.08);color:var(--emerald-700);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:12px}
+.section-eyebrow::before{content:'';width:20px;height:2px;background:linear-gradient(90deg,var(--gold-500),var(--emerald-700));border-radius:999px}
+.section-title{font-family:var(--serif);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;color:var(--emerald-800);line-height:1.2}
+.section-divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold-500),transparent);margin:16px 0 0}
+.section-head{text-align:center;margin-bottom:44px}
+.bg-cream{background:var(--cream-soft)}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:900px;margin:0 auto}
+.about-text p{color:var(--ink-soft);line-height:1.8}
+.about-facts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.fact-card{background:var(--cream-soft);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px 16px}
+.fact-card h4{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-700);font-weight:700;margin-bottom:4px}
+.fact-card p{font-size:.9rem;color:var(--ink);font-weight:600}
+
+/* SERVICES */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.svc-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;transition:var(--transition)}
+.svc-card:hover{box-shadow:var(--shadow-md);border-color:rgba(201,168,76,0.3);transform:translateY(-4px)}
+.svc-icon{width:48px;height:48px;border-radius:var(--radius-sm);background:rgba(13,122,95,0.08);display:flex;align-items:center;justify-content:center;margin-bottom:14px;transition:var(--transition)}
+.svc-card:hover .svc-icon{background:rgba(201,168,76,0.12)}
+.svc-icon svg{width:24px;height:24px;color:var(--emerald-700);transition:var(--transition)}
+.svc-card:hover .svc-icon svg{color:var(--gold-500)}
+.svc-card h3{font-family:var(--serif);font-size:1.1rem;color:var(--emerald-800);margin-bottom:6px}
+.svc-card p{font-size:.86rem;color:var(--ink-soft);line-height:1.6}
+
+/* MEDICINE CATEGORIES */
+.med-cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.med-cat{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:18px;text-align:center;transition:var(--transition);cursor:pointer;position:relative}
+.med-cat:hover{box-shadow:var(--shadow-md);border-color:rgba(201,168,76,0.3);transform:translateY(-4px)}
+.med-cat-icon{width:48px;height:48px;border-radius:50%;background:rgba(13,122,95,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.med-cat-icon svg{width:24px;height:24px;color:var(--emerald-700)}
+.med-cat h3{font-size:.9rem;font-weight:700;color:var(--ink)}
+.med-cat .count{font-size:.76rem;color:var(--muted);margin-top:2px}
+.med-cat .rx-badge{position:absolute;top:8px;right:8px;background:rgba(220,38,38,0.1);color:#b91c1c;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.05em}
+
+/* MEDICINE SEARCH */
+.search-wrap{max-width:700px;margin:0 auto 32px}
+.search-box{position:relative}
+.search-box input{width:100%;padding:16px 20px 16px 52px;border:1.5px solid var(--line);border-radius:999px;font-family:var(--sans);font-size:1rem;color:var(--ink);background:var(--paper);transition:var(--transition)}
+.search-box input:focus{outline:none;border-color:var(--gold-400);box-shadow:0 0 0 4px rgba(201,168,76,0.1)}
+.search-box svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:22px;height:22px;color:var(--emerald-600)}
+
+/* PRODUCTS */
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.prod-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:16px;transition:var(--transition);cursor:pointer;position:relative}
+.prod-card:hover{box-shadow:var(--shadow-md);border-color:rgba(201,168,76,0.3);transform:translateY(-4px)}
+.prod-cat-tag{font-size:.66rem;color:var(--emerald-600);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.prod-card h3{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.prod-desc{font-size:.8rem;color:var(--ink-soft);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--line)}
+.prod-price{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--gold-500)}
+.prod-avail{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+.prod-avail.yes{background:rgba(34,197,94,0.1);color:#16a34a}
+.prod-avail.no{background:rgba(220,38,38,0.1);color:#dc2626}
+.prod-rx{position:absolute;top:10px;right:10px;background:rgba(220,38,38,0.08);color:#b91c1c;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:999px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(4,50,42,0.6);backdrop-filter:blur(6px);z-index:4000;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--paper);border-radius:var(--radius-lg);max-width:480px;width:100%;padding:32px;position:relative;box-shadow:var(--shadow-lg);animation:slideUp .4s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:var(--cream-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition);color:var(--ink-soft)}
+.modal-close:hover{background:var(--cream-dark);color:var(--ink)}
+.modal-cat{font-size:.72rem;color:var(--emerald-600);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.modal h3{font-family:var(--serif);font-size:1.4rem;color:var(--emerald-800);margin-bottom:10px}
+.modal-price{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--gold-500);margin-bottom:14px}
+.modal-desc{font-size:.92rem;color:var(--ink-soft);line-height:1.7;margin-bottom:20px}
+.modal-status{display:flex;gap:10px;margin-bottom:20px}
+.modal-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:.76rem;font-weight:700}
+.modal-badge.avail{background:rgba(34,197,94,0.1);color:#16a34a}
+.modal-badge.unavail{background:rgba(220,38,38,0.1);color:#dc2626}
+.modal-badge.rx{background:rgba(220,38,38,0.08);color:#b91c1c}
+.modal-actions{display:flex;gap:10px}
+.modal-actions .btn{flex:1;justify-content:center;padding:12px 20px;font-size:.76rem}
+
+/* PHARMACISTS */
+.pharm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:800px;margin:0 auto}
+.pharm-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;transition:var(--transition)}
+.pharm-card:hover{box-shadow:var(--shadow-md)}
+.pharm-img{height:220px;overflow:hidden}
+.pharm-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.pharm-card:hover .pharm-img img{transform:scale(1.08)}
+.pharm-body{padding:18px}
+.pharm-body h3{font-weight:700;font-size:1rem;color:var(--ink)}
+.pharm-role{color:var(--emerald-700);font-size:.85rem;font-weight:600;margin-top:2px}
+.pharm-qual{font-size:.8rem;color:var(--muted);margin-top:8px}
+
+/* HEALTH CHECKS */
+.check-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;max-width:900px;margin:0 auto}
+.check-card{background:linear-gradient(135deg,rgba(13,122,95,0.06),var(--cream-soft));border:1px solid rgba(13,122,95,0.15);border-radius:var(--radius-md);padding:20px;text-align:center;transition:var(--transition)}
+.check-card:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.check-icon{width:44px;height:44px;border-radius:50%;background:rgba(13,122,95,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.check-icon svg{width:22px;height:22px;color:var(--emerald-700)}
+.check-card h3{font-size:.88rem;font-weight:700;color:var(--emerald-800)}
+.check-price{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--gold-500);margin-top:4px}
+
+/* DELIVERY */
+.delivery-card{max-width:680px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:28px;box-shadow:var(--shadow-sm)}
+.delivery-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.delivery-item{display:flex;align-items:flex-start;gap:12px}
+.delivery-item .d-icon{width:40px;height:40px;border-radius:50%;background:rgba(13,122,95,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.delivery-item .d-icon svg{width:20px;height:20px;color:var(--emerald-700)}
+.delivery-item h4{font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:2px}
+.delivery-item p{font-size:.85rem;color:var(--ink-soft)}
+
+/* HOURS */
+.hours-table{max-width:520px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
+.hours-row{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--line)}
+.hours-row:last-child{border-bottom:none}
+.hours-label{font-weight:600;color:var(--ink);font-size:.9rem}
+.hours-value{font-size:.86rem;color:var(--ink-soft)}
+
+/* LOCATION */
+.location-grid{display:grid;grid-template-columns:3fr 2fr;gap:24px}
+.location-map{border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-md);min-height:380px;background:var(--cream-dark);position:relative}
+.location-map iframe{width:100%;height:100%;border:0;position:absolute;inset:0}
+.location-side{display:flex;flex-direction:column;gap:14px}
+.loc-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-sm)}
+.loc-card h3{font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:6px}
+.loc-card p{font-size:.88rem;color:var(--ink-soft);line-height:1.6}
+.loc-copy{display:inline-flex;align-items:center;gap:6px;color:var(--emerald-600);font-size:.8rem;font-weight:600;cursor:pointer;margin-top:8px}
+.loc-copy svg{width:16px;height:16px}
+.loc-card .coords{font-size:.76rem;color:var(--muted);margin-top:6px}
+.btn-directions{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--emerald-800);color:var(--cream);font-weight:700;font-size:.86rem;transition:var(--transition)}
+.btn-directions:hover{background:var(--emerald-900);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+
+/* CONTACT */
+#contact{background:var(--emerald-900);color:var(--cream)}
+#contact .section-title{color:var(--cream)}
+#contact .section-eyebrow{background:rgba(201,168,76,0.15);color:var(--gold-300)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:760px;margin:0 auto}
+.contact-card{background:rgba(6,78,59,0.4);border:1px solid rgba(13,122,95,0.4);border-radius:var(--radius-md);padding:18px;display:flex;align-items:center;gap:14px;transition:var(--transition)}
+.contact-card:hover{background:rgba(6,78,59,0.6)}
+.contact-icon{width:44px;height:44px;border-radius:50%;background:rgba(201,168,76,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-icon svg{width:20px;height:20px;color:var(--gold-300)}
+.contact-info{flex:1;min-width:0}
+.contact-info .label{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-300);font-weight:700}
+.contact-info a{color:var(--cream);font-weight:600;font-size:.9rem;transition:var(--transition);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.contact-info a:hover{color:var(--gold-200)}
+.contact-copy{color:rgba(245,240,224,0.5);cursor:pointer;flex-shrink:0;transition:var(--transition)}
+.contact-copy:hover{color:var(--gold-300)}
+.contact-copy svg{width:16px;height:16px}
+
+/* MEDICINE INFO PANEL */
+.info-panel{display:flex;align-items:flex-start;gap:14px;padding:20px;border-radius:var(--radius-md);background:rgba(254,243,199,0.4);border:1px solid rgba(202,138,4,0.2)}
+.info-panel-icon{width:44px;height:44px;border-radius:50%;background:rgba(202,138,4,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.info-panel-icon svg{width:22px;height:22px;color:#a16207}
+.info-panel h4{font-weight:700;font-size:1rem;color:#92400e;margin-bottom:4px}
+.info-panel p{font-size:.86rem;color:#78350f;line-height:1.6}
+
+/* FAQ */
+.faq-list{max-width:760px;margin:0 auto}
+.faq-item{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:10px;overflow:hidden;transition:var(--transition)}
+.faq-item:hover{border-color:rgba(201,168,76,0.3)}
+.faq-item.active{border-color:var(--gold-400);box-shadow:var(--shadow-md)}
+.faq-q{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:14px;transition:var(--transition)}
+.faq-q:hover{background:var(--cream-soft)}
+.faq-q h3{font-weight:700;font-size:.94rem;color:var(--ink)}
+.faq-toggle{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;transition:var(--transition);color:var(--emerald-700);flex-shrink:0}
+.faq-item.active .faq-toggle{background:var(--gold-400);color:var(--emerald-900);border-color:var(--gold-400);transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s ease}
+.faq-a-inner{padding:0 22px 20px}
+.faq-a p{font-size:.9rem;color:var(--ink-soft);line-height:1.7}
+
+/* FOOTER */
+footer{background:var(--emerald-900);color:rgba(245,240,224,0.7);padding:56px 0 0;border-top:1px solid rgba(13,122,95,0.3)}
+.footer-grid{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:36px;padding:0 32px}
+.footer-brand h3{font-family:var(--serif);font-size:1.4rem;color:var(--gold-300);margin-bottom:10px}
+.footer-brand p{font-size:.86rem;line-height:1.7;max-width:300px}
+.footer-col h4{font-weight:700;font-size:.82rem;color:var(--gold-200);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.footer-col ul li{margin-bottom:8px}
+.footer-col a{font-size:.84rem;opacity:.7;transition:var(--transition);cursor:pointer}
+.footer-col a:hover{opacity:1;color:var(--gold-200);padding-left:4px}
+.footer-bottom{max-width:1300px;margin:44px auto 0;padding:22px 32px;border-top:1px solid rgba(13,122,95,0.3);text-align:center}
+.footer-bottom p{font-size:.78rem;opacity:.5}
+
+.back-to-top{position:fixed;bottom:30px;right:30px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--gold-400),var(--gold-500));color:var(--emerald-900);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-gold);z-index:900;opacity:0;visibility:hidden;transform:translateY(20px);transition:var(--transition);cursor:pointer}
+.back-to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+.back-to-top:hover{transform:translateY(-4px)}
+.back-to-top svg{width:22px;height:22px}
+
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+@media(prefers-reduced-motion:reduce){.reveal{transition:none!important;opacity:1!important;transform:none!important}html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+@media(max-width:1024px){
+  .status-container{grid-template-columns:repeat(3,1fr)}
+  .about-grid{grid-template-columns:1fr;gap:24px}
+  .svc-grid{grid-template-columns:repeat(2,1fr)}
+  .med-cat-grid{grid-template-columns:repeat(3,1fr)}
+  .prod-grid{grid-template-columns:repeat(3,1fr)}
+  .pharm-grid{grid-template-columns:1fr 1fr;max-width:600px}
+  .check-grid{grid-template-columns:repeat(3,1fr)}
+  .location-grid{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media(max-width:768px){
+  .nav-links{display:none;position:fixed;top:0;right:0;height:100vh;width:280px;background:var(--emerald-900);flex-direction:column;justify-content:center;padding:40px;gap:20px;box-shadow:var(--shadow-lg)}
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:.92rem}
+  .nav-burger{display:flex}
+  .nav-back{display:none}
+  .status-container{grid-template-columns:1fr 1fr}
+  .svc-grid{grid-template-columns:1fr;max-width:480px;margin:0 auto}
+  .med-cat-grid{grid-template-columns:repeat(2,1fr)}
+  .prod-grid{grid-template-columns:repeat(2,1fr)}
+  .pharm-grid{grid-template-columns:1fr;max-width:400px}
+  .check-grid{grid-template-columns:repeat(2,1fr)}
+  .delivery-grid{grid-template-columns:1fr}
+  .contact-grid{grid-template-columns:minmax(0,1fr)}
+  .contact-card{width:100%;min-width:0}
+  .contact-info{min-width:0;overflow:hidden}
+  .contact-info a{white-space:normal;overflow-wrap:anywhere}
+  .prod-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prod-card{min-width:0;overflow-wrap:anywhere}
+  .footer-grid{grid-template-columns:1fr;gap:24px;padding:0 24px}
+  .section-pad{padding:56px 0}
+  .section-container{padding:0 24px}
+}
+@media(max-width:480px){
+  .nav-container{padding:0 20px}
+  .status-container{grid-template-columns:1fr;gap:8px}
+  .med-cat-grid{grid-template-columns:1fr 1fr}
+  .prod-grid{grid-template-columns:1fr 1fr}
+  .check-grid{grid-template-columns:1fr 1fr}
+  .hero-actions{flex-direction:column;width:100%}
+  .hero-actions .btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-container">
+    <a href="#" class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/><path d="M12 7v8M8 11h8"/></svg>
+      Yola AI Info Hub
+    </a>
+    <a href="#" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Hub
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#overview" class="nav-link">Overview</a></li>
+      <li><a href="#services" class="nav-link">Services</a></li>
+      <li><a href="#categories" class="nav-link">Medicines</a></li>
+      <li><a href="#products" class="nav-link">Products</a></li>
+      <li><a href="#pharmacists" class="nav-link">Pharmacists</a></li>
+      <li><a href="#checks" class="nav-link">Health Checks</a></li>
+      <li><a href="#delivery" class="nav-link">Delivery</a></li>
+      <li><a href="#hours" class="nav-link">Hours</a></li>
+      <li><a href="#location" class="nav-link">Location</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
+      <li><a href="#faqs" class="nav-link">FAQs</a></li>
+    </ul>
+    <div class="nav-burger" id="navBurger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 20.5L3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7z"/><path d="M8.5 8.5l7 7"/></svg>
+    </div>
+    <h1>GreenCare Pharmacy</h1>
+    <p class="hero-type">Pharmacy & Pharmaceutical Centre</p>
+    <p class="hero-loc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Jimeta, Yola · Adamawa State
+    </p>
+    <div class="hero-badges">
+      <span class="badge badge-open"><span class="dot"></span>Open Now</span>
+      <span class="badge badge-verified">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/><path d="M9 12l2 2 4-4"/></svg>
+        PCN Verified
+      </span>
+    </div>
+    <div class="hero-actions">
+      <a href="tel:+2348034567890" class="btn btn-gold">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        Call
+      </a>
+      <a href="https://wa.me/2348034567890" target="_blank" rel="noopener" class="btn btn-wa">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.582 0 11.94-5.359 11.944-11.893a11.821 11.821 0 00-3.485-8.413"/></svg>
+        WhatsApp
+      </a>
+      <a href="https://www.google.com/maps/search/?api=1&query=9.2035,12.4955" target="_blank" rel="noopener" class="btn btn-outline">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Directions
+      </a>
+      <button class="btn-icon" id="shareBtn" aria-label="Share">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- STATUS PANEL -->
+<section id="status">
+  <div class="status-container">
+    <div class="status-item"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="status-info"><h4>Today's Hours</h4><p>8AM – 10PM</p></div></div>
+    <div class="status-item"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="status-info"><h4>Delivery</h4><p class="yes">Available</p></div></div>
+    <div class="status-item"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="status-info"><h4>Prescription</h4><p class="yes">Available</p></div></div>
+    <div class="status-item"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg></div><div class="status-info"><h4>Consultation</h4><p class="yes">Available</p></div></div>
+    <div class="status-item"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="status-info"><h4>Open Status</h4><p class="yes">Open Now</p></div></div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section id="overview" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">Pharmacy Overview</span><h2 class="section-title">About GreenCare</h2><div class="section-divider"></div></div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>GreenCare Pharmacy is a licensed community pharmacy serving the Jimeta area of Yola. We provide prescription dispensing, over-the-counter medicines, health consultations, and essential health monitoring services. Our pharmacists are fully registered with the Pharmacists Council of Nigeria.</p>
+        <div class="about-facts">
+          <div class="fact-card"><h4>Pharmacy Type</h4><p>Community Pharmacy</p></div>
+          <div class="fact-card"><h4>Years Operating</h4><p>12 years</p></div>
+          <div class="fact-card"><h4>License No.</h4><p>PCN-LIC-AD-2012-0457</p></div>
+          <div class="fact-card"><h4>Verification</h4><p>PCN Verified</p></div>
+        </div>
+      </div>
+      <div class="about-text reveal reveal-delay-1">
+        <p style="font-size:.9rem">Our commitment to quality care means every prescription is reviewed by a licensed pharmacist, every patient receives counselling on their medication, and every health check is conducted with professional-grade equipment. We also offer convenient home delivery within Yola metropolis.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">What We Offer</span><h2 class="section-title">Pharmaceutical Services</h2><div class="section-divider"></div></div>
+    <div class="svc-grid reveal" id="svcGrid"></div>
+  </div>
+</section>
+
+<!-- MEDICINE CATEGORIES -->
+<section id="categories" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">Browse by Type</span><h2 class="section-title">Medicine Categories</h2><div class="section-divider"></div></div>
+    <div class="med-cat-grid reveal" id="medCatGrid"></div>
+  </div>
+</section>
+
+<!-- PRODUCTS / SEARCH -->
+<section id="products" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">In Stock</span><h2 class="section-title">Medicine Search</h2><div class="section-divider"></div></div>
+    <div class="search-wrap reveal">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search medicine or health product...">
+      </div>
+    </div>
+    <div class="prod-grid reveal" id="prodGrid"></div>
+  </div>
+</section>
+
+<!-- PHARMACISTS -->
+<section id="pharmacists" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">Our Team</span><h2 class="section-title">Pharmacists & Staff</h2><div class="section-divider"></div></div>
+    <div class="pharm-grid reveal" id="pharmGrid"></div>
+  </div>
+</section>
+
+<!-- HEALTH CHECKS -->
+<section id="checks" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">In-Store Services</span><h2 class="section-title">Health Measurements</h2><div class="section-divider"></div></div>
+    <div class="check-grid reveal" id="checkGrid"></div>
+  </div>
+</section>
+
+<!-- DELIVERY -->
+<section id="delivery" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">Convenience</span><h2 class="section-title">Delivery & Pickup</h2><div class="section-divider"></div></div>
+    <div class="delivery-card reveal">
+      <div class="delivery-grid">
+        <div class="delivery-item"><div class="d-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div><h4>Delivery Area</h4><p>Within Yola metropolis (Jimeta, Yola Town, Girei)</p></div></div>
+        <div class="delivery-item"><div class="d-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div><div><h4>Delivery Phone</h4><p>+234 803 456 7890</p></div></div>
+        <div class="delivery-item"><div class="d-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg></div><div><h4>Pickup</h4><p>Available — order ahead and collect in-store</p></div></div>
+        <div class="delivery-item"><div class="d-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><div><h4>Payment Options</h4><p>Cash, Bank Transfer, POS</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOURS -->
+<section id="hours" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">Opening Times</span><h2 class="section-title">Opening Hours</h2><div class="section-divider"></div></div>
+    <div class="hours-table reveal" id="hoursTable"></div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section id="location" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">Find Us</span><h2 class="section-title">Location & Directions</h2><div class="section-divider"></div></div>
+    <div class="location-grid">
+      <div class="location-map reveal">
+        <iframe title="Pharmacy location map" src="https://www.openstreetmap.org/export/embed.html?bbox=12.4855,9.1935,12.5055,9.2135&layer=mapnik&marker=9.2035,12.4955" loading="lazy"></iframe>
+      </div>
+      <div class="location-side">
+        <div class="loc-card reveal reveal-delay-1">
+          <h3>Address</h3>
+          <p>12 Atiku Abubakar Way, Jimeta<br>Yola, Adamawa State</p>
+          <div class="loc-copy" id="copyAddress">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copyLabel">Copy address</span>
+          </div>
+        </div>
+        <div class="loc-card reveal reveal-delay-2">
+          <h3>Landmark</h3>
+          <p>Near Jimeta Main Market</p>
+          <p class="coords">Coordinates: 9.2035°N, 12.4955°E</p>
+        </div>
+        <a href="https://www.google.com/maps/search/?api=1&query=9.2035,12.4955" target="_blank" rel="noopener" class="btn-directions reveal reveal-delay-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          Get Directions
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section-pad">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">Get In Touch</span><h2 class="section-title">Contact Information</h2><div class="section-divider"></div></div>
+    <div class="contact-grid reveal">
+      <div class="contact-card">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div class="contact-info"><span class="label">Phone</span><a href="tel:+2348034567890">+234 803 456 7890</a></div>
+        <div class="contact-copy" data-copy="+234 803 456 7890"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.582 0 11.94-5.359 11.944-11.893a11.821 11.821 0 00-3.485-8.413"/></svg></div>
+        <div class="contact-info"><span class="label">WhatsApp</span><a href="https://wa.me/2348034567890" target="_blank" rel="noopener">+234 803 456 7890</a></div>
+        <div class="contact-copy" data-copy="+234 803 456 7890"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="contact-info"><span class="label">Email</span><a href="mailto:info@greencarepharmacy.com">info@greencarepharmacy.com</a></div>
+        <div class="contact-copy" data-copy="info@greencarepharmacy.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="contact-info"><span class="label">Website</span><a href="https://www.greencarepharmacy.com" target="_blank" rel="noopener">www.greencarepharmacy.com</a></div>
+        <div class="contact-copy" data-copy="www.greencarepharmacy.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEDICINE INFO + FAQS -->
+<section id="faqs" class="section-pad bg-cream">
+  <div class="section-container">
+    <div class="section-head reveal"><span class="section-eyebrow">Good to Know</span><h2 class="section-title">Frequently Asked Questions</h2><div class="section-divider"></div></div>
+    <div style="max-width:760px;margin:0 auto 24px" class="reveal">
+      <div class="info-panel">
+        <div class="info-panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div>
+          <h4>Important Medicine Information</h4>
+          <p>Medicine availability and product information may change. Users should consult a qualified healthcare professional where appropriate. Prescription medicines require a valid prescription from a registered medical practitioner.</p>
+        </div>
+      </div>
+    </div>
+    <div class="faq-list reveal" id="faqList"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>Yola AI Info Hub</h3>
+      <p>Your trusted directory for healthcare facilities across Yola and Adamawa State. Information verified and regularly updated.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Healthcare</h4>
+      <ul>
+        <li><a href="secondary-hospital-details.html">Secondary Hospital</a></li>
+        <li><a href="primary-healthcare-details.html">Primary Health Centre</a></li>
+        <li><a href="pharmacy-details.html">Pharmacy</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#categories">Medicines</a></li>
+        <li><a href="#delivery">Delivery</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>About This Data</h4>
+      <p style="font-size:.84rem;opacity:.7;line-height:1.6">Medicine availability may change. Always consult a qualified healthcare professional. Prescription medicines require a valid prescription.</p>
+    </div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 Yola AI Info Hub · Healthcare Directory · Golden Emerald Design System</p></div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent">
+    <div class="modal-close" id="modalClose">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* DATA */
+var services=[
+  {name:'Prescription Filling',desc:'Professional dispensing of prescribed medications with counselling.',icon:'file'},
+  {name:'OTC Medicines',desc:'Over-the-counter medicines for common ailments.',icon:'pill'},
+  {name:'Health Consultation',desc:'Professional advice on minor ailments and medication use.',icon:'stethoscope'},
+  {name:'Medicine Refill',desc:'Easy refill service for repeat prescriptions.',icon:'refresh'},
+  {name:'Home Delivery',desc:'Doorstep delivery within Yola metropolis.',icon:'truck'},
+  {name:'Blood Pressure Check',desc:'Free blood pressure monitoring.',icon:'heart'},
+  {name:'Blood Sugar Check',desc:'Blood glucose testing service.',icon:'droplet'},
+  {name:'First Aid Supplies',desc:'Complete first aid kits and supplies.',icon:'shield'},
+  {name:'Health Products',desc:'Vitamins, supplements, and personal care products.',icon:'apple'}
+];
+var medCategories=[
+  {name:'Pain Relief',count:24,icon:'thermometer',rx:false},
+  {name:'Antimalarials',count:18,icon:'thermometer',rx:false},
+  {name:'Antibiotics',count:32,icon:'pill',rx:true},
+  {name:'Antihistamines',count:12,icon:'wind',rx:false},
+  {name:'Vitamins & Supplements',count:45,icon:'apple',rx:false},
+  {name:'Maternal Health',count:15,icon:'baby',rx:false},
+  {name:'Paediatric Medicines',count:20,icon:'baby',rx:false},
+  {name:'Diabetes Supplies',count:18,icon:'droplet',rx:false},
+  {name:'Hypertension',count:22,icon:'heart',rx:true},
+  {name:'First Aid',count:30,icon:'shield',rx:false},
+  {name:'Personal Care',count:40,icon:'sparkles',rx:false},
+  {name:'Respiratory',count:14,icon:'wind',rx:false}
+];
+var products=[
+  {id:'p1',name:'Paracetamol 500mg (Tablets)',cat:'Pain Relief',avail:true,price:'\u20a6500',desc:'General pain reliever and fever reducer. 100 tablets per pack.',rx:false},
+  {id:'p2',name:'Artemether/Lumefantrine',cat:'Antimalarials',avail:true,price:'\u20a61,200',desc:'ACT combination therapy for malaria treatment. Full course pack.',rx:false},
+  {id:'p3',name:'Amoxicillin 250mg (Capsules)',cat:'Antibiotics',avail:true,price:'\u20a61,500',desc:'Broad-spectrum antibiotic. Prescription required.',rx:true},
+  {id:'p4',name:'Vitamin C 1000mg (Tablets)',cat:'Vitamins & Supplements',avail:true,price:'\u20a6800',desc:'Immune system support. 60 tablets per pack.',rx:false},
+  {id:'p5',name:'Loratadine 10mg (Tablets)',cat:'Antihistamines',avail:true,price:'\u20a6700',desc:'Allergy relief medication. Non-drowsy formula.',rx:false},
+  {id:'p6',name:'Blood Glucose Test Strips (50)',cat:'Diabetes Supplies',avail:true,price:'\u20a64,500',desc:'Compatible with standard glucose meters. 50 strips per box.',rx:false},
+  {id:'p7',name:'Folic Acid 5mg (Tablets)',cat:'Maternal Health',avail:true,price:'\u20a6600',desc:'Prenatal supplement. Recommended during pregnancy.',rx:false},
+  {id:'p8',name:'Paediatric Paracetamol Syrup',cat:'Paediatric Medicines',avail:false,price:'\u20a6900',desc:'Pain and fever relief for children. 100ml bottle.',rx:false},
+  {id:'p9',name:'Digital Blood Pressure Monitor',cat:'Hypertension',avail:true,price:'\u20a615,000',desc:'Automatic arm-cuff BP monitor with memory function.',rx:true},
+  {id:'p10',name:'First Aid Kit (Standard)',cat:'First Aid',avail:true,price:'\u20a65,000',desc:'Complete first aid kit with bandages, antiseptics, and tools.',rx:false},
+  {id:'p11',name:'Hand Sanitiser (500ml)',cat:'Personal Care',avail:true,price:'\u20a61,200',desc:'70% alcohol-based hand sanitiser. Antibacterial.',rx:false},
+  {id:'p12',name:'Salbutamol Inhaler',cat:'Respiratory',avail:true,price:'\u20a62,500',desc:'Reliever inhaler for asthma. Prescription required.',rx:true}
+];
+var pharmacists=[
+  {name:'Pharm. Bello Aminu',role:'Superintendent Pharmacist',qual:'B.Pharm, PCN Registered',img:'https://images.pexels.com/photos/14797861/pexels-photo-14797861.jpeg?auto=compress&cs=tinysrgb&h=300&w=300'},
+  {name:'Pharm. Mary Garba',role:'Pharmacist',qual:'Pharm.D, PCN Registered',img:'https://images.pexels.com/photos/15114245/pexels-photo-15114245.jpeg?auto=compress&cs=tinysrgb&h=300&w=300'},
+  {name:'Mr. David Yohanna',role:'Pharmacy Technician',qual:'Pharm Tech Cert.',img:'https://images.pexels.com/photos/19471016/pexels-photo-19471016.jpeg?auto=compress&cs=tinysrgb&h=300&w=300'}
+];
+var healthChecks=[
+  {name:'Blood Pressure',price:'Free',icon:'heart'},
+  {name:'Blood Glucose',price:'\u20a6500',icon:'droplet'},
+  {name:'Weight Check',price:'Free',icon:'scale'},
+  {name:'Temperature',price:'Free',icon:'thermometer'},
+  {name:'BMI Assessment',price:'Free',icon:'activity'}
+];
+var hoursData=[
+  {label:'Monday – Friday',val:'8:00 AM – 10:00 PM'},
+  {label:'Saturday',val:'9:00 AM – 9:00 PM'},
+  {label:'Sunday',val:'10:00 AM – 6:00 PM'},
+  {label:'Public Holidays',val:'10:00 AM – 6:00 PM'}
+];
+var faqs=[
+  {q:'Do you offer home delivery?',a:'Yes. We provide home delivery within Yola metropolis including Jimeta, Yola Town, and Girei. Call or WhatsApp us to place a delivery order. Delivery fees may apply depending on distance.'},
+  {q:'Do you fill prescriptions?',a:'Yes. Our licensed pharmacists fill prescriptions from registered medical practitioners. Please bring your valid prescription. We also offer prescription counselling.'},
+  {q:'Are you open on Sundays?',a:'Yes, we are open on Sundays from 10:00 AM to 6:00 PM. We also operate on public holidays with the same hours.'},
+  {q:'Do you check blood pressure?',a:'Yes. Blood pressure checks are free of charge. We also offer blood glucose testing for a small fee. Walk in during opening hours for any of our health monitoring services.'},
+  {q:'Do you have a pharmacist available?',a:'A licensed pharmacist is always on duty during opening hours. You can ask for professional advice on medications, side effects, and general health concerns.'},
+  {q:'How can I contact the pharmacy?',a:'You can reach us by phone, WhatsApp, or email. Our contact details are listed in the contact section above. We respond to WhatsApp messages during opening hours.'}
+];
+
+function svgIcon(name){
+  var i={
+    heart:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+    pill:'<path d="M10.5 20.5L3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7z"/><path d="M8.5 8.5l7 7"/>',
+    file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+    stethoscope:'<path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/>',
+    refresh:'<path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+    truck:'<path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+    droplet:'<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
+    shield:'<path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/>',
+    apple:'<path d="M12 2a3 3 0 0 0-3 3c0 1 .5 2 1 3-2 0-4 1-5 3-1 3 1 8 4 9 2 .5 4 0 6 0s4 .5 6 0c3-1 5-6 4-9-1-2-3-3-5-3 .5-1 1-2 1-3a3 3 0 0 0-3-3"/>',
+    thermometer:'<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/>',
+    wind:'<path d="M9.59 4.59A2 2 0 1 1 11 8H2M12.59 19.41A2 2 0 1 0 14 16H2M17.73 7.73A2.5 2.5 0 1 1 19.5 12H2"/>',
+    baby:'<path d="M9 12h.01M15 12h.01M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M12 3a17 17 0 0 0 14 9 17 17 0 0 0-14 9 17 17 0 0 0-14-9 17 17 0 0 0 14-9z"/>',
+    sparkles:'<path d="M12 3l1.91 5.82L19.73 10.73 13.91 12.64 12 18.46 10.09 12.64 4.27 10.73 10.09 8.82z"/>',
+    scale:'<path d="M12 3v18M5 7l7-4 7 4M5 7l-3 7h6zM19 7l3 7h-6z"/>',
+    activity:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+    search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    phone:'<path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>',
+    clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
+  };
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+i[name]+'</svg>';
+}
+
+/* RENDER SERVICES */
+(function(){var h='';services.forEach(function(s){h+='<div class="svc-card"><div class="svc-icon">'+svgIcon(s.icon)+'</div><h3>'+s.name+'</h3><p>'+s.desc+'</p></div>';});document.getElementById('svcGrid').innerHTML=h;})();
+
+/* RENDER CATEGORIES */
+(function(){var h='';medCategories.forEach(function(c){h+='<div class="med-cat" onclick="scrollToProducts()"><div class="med-cat-icon">'+svgIcon(c.icon)+'</div><h3>'+c.name+'</h3><p class="count">'+c.count+' items</p>'+(c.rx?'<span class="rx-badge">Rx</span>':'')+'</div>';});document.getElementById('medCatGrid').innerHTML=h;})();
+
+function scrollToProducts(){var el=document.getElementById('products');if(el)window.scrollTo({top:el.offsetTop-70,behavior:'smooth'});}
+
+/* RENDER PRODUCTS */
+function renderProducts(filter){
+  var grid=document.getElementById('prodGrid');
+  var h='';
+  products.forEach(function(p){
+    if(filter&&!p.name.toLowerCase().includes(filter.toLowerCase())&&!p.cat.toLowerCase().includes(filter.toLowerCase()))return;
+    h+='<div class="prod-card" onclick="openModal(\''+p.id+'\')">'+
+      (p.rx?'<span class="prod-rx">Rx</span>':'')+
+      '<p class="prod-cat-tag">'+p.cat+'</p>'+
+      '<h3>'+p.name+'</h3>'+
+      '<p class="prod-desc">'+p.desc+'</p>'+
+      '<div class="prod-footer"><span class="prod-price">'+p.price+'</span>'+
+      '<span class="prod-avail '+(p.avail?'yes':'no')+'">'+(p.avail?'In Stock':'Out of Stock')+'</span></div>'+
+    '</div>';
+  });
+  if(!h)h='<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px">No products found matching your search.</p>';
+  grid.innerHTML=h;
+}
+renderProducts('');
+
+/* SEARCH */
+document.getElementById('searchInput').addEventListener('input',function(){renderProducts(this.value);});
+
+/* MODAL */
+function openModal(id){
+  var p=products.find(function(x){return x.id===id;});
+  if(!p)return;
+  var h='<div class="modal-cat">'+p.cat+'</div>'+
+    '<h3>'+p.name+'</h3>'+
+    '<p class="modal-price">'+p.price+'</p>'+
+    '<p class="modal-desc">'+p.desc+'</p>'+
+    '<div class="modal-status">'+
+      '<span class="modal-badge '+(p.avail?'avail':'unavail')+'">'+(p.avail?'In Stock':'Out of Stock')+'</span>'+
+      (p.rx?'<span class="modal-badge rx">Prescription Required</span>':'')+
+    '</div>'+
+    '<div class="modal-actions">'+
+      '<a href="tel:+2348034567890" class="btn btn-gold">'+svgIcon('phone')+' Call to Order</a>'+
+      '<a href="https://wa.me/2348034567890" target="_blank" rel="noopener" class="btn btn-outline">WhatsApp</a>'+
+    '</div>';
+  document.getElementById('modalBody').innerHTML=h;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+
+/* PHARMACISTS */
+(function(){var h='';pharmacists.forEach(function(p){h+='<div class="pharm-card"><div class="pharm-img"><img src="'+p.img+'" alt="'+p.name+'" loading="lazy"></div><div class="pharm-body"><h3>'+p.name+'</h3><p class="pharm-role">'+p.role+'</p><p class="pharm-qual">'+p.qual+'</p></div></div>';});document.getElementById('pharmGrid').innerHTML=h;})();
+
+/* HEALTH CHECKS */
+(function(){var h='';healthChecks.forEach(function(c){h+='<div class="check-card"><div class="check-icon">'+svgIcon(c.icon)+'</div><h3>'+c.name+'</h3><p class="check-price">'+c.price+'</p></div>';});document.getElementById('checkGrid').innerHTML=h;})();
+
+/* HOURS */
+(function(){var h='';hoursData.forEach(function(hr){h+='<div class="hours-row"><span class="hours-label">'+hr.label+'</span><span class="hours-value">'+hr.val+'</span></div>';});document.getElementById('hoursTable').innerHTML=h;})();
+
+/* FAQS */
+(function(){var h='';faqs.forEach(function(f,i){h+='<div class="faq-item'+(i===0?' active':'')+'"><div class="faq-q" onclick="toggleFaq(this)"><h3>'+f.q+'</h3><div class="faq-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="faq-a"'+(i===0?' style="max-height:300px"':'')+'><div class="faq-a-inner"><p>'+f.a+'</p></div></div></div>';});document.getElementById('faqList').innerHTML=h;})();
+
+function toggleFaq(q){var item=q.parentElement;var a=item.querySelector('.faq-a');var isActive=item.classList.contains('active');document.querySelectorAll('.faq-item.active').forEach(function(f){f.classList.remove('active');f.querySelector('.faq-a').style.maxHeight='0';});if(!isActive){item.classList.add('active');a.style.maxHeight=a.scrollHeight+'px';}}
+
+/* NAV */
+var nav=document.getElementById('nav'),backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',function(){
+  if(window.scrollY>60){nav.classList.add('scrolled');backToTop.classList.add('show');}
+  else{nav.classList.remove('scrolled');backToTop.classList.remove('show');}
+  updateActiveNav();
+});
+var navSections=document.querySelectorAll('section[id]'),navLinks=document.querySelectorAll('.nav-link');
+function updateActiveNav(){var pos=window.scrollY+120;navSections.forEach(function(sec){if(pos>=sec.offsetTop&&pos<sec.offsetTop+sec.offsetHeight){navLinks.forEach(function(l){l.classList.remove('active');});var a=document.querySelector('.nav-link[href="#'+sec.id+'"]');if(a)a.classList.add('active');}});}
+var burger=document.getElementById('navBurger'),navLinksEl=document.getElementById('navLinks');
+burger.addEventListener('click',function(){burger.classList.toggle('open');navLinksEl.classList.toggle('open');});
+navLinksEl.querySelectorAll('a').forEach(function(l){l.addEventListener('click',function(){burger.classList.remove('open');navLinksEl.classList.remove('open');});});
+
+/* REVEAL */
+var ro=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target);}});},{threshold:0.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(function(el){ro.observe(el);});
+
+/* MISC */
+backToTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+document.querySelectorAll('a[href^="#"]').forEach(function(l){l.addEventListener('click',function(e){var h=this.getAttribute('href');if(h==='#')return;var t=document.querySelector(h);if(t){e.preventDefault();window.scrollTo({top:t.offsetTop-70,behavior:'smooth'});}});});
+document.getElementById('shareBtn').addEventListener('click',function(){if(navigator.share)navigator.share({title:'GreenCare Pharmacy',url:window.location.href});else{navigator.clipboard.writeText(window.location.href);alert('Link copied!');}});
+document.getElementById('copyAddress').addEventListener('click',function(){navigator.clipboard.writeText('12 Atiku Abubakar Way, Jimeta, Yola, Adamawa State');var l=document.getElementById('copyLabel');l.textContent='Copied!';setTimeout(function(){l.textContent='Copy address';},2000);});
+document.querySelectorAll('.contact-copy').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(this.getAttribute('data-copy'));var s=this.querySelector('svg');var o=s.innerHTML;s.innerHTML='<polyline points="20 6 9 17 4 12"/>';setTimeout(function(){s.innerHTML=o;},2000);});});
+</script>
+<script src="/components/naviinfo/details/healthcare-detail-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>College / Polytechnic Details Template</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--cream:#f5f0e0;
+--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+.cover{position:relative;background:radial-gradient(1200px 400px at 12% -10%,rgba(201,168,76,.32),transparent 60%),linear-gradient(135deg,var(--emerald-950),var(--emerald) 55%,var(--forest));color:var(--cream);padding:1.6rem 0 2rem;overflow:hidden}
+.cover:after{content:"";position:absolute;inset:auto -10% -60% 40%;height:220px;border-radius:50%;background:rgba(242,214,129,.12);filter:blur(10px)}
+.cover-inner{position:relative;z-index:1;display:grid;gap:1rem}
+.crumbs{font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-light);opacity:0;animation:fadeUp .6s .2s forwards}
+.crumbs a{text-decoration:none}.crumbs a:hover{text-decoration:underline}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.cover-head{display:grid;gap:.9rem;opacity:0;animation:fadeUp .7s .35s forwards}
+.badge-row{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:.35rem;font-size:.74rem;padding:.3rem .65rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(242,214,129,.32);color:var(--cream)}
+.pill.gold{background:linear-gradient(135deg,var(--gold),#a5821f);color:var(--emerald-950);border-color:transparent;font-weight:700}
+.pill.open{background:rgba(120,230,170,.18);border-color:rgba(120,230,170,.5)}
+.pill.closed{background:rgba(255,140,140,.16);border-color:rgba(255,160,160,.45)}
+.cover h1{font-size:clamp(1.6rem,6vw,2.9rem)}
+.cover p.lead{max-width:62ch;color:rgba(245,240,224,.85)}
+.cover-meta{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;font-size:.85rem;color:rgba(245,240,224,.8)}
+.cover-visual{display:none}
+.rating-chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:700;color:var(--gold-light)}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.4rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.7rem .9rem;border-radius:12px;text-decoration:none;font-size:.85rem;font-weight:600;border:1px solid rgba(242,214,129,.38);color:var(--cream);background:rgba(255,255,255,.08);cursor:pointer;font-family:inherit;transition:transform .18s ease,background .18s ease}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),#a5821f);color:var(--emerald-950);border-color:transparent}
+main{padding:1.4rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.15rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.85rem;margin-bottom:.8rem}
+.panel>h2:not(:first-child){margin-top:1rem}
+.panel p{font-size:.9rem;color:#324b42;margin-bottom:.6rem}.panel p:last-child{margin-bottom:0}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin-top:.9rem}
+.fact{background:linear-gradient(160deg,rgba(204,235,221,.5),rgba(245,240,224,.6));border:1px solid var(--line);border-radius:14px;padding:.6rem .7rem;transition:transform .2s ease}
+.fact:hover{transform:translateY(-3px)}
+.fact dt{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fact dd{font-weight:600;font-size:.92rem;margin-top:.15rem}
+.tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem}
+.tag{font-size:.75rem;padding:.28rem .6rem;border-radius:999px;background:var(--mint);color:var(--emerald);border:1px solid var(--line)}
+.list{display:grid;gap:.45rem;margin-top:.7rem}
+.list li{list-style:none;display:flex;gap:.55rem;align-items:flex-start;font-size:.9rem}
+.list li:before{content:"\25C6";color:var(--gold);font-size:.7rem;line-height:1.6}
+/* Program cards */
+.prog-filters{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.9rem}
+.prog-filter{font-size:.74rem;padding:.28rem .6rem;border-radius:999px;border:1px solid var(--line);background:var(--white);color:var(--muted);cursor:pointer;transition:all .2s}
+.prog-filter.active{background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--cream);border-color:transparent}
+.prog-filter:hover{border-color:var(--gold)}
+.prog-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-top:.9rem}
+.prog-card{border:1px solid var(--line);border-radius:14px;padding:.8rem;background:linear-gradient(160deg,#fff,rgba(204,235,221,.15));transition:transform .2s ease,box-shadow .2s ease}
+.prog-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.prog-card.hidden{display:none}
+.prog-card h3{font-size:.9rem;color:var(--emerald);margin-bottom:.2rem}
+.prog-card .prog-meta{font-size:.74rem;color:var(--gold);font-weight:600;margin-bottom:.3rem}
+.prog-card p{font-size:.8rem;color:#324b42;margin:0}
+/* Department grid */
+.dept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-top:.9rem}
+.dept-card{border:1px solid var(--line);border-radius:14px;padding:.8rem;background:#fff;transition:transform .2s ease}
+.dept-card:hover{transform:translateY(-3px)}
+.dept-card h3{font-size:.9rem;color:var(--emerald);margin-bottom:.15rem}
+.dept-card .dept-head{font-size:.76rem;color:var(--muted);margin-bottom:.3rem}
+.dept-card p{font-size:.78rem;color:#324b42;margin:0}
+/* Steps */
+.steps{display:grid;gap:.6rem;margin-top:.8rem;counter-reset:step}
+.step{display:flex;gap:.7rem;align-items:flex-start;font-size:.88rem;padding:.6rem;border-radius:12px;background:linear-gradient(160deg,rgba(204,235,221,.3),rgba(245,240,224,.4));border:1px solid var(--line)}
+.step:before{counter-increment:step;content:counter(step);flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a5821f);color:var(--emerald-950);display:grid;place-items:center;font-weight:700;font-size:.78rem}
+/* Facility grid */
+.facility-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-top:.9rem}
+.facility-item{display:flex;gap:.6rem;align-items:flex-start;font-size:.86rem;padding:.6rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.12))}
+.facility-item .ico{flex:0 0 auto;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.facility-item b{display:block;font-size:.84rem}.facility-item small{display:block;font-size:.76rem;color:var(--muted);margin-top:.1rem}
+/* IT partners */
+.partner-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.9rem}
+.partner-card{border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;font-size:.82rem;background:linear-gradient(160deg,rgba(204,235,221,.25),rgba(245,240,224,.4));transition:transform .2s}
+.partner-card:hover{transform:translateY(-2px)}
+.partner-card b{color:var(--emerald)}
+/* Calendar */
+.cal-grid{display:grid;gap:.5rem;margin-top:.9rem}
+.cal-item{display:flex;gap:.7rem;align-items:center;padding:.6rem;border-radius:12px;border:1px solid var(--line);background:#fff;transition:transform .2s}
+.cal-item:hover{transform:translateX(4px)}
+.cal-tag{flex:0 0 auto;width:54px;text-align:center;border-radius:10px;background:linear-gradient(140deg,var(--emerald),var(--forest));color:var(--cream);padding:.4rem;font-size:.7rem;font-weight:600;letter-spacing:.05em}
+.cal-item .cal-info b{font-size:.86rem}.cal-item .cal-info small{font-size:.78rem;color:var(--muted);display:block;margin-top:.1rem}
+/* Hours */
+.hours{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:.9rem}
+.hours th,.hours td{text-align:left;padding:.45rem 0;border-bottom:1px dashed var(--line)}
+.hours th{font-weight:600;color:var(--muted)}.hours td{text-align:right;font-weight:600}
+/* Photos */
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.9rem}
+.photo{aspect-ratio:4/3;border-radius:12px;overflow:hidden;cursor:pointer;position:relative;box-shadow:var(--shadow)}
+.photo img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.photo:hover img{transform:scale(1.1)}
+.photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(3,42,35,.7),transparent 50%);display:flex;align-items:flex-end;padding:10px;opacity:0;transition:opacity .3s ease}
+.photo:hover .photo-overlay{opacity:1}
+.photo-overlay span{color:var(--cream);font-size:.76rem;font-family:var(--serif)}
+/* Contact */
+.contact-list{display:grid;gap:.6rem;margin-top:.8rem}
+.contact-row{display:flex;gap:.6rem;align-items:flex-start;font-size:.9rem;word-break:break-word}
+.contact-row span.ico{flex:0 0 auto;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.notice{margin-top:1rem;border-radius:14px;padding:.8rem .9rem;font-size:.84rem;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.45);color:#5c4a12}
+/* Reviews */
+.reviews{display:grid;gap:.75rem;margin-top:.8rem}
+.review{border:1px solid var(--line);border-radius:14px;padding:.75rem .85rem;background:linear-gradient(160deg,#fff,rgba(204,235,221,.25))}
+.review header{display:flex;justify-content:space-between;gap:.5rem;align-items:center;margin-bottom:.3rem}
+.review strong{font-size:.9rem}.review .stars{color:var(--gold);font-size:.82rem;white-space:nowrap}
+.review p{font-size:.88rem;color:#324b42;margin:0}
+.bars{display:grid;gap:.5rem;margin-top:.8rem}
+.bar{display:grid;grid-template-columns:90px 1fr 34px;gap:.5rem;align-items:center;font-size:.8rem;color:var(--muted)}
+.bar i{display:block;height:8px;border-radius:999px;background:var(--mint);overflow:hidden}
+.bar i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--forest),var(--gold));transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}
+.similar{display:grid;gap:.6rem;margin-top:.8rem}
+.sim{display:flex;gap:.7rem;align-items:center;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:.6rem;background:#fff;transition:transform .18s ease}
+.sim:hover{transform:translateY(-2px)}
+.sim .ico{width:42px;height:42px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;color:var(--cream);background:linear-gradient(140deg,var(--emerald),var(--forest));font-size:1.1rem}
+.sim b{display:block;font-size:.9rem}.sim small{color:var(--muted);font-size:.76rem}
+.lightbox{position:fixed;inset:0;background:rgba(3,42,35,.92);z-index:5000;display:none;align-items:center;justify-content:center;padding:40px;backdrop-filter:blur(6px)}
+.lightbox.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lightbox-inner{max-width:800px;max-height:85vh;position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lightbox-inner img{width:100%;max-height:75vh;object-fit:cover}
+.lightbox-close{position:absolute;top:-40px;right:0;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:1.3rem;color:var(--emerald);cursor:pointer;transition:transform .2s}
+.lightbox-close:hover{transform:rotate(90deg);background:var(--gold)}
+.lightbox-cap{padding:14px 18px;background:var(--cream);font-family:var(--serif);font-size:.92rem;color:var(--emerald)}
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.87rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.78rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a5821f);color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s ease;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}
+.btt:hover{transform:translateY(-4px)}
+@media (min-width:760px){
+.mobile-bar{display:none}
+.cover{padding:2.6rem 0 3rem}
+.cover-inner{grid-template-columns:1.6fr .9fr;align-items:center;gap:2rem}
+.cover-head{grid-column:1}
+.cover-visual{display:grid;place-items:center;height:230px;border-radius:26px;grid-column:2;grid-row:2;align-self:center;background:linear-gradient(150deg,rgba(255,255,255,.14),rgba(201,168,76,.28));border:1px solid rgba(242,214,129,.35);font-family:var(--serif);font-size:3.4rem;color:var(--gold-light)}
+.crumbs{grid-column:1/-1}
+.actions{grid-template-columns:repeat(4,max-content);grid-column:1}
+.layout{grid-template-columns:1.7fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:1rem}
+.facts{grid-template-columns:repeat(3,minmax(0,1fr))}
+.prog-grid{grid-template-columns:repeat(3,1fr)}
+.dept-grid{grid-template-columns:repeat(3,1fr)}
+.facility-grid{grid-template-columns:repeat(3,1fr)}
+.partner-grid{grid-template-columns:repeat(3,1fr)}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="loader-badge">C</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">C</div>
+<div><strong id="mbName">Institution Name</strong><small id="mbType">Polytechnic</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<section class="cover">
+<div class="wrap cover-inner">
+<div class="crumbs"><a href="#">Home</a> &rsaquo; <a href="#">Institutions</a> &rsaquo; <span id="crumbName">Institution</span></div>
+<div class="cover-head">
+<div class="badge-row">
+<span class="pill gold" id="typeBadge">Polytechnic</span>
+<span class="pill open" id="statusBadge">Admissions Open</span>
+<span class="pill" id="accredBadge">NBTE Accredited</span>
+</div>
+<h1 id="instName">Institution Name</h1>
+<p class="lead" id="instLead">Description goes here.</p>
+<div class="cover-meta">
+<span class="rating-chip" id="ratingChip">&#9733; 4.5</span>
+<span id="metaFounded">Founded 1980</span>
+<span id="metaLocation">City, Country</span>
+<span id="metaStudents">12,000 Students</span>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="alert('Call')">Call</button>
+<button class="btn" onclick="alert('Website')">Website</button>
+<button class="btn" onclick="alert('Directions')">Directions</button>
+<button class="btn" onclick="alert('Share')">Share</button>
+</div>
+</div>
+<div class="cover-visual" id="coverVisual">C</div>
+</div>
+</section>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<div class="panel" id="aboutPanel">
+<h2>About the Institution</h2>
+<p class="sub">Overview, mandate, and history</p>
+<p id="aboutText">Description goes here.</p>
+<div class="tags" id="tagsRow"></div>
+</div>
+
+<div class="panel" id="factsPanel">
+<h2>Key Facts</h2>
+<p class="sub">At a glance</p>
+<dl class="facts" id="factsGrid"></dl>
+</div>
+
+<div class="panel" id="programsPanel">
+<h2>Programs &amp; Courses</h2>
+<p class="sub">Filter by qualification type</p>
+<div class="prog-filters" id="progFilters"></div>
+<div class="prog-grid" id="progGrid"></div>
+</div>
+
+<div class="panel" id="deptsPanel">
+<h2>Departments</h2>
+<p class="sub">Academic departments and their heads</p>
+<div class="dept-grid" id="deptGrid"></div>
+</div>
+
+<div class="panel" id="admissionsPanel">
+<h2>Admissions</h2>
+<p class="sub">Entry requirements and process</p>
+<dl class="facts" id="admissionsFacts"></dl>
+<h2 style="margin-top:1rem">Application Process</h2>
+<div class="steps" id="appSteps"></div>
+<div class="notice" id="admissionsNotice">Admissions are open for the 2024/2025 session.</div>
+</div>
+
+<div class="panel" id="facilitiesPanel">
+<h2>Facilities</h2>
+<p class="sub">Workshops, labs, and amenities</p>
+<div class="facility-grid" id="facilityGrid"></div>
+</div>
+
+<div class="panel" id="itPanel">
+<h2>Industrial Training &amp; Partnerships</h2>
+<p class="sub">Industry linkages and placement</p>
+<div class="partner-grid" id="partnerGrid"></div>
+<ul class="list" id="itList" style="margin-top:1rem"></ul>
+</div>
+
+<div class="panel" id="calendarPanel">
+<h2>Academic Calendar</h2>
+<p class="sub">Semester schedule and key dates</p>
+<div class="cal-grid" id="calGrid"></div>
+</div>
+
+<div class="panel" id="galleryPanel">
+<h2>Photo Gallery</h2>
+<p class="sub">Labs, workshops, and campus</p>
+<div class="photos" id="photoGrid"></div>
+</div>
+
+<div class="panel" id="reviewsPanel">
+<h2>Reviews &amp; Ratings</h2>
+<p class="sub">What students and alumni say</p>
+<div class="bars" id="ratingBars"></div>
+<div class="reviews" id="reviewsList" style="margin-top:1.2rem"></div>
+</div>
+
+</div>
+
+<div class="col side">
+
+<div class="panel" id="hoursPanel">
+<h2>Operating Hours</h2>
+<p class="sub">Administrative hours</p>
+<table class="hours" id="hoursTable"></table>
+</div>
+
+<div class="panel" id="contactPanel">
+<h2>Contact Information</h2>
+<p class="sub">Get in touch</p>
+<div class="contact-list" id="contactList"></div>
+</div>
+
+<div class="panel" id="similarPanel">
+<h2>Similar Institutions</h2>
+<p class="sub">You may also like</p>
+<div class="similar" id="similarList"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footerName">Institution Name</h3>
+<p style="font-size:.87rem;opacity:.8;max-width:40ch">A technical and professional institution committed to skills development and employability.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+<a href="#" aria-label="Twitter"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+</div>
+</div>
+<div>
+<h3>Explore</h3>
+<ul><li><a href="#aboutPanel">About</a></li><li><a href="#programsPanel">Programs</a></li><li><a href="#deptsPanel">Departments</a></li><li><a href="#admissionsPanel">Admissions</a></li><li><a href="#galleryPanel">Gallery</a></li></ul>
+</div>
+<div>
+<h3>Resources</h3>
+<ul><li><a href="#">Student Portal</a></li><li><a href="#">E-Library</a></li><li><a href="#">IT Placement</a></li><li><a href="#">Alumni Network</a></li><li><a href="#">Careers</a></li></ul>
+</div>
+<div>
+<h3>Contact</h3>
+<ul><li><a href="#" id="footerAddr">Address</a></li><li><a href="#" id="footerPhone">Phone</a></li><li><a href="#" id="footerEmail">Email</a></li><li><a href="#" id="footerWeb">Website</a></li></ul>
+</div>
+</div>
+<div class="legal"><span id="footerCopy">&copy; 2024 Institution Name. All rights reserved.</span><span>Privacy Policy &middot; Terms of Service</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt" aria-label="Back to top"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+<div class="lightbox-inner" onclick="event.stopPropagation()">
+<div class="lightbox-close" onclick="closeLightbox()">&times;</div>
+<img id="lbImg" src="" alt="">
+<div class="lightbox-cap" id="lbCap"></div>
+</div>
+</div>
+
+<script>
+var SCHOOL_DATA = {
+  name:"Federal Polytechnic Greenwood",
+  type:"Polytechnic",
+  status:"Admissions Open",
+  accreditation:"NBTE Accredited",
+  rating:4.5,
+  founded:1980,
+  location:"Kaduna, Nigeria",
+  totalStudents:"12,000",
+  description:"Federal Polytechnic Greenwood is a leading technical institution dedicated to producing skilled professionals through hands-on training and technological innovation. We offer National Diploma (ND) and Higher National Diploma (HND) programs across engineering, technology, business, and applied sciences. Our curriculum emphasizes practical skills, industrial relevance, and entrepreneurial development to meet the demands of the modern workforce.",
+  tags:["NBTE Accredited","ND & HND","Industrial Training","Entrepreneurship","Skills-Based","STEM","Accredited"],
+  facts:[
+    {label:"Founded",value:"1980"},
+    {label:"Total Students",value:"12,000"},
+    {label:"Programs Offered",value:"35+"},
+    {label:"Institution Type",value:"Polytechnic"},
+    {label:"Accreditation",value:"NBTE"},
+    {label:"Campus Size",value:"180 acres"},
+    {label:"Faculty",value:"450"},
+    {label:"Graduation Rate",value:"78%"},
+    {label:"IT Placement Rate",value:"92%"}
+  ],
+  programs:[
+    {name:"Computer Engineering",type:"ND",duration:"4 semesters",career:"Hardware engineer, network technician"},
+    {name:"Electrical Engineering",type:"ND",duration:"4 semesters",career:"Electrical technician, power systems"},
+    {name:"Mechanical Engineering",type:"ND",duration:"4 semesters",career:"Maintenance, manufacturing"},
+    {name:"Civil Engineering",type:"ND",duration:"4 semesters",career:"Construction, surveying"},
+    {name:"Computer Science",type:"ND",duration:"4 semesters",career:"Programmer, web developer"},
+    {name:"Business Administration",type:"ND",duration:"4 semesters",career:"Management, entrepreneurship"},
+    {name:"Accountancy",type:"ND",duration:"4 semesters",career:"Accounting, auditing"},
+    {name:"Mass Communication",type:"ND",duration:"4 semesters",career:"Journalism, broadcasting"},
+    {name:"Computer Engineering",type:"HND",duration:"4 semesters",career:"Senior engineer, R&D"},
+    {name:"Electrical Engineering",type:"HND",duration:"4 semesters",career:"Power systems engineer"},
+    {name:"Mechanical Engineering",type:"HND",duration:"4 semesters",career:"Senior maintenance, design"},
+    {name:"Business Administration",type:"HND",duration:"4 semesters",career:"Senior management"},
+    {name:"Welding & Fabrication",type:"Certificate",duration:"2 semesters",career:"Welder, fabricator"},
+    {name:"Nursing Sciences",type:"Certificate",duration:"6 semesters",career:"Registered nurse"},
+    {name:"Science Laboratory Tech",type:"Certificate",duration:"4 semesters",career:"Lab technician"}
+  ],
+  programTypes:["All","ND","HND","Certificate"],
+  departments:[
+    {name:"Engineering Technology",head:"Dr. Musa Abdullahi",desc:"Mechanical, Electrical, Civil, Computer Engineering"},
+    {name:"Business Studies",head:"Mrs. Grace Okonkwo",desc:"Business Admin, Accountancy, Marketing"},
+    {name:"Information Technology",head:"Mr. Tunde Bakare",desc:"Computer Science, Data Processing, Cybersecurity"},
+    {name:"Applied Sciences",head:"Dr. Aisha Bello",desc:"Science Lab Tech, Statistics, Environmental"},
+    {name:"Communication Studies",head:"Mr. Emeka Nwosu",desc:"Mass Communication, Public Relations"},
+    {name:"Health Sciences",head:"Dr. Fatima Ibrahim",desc:"Nursing, Health Information Management"}
+  ],
+  admissions:[
+    {label:"JAMB Score",value:"140+ minimum"},
+    {label:"O-Level Requirements",value:"5 credits incl. Math & English"},
+    {label:"Application Period",value:"Jan - Aug"},
+    {label:"Screening Test",value:"August annually"},
+    {label:"Tuition (ND)",value:"$450/semester"},
+    {label:"Tuition (HND)",value:"$550/semester"}
+  ],
+  appSteps:[
+    "Obtain the JAMB UTME form and select the institution as first or second choice.",
+    "Score at least 140 in the UTME examination and meet the O-level credit requirements.",
+    "Apply for the post-UTME screening through the institution's online portal.",
+    "Attend the screening exercise on the scheduled date with all required documents.",
+    "Check the admission list online and accept the offer if admitted.",
+    "Complete registration, pay tuition, and attend orientation."
+  ],
+  admissionsNotice:"Post-UTME screening for 2024/2025 holds on August 15. Application closes July 31.",
+  facilities:[
+    {name:"Engineering Workshops",desc:"CNC, lathe, milling machines",icon:"W"},
+    {name:"Computer Labs",desc:"6 labs, 200+ workstations",icon:"\u2318"},
+    {name:"Electronics Lab",desc:"Circuit design, PCB fabrication",icon:"E"},
+    {name:"Welding Workshop",desc:"Arc, MIG, TIG welding bays",icon:"\u2692"},
+    {name:"Library",desc:"45,000 volumes, e-resources",icon:"L"},
+    {name:"Science Labs",desc:"Chemistry, biology, physics",icon:"\u2697"},
+    {name:"Hostels",desc:"4 residence halls, 1,200 beds",icon:"H"},
+    {name:"Sports Complex",desc:"Football, basketball, athletics",icon:"S"},
+    {name:"Entrepreneurship Hub",desc:"Startup incubator, maker space",icon:"I"}
+  ],
+  partners:[
+    {name:"Dangote Industries"},
+    {name:"NNPC Refinery"},
+    {name:"MTN Nigeria"},
+    {name:"GTBank"},
+    {name:"Julius Berger"},
+    {name:"Flutterwave"},
+    {name:"Nestlé Nigeria"},
+    {name:"Shell Petroleum"}
+  ],
+  itList:[
+    "Mandatory 12-month industrial training (SIWES) for all ND graduates",
+    "Placement with over 50 partner companies across engineering, tech, and business",
+    "IT evaluation and grading by industry supervisors and faculty",
+    "Entrepreneurship center for students starting their own businesses",
+    "Career fair held annually with 30+ companies recruiting on campus",
+    "Alumni mentorship program connecting current students with industry professionals"
+  ],
+  calendar:[
+    {tag:"SEM 1",title:"First Semester Begins",desc:"September 15 - January 30"},
+    {tag:"EXAM",title:"First Semester Exams",desc:"January 20 - 30"},
+    {tag:"IT",title:"Industrial Training",desc:"February 1 - July 31 (ND II)"},
+    {tag:"SEM 2",title:"Second Semester",desc:"March 1 - July 15"},
+    {tag:"EXAM",title:"Second Semester Exams",desc:"July 5 - 15"},
+    {tag:"GRAD",title:"Graduation Ceremony",desc:"December 10"}
+  ],
+  photos:[
+    {url:"https://images.pexels.com/photos/33986511/pexels-photo-33986511.png?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Engineering lab"},
+    {url:"https://images.pexels.com/photos/5506058/pexels-photo-5506058.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Modern laboratory"},
+    {url:"https://images.pexels.com/photos/5506047/pexels-photo-5506047.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Automotive workshop"},
+    {url:"https://images.pexels.com/photos/5650006/pexels-photo-5650006.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Welding training"},
+    {url:"https://images.pexels.com/photos/35645510/pexels-photo-35645510.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Nursing simulation"},
+    {url:"https://images.pexels.com/photos/5506026/pexels-photo-5506026.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Technical workshop"}
+  ],
+  hours:[
+    {day:"Monday",time:"8:00 AM - 5:00 PM"},
+    {day:"Tuesday",time:"8:00 AM - 5:00 PM"},
+    {day:"Wednesday",time:"8:00 AM - 5:00 PM"},
+    {day:"Thursday",time:"8:00 AM - 5:00 PM"},
+    {day:"Friday",time:"8:00 AM - 4:00 PM"},
+    {day:"Saturday",time:"9:00 AM - 1:00 PM"},
+    {day:"Sunday",time:"Closed"}
+  ],
+  contacts:[
+    {label:"Address",value:"Polytechnic Road, Greenwood, Kaduna State",icon:"L"},
+    {label:"Phone",value:"+234 80 555 0100",icon:"P"},
+    {label:"Email",value:"admissions@fpg.edu.ng",icon:"E"},
+    {label:"Website",value:"www.fpg.edu.ng",icon:"W"},
+    {label:"Admissions Office",value:"+234 80 555 0101",icon:"A"}
+  ],
+  ratingBars:[
+    {label:"Practical",score:88},
+    {label:"Facilities",score:80},
+    {label:"Employability",score:85},
+    {label:"Teaching",score:82}
+  ],
+  reviews:[
+    {name:"Ibrahim S.",stars:5,text:"The hands-on training here prepared me for the real world. I got a job at Julius Berger right after my IT placement."},
+    {name:"Grace A.",stars:4,text:"Good facilities and dedicated lecturers. The engineering workshops are well-equipped."},
+    {name:"Yusuf M.",stars:5,text:"The entrepreneurship center helped me start my own tech business. Great support system."}
+  ],
+  similar:[
+    {name:"City Polytechnic",desc:"ND/HND, 8,000 students"},
+    {name:"College of Health Tech",desc:"Health sciences, 3,500 students"},
+    {name:"Technical College North",desc:"Monotechnic, 2,000 students"}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" — Details";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('mbType').textContent=d.type;
+  document.getElementById('crumbName').textContent=d.name;
+  document.getElementById('instName').textContent=d.name;
+  document.getElementById('instLead').textContent=d.description;
+  document.getElementById('typeBadge').textContent=d.type;
+  document.getElementById('statusBadge').textContent=d.status;
+  document.getElementById('statusBadge').className='pill '+(d.status.includes('Open')||d.status.includes('Enroll')?'open':'closed');
+  document.getElementById('accredBadge').textContent=d.accreditation;
+  document.getElementById('ratingChip').innerHTML='&#9733; '+d.rating;
+  document.getElementById('metaFounded').textContent='Founded '+d.founded;
+  document.getElementById('metaLocation').textContent=d.location;
+  document.getElementById('metaStudents').textContent=d.totalStudents+' Students';
+  document.getElementById('aboutText').textContent=d.description;
+  document.getElementById('coverVisual').textContent=d.name.charAt(0);
+  document.getElementById('footerName').textContent=d.name;
+  document.getElementById('footerCopy').textContent='\u00A9 2024 '+d.name+'. All rights reserved.';
+  document.getElementById('tagsRow').innerHTML=d.tags.map(function(t){return '<span class="tag">'+t+'</span>';}).join('');
+  document.getElementById('factsGrid').innerHTML=d.facts.map(function(f){return '<div class="fact"><dt>'+f.label+'</dt><dd>'+f.value+'</dd></div>';}).join('');
+  /* Programs with filters */
+  var filters=d.programTypes.map(function(t,i){return '<button class="prog-filter'+(i===0?' active':'')+'" onclick="filterPrograms(\''+t+'\')">'+t+'</button>';}).join('');
+  document.getElementById('progFilters').innerHTML=filters;
+  document.getElementById('progGrid').innerHTML=d.programs.map(function(p){
+    return '<div class="prog-card" data-type="'+p.type+'"><h3>'+p.name+'</h3><div class="prog-meta">'+p.type+' &bull; '+p.duration+'</div><p>'+p.career+'</p></div>';
+  }).join('');
+  /* Departments */
+  document.getElementById('deptGrid').innerHTML=d.departments.map(function(dept){
+    return '<div class="dept-card"><h3>'+dept.name+'</h3><div class="dept-head">Head: '+dept.head+'</div><p>'+dept.desc+'</p></div>';
+  }).join('');
+  /* Admissions */
+  document.getElementById('admissionsFacts').innerHTML=d.admissions.map(function(f){return '<div class="fact"><dt>'+f.label+'</dt><dd>'+f.value+'</dd></div>';}).join('');
+  document.getElementById('appSteps').innerHTML=d.appSteps.map(function(s){return '<div class="step">'+s+'</div>';}).join('');
+  document.getElementById('admissionsNotice').textContent=d.admissionsNotice;
+  /* Facilities */
+  document.getElementById('facilityGrid').innerHTML=d.facilities.map(function(f){return '<div class="facility-item"><span class="ico">'+f.icon+'</span><div><b>'+f.name+'</b><small>'+f.desc+'</small></div></div>';}).join('');
+  /* IT partners */
+  document.getElementById('partnerGrid').innerHTML=d.partners.map(function(p){return '<div class="partner-card"><b>'+p.name+'</b></div>';}).join('');
+  document.getElementById('itList').innerHTML=d.itList.map(function(t){return '<li>'+t+'</li>';}).join('');
+  /* Calendar */
+  document.getElementById('calGrid').innerHTML=d.calendar.map(function(c){return '<div class="cal-item"><div class="cal-tag">'+c.tag+'</div><div class="cal-info"><b>'+c.title+'</b><small>'+c.desc+'</small></div></div>';}).join('');
+  /* Photos */
+  document.getElementById('photoGrid').innerHTML=d.photos.map(function(p){return '<div class="photo" onclick="openLightbox(\''+p.url+'\',\''+p.cap+'\')"><img src="'+p.url+'" alt="'+p.cap+'" loading="lazy"><div class="photo-overlay"><span>'+p.cap+'</span></div></div>';}).join('');
+  /* Hours */
+  var hr='<tr><th>Day</th><th>Hours</th></tr>';d.hours.forEach(function(h){var cls=h.time==='Closed'?' style="color:#c04040"':'';hr+='<tr><th>'+h.day+'</th><td'+cls+'>'+h.time+'</td></tr>';});
+  document.getElementById('hoursTable').innerHTML=hr;
+  /* Contact */
+  document.getElementById('contactList').innerHTML=d.contacts.map(function(c){return '<div class="contact-row"><span class="ico">'+(c.icon||'\u260E')+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';}).join('');
+  if(d.contacts[0])document.getElementById('footerAddr').textContent=d.contacts[0].value;
+  if(d.contacts[1])document.getElementById('footerPhone').textContent=d.contacts[1].value;
+  if(d.contacts[2])document.getElementById('footerEmail').textContent=d.contacts[2].value;
+  if(d.contacts[3])document.getElementById('footerWeb').textContent=d.contacts[3].value;
+  /* Rating bars */
+  document.getElementById('ratingBars').innerHTML=d.ratingBars.map(function(b){return '<div class="bar"><span>'+b.label+'</span><i><b data-w="'+b.score+'"></b></i><span>'+b.score+'</span></div>';}).join('');
+  /* Reviews */
+  document.getElementById('reviewsList').innerHTML=d.reviews.map(function(r){var s='';for(var i=0;i<r.stars;i++)s+='\u2605';return '<div class="review"><header><strong>'+r.name+'</strong><span class="stars">'+s+'</span></header><p>'+r.text+'</p></div>';}).join('');
+  /* Similar */
+  document.getElementById('similarList').innerHTML=d.similar.map(function(s){return '<a href="#" class="sim"><span class="ico">'+s.name.charAt(0)+'</span><div><b>'+s.name+'</b><small>'+s.desc+'</small></div></a>';}).join('');
+}
+
+function filterPrograms(type){
+  document.querySelectorAll('.prog-filter').forEach(function(b){b.classList.remove('active');});
+  event.target.classList.add('active');
+  document.querySelectorAll('.prog-card').forEach(function(c){
+    if(type==='All'||c.getAttribute('data-type')===type)c.classList.remove('hidden');
+    else c.classList.add('hidden');
+  });
+}
+
+function openLightbox(src,cap){document.getElementById('lbImg').src=src;document.getElementById('lbCap').textContent=cap;document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+function closeLightbox(e){if(e&&e.target.closest('.lightbox-inner')&&!e.target.classList.contains('lightbox-close'))return;document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLightbox();});
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){en.target.classList.add('visible');en.target.querySelectorAll('.bar i b[data-w]').forEach(function(b){setTimeout(function(){b.style.width=b.getAttribute('data-w')+'%';},200);});ro.unobserve(en.target);}
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){render(SCHOOL_DATA);document.querySelectorAll('.panel').forEach(function(p){ro.observe(p);});setTimeout(function(){document.getElementById('loader').classList.add('hidden');},500);});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>

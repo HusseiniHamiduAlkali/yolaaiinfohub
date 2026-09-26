@@ -153,6 +153,14 @@ function performSearch(searchTerm, filterCategory) {
     let sectionMatchesFilter = false;
     if (filterNorm === 'all') {
       sectionMatchesFilter = sectionCategoryNorm !== 'maps';
+    } else if (filterNorm === 'educational') {
+      sectionMatchesFilter = [
+        'universities',
+        'colleges',
+        'schools',
+        'religious',
+        'libraries'
+      ].includes(sectionCategoryNorm);
     } else {
       sectionMatchesFilter = sectionCategoryNorm === filterNorm;
     }

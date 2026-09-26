@@ -14,6 +14,13 @@
     "import-schools:write": "node scripts/import-schools.js --write",
     "import-professionals": "node scripts/import-professionals.js",
     "import-professionals:write": "node scripts/import-professionals.js --write",
+    "seed-restaurant-media": "node scripts/seed-restaurant-media.js",
+    "seed-restaurant-media:force": "node scripts/seed-restaurant-media.js --force",
+    "initialize-school-profiles": "node scripts/initialize-school-profiles.js",
+    "initialize-university-profiles": "node scripts/initialize-university-profiles.js",
+    "initialize-technical-profiles": "node scripts/initialize-technical-profiles.js",
+    "initialize-learning-profiles": "node scripts/initialize-learning-profiles.js",
+    "initialize-healthcare-profiles": "node scripts/initialize-healthcare-profiles.js",
     "predeploy": "npm run build",
     "deploy": "netlify deploy --prod",
     "render-deploy": "echo 'Render deployment handled via render.yaml'"

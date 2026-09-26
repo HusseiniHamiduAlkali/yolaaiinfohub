@@ -25,6 +25,10 @@
         "/^node --check components/naviinfo/scripts/maps\\.js && node --check server\\.js$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^git status --short && printf '\\\\n--- package ---\\\\n' && sed -n '1,220p' package\\.json && printf '\\\\n--- relevant files ---\\\\n' && rg --files components/serviinfo components/admin server test \\| sort$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }

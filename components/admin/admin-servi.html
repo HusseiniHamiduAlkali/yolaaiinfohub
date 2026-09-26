@@ -4,23 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ServiInfo Admin | Yola AI Info Hub</title>
-  <link rel="stylesheet" href="/styles/admin-schools.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/components/admin/admin-content.css">
 </head>
 <body>
+  <header class="admin-header">
+    <div>
+      <p class="eyebrow">Content administration</p>
+      <h1>ServiInfo professionals</h1>
+      <p class="muted">Manage listings, moderation status, and verification from MongoDB.</p>
+    </div>
+    <a class="back-link" href="/">Back to app</a>
+  </header>
+
   <main class="admin-shell">
-    <header class="admin-header">
-      <div>
-        <p class="eyebrow">Content administration</p>
-        <h1>ServiInfo professionals</h1>
-        <p class="muted">Manage listings, moderation status, and verification from MongoDB.</p>
-      </div>
-      <a class="back-link" href="/">Back to app</a>
-    </header>
 
     <div id="status" class="status" role="status" aria-live="polite"></div>
     <section class="admin-grid">
       <aside class="panel records-panel">
-        <div class="panel-heading"><h2>Listings</h2><div><button id="approve-pending" class="button button-primary" type="button">Approve pending</button> <button id="new-record" class="button button-primary" type="button">New listing</button></div></div>
+        <div class="panel-heading"><h2>Listings</h2><div class="panel-actions"><button id="approve-pending" class="button button-primary" type="button">Approve pending</button><button id="new-record" class="button button-primary" type="button">New listing</button></div></div>
         <label>Filter status<select id="status-filter"><option value="">All statuses</option><option>pending</option><option>published</option><option>draft</option><option>rejected</option><option>suspended</option></select></label>
         <div id="records" class="records-list"><p class="muted">Loading listings...</p></div>
       </aside>
@@ -44,8 +48,11 @@
             <label>Image URL/path<input id="image" placeholder="Data/Images/servi/example.jpg"></label>
             <label>Price label<input id="price" placeholder="N5,000 - N25,000"></label>
             <label class="wide">Services/tags<input id="service-tags" placeholder="Repairs, Installation, Emergency service"></label>
+            <label class="wide">Services and prices<input id="services" placeholder="Leak repair | from N5,000; Tank setup | from N18,000"></label>
+            <label class="wide">Languages<input id="languages" placeholder="English, Hausa, Fulfulde"></label>
             <label class="wide">Opening hours<input id="hours" placeholder="Mon-Sat, 8am-6pm"></label>
             <label class="wide">Bio<textarea id="bio" rows="5"></textarea></label>
+            <label class="wide">Reviews JSON<textarea id="reviews" rows="5" placeholder='[{"reviewer":"Amina B.","rating":5,"date":"March 2026","comment":"Great service."}]'></textarea></label>
           </div>
           <div class="form-actions"><button class="button button-primary" type="submit">Save listing</button><button id="reset-form" class="button" type="button">Reset</button></div>
         </form>

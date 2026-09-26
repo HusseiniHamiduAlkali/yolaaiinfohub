@@ -1,0 +1,71 @@
+[
+  {
+    "slug": "aun-hotel-jabbama-restaurant",
+    "heroImage": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": [
+      "https://images.unsplash.com/photo-1515003191393-8c8c0d1a8e2b?auto=format&fit=crop&w=1200&q=85",
+      "https://images.unsplash.com/photo-1552566626-52f8b828?auto=format&fit=crop&w=1200&q=85"
+    ],
+    "galleryCaptions": ["Dining room", "Restaurant service"],
+    "menuItems": [
+      {"name":"Jabbama grilled chicken","category":"main","description":"Seasoned grilled chicken served with rice and house sauce.","price":"6500","currency":"NGN","image":"https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=900&q=85"},
+      {"name":"Jollof rice platter","category":"main","description":"A generous local rice platter with seasonal sides.","price":"4500","currency":"NGN","image":"https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=900&q=85"}
+    ]
+  },
+  {
+    "slug": "items7-restaurant",
+    "heroImage": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": ["https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=85", "https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=1200&q=85"],
+    "galleryCaptions": ["Restaurant interior", "Shared dining"],
+    "menuItems": [{"name":"Items7 signature platter","category":"main","description":"A casual dining platter prepared for sharing.","price":"5500","currency":"NGN","image":"https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85"}, {"name":"Spiced chicken wings","category":"appetizer","description":"Crisp wings tossed in a house spice blend.","price":"3500","currency":"NGN","image":"https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=900&q=85"}]
+  },
+  {
+    "slug": "mevish-cafe",
+    "heroImage": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": ["https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=85", "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=85"],
+    "galleryCaptions": ["Coffee service", "Cafe seating"],
+    "menuItems": [{"name":"Cappuccino","category":"drink","description":"Fresh espresso with steamed milk foam.","price":"1800","currency":"NGN","image":"https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=900&q=85"}, {"name":"Cafe breakfast toast","category":"main","description":"Toasted bread with eggs and seasonal sides.","price":"3200","currency":"NGN","image":"https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=900&q=85"}]
+  },
+  {
+    "slug": "chicken-cottage-yola",
+    "heroImage": "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": ["https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=1200&q=85", "https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=1200&q=85"],
+    "galleryCaptions": ["Fried chicken", "Chicken meal"],
+    "menuItems": [{"name":"Crispy chicken meal","category":"main","description":"Crispy chicken with fries and a chilled drink.","price":"4500","currency":"NGN","image":"https://images.unsplash.com/photo-1562967916-eb82221dfb92?auto=format&fit=crop&w=900&q=85"}, {"name":"Grilled chicken sandwich","category":"main","description":"Grilled chicken, fresh salad, and house dressing in a toasted bun.","price":"3500","currency":"NGN","image":"https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=900&q=85"}]
+  },
+  {
+    "slug": "uptown-exclusive-spot-yola",
+    "heroImage": "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": ["https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85", "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=85"],
+    "galleryCaptions": ["Dining room", "Evening service"],
+    "menuItems": [{"name":"House dinner platter","category":"main","description":"A premium platter with grilled protein and seasonal sides.","price":"7500","currency":"NGN","image":"https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=85"}]
+  },
+  {
+    "slug": "oasis-bakery-yola",
+    "heroImage": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": ["https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=85", "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=85"],
+    "galleryCaptions": ["Fresh bread", "Celebration cake"],
+    "menuItems": [{"name":"Fresh bread loaf","category":"bakery","description":"Freshly baked bread prepared daily.","price":"1500","currency":"NGN","image":"https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=900&q=85"}, {"name":"Celebration cake","category":"dessert","description":"Custom cake orders for celebrations and events.","price":"12000","currency":"NGN","image":"https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85"}]
+  },
+  {
+    "slug": "marwa-shawarma-and-grills-yola",
+    "heroImage": "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": ["https://images.unsplash.com/photo-1561651823-34feb02250e4?auto=format&fit=crop&w=1200&q=85", "https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=1200&q=85"],
+    "galleryCaptions": ["Shawarma wrap", "Grill service"],
+    "menuItems": [{"name":"Chicken shawarma","category":"main","description":"Marinated chicken, salad, and sauce wrapped fresh to order.","price":"3000","currency":"NGN","image":"https://images.unsplash.com/photo-1561651823-34feb02250e4?auto=format&fit=crop&w=900&q=85"}, {"name":"Mixed grill","category":"main","description":"A selection of grilled meats with onions and pepper.","price":"6000","currency":"NGN","image":"https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=85"}]
+  },
+  {
+    "slug": "yahuza-suya-spot-yola",
+    "heroImage": "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": ["https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1200&q=85", "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=85"],
+    "galleryCaptions": ["Suya grill", "Grilled meat platter"],
+    "menuItems": [{"name":"Beef suya","category":"grill","description":"Thinly sliced beef grilled with traditional suya spice.","price":"3000","currency":"NGN","image":"https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=900&q=85"}, {"name":"Chicken suya","category":"grill","description":"Tender chicken pieces grilled over open heat.","price":"3000","currency":"NGN","image":"https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=900&q=85"}]
+  },
+  {
+    "slug": "icecream-planet-yola",
+    "heroImage": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1600&q=85",
+    "galleryImages": ["https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1200&q=85", "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=1200&q=85"],
+    "galleryCaptions": ["Ice cream selection", "Dessert counter"],
+    "menuItems": [{"name":"Ice cream cup","category":"dessert","description":"Choose from the day's available ice cream flavors.","price":"1800","currency":"NGN","image":"https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=900&q=85"}, {"name":"Ice cream sundae","category":"dessert","description":"Ice cream with toppings and a sweet sauce finish.","price":"2800","currency":"NGN","image":"https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=900&q=85"}]
+  }
+]

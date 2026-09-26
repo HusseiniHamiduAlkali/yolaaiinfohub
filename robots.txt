@@ -85,6 +85,13 @@ Disallow: /
 User-agent: OAI-SearchBot
 Allow: /
 
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+
 # Allow favicon and robots.txt requests
 Allow: /favicon.ico
 Allow: /robots.txt

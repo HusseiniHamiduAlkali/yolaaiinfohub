@@ -287,21 +287,54 @@
     </footer>
 
     
-        <script src="/components/serviinfo/scripts/servi.js"></script>
         <script src="/pages/scripts/pages.js"></script>
         <script src="/scripts/apiConfig.js"></script>
         <script>
             (function () {
                 var pathParts = location.pathname.split('/').filter(Boolean);
-                if (pathParts[0] !== 'servi' || !pathParts[1]) return;
-                var slug = pathParts[1];
+                var querySlug = new URLSearchParams(location.search).get('slug');
+                var slug = querySlug || (pathParts[0] === 'servi' && pathParts[1]);
+                if (!slug) return;
                 var base = typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE || 'http://localhost:4000');
                 var main = document.querySelector('.page-content');
-                function escapeHtml(value) { return String(value || '').replace(/[&<>'"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c]; }); }
-                fetch(base + '/api/content/professionals/' + encodeURIComponent(slug)).then(function (response) { return response.json().then(function (data) { if (!response.ok) throw new Error(data.error || 'Profile not found'); return data.item; }); }).then(function (item) {
+                function escapeHtml(value) { return String(value == null ? '' : value).replace(/[&<>'"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[c]; }); }
+                function initials(name) { return String(name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function (part) { return part.charAt(0); }).join('').toUpperCase(); }
+                function profileUrl(value) { return '/components/serviinfo/servi-profile.html?slug=' + encodeURIComponent(value); }
+                function stars(rating) { var rounded = Math.round(Number(rating || 0)); return Array.from({ length: 5 }, function (_, index) { return '<i class="fas ' + (index < rounded ? 'fa-star' : 'fa-star dim') + '" aria-hidden="true"></i>'; }).join(''); }
+                function request(url) { return fetch(base + url, { credentials: 'include' }).then(function (response) { return response.json().then(function (data) { if (!response.ok) throw new Error(data.error || 'Profile not found'); return data; }); }); }
+                function serviceRows(item) {
+                    var rows = item.services && item.services.length ? item.services : (item.serviceTags || []).map(function (tag) { return { name: tag, price: '' }; });
+                    return rows.map(function (service) { return '<li><span>' + escapeHtml(service.name) + '</span><span class="service-price">' + escapeHtml(service.price || 'Contact for price') + '</span></li>'; }).join('');
+                }
+                function reviewRows(item) {
+                    return (item.reviews || []).map(function (review) { return '<article class="review"><div class="review-head"><span class="reviewer">' + escapeHtml(review.reviewer) + '</span><span class="stars" aria-label="' + Number(review.rating || 0).toFixed(1) + ' out of 5 stars">' + stars(review.rating) + '</span><span class="review-date">' + escapeHtml(review.date) + '</span></div><p>' + escapeHtml(review.comment) + '</p></article>'; }).join('');
+                }
+                function similarCards(items, item) {
+                    return items.filter(function (candidate) { return candidate.slug !== item.slug && candidate.category === item.category; }).slice(0, 3).map(function (candidate) {
+                        return '<a class="spotlight-card" href="' + profileUrl(candidate.slug) + '"><div class="avatar">' + escapeHtml(initials(candidate.displayName)) + '</div><div><h3>' + escapeHtml(candidate.displayName) + '</h3><p class="role">' + escapeHtml(candidate.profession) + '</p><span class="stars">' + stars(candidate.ratingAverage) + '</span><span class="rating-value"> ' + Number(candidate.ratingAverage || 0).toFixed(1) + '</span></div></a>';
+                    }).join('');
+                }
+                function render(item, similar) {
+                    var rating = Number(item.ratingAverage || 0).toFixed(1);
+                    var phone = item.contact && item.contact.phone ? item.contact.phone : '';
+                    var whatsapp = item.contact && (item.contact.whatsapp || item.contact.phone) ? (item.contact.whatsapp || item.contact.phone).replace(/[^\d+]/g, '') : '';
+                    var reviews = reviewRows(item);
                     document.title = item.displayName + ' | Yola AI Info Hub';
-                    main.innerHTML = '<a class="btn btn-secondary" href="/">Back to directory</a><div class="profile-card" style="margin-top:24px"><div class="profile-hero"><div class="avatar avatar-lg">' + escapeHtml(item.displayName.split(/\\s+/).map(function (part) { return part[0]; }).slice(0, 2).join('').toUpperCase()) + '</div><div class="pro-id"><h1 class="pro-name">' + escapeHtml(item.displayName) + '</h1><p class="pro-role">' + escapeHtml(item.profession) + ' · ' + escapeHtml(item.category) + '</p></div></div><p>' + escapeHtml(item.bio) + '</p><div class="pro-meta"><span><i class="fas fa-briefcase" aria-hidden="true"></i> ' + Number(item.yearsExperience || 0) + ' years experience</span><span><i class="fas fa-location-dot" aria-hidden="true"></i> ' + escapeHtml((item.areas || []).join(', ')) + '</span><span><i class="fas fa-star" aria-hidden="true"></i> ' + Number(item.ratingAverage || 0).toFixed(1) + ' (' + Number(item.reviewCount || 0) + ' reviews)</span></div><div class="tag-row">' + (item.serviceTags || []).map(function (tag) { return '<span class="tag">' + escapeHtml(tag) + '</span>'; }).join('') + '</div>' + (item.contact && item.contact.phone ? '<a class="btn btn-primary" href="tel:' + escapeHtml(item.contact.phone) + '">Call professional</a>' : '') + '</div>';
-                }).catch(function (error) { main.innerHTML = '<h1>Profile unavailable</h1><p>' + escapeHtml(error.message) + '</p>'; });
+                    var description = document.querySelector('meta[name="description"]');
+                    if (description) description.setAttribute('content', (item.bio || item.profession + ' in Yola').slice(0, 160));
+                    main.innerHTML = '<nav class="crumbs" aria-label="Breadcrumb"><a href="/">ServiInfo</a><span aria-hidden="true"> / </span><span>' + escapeHtml(item.displayName) + '</span></nav>' +
+                        '<div class="profile-layout"><div>' +
+                        '<div class="profile-card"><div class="profile-hero"><div class="avatar avatar-lg">' + escapeHtml(initials(item.displayName)) + '</div><div class="pro-id"><h1 class="pro-name">' + escapeHtml(item.displayName) + (item.verificationStatus === 'verified' ? ' <i class="fas fa-circle-check verified" title="Verified professional" aria-label="Verified"></i>' : '') + '</h1><p class="pro-role">' + escapeHtml(item.profession) + ' · ' + escapeHtml(item.category) + '</p><div class="rating-line"><span class="stars" aria-label="' + rating + ' out of 5 stars">' + stars(item.ratingAverage) + '</span><span class="rating-value">' + rating + '</span><span>(' + Number(item.reviewCount || 0) + ' reviews)</span><span class="badge ' + (item.availability === 'available' ? 'badge-open' : 'badge-closed') + '">' + (item.availability === 'available' ? 'Available' : 'Busy') + '</span></div></div></div><div class="pro-meta"><span><i class="fas fa-briefcase" aria-hidden="true"></i> ' + Number(item.yearsExperience || 0) + ' years experience</span><span><i class="fas fa-location-dot" aria-hidden="true"></i> ' + escapeHtml((item.areas || []).join(', ')) + '</span><span><i class="fas fa-naira-sign" aria-hidden="true"></i> ' + escapeHtml(item.pricing && item.pricing.label || 'Contact for price') + '</span>' + (item.languages && item.languages.length ? '<span><i class="fas fa-language" aria-hidden="true"></i> ' + escapeHtml(item.languages.join(', ')) + '</span>' : '') + '</div><div class="tag-row">' + (item.serviceTags || []).map(function (tag) { return '<span class="tag">' + escapeHtml(tag) + '</span>'; }).join('') + '</div></div>' +
+                        '<div class="profile-card"><h2>About</h2><p>' + escapeHtml(item.bio || 'This professional has not added a biography yet.') + '</p></div>' +
+                        '<div class="profile-card"><h2>Services &amp; pricing guide</h2><ul class="service-list">' + serviceRows(item) + '</ul></div>' +
+                        '<div class="profile-card"><h2>Working hours</h2><p>' + escapeHtml(item.hours || 'Contact this professional for working hours.') + '</p><h2 style="margin-top:20px">Areas covered</h2><div class="tag-row">' + (item.areas || []).map(function (area) { return '<span class="tag">' + escapeHtml(area) + '</span>'; }).join('') + '</div></div>' +
+                        '<div class="profile-card"><h2>Ratings &amp; reviews</h2><div class="rating-summary"><div><div class="rating-big">' + rating + '</div><span class="stars">' + stars(item.ratingAverage) + '</span><p>Based on ' + Number(item.reviewCount || 0) + ' reviews</p></div></div><div class="review-list">' + (reviews || '<p>No reviews have been published yet.</p>') + '</div></div>' +
+                        '</div><aside class="contact-panel" aria-label="Contact this professional"><h2>Contact ' + escapeHtml(item.displayName) + '</h2><p>Reach this professional directly using the contact details below.</p><div class="contact-actions">' + (phone ? '<a class="btn btn-primary" href="tel:' + escapeHtml(phone) + '"><i class="fas fa-phone" aria-hidden="true"></i> Call now</a>' : '') + (whatsapp ? '<a class="btn btn-secondary" href="https://wa.me/' + escapeHtml(whatsapp.replace(/^\+/, '')) + '"><i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp</a>' : '') + (item.contact && item.contact.email ? '<a class="btn btn-secondary" href="mailto:' + escapeHtml(item.contact.email) + '"><i class="fas fa-envelope" aria-hidden="true"></i> Send a message</a>' : '') + '<a class="btn btn-secondary" href="/pages/report.html"><i class="fas fa-flag" aria-hidden="true"></i> Report this listing</a></div></aside></div>' +
+                        (similar ? '<section class="section" aria-labelledby="sim-heading"><div class="section-header"><span class="section-eyebrow">Also in Yola</span><h2 id="sim-heading" class="section-title">Similar professionals</h2></div><div class="spotlight-strip">' + similarCards(similar, item) + '</div></section>' : '');
+                }
+                request('/api/content/professionals/' + encodeURIComponent(slug)).then(function (data) {
+                    return request('/api/content/professionals?category=' + encodeURIComponent(data.item.category) + '&limit=4').then(function (similar) { render(data.item, similar.items || []); });
+                }).catch(function (error) { main.innerHTML = '<div class="profile-card"><h1>Profile unavailable</h1><p>' + escapeHtml(error.message) + '</p><a class="btn btn-secondary" href="/">Back to directory</a></div>'; });
             }());
         </script>
 </body>
