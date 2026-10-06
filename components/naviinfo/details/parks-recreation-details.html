@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Park &amp; Recreation Details — Template</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Immersive hero */
+.immersive{position:relative;min-height:380px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.immersive-bg{position:absolute;inset:0;background:url('https://images.pexels.com/photos/983436/pexels-photo-983436.jpeg?auto=compress&cs=tinysrgb&h=650&w=940') center/cover no-repeat;transform:scale(1.08);animation:immZoom 22s ease-in-out infinite alternate}
+.immersive-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,42,35,.4) 0%,rgba(6,78,59,.65) 100%)}
+@keyframes immZoom{0%{transform:scale(1.08)}100%{transform:scale(1.18)}}
+/* Floating particles */
+.particle{position:absolute;border-radius:50%;background:var(--gold);opacity:.15;animation:floatUp 12s linear infinite;pointer-events:none}
+@keyframes floatUp{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-100px) translateX(40px);opacity:0}}
+.immersive-content{position:relative;z-index:2;text-align:center;padding:2.5rem 1.5rem;max-width:700px}
+.immersive-content h1{font-size:clamp(1.8rem,6vw,3.2rem);color:var(--cream);margin-bottom:.3rem;opacity:0;animation:fadeUp .8s .3s forwards;text-shadow:0 4px 24px rgba(0,0,0,.4)}
+.immersive-content .tagline{font-size:clamp(.9rem,2vw,1.15rem);color:var(--gold-light);letter-spacing:.08em;margin-bottom:1rem;opacity:0;animation:fadeUp .8s .5s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+.immersive-actions{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;opacity:0;animation:fadeUp .8s .7s forwards}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1.1rem;border-radius:12px;text-decoration:none;font-size:.85rem;font-weight:600;border:1px solid rgba(242,214,129,.38);color:var(--cream);background:rgba(255,255,255,.1);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s;backdrop-filter:blur(4px)}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.2)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Status pills */
+.status-bar{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;padding:.8rem 1rem;background:var(--white);border-bottom:1px solid var(--line)}
+.spill{display:inline-flex;align-items:center;gap:.3rem;font-size:.76rem;padding:.3rem .65rem;border-radius:999px;border:1px solid var(--line);background:var(--cream);color:var(--emerald)}
+.spill .dot{width:7px;height:7px;border-radius:50%;background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+/* Main */
+main{padding:1.4rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* Editorial image+text */
+.ed-layout{display:grid;gap:1rem;margin-top:.7rem}
+.ed-img{border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.ed-img img{width:100%;height:100%;min-height:180px;object-fit:cover;transition:transform .8s}
+.ed-img:hover img{transform:scale(1.06)}
+.ed-text p{font-size:.88rem;color:#324b42;line-height:1.7}
+/* Activities grid */
+.act-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.7rem}
+.act-card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.7rem .4rem;border-radius:14px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.12));transition:transform .25s,box-shadow .25s;cursor:pointer}
+.act-card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.act-card .aico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:1.1rem}
+.act-card b{font-size:.74rem;text-align:center}
+/* Experience zones timeline */
+.zone-timeline{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:.8rem}
+.zt-step{display:flex;align-items:center;gap:.7rem;width:100%;max-width:380px;padding:.65rem .8rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.15),rgba(245,240,224,.3));transition:transform .25s}
+.zt-step:hover{transform:translateX(6px)}
+.zt-step .zico{width:38px;height:38px;flex:0 0 auto;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--gold-light);font-size:1.05rem}
+.zt-step b{font-size:.86rem}.zt-step small{font-size:.74rem;color:var(--muted);display:block;margin-top:.05rem}
+.zt-conn{width:2px;height:20px;background:linear-gradient(to bottom,var(--gold),rgba(201,168,76,.2));margin:0 auto}
+/* Facilities circles */
+.fac-circles{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.7rem}
+.fac-circle{display:flex;flex-direction:column;align-items:center;gap:.3rem;width:80px}
+.fac-circle .fc-ico{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(160deg,rgba(204,235,221,.3),rgba(245,240,224,.4));border:1px solid var(--line);color:var(--emerald);font-size:1.1rem;transition:transform .25s,box-shadow .25s}
+.fac-circle:hover .fc-ico{transform:scale(1.1);box-shadow:var(--shadow)}
+.fac-circle small{font-size:.68rem;color:var(--muted);text-align:center}
+/* Events */
+.event-scroll{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.4rem;margin-top:.7rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.event-scroll::-webkit-scrollbar{height:4px}.event-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.event-card{flex:0 0 auto;width:220px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--white);box-shadow:var(--shadow);transition:transform .25s}
+.event-card:hover{transform:translateY(-5px)}
+.event-card .ec-date{background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--gold-light);padding:.5rem .7rem;text-align:center;font-family:var(--serif)}
+.event-card .ec-date b{font-size:1.1rem;display:block}
+.event-card .ec-date small{font-size:.66rem;text-transform:uppercase;letter-spacing:.06em}
+.event-card .ec-body{padding:.6rem .7rem}
+.event-card .ec-body b{font-size:.84rem;color:var(--emerald);display:block;margin-bottom:.1rem}
+.event-card .ec-body small{font-size:.72rem;color:var(--muted)}
+/* Gallery masonry */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.7rem}
+.gal-item{border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:var(--shadow);position:relative}
+.gal-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.gal-item:hover img{transform:scale(1.1)}
+.gal-item.tall{grid-row:span 2}
+.gal-item.wide{grid-column:span 2}
+/* Best time */
+.best-time{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem}
+.bt-card{display:flex;align-items:center;gap:.5rem;padding:.55rem .7rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3));font-size:.82rem;transition:transform .2s}
+.bt-card:hover{transform:translateX(4px)}
+.bt-card .bt-ico{font-size:1.1rem;flex:0 0 auto}
+.bt-card b{font-size:.82rem}.bt-card small{font-size:.72rem;color:var(--muted);display:block;margin-top:.05rem}
+/* Accordion */
+.faq-list{display:grid;gap:.5rem;margin-top:.7rem}
+.faq-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:box-shadow .2s}
+.faq-item:hover{box-shadow:var(--shadow)}
+.faq-q{padding:.6rem .8rem;font-size:.84rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:rgba(204,235,221,.15)}
+.faq-q .toggle{color:var(--gold);font-size:1.1rem;transition:transform .3s}
+.faq-item.open .faq-q .toggle{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a-inner{padding:0 .8rem .6rem;font-size:.82rem;color:#324b42}
+/* Map */
+.map-box{height:190px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.6rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinB 2s ease-in-out infinite}
+@keyframes pinB{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinP 2s ease-in-out infinite}
+@keyframes pinP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:5px 11px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+/* Contact */
+.contact-list{display:grid;gap:.5rem;margin-top:.6rem}
+.contact-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.84rem;word-break:break-word}
+.contact-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Nearby */
+.nearby-scroll{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.4rem;margin-top:.6rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.nearby-scroll::-webkit-scrollbar{height:4px}.nearby-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.near-card{flex:0 0 auto;min-width:170px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--white);box-shadow:var(--shadow);transition:transform .2s;cursor:pointer}
+.near-card:hover{transform:translateY(-4px)}
+.near-card img{width:100%;height:90px;object-fit:cover}
+.near-card .nc-body{padding:.5rem .6rem}
+.near-card b{font-size:.78rem;color:var(--emerald);display:block}
+.near-card small{font-size:.7rem;color:var(--muted)}
+/* Lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(3,42,35,.92);z-index:5000;display:none;align-items:center;justify-content:center;padding:40px;backdrop-filter:blur(6px)}
+.lightbox.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lb-inner{max-width:800px;max-height:85vh;position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lb-inner img{width:100%;max-height:75vh;object-fit:cover}
+.lb-close{position:absolute;top:-40px;right:0;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:1.3rem;color:var(--emerald);cursor:pointer;transition:transform .2s}
+.lb-close:hover{transform:rotate(90deg);background:var(--gold)}
+.lb-cap{padding:14px 18px;background:var(--cream);font-family:var(--serif);font-size:.92rem;color:var(--emerald)}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.immersive{min-height:480px}
+.ed-layout{grid-template-columns:1fr 1.2fr;align-items:start}
+.act-grid{grid-template-columns:repeat(4,1fr)}
+.best-time{grid-template-columns:repeat(4,1fr)}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:1rem}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#127795;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#127795;</div>
+<div><strong id="mbName">Park Name</strong><small>Park &amp; Recreation</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<section class="immersive">
+<div class="immersive-bg" id="immBg"></div>
+<div class="immersive-content">
+<h1 id="parkName">Girei Recreation Park</h1>
+<p class="tagline">Nature &bull; Recreation &bull; Leisure</p>
+<div class="immersive-actions">
+<button class="btn primary" onclick="document.getElementById('aboutPanel').scrollIntoView({behavior:'smooth'})">Explore Park</button>
+<button class="btn" onclick="document.getElementById('locPanel').scrollIntoView({behavior:'smooth'})">Directions</button>
+</div>
+</div>
+</section>
+
+<div class="status-bar" id="statusBar"></div>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<div class="panel" id="aboutPanel">
+<h2>About the Park</h2>
+<p class="sub">Discover this natural retreat</p>
+<div class="ed-layout">
+<div class="ed-img"><img src="https://images.pexels.com/photos/39893727/pexels-photo-39893727.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Park trail" id="aboutImg" loading="lazy"></div>
+<div class="ed-text">
+<p id="aboutText">Description goes here.</p>
+</div>
+</div>
+</div>
+
+<div class="panel" id="actPanel">
+<h2>Activities</h2>
+<p class="sub">Things to do at the park</p>
+<div class="act-grid" id="actGrid"></div>
+</div>
+
+<div class="panel" id="zonePanel">
+<h2>Experience Zones</h2>
+<p class="sub">Explore the park layout</p>
+<div class="zone-timeline" id="zoneTimeline"></div>
+</div>
+
+<div class="panel" id="facPanel">
+<h2>Facilities</h2>
+<p class="sub">Park amenities</p>
+<div class="fac-circles" id="facCircles"></div>
+</div>
+
+<div class="panel" id="eventPanel">
+<h2>Events</h2>
+<p class="sub">Upcoming activities</p>
+<div class="event-scroll" id="eventScroll"></div>
+</div>
+
+<div class="panel" id="galleryPanel">
+<h2>Gallery</h2>
+<p class="sub"> moments at the park</p>
+<div class="gallery" id="galleryGrid"></div>
+</div>
+
+<div class="panel" id="bestTimePanel">
+<h2>Best Time to Visit</h2>
+<p class="sub">Plan your visit</p>
+<div class="best-time" id="bestTimeGrid"></div>
+</div>
+
+<div class="panel" id="rulesPanel">
+<h2>Visitor Information</h2>
+<p class="sub">Rules and guidelines</p>
+<div class="faq-list" id="rulesList"></div>
+</div>
+
+</div>
+<div class="col side">
+
+<div class="panel" id="locPanel">
+<h2>Location</h2>
+<p class="sub">Find the park</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Park address</div>
+</div>
+<div class="contact-list" id="contactList" style="margin-top:.6rem"></div>
+</div>
+
+<div class="panel" id="nearPanel">
+<h2>Nearby Attractions</h2>
+<p class="sub">Explore the area</p>
+<div class="nearby-scroll" id="nearScroll"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Girei Recreation Park</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">A natural retreat for relaxation, recreation, and family fun.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+</div>
+</div>
+<div><h3>Explore</h3><ul><li><a href="#aboutPanel">About</a></li><li><a href="#actPanel">Activities</a></li><li><a href="#eventPanel">Events</a></li><li><a href="#galleryPanel">Gallery</a></li></ul></div>
+<div><h3>Information</h3><ul><li><a href="#">Opening Hours</a></li><li><a href="#">Entry Rules</a></li><li><a href="#">Book Event</a></li><li><a href="#">FAQ</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Girei Recreation Park</span><span>Privacy Policy &middot; Terms</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<div class="lightbox" id="lightbox" onclick="closeLb(event)">
+<div class="lb-inner" onclick="event.stopPropagation()">
+<div class="lb-close" onclick="closeLb()">&times;</div>
+<img id="lbImg" src="" alt="">
+<div class="lb-cap" id="lbCap"></div>
+</div>
+</div>
+
+<script>
+var DATA={
+  name:"Girei Recreation Park",
+  heroImg:"https://images.pexels.com/photos/983436/pexels-photo-983436.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  aboutImg:"https://images.pexels.com/photos/39893727/pexels-photo-39893727.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  description:"Girei Recreation Park is a serene 25-acre green space offering a perfect escape from the city's hustle. With walking trails, children's playgrounds, sports facilities, picnic areas, and beautiful landscaped gardens, the park provides something for everyone. Whether you're seeking a quiet walk among trees, a family day out, or a place to exercise, Girei Recreation Park is your natural retreat in the heart of the city.",
+  statusPills:["\u{1F534} Open Now","\u{1F333} Outdoor","\u{1F3B2} Recreation","\u{1F46A} Family Friendly","\u{1F4CD} Yola"],
+  activities:[
+    {icon:"\u{1F333}",name:"Nature Walk"},{icon:"\u26BD",name:"Sports"},
+    {icon:"\u{1F9EE}",name:"Picnic"},{icon:"\u{1F3B2}",name:"Playground"},
+    {icon:"\u{1F3C3}",name:"Jogging"},{icon:"\u{1F3A3}",name:"Fishing"},
+    {icon:"\u{1F4F8}",name:"Photography"},{icon:"\u{1F389}",name:"Events"}
+  ],
+  zones:[
+    {icon:"\u{1F6AA}",title:"Entrance",desc:"Main gate & welcome area"},
+    {icon:"\u{1F333}",title:"Nature Area",desc:"Trees, trails, gardens"},
+    {icon:"\u26BD",title:"Sports Area",desc:"Football, basketball, tennis"},
+    {icon:"\u{1F9EE}",title:"Picnic Area",desc:"Benches, shaded spots"},
+    {icon:"\u{1F3B2}",title:"Recreation Area",desc:"Playground, kids zone"}
+  ],
+  facilities:[
+    {icon:"\u{1F17B}",name:"Parking"},{icon:"\u{1F6BD}",name:"Restrooms"},
+    {icon:"\u{1F6CB}",name:"Seating"},{icon:"\u{1F354}",name:"Food Vendors"},
+    {icon:"\u{1F6E1}",name:"Security"},{icon:"\u{1F476}",name:"Kids Area"},
+    {icon:"\u{1F6B6}",name:"Walk Paths"},{icon:"\u{1F39E}",name:"Event Space"},
+    {icon:"\u{1F4A1}",name:"Lighting"}
+  ],
+  events:[
+    {date:"12",month:"OCT",title:"Family Recreation Day",time:"10:00 AM",desc:"Free activities for all ages"},
+    {date:"19",month:"OCT",title:"Nature Photography Walk",time:"7:00 AM",desc:"Guided photo walk"},
+    {date:"26",month:"OCT",title:"Community Sports Day",time:"3:00 PM",desc:"Football & basketball"},
+    {date:"02",month:"NOV",title:"Outdoor Yoga Session",time:"6:30 AM",desc:"Morning wellness"}
+  ],
+  gallery:[
+    {url:"https://images.pexels.com/photos/983436/pexels-photo-983436.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Park walkway",cls:"wide"},
+    {url:"https://images.pexels.com/photos/34889832/pexels-photo-34889832.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Children's playground"},
+    {url:"https://images.pexels.com/photos/32670045/pexels-photo-32670045.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Green pathway"},
+    {url:"https://images.pexels.com/photos/19336565/pexels-photo-19336565.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Playground slides",cls:"tall"},
+    {url:"https://images.pexels.com/photos/10333124/pexels-photo-10333124.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Sunlit pathway"},
+    {url:"https://images.pexels.com/photos/39893726/pexels-photo-39893726.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Forest trail"}
+  ],
+  bestTime:[
+    {icon:"\u{1F31E}",name:"Morning",status:"Excellent",desc:"Cool & peaceful"},
+    {icon:"\u2600",name:"Afternoon",status:"Busy",desc:"Warm & active"},
+    {icon:"\u{1F319}",name:"Evening",status:"Popular",desc:"Golden hour views"},
+    {icon:"\u{1F46A}",name:"Weekend",status:"Busy",desc:"Family crowds"}
+  ],
+  rules:[
+    {q:"Opening Hours",a:"The park is open daily from 6:00 AM to 7:00 PM. Entry is free for all visitors."},
+    {q:"Entry Requirements",a:"No entry fee. Groups of 20+ should book in advance at the park office."},
+    {q:"Safety Guidelines",a:"Children must be supervised at all times. Swim only in designated areas. Follow posted signs."},
+    {q:"Pets Policy",a:"Pets are welcome but must be leashed at all times. Owners must clean up after their pets."},
+    {q:"Photography",a:"Personal photography is encouraged. Commercial shoots require prior permission."},
+    {q:"Waste Disposal",a:"Use designated bins. Help keep the park clean for everyone."}
+  ],
+  contacts:[
+    {label:"Address",value:"Girei Road, Yola, Adamawa State",icon:"\u{1F4CD}"},
+    {label:"Phone",value:"+234 803 555 0500",icon:"\u260E"},
+    {label:"Email",value:"info@gireipark.ng",icon:"\u2709"},
+    {label:"Hours",value:"6:00 AM - 7:00 PM Daily",icon:"\u{1F551}"}
+  ],
+  nearby:[
+    {name:"Riverside Garden",desc:"Relaxation spot",img:"https://images.pexels.com/photos/32757803/pexels-photo-32757803.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"City Sports Club",desc:"Sports facility",img:"https://images.pexels.com/photos/18197971/pexels-photo-18197971.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Forest Reserve",desc:"Nature trail",img:"https://images.pexels.com/photos/12695321/pexels-photo-12695321.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" — Park Details";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('parkName').textContent=d.name;
+  document.getElementById('immBg').style.background="url('"+d.heroImg+"') center/cover no-repeat";
+  document.getElementById('aboutImg').src=d.aboutImg;
+  document.getElementById('aboutText').textContent=d.description;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('mapLabel').textContent=d.name;
+  if(d.contacts[0]){document.getElementById('footAddr').textContent=d.contacts[0].value;document.getElementById('footPhone').textContent=d.contacts[1]?d.contacts[1].value:'';document.getElementById('footEmail').textContent=d.contacts[2]?d.contacts[2].value:'';}
+  /* Status pills */
+  document.getElementById('statusBar').innerHTML=d.statusPills.map(function(p){return '<span class="spill">'+p+'</span>';}).join('');
+  /* Activities */
+  document.getElementById('actGrid').innerHTML=d.activities.map(function(a){
+    return '<div class="act-card"><span class="aico">'+a.icon+'</span><b>'+a.name+'</b></div>';
+  }).join('');
+  /* Zones */
+  document.getElementById('zoneTimeline').innerHTML=d.zones.map(function(z,i){
+    var conn=i<d.zones.length-1?'<div class="zt-conn"></div>':'';
+    return '<div class="zt-step"><span class="zico">'+z.icon+'</span><div><b>'+z.title+'</b><small>'+z.desc+'</small></div></div>'+conn;
+  }).join('');
+  /* Facilities */
+  document.getElementById('facCircles').innerHTML=d.facilities.map(function(f){
+    return '<div class="fac-circle"><div class="fc-ico">'+f.icon+'</div><small>'+f.name+'</small></div>';
+  }).join('');
+  /* Events */
+  document.getElementById('eventScroll').innerHTML=d.events.map(function(e){
+    return '<div class="event-card"><div class="ec-date"><b>'+e.date+'</b><small>'+e.month+'</small></div><div class="ec-body"><b>'+e.title+'</b><small>'+e.time+' &bull; '+e.desc+'</small></div></div>';
+  }).join('');
+  /* Gallery */
+  document.getElementById('galleryGrid').innerHTML=d.gallery.map(function(g){
+    return '<div class="gal-item'+(g.cls?' '+g.cls:'')+'" style="aspect-ratio:'+(g.cls==='tall'?'3/4':g.cls==='wide'?'2/1':'1/1')+'" onclick="openLb(\''+g.url+'\',\''+g.cap+'\')"><img src="'+g.url+'" alt="'+g.cap+'" loading="lazy"></div>';
+  }).join('');
+  /* Best time */
+  document.getElementById('bestTimeGrid').innerHTML=d.bestTime.map(function(b){
+    return '<div class="bt-card"><span class="bt-ico">'+b.icon+'</span><div><b>'+b.name+'</b><small>'+b.status+' &bull; '+b.desc+'</small></div></div>';
+  }).join('');
+  /* Rules accordion */
+  document.getElementById('rulesList').innerHTML=d.rules.map(function(r,i){
+    return '<div class="faq-item" id="rule'+i+'"><div class="faq-q" onclick="toggleRule('+i+')">'+r.q+'<span class="toggle">+</span></div><div class="faq-a"><div class="faq-a-inner">'+r.a+'</div></div></div>';
+  }).join('');
+  /* Contact */
+  document.getElementById('contactList').innerHTML=d.contacts.map(function(c){
+    return '<div class="contact-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+  }).join('');
+  /* Nearby */
+  document.getElementById('nearScroll').innerHTML=d.nearby.map(function(n){
+    return '<div class="near-card" onclick="void(0)"><img src="'+n.img+'" alt="'+n.name+'" loading="lazy"><div class="nc-body"><b>'+n.name+'</b><small>'+n.desc+'</small></div></div>';
+  }).join('');
+}
+
+function toggleRule(i){
+  var item=document.getElementById('rule'+i);
+  var a=item.querySelector('.faq-a');
+  if(item.classList.contains('open')){item.classList.remove('open');a.style.maxHeight='0';}
+  else{item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+}
+
+function openLb(src,cap){document.getElementById('lbImg').src=src;document.getElementById('lbCap').textContent=cap;document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+function closeLb(e){if(e&&e.target.closest('.lb-inner')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+/* Floating particles */
+function createParticles(){
+  var hero=document.querySelector('.immersive');
+  for(var i=0;i<8;i++){
+    var p=document.createElement('div');
+    p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.width=p.style.height=(4+Math.random()*8)+'px';
+    p.style.animationDelay=Math.random()*12+'s';
+    p.style.animationDuration=(8+Math.random()*8)+'s';
+    hero.appendChild(p);
+  }
+}
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){en.target.classList.add('visible');ro.unobserve(en.target);}
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  window.loadNaviTemplateProfile('parksRecreationProfile',DATA,function(data){
+    render(data);
+    createParticles();
+    document.querySelectorAll('.panel').forEach(function(p){ro.observe(p);});
+    setTimeout(function(){document.getElementById('loader').classList.add('hidden');},500);
+  });
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="../scripts/template-profile-loader.js"></script>
+</body>
+</html>

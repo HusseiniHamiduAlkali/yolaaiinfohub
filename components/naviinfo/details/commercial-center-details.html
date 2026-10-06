@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Commercial Center Details — Template</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+/* Mobile bar */
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Split hero */
+.hero{display:grid;grid-template-columns:1fr;min-height:280px;position:relative;overflow:hidden}
+.hero-img{position:relative;overflow:hidden;min-height:220px;background:linear-gradient(135deg,var(--emerald-950),var(--emerald))}
+.hero-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;animation:heroZoom 18s ease-in-out infinite alternate}
+.hero-img::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(3,42,35,.7),rgba(6,78,59,.45))}
+@keyframes heroZoom{0%{transform:scale(1.05)}100%{transform:scale(1.15)}}
+.hero-text{position:relative;z-index:2;padding:1.6rem 1.5rem;color:var(--cream);display:flex;flex-direction:column;justify-content:center;background:linear-gradient(120deg,var(--emerald-950),var(--emerald))}
+.hero-crumbs{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.6rem;opacity:0;animation:fadeUp .6s .2s forwards}
+.hero-crumbs a{text-decoration:none}.hero-crumbs a:hover{text-decoration:underline}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero h1{font-size:clamp(1.6rem,5vw,2.8rem);margin-bottom:.2rem;opacity:0;animation:fadeUp .6s .35s forwards}
+.hero .h-type{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.5rem;opacity:0;animation:fadeUp .6s .45s forwards}
+.hero-badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.6rem;opacity:0;animation:fadeUp .6s .55s forwards}
+.pill{display:inline-flex;align-items:center;gap:.35rem;font-size:.74rem;padding:.3rem .65rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(242,214,129,.32);color:var(--cream)}
+.pill.open{background:rgba(120,230,170,.18);border-color:rgba(120,230,170,.5)}
+.dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.dot.ok{background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+.hero-actions{display:flex;gap:.5rem;flex-wrap:wrap;opacity:0;animation:fadeUp .6s .65s forwards}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem .9rem;border-radius:10px;text-decoration:none;font-size:.82rem;font-weight:600;border:1px solid rgba(242,214,129,.38);color:var(--cream);background:rgba(255,255,255,.08);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Quick stats */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;padding:1rem 0}
+.stat-tile{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:.7rem .8rem;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.stat-tile.visible{opacity:1;transform:translateY(0)}
+.stat-tile .sicon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);margin-bottom:.3rem}
+.stat-tile .sval{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--emerald)}
+.stat-tile .slabel{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Main */
+main{padding:1rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel>h2:not(:first-child){margin-top:1.2rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* Editorial layout */
+.editorial{display:grid;gap:1rem;margin-top:.7rem}
+.ed-text p{font-size:.88rem;color:#324b42;line-height:1.7}
+.ed-facts{display:grid;gap:.4rem}
+.ed-fact{display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--line);font-size:.84rem}
+.ed-fact span:first-child{color:var(--muted)}
+.ed-fact span:last-child{font-weight:600}
+/* Category chips */
+.cat-scroll{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem}
+.cat-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;padding:.35rem .7rem;border-radius:999px;border:1px solid var(--line);background:var(--cream);color:var(--emerald);cursor:pointer;transition:all .2s;user-select:none}
+.cat-chip:hover{border-color:var(--gold);color:var(--gold-dark)}
+.cat-chip.active{background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--cream);border-color:transparent}
+/* Market zones grid */
+.zone-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem}
+.zone-card{border:1px solid var(--line);border-radius:12px;padding:.7rem;background:linear-gradient(160deg,#fff,rgba(204,235,221,.12));transition:transform .2s,box-shadow .2s;cursor:pointer}
+.zone-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.zone-card h3{font-size:.86rem;color:var(--emerald);margin-bottom:.15rem}
+.zone-card p{font-size:.76rem;color:var(--muted);margin:0}
+.zone-card .zone-count{display:inline-block;margin-top:.35rem;font-size:.68rem;font-weight:600;color:var(--gold);background:rgba(201,168,76,.1);padding:.15rem .4rem;border-radius:6px}
+/* Shop cards */
+.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-top:.7rem}
+.shop-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--white);transition:transform .2s,box-shadow .2s}
+.shop-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.shop-card img{width:100%;height:100px;object-fit:cover}
+.shop-card .sh-body{padding:.5rem .6rem}
+.shop-card b{font-size:.82rem;color:var(--emerald);display:block}
+.shop-card small{font-size:.72rem;color:var(--muted)}
+/* Price board */
+.price-board{background:linear-gradient(160deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.2rem;color:var(--cream);margin-top:.7rem}
+.price-board h3{color:var(--gold-light);font-size:.95rem;text-align:center;margin-bottom:.3rem}
+.price-board .pupdated{text-align:center;font-size:.7rem;color:rgba(245,240,224,.5);margin-bottom:.8rem}
+.price-items{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem}
+.price-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(242,214,129,.15);border-radius:10px;padding:.55rem .7rem}
+.price-row .pname{font-size:.78rem;color:rgba(245,240,224,.8)}
+.price-row .pval{font-family:var(--serif);font-size:1rem;font-weight:700;color:var(--gold-light)}
+.price-trend-link{display:block;text-align:center;margin-top:.8rem;font-size:.78rem;color:var(--gold-light);text-decoration:none;transition:opacity .2s}
+.price-trend-link:hover{opacity:.8;text-decoration:underline}
+/* Facilities */
+.fac-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem;margin-top:.7rem}
+.fac-chip{display:flex;align-items:center;gap:.4rem;font-size:.8rem;padding:.45rem .6rem;border-radius:10px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3))}
+.fac-chip .check{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#2eb27a;color:#fff;font-size:.62rem;flex:0 0 auto;font-weight:700}
+.fac-chip.no .check{background:#d4565b}
+/* Hours */
+.hours{width:100%;border-collapse:collapse;margin-top:.6rem;font-size:.86rem}
+.hours th,.hours td{text-align:left;padding:.4rem 0;border-bottom:1px dashed var(--line)}
+.hours th{font-weight:600;color:var(--muted)}.hours td{text-align:right;font-weight:600}
+/* Map */
+.map-box{height:190px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.6rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinB 2s ease-in-out infinite}
+@keyframes pinB{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinP 2s ease-in-out infinite}
+@keyframes pinP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:5px 11px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+/* Reviews bars */
+.bars{display:grid;gap:.4rem;margin-top:.6rem}
+.bar{display:grid;grid-template-columns:90px 1fr 30px;gap:.4rem;align-items:center;font-size:.76rem;color:var(--muted)}
+.bar i{display:block;height:7px;border-radius:999px;background:var(--mint);overflow:hidden}
+.bar i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--forest),var(--gold));transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}
+.reviews{display:grid;gap:.5rem;margin-top:.7rem}
+.review{border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;background:linear-gradient(160deg,#fff,rgba(204,235,221,.2))}
+.review header{display:flex;justify-content:space-between;gap:.4rem;align-items:center;margin-bottom:.2rem}
+.review strong{font-size:.82rem}.review .stars{color:var(--gold);font-size:.76rem;white-space:nowrap}
+.review p{font-size:.8rem;color:#324b42;margin:0}
+.report-btn{display:inline-flex;align-items:center;gap:.35rem;margin-top:.7rem;font-size:.76rem;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:.45rem .7rem;cursor:pointer;transition:color .2s,border-color .2s}
+.report-btn:hover{color:var(--gold-dark);border-color:var(--gold)}
+/* Nearby carousel */
+.nearby-scroll{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.4rem;margin-top:.6rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.nearby-scroll::-webkit-scrollbar{height:4px}.nearby-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.near-card{flex:0 0 auto;min-width:180px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--white);box-shadow:var(--shadow);transition:transform .2s;cursor:pointer}
+.near-card:hover{transform:translateY(-4px)}
+.near-card img{width:100%;height:100px;object-fit:cover}
+.near-card .nc-body{padding:.5rem .6rem}
+.near-card b{font-size:.8rem;color:var(--emerald);display:block}
+.near-card small{font-size:.7rem;color:var(--muted)}
+/* Contact */
+.contact-list{display:grid;gap:.5rem;margin-top:.6rem}
+.contact-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.84rem;word-break:break-word}
+.contact-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.hero{grid-template-columns:1fr 1fr;min-height:360px}
+.hero-img{min-height:360px}
+.stats-row{grid-template-columns:repeat(4,1fr)}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:1rem}
+.editorial{grid-template-columns:1.4fr 1fr;align-items:start}
+.zone-grid{grid-template-columns:repeat(3,1fr)}
+.shop-grid{grid-template-columns:repeat(3,1fr)}
+.fac-grid{grid-template-columns:repeat(3,1fr)}
+.price-items{grid-template-columns:repeat(3,1fr)}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#128722;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#128722;</div>
+<div><strong id="mbName">Center Name</strong><small>Commercial Center</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<section class="hero">
+<div class="hero-img">
+<img src="https://images.pexels.com/photos/17161099/pexels-photo-17161099.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Market scene" id="heroImg">
+</div>
+<div class="hero-text">
+<div class="hero-crumbs"><a href="#">Home</a> &rsaquo; <a href="#">Commercial</a> &rsaquo; <span id="crumbName">Center</span></div>
+<h1 id="cName">Central Market</h1>
+<div class="h-type" id="cType">Commercial Market</div>
+<div class="hero-badges" id="heroBadges"></div>
+<div class="hero-actions">
+<button class="btn primary" onclick="document.getElementById('catPanel').scrollIntoView({behavior:'smooth'})">Explore Market</button>
+<button class="btn" onclick="document.getElementById('locPanel').scrollIntoView({behavior:'smooth'})">Directions</button>
+</div>
+</div>
+</section>
+
+<div class="wrap">
+<div class="stats-row" id="statsRow"></div>
+</div>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<div class="panel" id="aboutPanel">
+<h2>About the Commercial Center</h2>
+<p class="sub">Description and background</p>
+<div class="editorial">
+<div class="ed-text"><p id="aboutText">Description goes here.</p></div>
+<div class="ed-facts" id="edFacts"></div>
+</div>
+</div>
+
+<div class="panel" id="catPanel">
+<h2>Shopping Categories</h2>
+<p class="sub">Browse by category</p>
+<div class="cat-scroll" id="catScroll"></div>
+<div class="shop-grid" id="shopGrid" style="margin-top:1rem"></div>
+</div>
+
+<div class="panel" id="zonePanel">
+<h2>Market Sections &amp; Zones</h2>
+<p class="sub">Find your way around</p>
+<div class="zone-grid" id="zoneGrid"></div>
+</div>
+
+<div class="panel" id="pricePanel">
+<h2>Commodity Price Intelligence</h2>
+<p class="sub">Popular market prices</p>
+<div class="price-board">
+<h3>Today's Commodity Prices</h3>
+<p class="pupdated" id="priceUpdated">Updated: Today</p>
+<div class="price-items" id="priceItems"></div>
+<a href="#" class="price-trend-link">View price trends &rarr;</a>
+</div>
+</div>
+
+<div class="panel" id="facPanel">
+<h2>Facilities</h2>
+<p class="sub">On-site amenities</p>
+<div class="fac-grid" id="facGrid"></div>
+</div>
+
+<div class="panel" id="reviewsPanel">
+<h2>Community Reviews</h2>
+<p class="sub">What visitors say</p>
+<div class="bars" id="ratingBars"></div>
+<div class="reviews" id="reviewsList" style="margin-top:.8rem"></div>
+<button class="report-btn" onclick="alert('Report form')">&#9888; Report incorrect information</button>
+</div>
+
+</div>
+<div class="col side">
+
+<div class="panel" id="hoursPanel">
+<h2>Opening Hours</h2>
+<p class="sub">Weekly schedule</p>
+<table class="hours" id="hoursTable"></table>
+</div>
+
+<div class="panel" id="locPanel">
+<h2>Location &amp; Map</h2>
+<p class="sub">Find this center</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Market address</div>
+</div>
+<div class="contact-list" id="contactList" style="margin-top:.6rem"></div>
+</div>
+
+<div class="panel" id="nearPanel">
+<h2>Nearby Commercial Centers</h2>
+<p class="sub">Other places to shop</p>
+<div class="nearby-scroll" id="nearScroll"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Central Market</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">Your one-stop destination for fresh produce, goods, and services.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+</div>
+</div>
+<div><h3>Explore</h3><ul><li><a href="#aboutPanel">About</a></li><li><a href="#catPanel">Categories</a></li><li><a href="#zonePanel">Zones</a></li><li><a href="#pricePanel">Prices</a></li></ul></div>
+<div><h3>Information</h3><ul><li><a href="#">Report Issue</a></li><li><a href="#">Price Trends</a></li><li><a href="#">Vendor List</a></li><li><a href="#">FAQ</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Central Market</span><span>Privacy Policy &middot; Terms</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script>
+var DATA={
+  name:"Central Market Yola",
+  badge:"C",
+  type:"Commercial Market",
+  status:"Open Today",
+  heroImg:"https://images.pexels.com/photos/17161099/pexels-photo-17161099.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  description:"Central Market Yola is the largest commercial marketplace in Adamawa State, serving thousands of shoppers daily with fresh produce, clothing, electronics, household goods, and more. Established in 1985, the market features over 500 shops across 30+ categories, organized into dedicated zones for easy navigation. From fresh vegetables to fashion, hardware to household items, Central Market is the beating heart of commerce in Yola.",
+  stats:[
+    {icon:"\u{1F551}",val:"8AM-7PM",label:"Hours"},
+    {icon:"\u{1F3EA}",val:"500+",label:"Shops"},
+    {icon:"\u{1F6D2}",val:"30+",label:"Categories"},
+    {icon:"\u{1F4CD}",val:"Yola",label:"Location"}
+  ],
+  edFacts:[
+    {label:"Market Type",value:"Open-air Market"},
+    {label:"Established",value:"1985"},
+    {label:"Total Shops",value:"500+"},
+    {label:"Land Area",value:"12 acres"},
+    {label:"Operator",value:"Adamawa Market Authority"},
+    {label:"Daily Visitors",value:"8,000+"},
+    {label:"Nearby Landmark",value:"Yola Motor Park"},
+    {label:"Parking Spaces",value:"200+"}
+  ],
+  categories:[
+    {name:"Food & Groceries"},{name:"Clothing & Fashion"},{name:"Electronics"},
+    {name:"Household Items"},{name:"Cosmetics & Beauty"},{name:"Hardware"},
+    {name:"Vegetables"},{name:"Meat & Fish"},{name:"Grains & Spices"},{name:"General Goods"}
+  ],
+  shops:[
+    {name:"Al-Mustapha Stores",cat:"Food & Groceries",img:"https://images.pexels.com/photos/33554298/pexels-photo-33554298.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Fatima Fashion House",cat:"Clothing & Fashion",img:"https://images.pexels.com/photos/33224237/pexels-photo-33224237.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"TechWorld Electronics",cat:"Electronics",img:"https://images.pexels.com/photos/5951182/pexels-photo-5951182.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Fresh Produce Stall",cat:"Vegetables",img:"https://images.pexels.com/photos/10697692/pexels-photo-10697692.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Modern Supermarket",cat:"Food & Groceries",img:"https://images.pexels.com/photos/4124939/pexels-photo-4124939.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Night Market Corner",cat:"General Goods",img:"https://images.pexels.com/photos/36930132/pexels-photo-36930132.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"}
+  ],
+  zones:[
+    {name:"Food Section",desc:"Groceries, grains, spices",count:"120 shops"},
+    {name:"Clothing Zone",desc:"Fashion, textiles, tailors",count:"85 shops"},
+    {name:"Electronics Lane",desc:"Phones, gadgets, repairs",count:"45 shops"},
+    {name:"Fresh Produce",desc:"Vegetables, fruits",count:"90 stalls"},
+    {name:"Meat & Fish",desc:"Butchers, fishmongers",count:"35 stalls"},
+    {name:"Hardware Area",desc:"Tools, building materials",count:"40 shops"}
+  ],
+  prices:[
+    {name:"Rice (50kg bag)",val:"\u20A675,000"},
+    {name:"Maize (bag)",val:"\u20A632,000"},
+    {name:"Beans (bag)",val:"\u20A688,000"},
+    {name:"Groundnut (bag)",val:"\u20A695,000"},
+    {name:"Tomatoes (basket)",val:"\u20A612,000"},
+    {name:"Onions (bag)",val:"\u20A645,000"}
+  ],
+  priceUpdated:"Updated: Today, 9:00 AM",
+  facilities:[
+    {name:"Parking",ok:true},{name:"Restrooms",ok:true},{name:"Security",ok:true},
+    {name:"ATMs",ok:true},{name:"Food Court",ok:true},{name:"Loading Bay",ok:true},
+    {name:"Waste Disposal",ok:true},{name:"Electricity",ok:true},{name:"Water Supply",ok:true},
+    {name:"Accessibility",ok:true},{name:"Cold Storage",ok:false},{name:"Wi-Fi",ok:false}
+  ],
+  hours:[
+    {day:"Monday",time:"8:00 AM - 7:00 PM"},
+    {day:"Tuesday",time:"8:00 AM - 7:00 PM"},
+    {day:"Wednesday",time:"8:00 AM - 7:00 PM"},
+    {day:"Thursday",time:"8:00 AM - 7:00 PM"},
+    {day:"Friday",time:"8:00 AM - 7:00 PM"},
+    {day:"Saturday",time:"7:00 AM - 8:00 PM"},
+    {day:"Sunday",time:"9:00 AM - 5:00 PM"}
+  ],
+  contacts:[
+    {label:"Address",value:"Central Market, Yola-Jimeta Rd, Adamawa",icon:"\u{1F4CD}"},
+    {label:"Phone",value:"+234 803 555 0400",icon:"\u260E"},
+    {label:"Email",value:"info@centralmarketyola.ng",icon:"\u2709"}
+  ],
+  ratingBars:[
+    {label:"Variety",score:88},{label:"Pricing",score:82},
+    {label:"Cleanliness",score:68},{label:"Parking",score:72}
+  ],
+  reviews:[
+    {name:"Ibrahim M.",stars:4,text:"Great variety and good prices. The food section is always fresh. Parking can be challenging on weekends."},
+    {name:"Aisha B.",stars:5,text:"Best market in Yola! You can find everything here from clothes to electronics."},
+    {name:"Chidi O.",stars:3,text:"Good market but needs better organization and waste management. Prices are fair though."}
+  ],
+  nearby:[
+    {name:"Jimeta Shopping Plaza",desc:"Modern shops",img:"https://images.pexels.com/photos/7451964/pexels-photo-7451964.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Nasarawa Supermarket",desc:"Groceries",img:"https://images.pexels.com/photos/33690927/pexels-photo-33690927.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Girei Market",desc:"Local market",img:"https://images.pexels.com/photos/39725525/pexels-photo-39725525.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" — Commercial Center";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('crumbName').textContent=d.name;
+  document.getElementById('cName').textContent=d.name;
+  document.getElementById('cType').textContent=d.type;
+  document.getElementById('aboutText').textContent=d.description;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('mapLabel').textContent=d.name;
+  document.getElementById('heroImg').src=d.heroImg;
+  if(d.contacts[0]){document.getElementById('footAddr').textContent=d.contacts[0].value;document.getElementById('footPhone').textContent=d.contacts[1]?d.contacts[1].value:'';document.getElementById('footEmail').textContent=d.contacts[2]?d.contacts[2].value:'';}
+  /* Hero badges */
+  document.getElementById('heroBadges').innerHTML='<span class="pill open"><span class="dot ok"></span>'+d.status+'</span><span class="pill">&#128205; Yola, Adamawa</span>';
+  /* Stats */
+  document.getElementById('statsRow').innerHTML=d.stats.map(function(s){
+    return '<div class="stat-tile"><div class="sicon">'+s.icon+'</div><div class="sval">'+s.val+'</div><div class="slabel">'+s.label+'</div></div>';
+  }).join('');
+  /* Editorial facts */
+  document.getElementById('edFacts').innerHTML=d.edFacts.map(function(f){
+    return '<div class="ed-fact"><span>'+f.label+'</span><span>'+f.value+'</span></div>';
+  }).join('');
+  /* Categories */
+  document.getElementById('catScroll').innerHTML=d.categories.map(function(c,i){
+    return '<span class="cat-chip'+(i===0?' active':'')+'" onclick="filterShops('+i+',\''+c.name+'\')">'+c.name+'</span>';
+  }).join('');
+  /* Shops */
+  renderShops(d.shops);
+  /* Zones */
+  document.getElementById('zoneGrid').innerHTML=d.zones.map(function(z){
+    return '<div class="zone-card"><h3>'+z.name+'</h3><p>'+z.desc+'</p><span class="zone-count">'+z.count+'</span></div>';
+  }).join('');
+  /* Prices */
+  document.getElementById('priceUpdated').textContent=d.priceUpdated;
+  document.getElementById('priceItems').innerHTML=d.prices.map(function(p){
+    return '<div class="price-row"><span class="pname">'+p.name+'</span><span class="pval">'+p.val+'</span></div>';
+  }).join('');
+  /* Facilities */
+  document.getElementById('facGrid').innerHTML=d.facilities.map(function(f){
+    return '<div class="fac-chip'+(f.ok?'':' no')+'"><span class="check">'+(f.ok?'\u2713':'\u2717')+'</span>'+f.name+'</div>';
+  }).join('');
+  /* Hours */
+  var hr='<tr><th>Day</th><th>Hours</th></tr>';d.hours.forEach(function(h){hr+='<tr><th>'+h.day+'</th><td>'+h.time+'</td></tr>';});
+  document.getElementById('hoursTable').innerHTML=hr;
+  /* Contact */
+  document.getElementById('contactList').innerHTML=d.contacts.map(function(c){
+    return '<div class="contact-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+  }).join('');
+  /* Rating bars */
+  document.getElementById('ratingBars').innerHTML=d.ratingBars.map(function(b){
+    return '<div class="bar"><span>'+b.label+'</span><i><b data-w="'+b.score+'"></b></i><span>'+b.score+'</span></div>';
+  }).join('');
+  /* Reviews */
+  document.getElementById('reviewsList').innerHTML=d.reviews.map(function(r){
+    var s='';for(var i=0;i<r.stars;i++)s+='\u2605';
+    return '<div class="review"><header><strong>'+r.name+'</strong><span class="stars">'+s+'</span></header><p>'+r.text+'</p></div>';
+  }).join('');
+  /* Nearby */
+  document.getElementById('nearScroll').innerHTML=d.nearby.map(function(n){
+    return '<div class="near-card" onclick="void(0)"><img src="'+n.img+'" alt="'+n.name+'" loading="lazy"><div class="nc-body"><b>'+n.name+'</b><small>'+n.desc+'</small></div></div>';
+  }).join('');
+}
+
+function renderShops(shops){
+  document.getElementById('shopGrid').innerHTML=shops.map(function(s){
+    return '<div class="shop-card"><img src="'+s.img+'" alt="'+s.name+'" loading="lazy"><div class="sh-body"><b>'+s.name+'</b><small>'+s.cat+'</small></div></div>';
+  }).join('');
+}
+
+var allShops=[];
+function filterShops(idx,cat){
+  document.querySelectorAll('.cat-chip').forEach(function(c,i){c.classList.toggle('active',i===idx);});
+  var filtered=cat==='All'?allShops:allShops.filter(function(s){return s.cat===cat;});
+  if(filtered.length===0)filtered=allShops;
+  renderShops(filtered);
+}
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){
+      en.target.classList.add('visible');
+      en.target.querySelectorAll('.bar i b[data-w]').forEach(function(b){setTimeout(function(){b.style.width=b.getAttribute('data-w')+'%';},200);});
+      ro.unobserve(en.target);
+    }
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  window.loadNaviTemplateProfile('commercialCenterProfile',DATA,function(data){
+    DATA=data;
+    allShops=DATA.shops || [];
+    render(DATA);
+    document.querySelectorAll('.panel,.stat-tile').forEach(function(p){ro.observe(p);});
+    setTimeout(function(){document.getElementById('loader').classList.add('hidden');},500);
+  });
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="../scripts/template-profile-loader.js"></script>
+</body>
+</html>

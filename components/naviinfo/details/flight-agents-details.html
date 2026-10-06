@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Travel Agent Details — Template</title>
+<script src="/scripts/apiConfig.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+/* Mobile bar */
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Hero banner */
+.hero{position:relative;min-height:340px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:url('https://images.pexels.com/photos/6939346/pexels-photo-6939346.jpeg?auto=compress&cs=tinysrgb&h=650&w=940') center/cover no-repeat;transform:scale(1.05);animation:heroZoom 20s ease-in-out infinite alternate}
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(3,42,35,.78),rgba(6,78,59,.55))}
+@keyframes heroZoom{0%{transform:scale(1.05)}100%{transform:scale(1.15)}}
+.hero-content{position:relative;z-index:2;text-align:center;padding:2rem 1.5rem;max-width:700px}
+.hero-content h1{font-size:clamp(1.8rem,6vw,3rem);color:var(--cream);margin-bottom:.3rem;opacity:0;animation:fadeUp .7s .3s forwards}
+.hero-content .tagline{font-size:clamp(.9rem,2vw,1.1rem);color:var(--gold-light);letter-spacing:.1em;opacity:0;animation:fadeUp .7s .5s forwards}
+.hero-content .meta{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:.8rem;opacity:0;animation:fadeUp .7s .7s forwards}
+.hero-meta-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;color:rgba(245,240,224,.85);background:rgba(255,255,255,.1);padding:.3rem .7rem;border-radius:999px;border:1px solid rgba(242,214,129,.25)}
+.hero-meta-chip .dot-ok{width:8px;height:8px;border-radius:50%;background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+.hero-actions{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-top:1.2rem;opacity:0;animation:fadeUp .7s .9s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1.1rem;border-radius:12px;text-decoration:none;font-size:.85rem;font-weight:600;border:1px solid rgba(242,214,129,.38);color:var(--cream);background:rgba(255,255,255,.08);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Service strip */
+.svc-strip{background:var(--white);border-bottom:1px solid var(--line);box-shadow:0 4px 20px -14px rgba(3,42,35,.3);position:sticky;top:0;z-index:20}
+.svc-strip-inner{display:flex;gap:.4rem;overflow-x:auto;padding:.6rem 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.svc-strip-inner::-webkit-scrollbar{display:none}
+.svc-pill{flex:0 0 auto;display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;padding:.35rem .7rem;border-radius:999px;border:1px solid var(--line);color:var(--emerald);background:var(--cream);cursor:pointer;transition:all .2s;white-space:nowrap}
+.svc-pill:hover,.svc-pill.active{background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--cream);border-color:transparent}
+/* Main */
+main{padding:1.4rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* Journey path */
+.journey{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:.8rem}
+.j-step{display:flex;align-items:center;gap:.8rem;width:100%;max-width:420px;padding:.7rem .9rem;border-radius:14px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.12));transition:transform .25s,box-shadow .25s}
+.j-step:hover{transform:translateX(6px);box-shadow:var(--shadow)}
+.j-step .jico{width:42px;height:42px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--gold-light);font-size:1.2rem}
+.j-step .jinfo b{font-size:.9rem;display:block}
+.j-step .jinfo small{font-size:.76rem;color:var(--muted)}
+.j-connector{width:2px;height:24px;background:linear-gradient(to bottom,var(--gold),rgba(201,168,76,.2));margin:0 auto;opacity:0;animation:connFade .5s forwards}
+@keyframes connFade{to{opacity:1}}
+/* Flight search panel */
+.flight-search{background:linear-gradient(160deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.2rem;color:var(--cream);margin-top:.8rem}
+.fs-row{display:grid;grid-template-columns:1fr auto 1fr;gap:.6rem;align-items:end}
+.fs-field{display:flex;flex-direction:column;gap:.25rem}
+.fs-field label{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,240,224,.55)}
+.fs-field input,.fs-field select{padding:.6rem .8rem;border-radius:10px;border:1px solid rgba(242,214,129,.2);background:rgba(255,255,255,.08);color:var(--cream);font-size:.88rem;font-family:inherit}
+.fs-field input:focus,.fs-field select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15)}
+.fs-arrow{font-size:1.3rem;color:var(--gold-light);padding-bottom:.5rem}
+.flight-search .btn{width:100%;margin-top:.8rem;justify-content:center}
+/* Destination cards */
+.dest-scroll{display:flex;gap:.6rem;overflow-x:auto;padding-bottom:.5rem;margin-top:.8rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.dest-scroll::-webkit-scrollbar{height:4px}.dest-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.dest-card{flex:0 0 auto;width:200px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer;transition:transform .25s}
+.dest-card:hover{transform:translateY(-5px)}
+.dest-card img{width:100%;height:130px;object-fit:cover}
+.dest-card .dc-body{padding:.6rem .7rem;background:var(--white)}
+.dest-card b{font-size:.84rem;color:var(--emerald);display:block}
+.dest-card small{font-size:.72rem;color:var(--muted)}
+/* Tour packages */
+.tour-grid{display:grid;gap:.8rem;margin-top:.8rem}
+.tour-card{display:grid;grid-template-columns:140px 1fr;gap:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);transition:transform .25s}
+.tour-card:hover{transform:translateY(-4px)}
+.tour-card img{width:100%;height:100%;min-height:120px;object-fit:cover}
+.tour-body{padding:.7rem .9rem;background:var(--white)}
+.tour-body h3{font-size:.92rem;color:var(--emerald);margin-bottom:.15rem}
+.tour-body .tour-meta{font-size:.72rem;color:var(--gold);font-weight:600;margin-bottom:.3rem}
+.tour-body p{font-size:.8rem;color:#324b42;margin:0}
+.tour-body .tour-price{font-family:var(--serif);font-size:1.1rem;color:var(--gold-dark);font-weight:700;margin-top:.4rem}
+/* Documents list */
+.doc-list{display:grid;gap:.5rem;margin-top:.7rem}
+.doc-item{display:flex;gap:.5rem;align-items:flex-start;font-size:.84rem;padding:.55rem .7rem;border-radius:10px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3));transition:transform .2s}
+.doc-item:hover{transform:translateX(4px)}
+.doc-item .dico{flex:0 0 auto;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:.85rem}
+.doc-item b{font-size:.84rem}.doc-item small{font-size:.74rem;color:var(--muted);display:block;margin-top:.05rem}
+/* Why us path */
+.why-path{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:.8rem}
+.why-step{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.15),rgba(245,240,224,.3));width:100%;max-width:400px;transition:transform .25s}
+.why-step:hover{transform:translateX(5px)}
+.why-step .wnum{width:30px;height:30px;flex:0 0 auto;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;font-weight:700;font-size:.78rem}
+.why-step b{font-size:.86rem}.why-step small{font-size:.74rem;color:var(--muted);display:block;margin-top:.05rem}
+/* Hours */
+.hours{width:100%;border-collapse:collapse;margin-top:.6rem;font-size:.86rem}
+.hours th,.hours td{text-align:left;padding:.4rem 0;border-bottom:1px dashed var(--line)}
+.hours th{font-weight:600;color:var(--muted)}.hours td{text-align:right;font-weight:600}
+/* Contact */
+.contact-list{display:grid;gap:.5rem;margin-top:.6rem}
+.contact-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.86rem;word-break:break-word}
+.contact-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Map */
+.map-box{height:180px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.6rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinB 2s ease-in-out infinite}
+@keyframes pinB{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinP 2s ease-in-out infinite}
+@keyframes pinP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:5px 11px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+/* FAQ */
+.faq-list{display:grid;gap:.5rem;margin-top:.7rem}
+.faq-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:box-shadow .2s}
+.faq-item:hover{box-shadow:var(--shadow)}
+.faq-q{padding:.65rem .8rem;font-size:.86rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:rgba(204,235,221,.15)}
+.faq-q .toggle{color:var(--gold);font-size:1.1rem;transition:transform .3s}
+.faq-item.open .faq-q .toggle{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a-inner{padding:0 .8rem .65rem;font-size:.82rem;color:#324b42}
+/* CTA section */
+.cta-section{background:linear-gradient(135deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:2rem 1.5rem;text-align:center;color:var(--cream);margin-top:1.2rem;box-shadow:var(--shadow)}
+.cta-section h2{color:var(--gold-light);font-size:1.4rem;margin-bottom:.5rem}
+.cta-section p{color:rgba(245,240,224,.8);font-size:.9rem;margin-bottom:1rem}
+/* Reviews */
+.bars{display:grid;gap:.4rem;margin-top:.6rem}
+.bar{display:grid;grid-template-columns:90px 1fr 30px;gap:.4rem;align-items:center;font-size:.76rem;color:var(--muted)}
+.bar i{display:block;height:7px;border-radius:999px;background:var(--mint);overflow:hidden}
+.bar i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--forest),var(--gold));transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}
+.reviews{display:grid;gap:.5rem;margin-top:.7rem}
+.review{border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;background:linear-gradient(160deg,#fff,rgba(204,235,221,.2))}
+.review header{display:flex;justify-content:space-between;gap:.4rem;align-items:center;margin-bottom:.2rem}
+.review strong{font-size:.82rem}.review .stars{color:var(--gold);font-size:.76rem;white-space:nowrap}
+.review p{font-size:.8rem;color:#324b42;margin:0}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:3.5rem}
+.tour-card{grid-template-columns:180px 1fr}
+.panel{padding:1.4rem}
+.faq-item{max-width:100%}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#9992;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#9992;</div>
+<div><strong id="mbName">Agent Name</strong><small>Travel &amp; Tours</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-content">
+<h1 id="agentName">Skyway Travel &amp; Tours</h1>
+<p class="tagline">Flight &bull; Travel &bull; Tours</p>
+<div class="meta">
+<span class="hero-meta-chip">&#128205; <span id="agentLoc">Yola</span></span>
+<span class="hero-meta-chip"><span class="dot-ok"></span> <span id="agentVer">Verified Agent</span></span>
+<span class="hero-meta-chip">&#9733; <span id="agentRating">4.8</span></span>
+</div>
+<div class="hero-actions">
+<button class="btn primary" onclick="document.getElementById('contactPanel').scrollIntoView({behavior:'smooth'})">Contact Agent</button>
+<button class="btn" onclick="document.getElementById('locPanel').scrollIntoView({behavior:'smooth'})">Get Directions</button>
+</div>
+</div>
+</section>
+
+<div class="svc-strip">
+<div class="wrap svc-strip-inner" id="svcStrip"></div>
+</div>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<div class="panel" id="aboutPanel">
+<h2>About the Travel Agent</h2>
+<p class="sub">Company profile and services</p>
+<p id="aboutText">Agent description goes here.</p>
+<div class="facts" id="factsGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem"></div>
+</div>
+
+<div class="panel" id="journeyPanel">
+<h2>Travel Services</h2>
+<p class="sub">Your journey, step by step</p>
+<div class="journey" id="journeyPath"></div>
+</div>
+
+<div class="panel" id="flightPanel">
+<h2>Flight Assistance</h2>
+<p class="sub">Contact us for flight booking assistance</p>
+<div class="flight-search">
+<div class="fs-row">
+<div class="fs-field"><label>From</label><select><option>Yola</option><option>Abuja</option><option>Lagos</option></select></div>
+<div class="fs-arrow">&rarr;</div>
+<div class="fs-field"><label>To</label><select><option>Abuja</option><option>Lagos</option><option>Kano</option><option>Dubai</option></select></div>
+</div>
+<button class="btn primary" onclick="alert('Contact agent for booking')">Contact Agent for Booking</button>
+</div>
+</div>
+
+<div class="panel" id="destPanel">
+<h2>Popular Destinations</h2>
+<p class="sub">Where we can take you</p>
+<div class="dest-scroll" id="destScroll"></div>
+</div>
+
+<div class="panel" id="tourPanel">
+<h2>Tour Packages</h2>
+<p class="sub">Curated travel experiences</p>
+<div class="tour-grid" id="tourGrid"></div>
+</div>
+
+<div class="panel" id="docPanel">
+<h2>Travel Documents &amp; Assistance</h2>
+<p class="sub">We help you prepare</p>
+<div class="doc-list" id="docList"></div>
+</div>
+
+<div class="panel" id="whyPanel">
+<h2>Why Travellers Choose Us</h2>
+<p class="sub">Our commitment to you</p>
+<div class="why-path" id="whyPath"></div>
+</div>
+
+<div class="panel" id="reviewsPanel">
+<h2>Reviews &amp; Ratings</h2>
+<p class="sub">What travellers say</p>
+<div class="bars" id="ratingBars"></div>
+<div class="reviews" id="reviewsList" style="margin-top:.8rem"></div>
+</div>
+
+<div class="cta-section">
+<h2>Planning your next journey?</h2>
+<p>Let us handle the details while you enjoy the adventure.</p>
+<button class="btn primary" onclick="document.getElementById('contactPanel').scrollIntoView({behavior:'smooth'})">Contact Travel Agent</button>
+</div>
+
+</div>
+<div class="col side">
+
+<div class="panel" id="hoursPanel">
+<h2>Office Hours</h2>
+<p class="sub">When we're available</p>
+<table class="hours" id="hoursTable"></table>
+</div>
+
+<div class="panel" id="contactPanel">
+<h2>Contact Information</h2>
+<p class="sub">Reach out to us</p>
+<div class="contact-list" id="contactList"></div>
+</div>
+
+<div class="panel" id="locPanel">
+<h2>Office Location</h2>
+<p class="sub">Visit our office</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Office address</div>
+</div>
+</div>
+
+<div class="panel" id="faqPanel">
+<h2>FAQs</h2>
+<p class="sub">Common questions</p>
+<div class="faq-list" id="faqList"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Skyway Travel</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">Your trusted travel partner for flights, tours, and visa assistance.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+<a href="#" aria-label="WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.13c-1.52 0-3.01-.41-4.3-1.18l-.31-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 01-1.26-4.36c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 012.41 5.83c0 4.54-3.7 8.24-8.24 8.24z"/></svg></a>
+</div>
+</div>
+<div><h3>Explore</h3><ul><li><a href="#aboutPanel">About</a></li><li><a href="#flightPanel">Flights</a></li><li><a href="#destPanel">Destinations</a></li><li><a href="#tourPanel">Tour Packages</a></li><li><a href="#faqPanel">FAQs</a></li></ul></div>
+<div><h3>Services</h3><ul><li><a href="#">Flight Booking</a></li><li><a href="#">Visa Assistance</a></li><li><a href="#">Hotel Reservation</a></li><li><a href="#">Travel Insurance</a></li><li><a href="#">Airport Transfer</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Skyway Travel &amp; Tours</span><span>Privacy Policy &middot; Terms</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script>
+var DATA={
+  name:"Skyway Travel & Tours",
+  badge:"S",
+  location:"Yola, Adamawa State",
+  verified:"Verified Agent",
+  rating:"4.8",
+  description:"Skyway Travel & Tours is a full-service travel agency with over 12 years of experience in flight booking, tour packages, visa assistance, and travel insurance. We serve both domestic and international travellers, offering personalized service and competitive rates. Our team of travel experts handles everything from ticketing to itinerary planning, ensuring a seamless travel experience.",
+  svcStrip:["Flights","Tours","Visa","Hotels","Transport","Insurance","Ticketing"],
+  facts:[
+    {label:"Years of Operation",value:"12+"},
+    {label:"Destinations Served",value:"50+"},
+    {label:"Happy Travellers",value:"8,000+"},
+    {label:"Office Location",value:"Yola, Adamawa"},
+    {label:"Verification",value:"Verified Agent"},
+    {label:"Languages",value:"English, Hausa, French"}
+  ],
+  journey:[
+    {icon:"\u2708",title:"Flights",desc:"Domestic & international ticketing"},
+    {icon:"\u{1F3E8}",title:"Hotels",desc:"Worldwide hotel reservations"},
+    {icon:"\u{1F690}",title:"Transport",desc:"Airport transfers & car hire"},
+    {icon:"\u{1F30D}",title:"Tours",desc:"Curated travel experiences"},
+    {icon:"\u{1F6C2}",title:"Visa Assistance",desc:"Document prep & processing"}
+  ],
+  destinations:[
+    {name:"Abuja",type:"Domestic",img:"https://images.pexels.com/photos/10958528/pexels-photo-10958528.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Lagos",type:"Domestic",img:"https://images.pexels.com/photos/18828516/pexels-photo-18828516.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Dubai",type:"International",img:"https://images.pexels.com/photos/5007437/pexels-photo-5007437.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Cairo",type:"International",img:"https://images.pexels.com/photos/4096283/pexels-photo-4096283.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Kano",type:"Domestic",img:"https://images.pexels.com/photos/27357494/pexels-photo-27357494.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Maldives",type:"International",img:"https://images.pexels.com/photos/9149356/pexels-photo-9149356.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"}
+  ],
+  tours:[
+    {name:"Northern Nigeria Discovery",meta:"5 days &bull; Multi-city",desc:"Explore Yola, Jos, and Bauchi with guided tours, cultural visits, and local cuisine.",price:"\u20A6150,000/person",img:"https://images.pexels.com/photos/27357494/pexels-photo-27357494.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Desert Safari Adventure",meta:"3 days &bull; Desert tour",desc:" thrilling off-road desert experience with camping under the stars.",price:"\u20A695,000/person",img:"https://images.pexels.com/photos/12565188/pexels-photo-12565188.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"},
+    {name:"Tropical Beach Getaway",meta:"7 days &bull; International",desc:"Relax on pristine beaches with luxury accommodation and water sports.",price:"\u20A6850,000/person",img:"https://images.pexels.com/photos/5007437/pexels-photo-5007437.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"}
+  ],
+  docs:[
+    {icon:"\u{1F4C4}",name:"Passport Assistance",desc:"New applications & renewals"},
+    {icon:"\u{1F6C2}",name:"Visa Processing",desc:"Tourist, business, student visas"},
+    {icon:"\u{1F4CB}",name:"Travel Documents",desc:"Ticket confirmation & itinerary"},
+    {icon:"\u2702",name:"Ticketing",desc:"Domestic & international tickets"},
+    {icon:"\u{1F6D1}",name:"Travel Insurance",desc:"Comprehensive coverage plans"},
+    {icon:"\u{1F3E8}",name:"Hotel Reservations",desc:"Worldwide booking service"}
+  ],
+  whyUs:[
+    {title:"Experienced Agent",desc:"12+ years in the travel industry"},
+    {title:"Travel Planning",desc:"Personalized itinerary design"},
+    {title:"Ticket Assistance",desc:"Best fares and flexible options"},
+    {title:"Destination Support",desc:"On-ground help at your destination"}
+  ],
+  hours:[
+    {day:"Monday",time:"8:00 AM - 6:00 PM"},
+    {day:"Tuesday",time:"8:00 AM - 6:00 PM"},
+    {day:"Wednesday",time:"8:00 AM - 6:00 PM"},
+    {day:"Thursday",time:"8:00 AM - 6:00 PM"},
+    {day:"Friday",time:"8:00 AM - 6:00 PM"},
+    {day:"Saturday",time:"10:00 AM - 4:00 PM"},
+    {day:"Sunday",time:"Closed"}
+  ],
+  contacts:[
+    {label:"Address",value:"12 Liberty Road, Yola, Adamawa State",icon:"\u{1F4CD}"},
+    {label:"Phone",value:"+234 807 555 0200",icon:"\u{1F4DE}"},
+    {label:"WhatsApp",value:"+234 807 555 0201",icon:"\u{1F4AC}"},
+    {label:"Email",value:"info@skywaytravels.ng",icon:"\u2709"},
+    {label:"Website",value:"www.skywaytravels.ng",icon:"\u{1F310}"}
+  ],
+  ratingBars:[
+    {label:"Service",score:92},
+    {label:"Pricing",score:85},
+    {label:"Support",score:90},
+    {label:"Reliability",score:88}
+  ],
+  reviews:[
+    {name:"Chidi O.",stars:5,text:"Excellent service! They handled my Dubai visa and flights seamlessly. Highly recommended."},
+    {name:"Aisha M.",stars:5,text:"Best travel agent in Yola. Got me the cheapest flight to Lagos and arranged airport pickup."},
+    {name:"David K.",stars:4,text:"Good service and helpful staff. The tour package was well organized."}
+  ],
+  faqs:[
+    {q:"Do you book domestic flights?",a:"Yes, we book flights for all domestic airlines including Air Peace, Arik Air, and Dana Air."},
+    {q:"Do you arrange international travel?",a:"Absolutely. We handle flights, visas, and hotel bookings for destinations worldwide."},
+    {q:"Do you assist with visa applications?",a:"Yes, we provide full visa assistance including document preparation and submission guidance."},
+    {q:"Do you arrange airport transfers?",a:"Yes, we can arrange airport pickups and drop-offs at most destinations."},
+    {q:"What documents are required for travel?",a:"Requirements vary by destination. Contact us and we'll provide a complete checklist for your trip."}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" — Travel Agent Details";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('agentName').textContent=d.name;
+  document.getElementById('agentLoc').textContent=d.location;
+  document.getElementById('agentVer').textContent=d.verified;
+  document.getElementById('agentRating').textContent=d.rating;
+  document.getElementById('aboutText').textContent=d.description;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('mapLabel').textContent=d.location;
+  /* Service strip */
+  document.getElementById('svcStrip').innerHTML=d.svcStrip.map(function(s,i){
+    return '<span class="svc-pill'+(i===0?' active':'')+'">'+s+'</span>';
+  }).join('');
+  /* Facts */
+  document.getElementById('factsGrid').innerHTML=d.facts.map(function(f){
+    return '<div style="background:linear-gradient(160deg,rgba(204,235,221,.4),rgba(245,240,224,.5));border:1px solid var(--line);border-radius:12px;padding:.5rem .7rem"><div style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">'+f.label+'</div><div style="font-weight:600;font-size:.88rem;margin-top:.1rem">'+f.value+'</div></div>';
+  }).join('');
+  /* Journey */
+  document.getElementById('journeyPath').innerHTML=d.journey.map(function(j,i){
+    var conn=i<d.journey.length-1?'<div class="j-connector"></div>':'';
+    return '<div class="j-step"><span class="jico">'+j.icon+'</span><div class="jinfo"><b>'+j.title+'</b><small>'+j.desc+'</small></div></div>'+conn;
+  }).join('');
+  /* Destinations */
+  document.getElementById('destScroll').innerHTML=d.destinations.map(function(dest){
+    return '<div class="dest-card"><img src="'+dest.img+'" alt="'+dest.name+'" loading="lazy"><div class="dc-body"><b>'+dest.name+'</b><small>'+dest.type+'</small></div></div>';
+  }).join('');
+  /* Tours */
+  document.getElementById('tourGrid').innerHTML=d.tours.map(function(t){
+    return '<div class="tour-card"><img src="'+t.img+'" alt="'+t.name+'" loading="lazy"><div class="tour-body"><h3>'+t.name+'</h3><div class="tour-meta">'+t.meta+'</div><p>'+t.desc+'</p><div class="tour-price">'+t.price+'</div></div></div>';
+  }).join('');
+  /* Documents */
+  document.getElementById('docList').innerHTML=d.docs.map(function(doc){
+    return '<div class="doc-item"><span class="dico">'+doc.icon+'</span><div><b>'+doc.name+'</b><small>'+doc.desc+'</small></div></div>';
+  }).join('');
+  /* Why us */
+  document.getElementById('whyPath').innerHTML=d.whyUs.map(function(w,i){
+    var conn=i<d.whyUs.length-1?'<div class="j-connector"></div>':'';
+    return '<div class="why-step"><span class="wnum">'+(i+1)+'</span><div><b>'+w.title+'</b><small>'+w.desc+'</small></div></div>'+conn;
+  }).join('');
+  /* Hours */
+  var hr='<tr><th>Day</th><th>Hours</th></tr>';d.hours.forEach(function(h){var cls=h.time==='Closed'?' style="color:#d4565b"':'';hr+='<tr><th>'+h.day+'</th><td'+cls+'>'+h.time+'</td></tr>';});
+  document.getElementById('hoursTable').innerHTML=hr;
+  /* Contact */
+  document.getElementById('contactList').innerHTML=d.contacts.map(function(c){
+    return '<div class="contact-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+  }).join('');
+  if(d.contacts[0])document.getElementById('footAddr').textContent=d.contacts[0].value;
+  if(d.contacts[1])document.getElementById('footPhone').textContent=d.contacts[1].value;
+  if(d.contacts[3])document.getElementById('footEmail').textContent=d.contacts[3].value;
+  /* Rating bars */
+  document.getElementById('ratingBars').innerHTML=d.ratingBars.map(function(b){
+    return '<div class="bar"><span>'+b.label+'</span><i><b data-w="'+b.score+'"></b></i><span>'+b.score+'</span></div>';
+  }).join('');
+  /* Reviews */
+  document.getElementById('reviewsList').innerHTML=d.reviews.map(function(r){
+    var s='';for(var i=0;i<r.stars;i++)s+='\u2605';
+    return '<div class="review"><header><strong>'+r.name+'</strong><span class="stars">'+s+'</span></header><p>'+r.text+'</p></div>';
+  }).join('');
+  /* FAQs */
+  document.getElementById('faqList').innerHTML=d.faqs.map(function(f,i){
+    return '<div class="faq-item" id="faq'+i+'"><div class="faq-q" onclick="toggleFaq('+i+')">'+f.q+'<span class="toggle">+</span></div><div class="faq-a"><div class="faq-a-inner">'+f.a+'</div></div></div>';
+  }).join('');
+}
+
+function toggleFaq(i){
+  var item=document.getElementById('faq'+i);
+  var a=item.querySelector('.faq-a');
+  if(item.classList.contains('open')){
+    item.classList.remove('open');a.style.maxHeight='0';
+  }else{
+    item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';
+  }
+}
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){
+      en.target.classList.add('visible');
+      en.target.querySelectorAll('.bar i b[data-w]').forEach(function(b){
+        setTimeout(function(){b.style.width=b.getAttribute('data-w')+'%';},200);
+      });
+      ro.unobserve(en.target);
+    }
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  if(window.naviProfileLoaded||!document.getElementById('loader'))return;
+  render(DATA);
+  document.querySelectorAll('.panel').forEach(function(p){ro.observe(p);});
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="/components/naviinfo/details/database-detail.js"></script>
+</body>
+</html>

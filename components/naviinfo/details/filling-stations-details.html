@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Filling Station Details — Template</title>
+<script src="/scripts/apiConfig.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+--ok:#2eb27a;--warn:#e0a030;--bad:#d4565b}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+/* Mobile bar */
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Dashboard header */
+.dash{position:relative;background:linear-gradient(135deg,var(--emerald-950),var(--emerald) 60%,var(--forest));color:var(--cream);padding:1.6rem 0 1.8rem;overflow:hidden}
+.dash:after{content:"";position:absolute;inset:auto -10% -50% 50%;height:180px;border-radius:50%;background:rgba(242,214,129,.1);filter:blur(20px)}
+.dash-inner{position:relative;z-index:1;display:grid;gap:1.2rem}
+.dash-top{display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap;opacity:0;animation:fadeUp .6s .2s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.dash-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),var(--gold-dark));color:var(--emerald-950);font-size:1.6rem;font-family:var(--serif);box-shadow:0 8px 24px -12px rgba(201,168,76,.5)}
+.dash-info{flex:1;min-width:200px}
+.dash-info h1{font-size:clamp(1.5rem,5vw,2.6rem);margin-bottom:.2rem}
+.dash-info .loc{font-size:.85rem;color:rgba(245,240,224,.7);margin-bottom:.5rem}
+.dash-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem .9rem;border-radius:10px;text-decoration:none;font-size:.82rem;font-weight:600;border:1px solid rgba(242,214,129,.38);color:var(--cream);background:rgba(255,255,255,.08);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Status tiles */
+.status-row{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;opacity:0;animation:fadeUp .6s .4s forwards}
+.status-tile{background:rgba(255,255,255,.08);border:1px solid rgba(242,214,129,.2);border-radius:14px;padding:.7rem .8rem;display:flex;flex-direction:column;gap:.15rem}
+.status-tile .label{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,240,224,.6)}
+.status-tile .val{font-size:.9rem;font-weight:700;color:var(--cream);display:flex;align-items:center;gap:.35rem}
+.dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.dot.warn{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+.dot.bad{background:var(--bad);box-shadow:0 0 8px var(--bad)}
+/* Main */
+main{padding:1.4rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel>h2:not(:first-child){margin-top:1.2rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* Fuel price board */
+.price-board{background:linear-gradient(160deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.4rem;color:var(--cream);margin-bottom:1rem;box-shadow:var(--shadow)}
+.price-board h2{color:var(--gold-light);text-align:center;font-size:1.1rem;margin-bottom:.3rem}
+.price-board .updated{text-align:center;font-size:.72rem;color:rgba(245,240,224,.5);margin-bottom:1rem}
+.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem}
+.price-item{background:rgba(255,255,255,.06);border:1px solid rgba(242,214,129,.15);border-radius:12px;padding:.7rem .8rem;display:flex;justify-content:space-between;align-items:center}
+.price-item .pname{font-size:.78rem;color:rgba(245,240,224,.75);display:flex;align-items:center;gap:.35rem}
+.price-item .pval{font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--gold-light)}
+.price-item .picon{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;background:rgba(201,168,76,.2);color:var(--gold-light);font-size:.7rem}
+/* Availability */
+.avail-list{display:grid;gap:.5rem;margin-top:.7rem}
+.avail-row{display:flex;align-items:center;justify-content:space-between;padding:.55rem .8rem;border-radius:10px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.1));font-size:.88rem;transition:transform .2s}
+.avail-row:hover{transform:translateX(4px)}
+.avail-row .fname{display:flex;align-items:center;gap:.5rem;font-weight:600}
+.avail-row .fstatus{font-size:.78rem;font-weight:600;display:flex;align-items:center;gap:.35rem}
+.fstatus.s-ok{color:var(--ok)}
+.fstatus.s-warn{color:var(--warn)}
+.fstatus.s-bad{color:var(--bad)}
+/* Services scroll */
+.svc-scroll{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.5rem;margin-top:.7rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.svc-scroll::-webkit-scrollbar{height:4px}
+.svc-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.svc-tile{flex:0 0 auto;min-width:110px;display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:.7rem .5rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.12));transition:transform .2s,box-shadow .2s}
+.svc-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.svc-tile .sico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:1rem}
+.svc-tile b{font-size:.74rem;text-align:center}
+/* Facility matrix */
+.fac-matrix{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem}
+.fac-chip{display:flex;align-items:center;gap:.45rem;padding:.5rem .7rem;border-radius:10px;border:1px solid var(--line);font-size:.82rem;background:linear-gradient(160deg,rgba(204,235,221,.25),rgba(245,240,224,.3))}
+.fac-chip .check{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--ok);color:#fff;font-size:.65rem;flex:0 0 auto}
+.fac-chip.no .check{background:var(--bad)}
+/* Price history chart */
+.chart-box{margin-top:.8rem;background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3));border:1px solid var(--line);border-radius:14px;padding:1rem}
+.chart-svg{width:100%;height:160px;overflow:visible}
+.chart-svg path.line{fill:none;stroke:var(--gold);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:500;stroke-dashoffset:500;transition:stroke-dashoffset 2s ease}
+.chart-box.visible .chart-svg path.line{stroke-dashoffset:0}
+.chart-svg circle.pt{fill:var(--gold);stroke:var(--white);stroke-width:2;opacity:0;transition:opacity .3s}
+.chart-box.visible .chart-svg circle.pt{opacity:1}
+.chart-labels{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-top:.4rem}
+/* Facts */
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem}
+.fact{background:linear-gradient(160deg,rgba(204,235,221,.4),rgba(245,240,224,.5));border:1px solid var(--line);border-radius:12px;padding:.5rem .7rem}
+.fact dt{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fact dd{font-weight:600;font-size:.88rem;margin-top:.1rem}
+/* Map */
+.map-box{height:200px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.7rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2;text-align:center}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinBounce 2s ease-in-out infinite}
+@keyframes pinBounce{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinPulse 2s ease-in-out infinite}
+@keyframes pinPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:6px 12px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+.map-info{display:grid;gap:.5rem;margin-top:.8rem}
+.map-info-row{display:flex;gap:.6rem;align-items:flex-start;font-size:.84rem}
+.map-info-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.map-info-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Safety */
+.safety-list{display:grid;gap:.5rem;margin-top:.7rem}
+.safety-item{display:flex;gap:.5rem;align-items:flex-start;font-size:.84rem;padding:.5rem .7rem;border-radius:10px;background:linear-gradient(160deg,rgba(201,168,76,.08),rgba(245,240,224,.3));border:1px solid rgba(201,168,76,.25)}
+.safety-item .sico{flex:0 0 auto;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:rgba(201,168,76,.15);color:var(--gold-dark);font-size:.75rem}
+/* Reviews / ratings */
+.bars{display:grid;gap:.45rem;margin-top:.7rem}
+.bar{display:grid;grid-template-columns:100px 1fr 30px;gap:.5rem;align-items:center;font-size:.78rem;color:var(--muted)}
+.bar i{display:block;height:7px;border-radius:999px;background:var(--mint);overflow:hidden}
+.bar i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--forest),var(--gold));transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}
+.reviews{display:grid;gap:.6rem;margin-top:.8rem}
+.review{border:1px solid var(--line);border-radius:12px;padding:.65rem .8rem;background:linear-gradient(160deg,#fff,rgba(204,235,221,.2))}
+.review header{display:flex;justify-content:space-between;gap:.4rem;align-items:center;margin-bottom:.2rem}
+.review strong{font-size:.85rem}.review .stars{color:var(--gold);font-size:.78rem;white-space:nowrap}
+.review p{font-size:.82rem;color:#324b42;margin:0}
+.report-btn{display:inline-flex;align-items:center;gap:.4rem;margin-top:.8rem;font-size:.78rem;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:.5rem .8rem;cursor:pointer;transition:color .2s,border-color .2s}
+.report-btn:hover{color:var(--gold-dark);border-color:var(--gold)}
+/* Nearby */
+.nearby{display:grid;gap:.5rem;margin-top:.7rem}
+.near-item{display:flex;gap:.6rem;align-items:center;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:.55rem .7rem;background:#fff;transition:transform .18s}
+.near-item:hover{transform:translateY(-2px)}
+.near-item .nico{width:38px;height:38px;flex:0 0 auto;border-radius:10px;display:grid;place-items:center;color:var(--cream);background:linear-gradient(140deg,var(--emerald),var(--forest));font-size:1rem}
+.near-item b{font-size:.84rem}.near-item small{font-size:.72rem;color:var(--muted);display:block;margin-top:.1rem}
+.near-item .ndist{margin-left:auto;font-size:.72rem;color:var(--gold);font-weight:600}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.dash{padding:2.4rem 0 2.8rem}
+.status-row{grid-template-columns:repeat(4,1fr)}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:1rem}
+.facts{grid-template-columns:repeat(3,1fr)}
+.fac-matrix{grid-template-columns:repeat(3,1fr)}
+.price-grid{grid-template-columns:repeat(4,1fr)}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#9981;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#9981;</div>
+<div><strong id="mbName">Station Name</strong><small>Filling Station</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<section class="dash">
+<div class="wrap dash-inner">
+<div class="dash-top">
+<div class="dash-badge" id="dashBadge">&#9981;</div>
+<div class="dash-info">
+<h1 id="stName">Station Name</h1>
+<p class="loc" id="stLoc">Address line, City</p>
+<div class="dash-actions">
+<button class="btn primary" onclick="alert('Directions')">Get Directions</button>
+<button class="btn" onclick="alert('Call')">Call Station</button>
+<button class="btn" onclick="alert('Share')">Share</button>
+</div>
+</div>
+</div>
+<div class="status-row" id="statusRow"></div>
+</div>
+</section>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<!-- Price board -->
+<div class="price-board panel" id="priceBoard">
+<h2>Today's Fuel Prices</h2>
+<p class="updated" id="priceUpdated">Updated: Today</p>
+<div class="price-grid" id="priceGrid"></div>
+</div>
+
+<!-- Availability -->
+<div class="panel" id="availPanel">
+<h2>Fuel Availability</h2>
+<p class="sub">Real-time stock status</p>
+<div class="avail-list" id="availList"></div>
+</div>
+
+<!-- Services -->
+<div class="panel" id="svcPanel">
+<h2>Station Services</h2>
+<p class="sub">What's available at this station</p>
+<div class="svc-scroll" id="svcScroll"></div>
+</div>
+
+<!-- Facilities -->
+<div class="panel" id="facPanel">
+<h2>Facilities</h2>
+<p class="sub">On-site amenities</p>
+<div class="fac-matrix" id="facMatrix"></div>
+</div>
+
+<!-- Price history -->
+<div class="panel" id="chartPanel">
+<h2>Fuel Price History</h2>
+<p class="sub">Petrol price trend this week</p>
+<div class="chart-box" id="chartBox">
+<svg class="chart-svg" viewBox="0 0 300 160" preserveAspectRatio="none">
+<line x1="0" y1="40" x2="300" y2="40" stroke="rgba(6,78,59,.08)" stroke-width="1"/>
+<line x1="0" y1="80" x2="300" y2="80" stroke="rgba(6,78,59,.08)" stroke-width="1"/>
+<line x1="0" y1="120" x2="300" y2="120" stroke="rgba(6,78,59,.08)" stroke-width="1"/>
+<path class="line" id="chartLine" d=""/>
+<g id="chartPoints"></g>
+</svg>
+<div class="chart-labels" id="chartLabels"></div>
+</div>
+</div>
+
+<!-- Safety -->
+<div class="panel" id="safetyPanel">
+<h2>Safety Information</h2>
+<p class="sub">Emergency and safety guidelines</p>
+<div class="safety-list" id="safetyList"></div>
+</div>
+
+<!-- Reviews -->
+<div class="panel" id="reviewsPanel">
+<h2>Station Experience</h2>
+<p class="sub">Visitor ratings and reports</p>
+<div class="bars" id="ratingBars"></div>
+<div class="reviews" id="reviewsList" style="margin-top:1rem"></div>
+<button class="report-btn" onclick="alert('Report form')">&#9888; Report incorrect information</button>
+</div>
+
+</div>
+<div class="col side">
+
+<!-- Station info -->
+<div class="panel" id="infoPanel">
+<h2>Station Information</h2>
+<p class="sub">Details at a glance</p>
+<dl class="facts" id="factsGrid"></dl>
+</div>
+
+<!-- Location -->
+<div class="panel" id="locPanel">
+<h2>Location &amp; Map</h2>
+<p class="sub">Find this station</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Station address</div>
+</div>
+<div class="map-info" id="mapInfo"></div>
+</div>
+
+<!-- Nearby -->
+<div class="panel" id="nearPanel">
+<h2>Nearby Stations</h2>
+<p class="sub">Other stations close by</p>
+<div class="nearby" id="nearbyList"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Station Name</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">Your trusted fuel and service station, open 24/7.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+</div>
+</div>
+<div><h3>Explore</h3><ul><li><a href="#priceBoard">Fuel Prices</a></li><li><a href="#svcPanel">Services</a></li><li><a href="#safetyPanel">Safety</a></li><li><a href="#locPanel">Location</a></li></ul></div>
+<div><h3>Information</h3><ul><li><a href="#">Report Issue</a></li><li><a href="#">Fuel Quality</a></li><li><a href="#">Price Updates</a></li><li><a href="#">FAQ</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Station Name</span><span>Privacy Policy &middot; Terms</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script>
+var DATA={
+  name:"MRS Filling Station",
+  badge:"M",
+  location:"Yola-Jimeta Road, Adamawa State",
+  status:"Open Now",
+  operating:"24 Hours",
+  prices:[
+    {name:"PMS / Petrol",short:"PMS",price:"\u20A6685",icon:"P"},
+    {name:"AGO / Diesel",short:"AGO",price:"\u20A61,150",icon:"D"},
+    {name:"DPK / Kerosene",short:"DPK",price:"\u20A61,300",icon:"K"},
+    {name:"LPG / Gas",short:"LPG",price:"\u20A61,250/kg",icon:"G"}
+  ],
+  priceUpdated:"Updated: Today, 8:30 AM",
+  availability:[
+    {name:"Petrol (PMS)",status:"Available",cls:"ok"},
+    {name:"Diesel (AGO)",status:"Available",cls:"ok"},
+    {name:"Kerosene (DPK)",status:"Limited",cls:"warn"},
+    {name:"LPG / Gas",status:"Unavailable",cls:"bad"}
+  ],
+  statusTiles:[
+    {label:"Status",value:"Open",dot:"ok"},
+    {label:"Hours",value:"24 Hours",dot:""},
+    {label:"Petrol",value:"Available",dot:"ok"},
+    {label:"Diesel",value:"Available",dot:"ok"}
+  ],
+  services:[
+    {name:"Fuel Dispensing",icon:"\u26FD"},{name:"LPG Refill",icon:"\u26FD"},
+    {name:"Lubricants",icon:"\u26FD"},{name:"Car Wash",icon:"\u{1F69B}"},
+    {name:"Mechanic",icon:"\u2692"},{name:"Tyre Service",icon:"\u26FD"},
+    {name:"Air Pump",icon:"\u2609"},{name:"ATM",icon:"\u20A6"},
+    {name:"Mini-Mart",icon:"\u{1F6D2}"},{name:"Restroom",icon:"\u{1F6BD}"},
+    {name:"Engine Oil",icon:"\u26FD"},{name:"Battery Service",icon:"\u26A1"}
+  ],
+  facilities:[
+    {name:"ATM",ok:true},{name:"Restroom",ok:true},{name:"Parking",ok:true},
+    {name:"Car Wash",ok:true},{name:"Air Pump",ok:true},{name:"Convenience Store",ok:true},
+    {name:"Security",ok:true},{name:"Lighting",ok:true},{name:"Truck Lane",ok:false}
+  ],
+  priceHistory:{days:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],values:[670,672,675,678,680,683,685]},
+  safety:[
+    {text:"Emergency contact: +234 803 555 0100",icon:"\u260E"},
+    {text:"Fire extinguishers available at all pump islands",icon:"\u{1F525}"},
+    {text:"No smoking within station premises",icon:"\u{1F6AD}"},
+    {text:"Turn off engine before refueling",icon:"\u26FD"},
+    {text:"No phone calls at the pump area",icon:"\u{1F4F1}"},
+    {text:"Emergency shutdown button at cashier desk",icon:"\u{1F6A1}"}
+  ],
+  facts:[
+    {label:"Station Name",value:"MRS Filling Station"},
+    {label:"Brand",value:"MRS Oil"},
+    {label:"Operator",value:"MRS Holdings"},
+    {label:"Station Type",value:"Full Service"},
+    {label:"Address",value:"Yola-Jimeta Rd"},
+    {label:"Landmark",value:"Near FUOTUOJE Gate"},
+    {label:"Phone",value:"+234 803 555 0100"},
+    {label:"Operating Hours",value:"24 Hours / 7 Days"},
+    {label:"Payment Options",value:"Cash, Card, Transfer"}
+  ],
+  mapInfo:[
+    {label:"Address",value:"Yola-Jimeta Road, Adamawa State"},
+    {label:"Landmark",value:"Near University Gate"},
+    {label:"Distance from City Center",value:"3.2 km"}
+  ],
+  nearby:[
+    {name:"NNPC Mega Station",desc:"2.1 km away",dist:"2.1 km"},
+    {name:"TotalEnergies Yola",desc:"3.5 km away",dist:"3.5 km"},
+    {name:"Conoil Filling Station",desc:"4.8 km away",dist:"4.8 km"}
+  ],
+  ratingBars:[
+    {label:"Cleanliness",score:90},{label:"Service",score:82},
+    {label:"Fuel Avail.",score:75},{label:"Pricing",score:85}
+  ],
+  reviews:[
+    {name:"Ahmed I.",stars:5,text:"Clean station, fast service. Petrol always available here."},
+    {name:"Grace O.",stars:4,text:"Good car wash but can get busy on weekends."},
+    {name:"Musa A.",stars:4,text:"Fair prices and the mini-mart is convenient for snacks."}
+  ],
+  contacts:{addr:"Yola-Jimeta Road, Adamawa",phone:"+234 803 555 0100",email:"info@mrsfilling.ng"}
+};
+
+function render(d){
+  document.title=d.name+" — Station Details";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('stName').textContent=d.name;
+  document.getElementById('stLoc').textContent=d.location;
+  document.getElementById('dashBadge').textContent=d.badge;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('footAddr').textContent=d.contacts.addr;
+  document.getElementById('footPhone').textContent=d.contacts.phone;
+  document.getElementById('footEmail').textContent=d.contacts.email;
+  document.getElementById('mapLabel').textContent=d.location;
+  /* Status tiles */
+  document.getElementById('statusRow').innerHTML=d.statusTiles.map(function(t){
+    var dot=t.dot?'<span class="dot '+t.dot+'"></span>':'';
+    return '<div class="status-tile"><span class="label">'+t.label+'</span><span class="val">'+dot+t.value+'</span></div>';
+  }).join('');
+  /* Prices */
+  document.getElementById('priceUpdated').textContent=d.priceUpdated;
+  document.getElementById('priceGrid').innerHTML=d.prices.map(function(p){
+    return '<div class="price-item"><span class="pname"><span class="picon">'+p.icon+'</span>'+p.name+'</span><span class="pval">'+p.price+'</span></div>';
+  }).join('');
+  /* Availability */
+  document.getElementById('availList').innerHTML=d.availability.map(function(a){
+    return '<div class="avail-row"><span class="fname">'+a.name+'</span><span class="fstatus s-'+a.cls+'"><span class="dot '+a.cls+'"></span>'+a.status+'</span></div>';
+  }).join('');
+  /* Services */
+  document.getElementById('svcScroll').innerHTML=d.services.map(function(s){
+    return '<div class="svc-tile"><span class="sico">'+s.icon+'</span><b>'+s.name+'</b></div>';
+  }).join('');
+  /* Facilities */
+  document.getElementById('facMatrix').innerHTML=d.facilities.map(function(f){
+    return '<div class="fac-chip'+(f.ok?'':' no')+'"><span class="check">'+(f.ok?'\u2713':'\u2717')+'</span>'+f.name+'</div>';
+  }).join('');
+  /* Chart */
+  var v=d.priceHistory.values,days=d.priceHistory.days;
+  var max=Math.max.apply(null,v),min=Math.min.apply(null,v),range=max-min||1;
+  var pts=v.map(function(val,i){
+    var x=(i/(v.length-1))*280+10;
+    var y=140-((val-min)/range)*100;
+    return {x:x,y:y,val:val};
+  });
+  var pathD="M "+pts.map(function(p){return p.x+" "+p.y;}).join(" L ");
+  document.getElementById('chartLine').setAttribute('d',pathD);
+  document.getElementById('chartPoints').innerHTML=pts.map(function(p){
+    return '<circle class="pt" cx="'+p.x+'" cy="'+p.y+'" r="4"/>';
+  }).join('');
+  document.getElementById('chartLabels').innerHTML=days.map(function(dy){return '<span>'+dy+'</span>';}).join('');
+  /* Safety */
+  document.getElementById('safetyList').innerHTML=d.safety.map(function(s){
+    return '<div class="safety-item"><span class="sico">'+s.icon+'</span>'+s.text+'</div>';
+  }).join('');
+  /* Facts */
+  document.getElementById('factsGrid').innerHTML=d.facts.map(function(f){
+    return '<div class="fact"><dt>'+f.label+'</dt><dd>'+f.value+'</dd></div>';
+  }).join('');
+  /* Map info */
+  document.getElementById('mapInfo').innerHTML=d.mapInfo.map(function(m){
+    return '<div class="map-info-row"><span class="ico">\u25C6</span><div><small>'+m.label+'</small>'+m.value+'</div></div>';
+  }).join('');
+  /* Nearby */
+  document.getElementById('nearbyList').innerHTML=d.nearby.map(function(n){
+    return '<a href="#" class="near-item"><span class="nico">'+n.name.charAt(0)+'</span><div><b>'+n.name+'</b><small>'+n.desc+'</small></div><span class="ndist">'+n.dist+'</span></a>';
+  }).join('');
+  /* Ratings */
+  document.getElementById('ratingBars').innerHTML=d.ratingBars.map(function(b){
+    return '<div class="bar"><span>'+b.label+'</span><i><b data-w="'+b.score+'"></b></i><span>'+b.score+'</span></div>';
+  }).join('');
+  /* Reviews */
+  document.getElementById('reviewsList').innerHTML=d.reviews.map(function(r){
+    var s='';for(var i=0;i<r.stars;i++)s+='\u2605';
+    return '<div class="review"><header><strong>'+r.name+'</strong><span class="stars">'+s+'</span></header><p>'+r.text+'</p></div>';
+  }).join('');
+}
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){
+      en.target.classList.add('visible');
+      en.target.querySelectorAll('.bar i b[data-w]').forEach(function(b){
+        setTimeout(function(){b.style.width=b.getAttribute('data-w')+'%';},200);
+      });
+      ro.unobserve(en.target);
+    }
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  if(window.naviProfileLoaded||!document.getElementById('loader'))return;
+  render(DATA);
+  document.querySelectorAll('.panel').forEach(function(p){ro.observe(p);});
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="/components/naviinfo/details/database-detail.js"></script>
+</body>
+</html>

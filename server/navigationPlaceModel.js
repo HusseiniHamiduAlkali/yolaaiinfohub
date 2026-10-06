@@ -148,6 +148,149 @@ const healthcareProfileSchema = new mongoose.Schema({
   }
 }, { _id: false, strict: true });
 
+const labelValueSchema = new mongoose.Schema({
+  label: String,
+  value: String
+}, { _id: false, strict: true });
+
+const flightDestinationSchema = new mongoose.Schema({
+  name: String,
+  type: String,
+  img: String
+}, { _id: false, strict: true });
+
+const flightAgentProfileSchema = new mongoose.Schema({
+  name: String,
+  badge: String,
+  location: String,
+  verified: String,
+  rating: String,
+  description: String,
+  svcStrip: [String],
+  facts: [labelValueSchema],
+  journey: [{ icon: String, title: String, desc: String }],
+  destinations: [flightDestinationSchema],
+  tours: [{ name: String, meta: String, desc: String, price: String, img: String }],
+  docs: [{ icon: String, name: String, desc: String }],
+  whyUs: [{ title: String, desc: String }],
+  hours: [{ day: String, time: String }],
+  contacts: [{ label: String, value: String, icon: String }],
+  ratingBars: [{ label: String, score: Number }],
+  reviews: [{ name: String, stars: Number, text: String }],
+  faqs: [{ q: String, a: String }]
+}, { _id: false, strict: true });
+
+const fillingStationProfileSchema = new mongoose.Schema({
+  name: String,
+  badge: String,
+  location: String,
+  status: String,
+  operating: String,
+  prices: [{ name: String, short: String, price: String, icon: String }],
+  priceUpdated: String,
+  availability: [{ name: String, status: String, cls: String }],
+  statusTiles: [{ label: String, value: String, dot: String }],
+  services: [{ name: String, icon: String }],
+  facilities: [{ name: String, ok: Boolean }],
+  priceHistory: {
+    days: [String],
+    values: [Number]
+  },
+  safety: [{ text: String, icon: String }],
+  facts: [labelValueSchema],
+  mapInfo: [labelValueSchema],
+  nearby: [{ name: String, desc: String, dist: String }],
+  ratingBars: [{ label: String, score: Number }],
+  reviews: [{ name: String, stars: Number, text: String }],
+  contacts: {
+    addr: String,
+    phone: String,
+    email: String
+  }
+}, { _id: false, strict: true });
+
+const bankProfileSchema = new mongoose.Schema({
+  name: String,
+  badge: String,
+  type: String,
+  verified: String,
+  description: String,
+  qaTabs: [String],
+  overviewFacts: [labelValueSchema],
+  services: [{ cat: String, items: [String] }],
+  branch: [labelValueSchema],
+  atmFeatures: [String],
+  bankingHours: {
+    days: [String],
+    customer: [String],
+    atm: [String]
+  },
+  branchServices: [String],
+  digital: [{ icon: String, name: String, desc: String }],
+  security: [String],
+  mapInfo: [labelValueSchema],
+  contacts: [{
+    section: String,
+    items: [{ label: String, value: String, icon: String }]
+  }],
+  nearby: [{ name: String, desc: String, dist: String }],
+  faqs: [{ q: String, a: String }]
+}, { _id: false, strict: true });
+
+function templateProfileSchema(fields) {
+  const definition = {};
+  fields.forEach(function (field) {
+    definition[field] = { type: mongoose.Schema.Types.Mixed, default: undefined };
+  });
+  definition.demoContent = { type: Boolean, default: false };
+  definition.demoNotice = { type: String, trim: true, maxlength: 240, default: '' };
+  definition.seededFromExample = { type: Boolean, default: false };
+  definition.seedReviewRequired = { type: Boolean, default: false };
+  return new mongoose.Schema(definition, { _id: false, strict: true });
+}
+
+const navigationDemoProfileSchema = templateProfileSchema([
+  'title', 'summary', 'category', 'location', 'openingHours', 'highlights', 'services', 'facilities', 'visitorInfo',
+  'galleryImages', 'faqs'
+]);
+
+const commercialCenterProfileSchema = templateProfileSchema([
+  'name', 'badge', 'type', 'status', 'heroImg', 'description', 'stats', 'edFacts', 'categories', 'shops', 'zones', 'prices',
+  'priceUpdated', 'facilities', 'hours', 'contacts', 'ratingBars', 'reviews', 'nearby'
+]);
+const churchProfileSchema = templateProfileSchema([
+  'name', 'type', 'status', 'heroImg', 'aboutImg', 'description', 'weekStrip', 'worship', 'ministries', 'events', 'community',
+  'facilities', 'gallery', 'announcements', 'contacts', 'faqs'
+]);
+const mosqueProfileSchema = templateProfileSchema([
+  'name', 'heroImg', 'aboutImg', 'type', 'status', 'description', 'quickInfo', 'prayers', 'jumuah', 'facilities', 'education',
+  'community', 'gallery', 'contacts', 'faqs'
+]);
+const judiciaryProfileSchema = templateProfileSchema([
+  'name', 'type', 'seal', 'verify', 'sessionStatus', 'sessionLabel', 'nextHearing', 'causeList', 'description', 'stats', 'facts',
+  'divisions', 'caseInfo', 'judges', 'sittingDays', 'procedures', 'facilities', 'guidance', 'hours', 'contacts', 'nearby', 'faqs'
+]);
+const parksRecreationProfileSchema = templateProfileSchema([
+  'name', 'heroImg', 'aboutImg', 'description', 'statusPills', 'activities', 'zones', 'facilities', 'events', 'gallery', 'bestTime',
+  'rules', 'contacts', 'nearby'
+]);
+const eventCenterProfileSchema = templateProfileSchema([
+  'name', 'type', 'status', 'heroImg', 'aboutImg', 'description', 'highlights', 'facts', 'halls', 'amenities', 'eventTypes', 'events',
+  'packages', 'gallery', 'ratings', 'reviews', 'hours', 'contacts', 'nearby', 'faqs'
+]);
+const hospitalityProfileSchema = templateProfileSchema([
+  'name', 'category', 'description', 'heroImage', 'image', 'address', 'area', 'contact', 'openingHours', 'priceRange', 'rating',
+  'amenities', 'rooms', 'services', 'galleryImages', 'galleryCaptions', 'ratingBars', 'reviews', 'faqs'
+]);
+const iconicStructureProfileSchema = templateProfileSchema([
+  'name', 'category', 'heroImage', 'aboutImage', 'tagline', 'quickInfo', 'aboutParagraphs', 'highlights', 'milestones', 'zoneSteps', 'culturalParagraphs',
+  'culturalQuote', 'facilities', 'galleryImages', 'bestTimes', 'faqs', 'nearby', 'address', 'landmark', 'coordinates'
+]);
+const sportsSpaProfileSchema = templateProfileSchema([
+  'name', 'category', 'type', 'status', 'heroImage', 'aboutImage', 'statusItems', 'aboutParagraphs', 'facts', 'services', 'zoneSteps', 'pricing', 'trainers',
+  'weeklySchedule', 'facilities', 'galleryImages', 'hours', 'faqs', 'address', 'landmark', 'coordinates', 'contact'
+]);
+
 const navigationPlaceSchema = new mongoose.Schema({
   slug: { type: String, required: true, trim: true, lowercase: true, unique: true },
   displayName: { type: String, required: true, trim: true, maxlength: 180 },
@@ -190,10 +333,27 @@ const navigationPlaceSchema = new mongoose.Schema({
   technicalProfile: { type: technicalProfileSchema, default: () => ({}) },
   learningProfile: { type: learningProfileSchema, default: () => ({}) },
   healthcareProfile: { type: healthcareProfileSchema, default: undefined },
+  flightAgentProfile: { type: flightAgentProfileSchema, default: undefined },
+  fillingStationProfile: { type: fillingStationProfileSchema, default: undefined },
+  bankProfile: { type: bankProfileSchema, default: undefined },
+  demoProfile: { type: navigationDemoProfileSchema, default: undefined },
+  commercialCenterProfile: { type: commercialCenterProfileSchema, default: undefined },
+  churchProfile: { type: churchProfileSchema, default: undefined },
+  mosqueProfile: { type: mosqueProfileSchema, default: undefined },
+  judiciaryProfile: { type: judiciaryProfileSchema, default: undefined },
+  parksRecreationProfile: { type: parksRecreationProfileSchema, default: undefined },
+  eventCenterProfile: { type: eventCenterProfileSchema, default: undefined },
+  hospitalityProfile: { type: hospitalityProfileSchema, default: undefined },
+  iconicStructureProfile: { type: iconicStructureProfileSchema, default: undefined },
+  sportsSpaProfile: { type: sportsSpaProfileSchema, default: undefined },
   verificationStatus: { type: String, enum: ['unverified', 'pending', 'verified'], default: 'unverified', index: true },
   ratingAverage: { type: Number, min: 0, max: 5, default: 0 },
   reviewCount: { type: Number, min: 0, default: 0 },
   status: { type: String, enum: ['draft', 'pending', 'published', 'rejected', 'suspended'], default: 'draft', index: true },
+  demoContent: { type: Boolean, default: false, index: true },
+  demoPublished: { type: Boolean, default: false, index: true },
+  demoNotice: { type: String, trim: true, maxlength: 240, default: '' },
+  seedReviewRequired: { type: Boolean, default: false, index: true },
   legacySource: { type: String, trim: true, default: '' },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }

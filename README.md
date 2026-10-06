@@ -72,6 +72,40 @@ The backend serves the frontend and API on the same port. The default is `http:/
 
 Use one hostname consistently for browser testing so session cookies remain same-origin.
 
+### Navi place seeding
+
+The Navi importer catalogs 191 active cards and three Green Spaces examples that are currently commented out. Preview the base-record import first; it does not connect to MongoDB or write data:
+
+```bash
+npm run import-navigation-places
+```
+
+After reviewing the inventory and configuring `MONGO_URI` for the intended database, create missing base records with:
+
+```bash
+npm run import-navigation-places:write
+```
+
+The profile initializer reads the current database and reports the 63 template-backed records without writing by default. It skips existing published records. Run it after the base import, inspect the report, then opt into profile writes:
+
+```bash
+npm run initialize-navigation-template-profiles
+npm run initialize-navigation-template-profiles:write
+```
+
+If you explicitly intend to add template examples to existing published records, use `npm run initialize-navigation-template-profiles:write -- --demote-published`; those records are moved to draft for review. New seeded records are drafts and unverified. Template-derived profiles are marked for review; the base importer also skips existing published records. In the Navi admin, review the base fields and profile JSON, clear the seed-review checkbox, and deliberately publish the record only after confirming its details.
+
+### Navi demo profile seeding
+
+The all-card demo initializer adds a generic profile to every card and a specialized profile to cards with one of the nine detail templates. It is dry-run by default. Seeded content remains hidden from public detail APIs until the administrator uses **Publish demo profiles** in the Navi admin; publishing keeps `verificationStatus` as `unverified` and displays the demo notice.
+
+```bash
+npm run initialize-navigation-demo-profiles
+npm run initialize-navigation-demo-profiles:write
+```
+
+The admin action publishes eligible draft, pending, or already-published demo records in one batch. Rejected and suspended records are not revived. Admin detail previews use authenticated data and include the demo label before public release.
+
 ## Authentication and administrators
 
 Open the normal account page at:

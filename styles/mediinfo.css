@@ -13,7 +13,11 @@
     padding: 30px;
 }
 .section4-mauth {
-    width: 100%; height: 450px; }
+    width: 100%; 
+    height: 450px !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
 
 @media screen and (min-width: 701px) and (max-width: 1150px) {
 .section4-mau-container {

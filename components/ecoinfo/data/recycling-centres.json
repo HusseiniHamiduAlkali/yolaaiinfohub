@@ -102,5 +102,83 @@
     "phone": "+234 800 000 0008",
     "pays": false,
     "notes": "Sharps, expired medicine, paints and solvents. Must be sealed and labelled."
+  },
+  {
+    "id": "yola-domestic-waste-collectors",
+    "name": "Yola Domestic Waste Collectors",
+    "type": "Waste collection",
+    "materials": ["domestic waste", "general waste"],
+    "address": "Yola (exact location not provided)",
+    "lat": null,
+    "lon": null,
+    "hours": "Not provided",
+    "phone": null,
+    "pays": null,
+    "notes": "Licensed waste management service specializing in domestic waste collection and disposal in Yola."
+  },
+  {
+    "id": "yola-plastic-waste-collectors",
+    "name": "Plastic Waste Collectors, Yola",
+    "type": "Plastic waste collection",
+    "materials": ["plastic", "polythene"],
+    "address": "Yola (exact location not provided)",
+    "lat": null,
+    "lon": null,
+    "hours": "Not provided",
+    "phone": null,
+    "pays": null,
+    "notes": "Specialized service for collecting and recycling plastic waste materials throughout Yola metropolitan area."
+  },
+  {
+    "id": "yola-metal-waste-collectors",
+    "name": "Metal Waste and Scraps Collectors, Yola",
+    "type": "Scrap dealer",
+    "materials": ["metal", "scrap metal"],
+    "address": "Yola (exact location not provided)",
+    "lat": null,
+    "lon": null,
+    "hours": "Not provided",
+    "phone": null,
+    "pays": null,
+    "notes": "Professional metal waste collection service focusing on scrap metal recycling and responsible disposal in Yola region."
+  },
+  {
+    "id": "yola-plastics-polythenes-recycling-company",
+    "name": "Yola Plastics and Polythenes Waste Recycling Company",
+    "type": "Recycling company",
+    "materials": ["plastic", "polythene"],
+    "address": "Yola (exact location not provided)",
+    "lat": null,
+    "lon": null,
+    "hours": "Not provided",
+    "phone": null,
+    "pays": null,
+    "notes": "Plastic recycling facility in Yola specializing in processing and recycling plastics and polythene materials."
+  },
+  {
+    "id": "yola-ecowaste-management",
+    "name": "EcoWaste Management",
+    "type": "Waste management",
+    "materials": ["industrial waste", "commercial waste"],
+    "address": "Yola (exact location not provided)",
+    "lat": null,
+    "lon": null,
+    "hours": "Not provided",
+    "phone": null,
+    "pays": null,
+    "notes": "Professional industrial and commercial waste recycling services with eco-friendly practices and sustainable disposal methods."
+  },
+  {
+    "id": "adamawa-waste-to-wealth-recyclers",
+    "name": "Adamawa Waste To Wealth Recyclers Limited",
+    "type": "Recycling company",
+    "materials": ["industrial waste", "commercial waste"],
+    "address": "Adamawa State (exact location not provided)",
+    "lat": null,
+    "lon": null,
+    "hours": "Not provided",
+    "phone": null,
+    "pays": null,
+    "notes": "Recycling company providing industrial and commercial waste processing services with a commitment to environmental sustainability and waste resource recovery in Adamawa."
   }
 ]

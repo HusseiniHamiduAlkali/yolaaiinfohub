@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mosque Details — Template</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Architectural hero */
+.arch-hero{position:relative;min-height:360px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.arch-bg{position:absolute;inset:0;background:url('https://images.pexels.com/photos/38130139/pexels-photo-38130139.jpeg?auto=compress&cs=tinysrgb&h=650&w=940') center/cover no-repeat;transform:scale(1.06);animation:archZoom 25s ease-in-out infinite alternate}
+.arch-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,42,35,.55) 0%,rgba(3,42,35,.75) 100%)}
+@keyframes archZoom{0%{transform:scale(1.06)}100%{transform:scale(1.14)}}
+/* Geometric pattern overlay */
+.arch-pattern{position:absolute;inset:0;opacity:.06;background-image:repeating-linear-gradient(45deg,var(--gold) 0,var(--gold) 1px,transparent 1px,transparent 20px),repeating-linear-gradient(-45deg,var(--gold) 0,var(--gold) 1px,transparent 1px,transparent 20px);animation:patternDrift 60s linear infinite}
+@keyframes patternDrift{0%{background-position:0 0,0 0}100%{background-position:200px 200px,-200px -200px}}
+.arch-content{position:relative;z-index:2;text-align:center;padding:2.5rem 1.5rem;max-width:680px}
+.arch-content h1{font-size:clamp(1.7rem,5.5vw,3rem);color:var(--cream);margin-bottom:.3rem;opacity:0;animation:fadeUp .8s .3s forwards;text-shadow:0 4px 24px rgba(0,0,0,.3)}
+.arch-content .m-type{font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.6rem;opacity:0;animation:fadeUp .8s .45s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.arch-badges{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:.8rem;opacity:0;animation:fadeUp .8s .6s forwards}
+.pill{display:inline-flex;align-items:center;gap:.3rem;font-size:.74rem;padding:.3rem .65rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(242,214,129,.32);color:var(--cream)}
+.pill.open{background:rgba(120,230,170,.18);border-color:rgba(120,230,170,.5)}
+.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+.arch-actions{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;opacity:0;animation:fadeUp .8s .75s forwards}
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.6rem 1rem;border-radius:10px;text-decoration:none;font-size:.82rem;font-weight:600;border:1px solid rgba(242,214,129,.35);color:var(--cream);background:rgba(255,255,255,.08);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s;backdrop-filter:blur(4px)}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Quick info */
+.quick-info{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;padding:.8rem;background:var(--white);border-bottom:1px solid var(--line)}
+.qi-tile{display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;border-radius:10px;background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3));border:1px solid var(--line)}
+.qi-tile .qi-ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:.85rem;flex:0 0 auto}
+.qi-tile b{font-size:.78rem;display:block}.qi-tile small{font-size:.68rem;color:var(--muted)}
+/* Main */
+main{padding:1.4rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* About editorial */
+.ed-layout{display:grid;gap:1rem;margin-top:.7rem}
+.ed-img{border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.ed-img img{width:100%;height:100%;min-height:180px;object-fit:cover;transition:transform .8s}
+.ed-img:hover img{transform:scale(1.06)}
+.ed-text p{font-size:.88rem;color:#324b42;line-height:1.7}
+/* Prayer times board */
+.prayer-board{background:linear-gradient(160deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.3rem;color:var(--cream);margin-top:.7rem;position:relative;overflow:hidden}
+.prayer-board::before{content:"";position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(60deg,var(--gold) 0,var(--gold) 1px,transparent 1px,transparent 15px)}
+.prayer-board h2{color:var(--gold-light);text-align:center;font-size:1.05rem;margin-bottom:.3rem;position:relative}
+.prayer-board .pb-date{text-align:center;font-size:.72rem;color:rgba(245,240,224,.5);margin-bottom:1rem;position:relative}
+.prayer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;position:relative}
+.prayer-item{text-align:center;padding:.6rem .3rem;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(242,214,129,.1);transition:transform .2s,border-color .2s}
+.prayer-item:hover{transform:translateY(-3px);border-color:rgba(242,214,129,.3)}
+.prayer-item .pname{font-size:.66rem;color:var(--gold-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem}
+.prayer-item .ptime{font-family:var(--serif);font-size:.85rem;font-weight:700;color:var(--cream)}
+.prayer-item.next{background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.1));border-color:var(--gold)}
+.prayer-item.next .pname{color:var(--gold-light)}
+/* Next prayer countdown */
+.next-prayer{background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:var(--radius);padding:1.3rem;text-align:center;margin-top:.8rem;color:var(--emerald-950)}
+.next-prayer .np-label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;opacity:.7}
+.next-prayer .np-name{font-family:var(--serif);font-size:2rem;font-weight:700;margin:.2rem 0}
+.next-prayer .np-countdown{font-family:var(--serif);font-size:1.6rem;font-weight:700;letter-spacing:.05em}
+.next-prayer .np-countdown span{display:inline-block;min-width:2.5ch}
+.next-prayer .np-starts{font-size:.72rem;opacity:.7;margin-top:.3rem}
+/* Jumu'ah */
+.jumuah-box{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem}
+.jumuah-card{border:1px solid var(--line);border-radius:14px;padding:.8rem;background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3));text-align:center}
+.jumuah-card .jlabel{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
+.jumuah-card .jtime{font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--emerald)}
+/* Facilities */
+.fac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.7rem}
+.fac-card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.6rem .3rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.1));transition:transform .2s}
+.fac-card:hover{transform:translateY(-3px)}
+.fac-card .fico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:1rem}
+.fac-card b{font-size:.72rem;text-align:center}
+/* Education programs */
+.edu-list{display:grid;gap:.4rem;margin-top:.7rem}
+.edu-item{display:flex;align-items:center;gap:.5rem;padding:.55rem .7rem;border-radius:10px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.15),rgba(245,240,224,.3));font-size:.84rem;transition:transform .2s}
+.edu-item:hover{transform:translateX(4px)}
+.edu-item .eico{flex:0 0 auto;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:.8rem}
+.edu-item b{font-size:.82rem}.edu-item small{font-size:.72rem;color:var(--muted);display:block;margin-top:.05rem}
+/* Community timeline */
+.comm-timeline{display:grid;gap:.4rem;margin-top:.7rem}
+.comm-item{display:flex;align-items:center;gap:.7rem;padding:.55rem .7rem;border-radius:10px;border:1px solid var(--line);background:#fff;transition:transform .2s}
+.comm-item:hover{transform:translateX(4px)}
+.comm-day{flex:0 0 auto;width:50px;text-align:center;border-radius:8px;background:linear-gradient(140deg,var(--emerald),var(--forest));color:var(--gold-light);padding:.3rem;font-size:.66rem;font-weight:700;letter-spacing:.04em}
+.comm-item b{font-size:.82rem}.comm-item small{font-size:.72rem;color:var(--muted);display:block;margin-top:.05rem}
+/* Gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.7rem}
+.gal-item{border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:var(--shadow);aspect-ratio:1;position:relative}
+.gal-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.gal-item:hover img{transform:scale(1.1)}
+/* Map */
+.map-box{height:190px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.6rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinB 2s ease-in-out infinite}
+@keyframes pinB{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinP 2s ease-in-out infinite}
+@keyframes pinP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:5px 11px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+/* Contact */
+.contact-list{display:grid;gap:.5rem;margin-top:.6rem}
+.contact-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.84rem;word-break:break-word}
+.contact-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* FAQ */
+.faq-list{display:grid;gap:.5rem;margin-top:.7rem}
+.faq-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:box-shadow .2s}
+.faq-item:hover{box-shadow:var(--shadow)}
+.faq-q{padding:.6rem .8rem;font-size:.84rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:rgba(204,235,221,.15)}
+.faq-q .toggle{color:var(--gold);font-size:1.1rem;transition:transform .3s}
+.faq-item.open .faq-q .toggle{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a-inner{padding:0 .8rem .6rem;font-size:.82rem;color:#324b42}
+/* Lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(3,42,35,.92);z-index:5000;display:none;align-items:center;justify-content:center;padding:40px;backdrop-filter:blur(6px)}
+.lightbox.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lb-inner{max-width:800px;max-height:85vh;position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lb-inner img{width:100%;max-height:75vh;object-fit:cover}
+.lb-close{position:absolute;top:-40px;right:0;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:1.3rem;color:var(--emerald);cursor:pointer;transition:transform .2s}
+.lb-close:hover{transform:rotate(90deg);background:var(--gold)}
+.lb-cap{padding:14px 18px;background:var(--cream);font-family:var(--serif);font-size:.92rem;color:var(--emerald)}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem;border-top:2px solid rgba(242,214,129,.22)}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.arch-hero{min-height:420px}
+.quick-info{grid-template-columns:repeat(4,1fr)}
+.ed-layout{grid-template-columns:1fr 1.3fr;align-items:start}
+.fac-grid{grid-template-columns:repeat(4,1fr)}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:1rem}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#127934;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#127934;</div>
+<div><strong id="mbName">Mosque Name</strong><small>Mosque &amp; Islamic Centre</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<section class="arch-hero">
+<div class="arch-bg" id="archBg"></div>
+<div class="arch-pattern"></div>
+<div class="arch-content">
+<h1 id="mName">Yola Central Mosque</h1>
+<div class="m-type" id="mType">Mosque &amp; Islamic Centre</div>
+<div class="arch-badges" id="archBadges"></div>
+<div class="arch-actions">
+<button class="btn primary" onclick="document.getElementById('locPanel').scrollIntoView({behavior:'smooth'})">Directions</button>
+<button class="btn" onclick="alert('Call')">Call</button>
+<button class="btn" onclick="alert('Share')">Share</button>
+</div>
+</div>
+</section>
+
+<div class="quick-info" id="quickInfo"></div>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<div class="panel" id="aboutPanel">
+<h2>About the Institution</h2>
+<p class="sub">History and community role</p>
+<div class="ed-layout">
+<div class="ed-img"><img src="https://images.pexels.com/photos/39830153/pexels-photo-39830153.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Mosque interior" id="aboutImg" loading="lazy"></div>
+<div class="ed-text">
+<p id="aboutText">Description goes here.</p>
+</div>
+</div>
+</div>
+
+<div class="panel" id="prayerPanel">
+<h2>Today's Prayer Times</h2>
+<p class="sub">Daily prayer schedule</p>
+<div class="prayer-board">
+<h2>Prayer Times</h2>
+<p class="pb-date" id="prayerDate">Today</p>
+<div class="prayer-grid" id="prayerGrid"></div>
+</div>
+<div class="next-prayer" id="nextPrayer">
+<div class="np-label">Next Prayer</div>
+<div class="np-name" id="npName">Asr</div>
+<div class="np-countdown" id="npCountdown">--:--:--</div>
+<div class="np-starts" id="npStarts">Starts in</div>
+</div>
+</div>
+
+<div class="panel" id="jumuahPanel">
+<h2>Friday Prayer (Jumu'ah)</h2>
+<p class="sub">Weekly congregational prayer</p>
+<div class="jumuah-box" id="jumuahBox"></div>
+</div>
+
+<div class="panel" id="facPanel">
+<h2>Services &amp; Facilities</h2>
+<p class="sub">What's available</p>
+<div class="fac-grid" id="facGrid"></div>
+</div>
+
+<div class="panel" id="eduPanel">
+<h2>Educational Programs</h2>
+<p class="sub">Learning opportunities</p>
+<div class="edu-list" id="eduList"></div>
+</div>
+
+<div class="panel" id="commPanel">
+<h2>Community Activities</h2>
+<p class="sub">Weekly programs</p>
+<div class="comm-timeline" id="commTimeline"></div>
+</div>
+
+<div class="panel" id="galleryPanel">
+<h2>Architectural Gallery</h2>
+<p class="sub">The mosque and its spaces</p>
+<div class="gallery" id="galleryGrid"></div>
+</div>
+
+<div class="panel" id="faqPanel">
+<h2>Frequently Asked Questions</h2>
+<p class="sub">Common questions</p>
+<div class="faq-list" id="faqList"></div>
+</div>
+
+</div>
+<div class="col side">
+
+<div class="panel" id="locPanel">
+<h2>Location</h2>
+<p class="sub">Find the mosque</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Mosque address</div>
+</div>
+<div class="contact-list" id="contactList" style="margin-top:.6rem"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Yola Central Mosque</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">A place of worship, learning, and community gathering.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2z"/></svg></a>
+</div>
+</div>
+<div><h3>Explore</h3><ul><li><a href="#aboutPanel">About</a></li><li><a href="#prayerPanel">Prayer Times</a></li><li><a href="#jumuahPanel">Jumu'ah</a></li><li><a href="#eduPanel">Education</a></li><li><a href="#galleryPanel">Gallery</a></li></ul></div>
+<div><h3>Programs</h3><ul><li><a href="#">Qur'an Classes</a></li><li><a href="#">Islamic Studies</a></li><li><a href="#">Children's Classes</a></li><li><a href="#">Community Events</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Yola Central Mosque</span><span>Privacy Policy &middot; Terms</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<div class="lightbox" id="lightbox" onclick="closeLb(event)">
+<div class="lb-inner" onclick="event.stopPropagation()">
+<div class="lb-close" onclick="closeLb()">&times;</div>
+<img id="lbImg" src="" alt="">
+<div class="lb-cap" id="lbCap"></div>
+</div>
+</div>
+
+<script>
+var DATA={
+  name:"Yola Central Mosque",
+  heroImg:"https://images.pexels.com/photos/38130139/pexels-photo-38130139.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  aboutImg:"https://images.pexels.com/photos/39830153/pexels-photo-39830153.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  type:"Mosque & Islamic Centre",
+  status:"Open / Accessible",
+  description:"Yola Central Mosque is a historic place of worship and the spiritual heart of the Muslim community in Yola. Built in 1975, the mosque features stunning Islamic architecture with elegant domes, a towering minaret, and a spacious prayer hall accommodating over 3,000 worshippers. Beyond daily prayers, the mosque serves as a centre for Islamic education, community gatherings, and social welfare programs. The institution is committed to serving both the spiritual and educational needs of the community.",
+  quickInfo:[
+    {icon:"\u{1F3DB}",title:"Prayer Hall",desc:"3,000 capacity"},
+    {icon:"\u{1F469}",title:"Women's Area",desc:"Dedicated section"},
+    {icon:"\u{1F9EA}",title:"Wudu Area",desc:"Ablution facilities"},
+    {icon:"\u{1F697}",title:"Parking",desc:"200+ spaces"}
+  ],
+  prayers:[
+    {name:"Fajr",time:"5:15 AM"},
+    {name:"Dhuhr",time:"12:45 PM"},
+    {name:"Asr",time:"4:00 PM"},
+    {name:"Maghrib",time:"6:15 PM"},
+    {name:"Isha",time:"7:30 PM"}
+  ],
+  jumuah:[
+    {label:"First Khutbah",time:"1:00 PM"},
+    {label:"Second Khutbah",time:"1:30 PM"}
+  ],
+  facilities:[
+    {icon:"\u{1F3DB}",name:"Prayer Hall"},{icon:"\u{1F6C1}",name:"Wudu Area"},
+    {icon:"\u{1F469}",name:"Women's Area"},{icon:"\u{1F4DA}",name:"Islamic Library"},
+    {icon:"\u{1F697}",name:"Parking"},{icon:"\u267F",name:"Accessibility"},
+    {icon:"\u26B8",name:"Funeral Services"},{icon:"\u{1F39E}",name:"Community Hall"}
+  ],
+  education:[
+    {icon:"\u{1F4D6}",name:"Qur'an Classes",desc:"Daily for children & adults"},
+    {icon:"\u{1F4D3}",name:"Islamic Studies",desc:"Weekly lectures & courses"},
+    {icon:"\u{1F466}",name:"Children's Classes",desc:"Weekend Islamic school"},
+    {icon:"\u{1F468}",name:"Adult Learning",desc:"Arabic & Tajweed classes"},
+    {icon:"\u{1F9E0}",name:"Memorization",desc:"Hifz program with certified teachers"}
+  ],
+  community:[
+    {day:"MON",title:"Qur'an Class",desc:"After Maghrib prayer"},
+    {day:"WED",title:"Islamic Lecture",desc:"After Isha prayer"},
+    {day:"FRI",title:"Jumu'ah Prayer",desc:"1:00 PM & 1:30 PM Khutbah"},
+    {day:"SAT",title:"Children's Class",desc:"10:00 AM - 12:00 PM"},
+    {day:"SUN",title:"Community Program",desc:"After Fajr prayer"}
+  ],
+  gallery:[
+    {url:"https://images.pexels.com/photos/38130139/pexels-photo-38130139.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Grand Mosque exterior"},
+    {url:"https://images.pexels.com/photos/39830153/pexels-photo-39830153.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Interior calligraphy"},
+    {url:"https://images.pexels.com/photos/8332107/pexels-photo-8332107.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Mosque at night"},
+    {url:"https://images.pexels.com/photos/18469103/pexels-photo-18469103.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Dome and minaret"},
+    {url:"https://images.pexels.com/photos/37158634/pexels-photo-37158634.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Prayer hall interior"},
+    {url:"https://images.pexels.com/photos/10707402/pexels-photo-10707402.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Ornate decorations"}
+  ],
+  contacts:[
+    {label:"Address",value:"Mosque Road, Yola, Adamawa State",icon:"\u{1F4CD}"},
+    {label:"Phone",value:"+234 803 555 0600",icon:"\u260E"},
+    {label:"Email",value:"info@yolacentralmosque.ng",icon:"\u2709"},
+    {label:"Imam Office",value:"+234 803 555 0601",icon:"\u{1F4DE}"}
+  ],
+  faqs:[
+    {q:"What are today's prayer times?",a:"Prayer times are displayed on the prayer board above. Times adjust daily based on the position of the sun."},
+    {q:"When is Jumu'ah prayer?",a:"Friday congregational prayer holds at 1:00 PM (first Khutbah) and 1:30 PM (second Khutbah). Please arrive early."},
+    {q:"Is parking available?",a:"Yes, the mosque has over 200 parking spaces. Additional street parking is available on Fridays."},
+    {q:"Is there a women's prayer area?",a:"Yes, there is a dedicated women's prayer area with separate entrance and wudu facilities."},
+    {q:"Are educational programs available?",a:"Yes, we offer Qur'an classes, Islamic studies, children's weekend school, and adult learning programs."}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" — Mosque Details";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('mName').textContent=d.name;
+  document.getElementById('mType').textContent=d.type;
+  document.getElementById('archBg').style.background="url('"+d.heroImg+"') center/cover no-repeat";
+  document.getElementById('aboutImg').src=d.aboutImg;
+  document.getElementById('aboutText').textContent=d.description;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('mapLabel').textContent=d.name;
+  if(d.contacts[0]){document.getElementById('footAddr').textContent=d.contacts[0].value;document.getElementById('footPhone').textContent=d.contacts[1]?d.contacts[1].value:'';document.getElementById('footEmail').textContent=d.contacts[2]?d.contacts[2].value:'';}
+  /* Badges */
+  document.getElementById('archBadges').innerHTML='<span class="pill open"><span class="dot"></span>'+d.status+'</span><span class="pill">&#128205; Yola, Adamawa</span>';
+  /* Quick info */
+  document.getElementById('quickInfo').innerHTML=d.quickInfo.map(function(q){
+    return '<div class="qi-tile"><span class="qi-ico">'+q.icon+'</span><div><b>'+q.title+'</b><small>'+q.desc+'</small></div></div>';
+  }).join('');
+  /* Prayer times */
+  document.getElementById('prayerGrid').innerHTML=d.prayers.map(function(p,i){
+    return '<div class="prayer-item'+(i===2?' next':'')+'"><div class="pname">'+p.name+'</div><div class="ptime">'+p.time+'</div></div>';
+  }).join('');
+  /* Jumu'ah */
+  document.getElementById('jumuahBox').innerHTML=d.jumuah.map(function(j){
+    return '<div class="jumuah-card"><div class="jlabel">'+j.label+'</div><div class="jtime">'+j.time+'</div></div>';
+  }).join('');
+  /* Facilities */
+  document.getElementById('facGrid').innerHTML=d.facilities.map(function(f){
+    return '<div class="fac-card"><span class="fico">'+f.icon+'</span><b>'+f.name+'</b></div>';
+  }).join('');
+  /* Education */
+  document.getElementById('eduList').innerHTML=d.education.map(function(e){
+    return '<div class="edu-item"><span class="eico">'+e.icon+'</span><div><b>'+e.name+'</b><small>'+e.desc+'</small></div></div>';
+  }).join('');
+  /* Community */
+  document.getElementById('commTimeline').innerHTML=d.community.map(function(c){
+    return '<div class="comm-item"><div class="comm-day">'+c.day+'</div><div><b>'+c.title+'</b><small>'+c.desc+'</small></div></div>';
+  }).join('');
+  /* Gallery */
+  document.getElementById('galleryGrid').innerHTML=d.gallery.map(function(g){
+    return '<div class="gal-item" onclick="openLb(\''+g.url+'\',\''+g.cap+'\')"><img src="'+g.url+'" alt="'+g.cap+'" loading="lazy"></div>';
+  }).join('');
+  /* Contact */
+  document.getElementById('contactList').innerHTML=d.contacts.map(function(c){
+    return '<div class="contact-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+  }).join('');
+  /* FAQ */
+  document.getElementById('faqList').innerHTML=d.faqs.map(function(f,i){
+    return '<div class="faq-item" id="faq'+i+'"><div class="faq-q" onclick="toggleFaq('+i+')">'+f.q+'<span class="toggle">+</span></div><div class="faq-a"><div class="faq-a-inner">'+f.a+'</div></div></div>';
+  }).join('');
+}
+
+/* Prayer countdown */
+function updateCountdown(){
+  var prayers=DATA.prayers;
+  if(!Array.isArray(prayers)||!prayers.length){
+    document.getElementById('npName').textContent='Unavailable';
+    document.getElementById('npCountdown').textContent='--:--:--';
+    document.getElementById('npStarts').textContent='Prayer times have not been confirmed';
+    return;
+  }
+  var now=new Date();
+  var nextIdx=-1;
+  for(var i=0;i<prayers.length;i++){
+    var t=prayers[i].time;
+    var hr=parseInt(t.split(':')[0]);
+    var min=parseInt(t.split(' ')[1]?t.split(':')[1].split(' ')[0]:t.split(':')[1]);
+    var ampm=t.indexOf('PM')>-1?12:0;
+    hr=hr+ampm;
+    if(hr===12&&!ampm)hr=0;
+    if(hr===24)hr=12;
+    var prayerDate=new Date();
+    prayerDate.setHours(hr,min,0,0);
+    if(prayerDate>now){nextIdx=i;break;}
+  }
+  if(nextIdx===-1){nextIdx=0;}
+  var np=prayers[nextIdx];
+  document.getElementById('npName').textContent=np.name;
+  /* Calculate time to next prayer */
+  var targetTime=np.time;
+  var th=parseInt(targetTime.split(':')[0]);
+  var tm=parseInt(targetTime.split(':')[1].split(' ')[0]);
+  var tap=targetTime.indexOf('PM')>-1?12:0;
+  th=th+tap;if(th===12&&!tap)th=0;if(th===24)th=12;
+  var target=new Date();
+  target.setHours(th,tm,0,0);
+  if(target<=now)target.setDate(target.getDate()+1);
+  var diff=Math.floor((target-now)/1000);
+  var h=Math.floor(diff/3600);
+  var m=Math.floor((diff%3600)/60);
+  var s=diff%60;
+  document.getElementById('npCountdown').innerHTML='<span>'+String(h).padStart(2,'0')+'</span>:<span>'+String(m).padStart(2,'0')+'</span>:<span>'+String(s).padStart(2,'0')+'</span>';
+  document.getElementById('npStarts').textContent='Starts in '+h+'h '+m+'m '+s+'s';
+}
+
+function toggleFaq(i){
+  var item=document.getElementById('faq'+i);
+  var a=item.querySelector('.faq-a');
+  if(item.classList.contains('open')){item.classList.remove('open');a.style.maxHeight='0';}
+  else{item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+}
+
+function openLb(src,cap){document.getElementById('lbImg').src=src;document.getElementById('lbCap').textContent=cap;document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+function closeLb(e){if(e&&e.target.closest('.lb-inner')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){en.target.classList.add('visible');ro.unobserve(en.target);}
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  window.loadNaviTemplateProfile('mosqueProfile',DATA,function(data){
+    DATA=data;
+    render(DATA);
+    document.querySelectorAll('.panel').forEach(function(p){ro.observe(p);});
+    updateCountdown();
+    setInterval(updateCountdown,1000);
+    setTimeout(function(){document.getElementById('loader').classList.add('hidden');},500);
+  });
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="../scripts/template-profile-loader.js"></script>
+</body>
+</html>

@@ -10,6 +10,12 @@ function initializeSearchHandlers() {
   initFilterChips();
   addDataAttributesToItems();
 
+  const filterRail = document.querySelector('.filter-chips');
+  const selectedChip = filterRail && (filterRail.querySelector('.chip.active') || filterRail.querySelector('.chip'));
+  if (selectedChip) {
+    currentFilter = String(selectedChip.dataset.filter || selectedChip.textContent || '').trim();
+  }
+
   // Ensure the UI reflects the current filter on initialization.
   try {
     // mark the matching chip active (if present)

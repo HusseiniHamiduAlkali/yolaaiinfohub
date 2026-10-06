@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Community Event Center &amp; Halls — Template</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+/* Mobile bar */
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Full-width visual hero */
+.visual-hero{position:relative;min-height:360px;overflow:hidden;display:flex;align-items:flex-end}
+.vh-img{position:absolute;inset:0;z-index:0}
+.vh-img img{width:100%;height:100%;object-fit:cover;animation:heroZoom 18s ease-in-out infinite alternate}
+.vh-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,42,35,.35) 0%,rgba(3,42,35,.75) 100%)}
+@keyframes heroZoom{0%{transform:scale(1.05)}100%{transform:scale(1.15)}}
+.vh-content{position:relative;z-index:2;padding:1.8rem 1.5rem;color:var(--cream);width:100%}
+.vh-crumbs{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.5rem;opacity:0;animation:fadeUp .6s .2s forwards}
+.vh-crumbs a{text-decoration:none}.vh-crumbs a:hover{text-decoration:underline}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.vh-content h1{font-size:clamp(1.6rem,5vw,2.8rem);margin-bottom:.2rem;opacity:0;animation:fadeUp .6s .35s forwards}
+.vh-content .vh-type{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.5rem;opacity:0;animation:fadeUp .6s .45s forwards}
+.vh-badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.6rem;opacity:0;animation:fadeUp .6s .55s forwards}
+.pill{display:inline-flex;align-items:center;gap:.35rem;font-size:.74rem;padding:.3rem .65rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(242,214,129,.32);color:var(--cream)}
+.pill.open{background:rgba(120,230,170,.18);border-color:rgba(120,230,170,.5)}
+.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+.vh-actions{display:flex;gap:.4rem;flex-wrap:wrap;opacity:0;animation:fadeUp .6s .65s forwards}
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.6rem .9rem;border-radius:10px;text-decoration:none;font-size:.82rem;font-weight:600;border:1px solid rgba(242,214,129,.38);color:var(--cream);background:rgba(255,255,255,.08);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Quick highlights strip */
+.hl-row{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;padding:1rem 0}
+.hl-tile{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:.7rem .8rem;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.hl-tile.visible{opacity:1;transform:translateY(0)}
+.hl-tile .hicon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);margin-bottom:.3rem}
+.hl-tile .hval{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--emerald)}
+.hl-tile .hlabel{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Main */
+main{padding:1rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel>h2:not(:first-child){margin-top:1.2rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* Editorial layout */
+.editorial{display:grid;gap:1rem;margin-top:.7rem}
+.ed-img{border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.ed-img img{width:100%;height:100%;min-height:180px;object-fit:cover;transition:transform .8s}
+.ed-img:hover img{transform:scale(1.06)}
+.ed-text p{font-size:.88rem;color:#324b42;line-height:1.7}
+.ed-facts{display:grid;gap:.4rem}
+.ed-fact{display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--line);font-size:.84rem}
+.ed-fact span:first-child{color:var(--muted)}
+.ed-fact span:last-child{font-weight:600}
+/* Halls showcase */
+.hall-scroll{display:flex;gap:.6rem;overflow-x:auto;padding-bottom:.4rem;margin-top:.7rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.hall-scroll::-webkit-scrollbar{height:4px}.hall-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.hall-card{flex:0 0 auto;min-width:200px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--white);box-shadow:var(--shadow);transition:transform .2s}
+.hall-card:hover{transform:translateY(-5px)}
+.hall-card img{width:100%;height:120px;object-fit:cover}
+.hall-card .hc-body{padding:.6rem .7rem}
+.hall-card b{font-size:.84rem;color:var(--emerald);display:block}
+.hall-card .hc-meta{font-size:.72rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.2rem}
+.hall-card .hc-meta span{display:inline-flex;align-items:center;gap:.2rem}
+.hall-card .hc-price{margin-top:.3rem;font-size:.78rem;font-weight:700;color:var(--gold-dark)}
+/* Booking form */
+.booking-form{background:linear-gradient(160deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.2rem;color:var(--cream);margin-top:.7rem}
+.booking-form h3{color:var(--gold-light);font-size:1rem;margin-bottom:.8rem;text-align:center}
+.bf-grid{display:grid;grid-template-columns:1fr;gap:.6rem}
+.bf-field{display:flex;flex-direction:column;gap:.2rem}
+.bf-field label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-light)}
+.bf-field select,.bf-field input{padding:.55rem .7rem;border-radius:10px;border:1px solid rgba(242,214,129,.2);background:rgba(255,255,255,.08);color:var(--cream);font-size:.82rem;font-family:inherit;outline:none;transition:border-color .2s}
+.bf-field select:focus,.bf-field input:focus{border-color:var(--gold)}
+.bf-field select option{background:var(--emerald-950);color:var(--cream)}
+.bf-submit{margin-top:.4rem;padding:.65rem 1rem;border-radius:10px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);font-size:.86rem;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .18s}
+.bf-submit:hover{transform:translateY(-2px)}
+/* Amenities grid */
+.amen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.7rem}
+.amen-card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.6rem .3rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.1));transition:transform .2s}
+.amen-card:hover{transform:translateY(-3px)}
+.amen-card .aico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:1rem}
+.amen-card b{font-size:.7rem;text-align:center}
+/* Event types pills */
+.etype-scroll{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.7rem}
+.etype-chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;padding:.35rem .7rem;border-radius:999px;border:1px solid var(--line);background:var(--cream);color:var(--emerald);cursor:pointer;transition:all .2s;user-select:none}
+.etype-chip:hover{border-color:var(--gold);color:var(--gold-dark)}
+.etype-chip.active{background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--cream);border-color:transparent}
+/* Upcoming events */
+.event-scroll{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.4rem;margin-top:.7rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.event-scroll::-webkit-scrollbar{height:4px}.event-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.event-card{flex:0 0 auto;min-width:180px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--white);box-shadow:var(--shadow);transition:transform .2s}
+.event-card:hover{transform:translateY(-4px)}
+.event-card .ec-date{background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--gold-light);padding:.5rem .7rem;text-align:center;font-family:var(--serif)}
+.event-card .ec-date b{font-size:1.1rem;display:block}
+.event-card .ec-date small{font-size:.66rem;text-transform:uppercase;letter-spacing:.06em}
+.event-card .ec-body{padding:.6rem .7rem}
+.event-card .ec-body b{font-size:.82rem;color:var(--emerald);display:block;margin-bottom:.1rem}
+.event-card .ec-body small{font-size:.72rem;color:var(--muted)}
+/* Pricing packages */
+.pkg-grid{display:grid;grid-template-columns:1fr;gap:.6rem;margin-top:.7rem}
+.pkg-card{border-radius:14px;padding:1rem;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.08));transition:transform .2s,box-shadow .2s;position:relative}
+.pkg-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.pkg-card.featured{border:2px solid var(--gold);background:linear-gradient(160deg,rgba(201,168,76,.06),rgba(204,235,221,.12))}
+.pkg-card .pkg-badge{position:absolute;top:-10px;right:14px;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);padding:.2rem .55rem;border-radius:6px}
+.pkg-card h3{font-size:.92rem;color:var(--emerald);margin-bottom:.3rem}
+.pkg-card .pkg-price{font-family:var(--serif);font-size:1.4rem;font-weight:700;color:var(--gold-dark);margin-bottom:.4rem}
+.pkg-card .pkg-price small{font-size:.74rem;color:var(--muted);font-weight:400}
+.pkg-features{list-style:none;display:grid;gap:.3rem}
+.pkg-features li{font-size:.78rem;color:#324b42;display:flex;align-items:center;gap:.35rem}
+.pkg-features li::before{content:"\2713";color:var(--forest);font-weight:700;flex:0 0 auto}
+/* Gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.7rem}
+.gal-item{border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:var(--shadow);aspect-ratio:1;position:relative}
+.gal-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.gal-item:hover img{transform:scale(1.1)}
+.gal-item.feature{grid-column:span 2;aspect-ratio:2/1}
+/* Lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(3,42,35,.92);z-index:5000;display:none;align-items:center;justify-content:center;padding:40px;backdrop-filter:blur(6px)}
+.lightbox.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lb-inner{max-width:800px;max-height:85vh;position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lb-inner img{width:100%;max-height:75vh;object-fit:cover}
+.lb-close{position:absolute;top:-40px;right:0;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:1.3rem;color:var(--emerald);cursor:pointer;transition:transform .2s}
+.lb-close:hover{transform:rotate(90deg);background:var(--gold)}
+.lb-cap{padding:14px 18px;background:var(--cream);font-family:var(--serif);font-size:.92rem;color:var(--emerald)}
+/* Reviews bars */
+.bars{display:grid;gap:.4rem;margin-top:.6rem}
+.bar{display:grid;grid-template-columns:90px 1fr 30px;gap:.4rem;align-items:center;font-size:.76rem;color:var(--muted)}
+.bar i{display:block;height:7px;border-radius:999px;background:var(--mint);overflow:hidden}
+.bar i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--forest),var(--gold));transition:width 1.2s cubic-bezier(.25,.46,.45,.94)}
+.reviews{display:grid;gap:.5rem;margin-top:.7rem}
+.review{border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;background:linear-gradient(160deg,#fff,rgba(204,235,221,.2))}
+.review header{display:flex;justify-content:space-between;gap:.4rem;align-items:center;margin-bottom:.2rem}
+.review strong{font-size:.82rem}.review .stars{color:var(--gold);font-size:.76rem;white-space:nowrap}
+.review p{font-size:.8rem;color:#324b42;margin:0}
+/* Map */
+.map-box{height:190px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.6rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinB 2s ease-in-out infinite}
+@keyframes pinB{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinP 2s ease-in-out infinite}
+@keyframes pinP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:5px 11px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+/* Contact */
+.contact-list{display:grid;gap:.5rem;margin-top:.6rem}
+.contact-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.84rem;word-break:break-word}
+.contact-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Hours */
+.hours{width:100%;border-collapse:collapse;margin-top:.6rem;font-size:.86rem}
+.hours th,.hours td{text-align:left;padding:.45rem 0;border-bottom:1px dashed var(--line)}
+.hours th{font-weight:600;color:var(--muted)}.hours td{text-align:right;font-weight:600}
+/* Nearby venues */
+.nearby-scroll{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.4rem;margin-top:.6rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.nearby-scroll::-webkit-scrollbar{height:4px}.nearby-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.near-card{flex:0 0 auto;min-width:160px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--white);box-shadow:var(--shadow);transition:transform .2s;cursor:pointer}
+.near-card:hover{transform:translateY(-4px)}
+.near-card img{width:100%;height:90px;object-fit:cover}
+.near-card .nc-body{padding:.5rem .6rem}
+.near-card b{font-size:.8rem;color:var(--emerald);display:block}
+.near-card small{font-size:.7rem;color:var(--muted)}
+/* CTA section */
+.cta-section{background:linear-gradient(135deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.6rem;text-align:center;color:var(--cream);margin-top:1.2rem;border:1px solid rgba(242,214,129,.2)}
+.cta-section h2{color:var(--gold-light);font-size:1.2rem;margin-bottom:.4rem}
+.cta-section p{color:rgba(245,240,224,.75);font-size:.86rem;margin-bottom:.8rem}
+.cta-section .btn{display:inline-flex;align-items:center;gap:.35rem;padding:.65rem 1.4rem;border-radius:10px;text-decoration:none;font-size:.88rem;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border:none;cursor:pointer;font-family:inherit;transition:transform .18s}
+.cta-section .btn:hover{transform:translateY(-2px)}
+/* FAQ */
+.faq-list{display:grid;gap:.5rem;margin-top:.7rem}
+.faq-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:box-shadow .2s}
+.faq-item:hover{box-shadow:var(--shadow)}
+.faq-q{padding:.6rem .8rem;font-size:.84rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:rgba(204,235,221,.15)}
+.faq-q .toggle{color:var(--gold);font-size:1.1rem;transition:transform .3s}
+.faq-item.open .faq-q .toggle{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a-inner{padding:0 .8rem .6rem;font-size:.8rem;color:#324b42}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem;border-top:2px solid rgba(242,214,129,.22)}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.visual-hero{min-height:440px}
+.hl-row{grid-template-columns:repeat(4,1fr)}
+.editorial{grid-template-columns:1.3fr 1fr;align-items:start}
+.amen-grid{grid-template-columns:repeat(5,1fr)}
+.bf-grid{grid-template-columns:repeat(2,1fr)}
+.bf-submit{grid-column:span 2}
+.pkg-grid{grid-template-columns:repeat(3,1fr)}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:1rem}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#127881;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#127881;</div>
+<div><strong id="mbName">Venue Name</strong><small>Event Center</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<section class="visual-hero">
+<div class="vh-img"><img src="https://images.pexels.com/photos/14646749/pexels-photo-14646749.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Event hall" id="heroImg"></div>
+<div class="wrap vh-content">
+<div class="vh-crumbs"><a href="#">Home</a> &rsaquo; <a href="#">Event Centers</a> &rsaquo; <span id="crumbName">Venue</span></div>
+<h1 id="vName">Grand Arena Event Center</h1>
+<div class="vh-type" id="vType">Banquet Hall &amp; Conference Center</div>
+<div class="vh-badges" id="heroBadges"></div>
+<div class="vh-actions">
+<button class="btn primary" onclick="document.getElementById('bookPanel').scrollIntoView({behavior:'smooth'})">Book Venue</button>
+<button class="btn" onclick="document.getElementById('galleryPanel').scrollIntoView({behavior:'smooth'})">View Gallery</button>
+<button class="btn" onclick="document.getElementById('locPanel').scrollIntoView({behavior:'smooth'})">Directions</button>
+</div>
+</div>
+</section>
+
+<div class="wrap">
+<div class="hl-row" id="hlRow"></div>
+</div>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<div class="panel" id="aboutPanel">
+<h2>About the Venue</h2>
+<p class="sub">Description and background</p>
+<div class="editorial">
+<div class="ed-img"><img src="https://images.pexels.com/photos/4717526/pexels-photo-4717526.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Banquet hall interior" id="aboutImg" loading="lazy"></div>
+<div class="ed-text">
+<p id="aboutText">Description goes here.</p>
+<div class="ed-facts" id="edFacts" style="margin-top:.6rem"></div>
+</div>
+</div>
+</div>
+
+<div class="panel" id="hallPanel">
+<h2>Halls &amp; Spaces</h2>
+<p class="sub">Explore our available venues</p>
+<div class="hall-scroll" id="hallScroll"></div>
+</div>
+
+<div class="panel" id="bookPanel">
+<h2>Check Availability</h2>
+<p class="sub">Inquire about booking your event</p>
+<div class="booking-form">
+<h3>Booking Inquiry Form</h3>
+<form onsubmit="event.preventDefault();alert('Availability check submitted! We will contact you shortly.');">
+<div class="bf-grid">
+<div class="bf-field">
+<label>Event Date</label>
+<input type="date" required>
+</div>
+<div class="bf-field">
+<label>Event Type</label>
+<select>
+<option>Wedding</option>
+<option>Conference</option>
+<option>Birthday Party</option>
+<option>Corporate Event</option>
+<option>Concert</option>
+<option>Exhibition</option>
+<option>Other</option>
+</select>
+</div>
+<div class="bf-field">
+<label>Expected Guests</label>
+<input type="number" placeholder="e.g. 200" min="1" required>
+</div>
+<div class="bf-field">
+<label>Preferred Hall</label>
+<select>
+<option>Any Hall</option>
+<option>Grand Ballroom</option>
+<option>Conference Hall</option>
+<option>Garden Pavilion</option>
+<option>Exhibition Hall</option>
+</select>
+</div>
+<button type="submit" class="bf-submit">Check Availability &amp; Get Quote</button>
+</div>
+</form>
+</div>
+</div>
+
+<div class="panel" id="amenPanel">
+<h2>Amenities &amp; Features</h2>
+<p class="sub">What we offer</p>
+<div class="amen-grid" id="amenGrid"></div>
+</div>
+
+<div class="panel" id="etypePanel">
+<h2>Event Types We Host</h2>
+<p class="sub">Click to filter upcoming events</p>
+<div class="etype-scroll" id="etypeScroll"></div>
+<div class="event-scroll" id="eventScroll" style="margin-top:1rem"></div>
+</div>
+
+<div class="panel" id="pkgPanel">
+<h2>Pricing &amp; Packages</h2>
+<p class="sub">Choose the right package for your event</p>
+<div class="pkg-grid" id="pkgGrid"></div>
+</div>
+
+<div class="panel" id="galleryPanel">
+<h2>Gallery</h2>
+<p class="sub">See our venue spaces and past events</p>
+<div class="gallery" id="galleryGrid"></div>
+</div>
+
+<div class="panel" id="reviewsPanel">
+<h2>Community Reviews</h2>
+<p class="sub">What hosts and guests say</p>
+<div class="bars" id="ratingBars"></div>
+<div class="reviews" id="reviewsList" style="margin-top:.8rem"></div>
+</div>
+
+<div class="panel" id="faqPanel">
+<h2>Frequently Asked Questions</h2>
+<p class="sub">Common questions about booking</p>
+<div class="faq-list" id="faqList"></div>
+</div>
+
+<div class="cta-section">
+<h2>Planning an Event?</h2>
+<p>Check availability and book your date today. Our team is ready to help make your event unforgettable.</p>
+<button class="btn" onclick="document.getElementById('bookPanel').scrollIntoView({behavior:'smooth'})">Check Availability &rarr;</button>
+</div>
+
+</div>
+<div class="col side">
+
+<div class="panel" id="hoursPanel">
+<h2>Operating Hours</h2>
+<p class="sub">Office and venue schedule</p>
+<table class="hours" id="hoursTable"></table>
+</div>
+
+<div class="panel" id="locPanel">
+<h2>Location &amp; Map</h2>
+<p class="sub">Find the venue</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Venue address</div>
+</div>
+<div class="contact-list" id="contactList" style="margin-top:.6rem"></div>
+</div>
+
+<div class="panel" id="nearPanel">
+<h2>Similar Venues Nearby</h2>
+<p class="sub">Other event centers</p>
+<div class="nearby-scroll" id="nearScroll"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Grand Arena Event Center</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">Your premier destination for weddings, conferences, and unforgettable events.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+<a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"/></svg></a>
+</div>
+</div>
+<div><h3>Explore</h3><ul><li><a href="#aboutPanel">About</a></li><li><a href="#hallPanel">Halls</a></li><li><a href="#amenPanel">Amenities</a></li><li><a href="#pkgPanel">Pricing</a></li><li><a href="#galleryPanel">Gallery</a></li></ul></div>
+<div><h3>Services</h3><ul><li><a href="#bookPanel">Book Venue</a></li><li><a href="#etypePanel">Event Types</a></li><li><a href="#">Catering</a></li><li><a href="#">Decoration</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Grand Arena Event Center</span><span>Privacy Policy &middot; Terms</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<div class="lightbox" id="lightbox" onclick="closeLb(event)">
+<div class="lb-inner" onclick="event.stopPropagation()">
+<div class="lb-close" onclick="closeLb()">&times;</div>
+<img id="lbImg" src="" alt="">
+<div class="lb-cap" id="lbCap"></div>
+</div>
+</div>
+
+<script>
+var DATA={
+  name:"Grand Arena Event Center",
+  type:"Banquet Hall & Conference Center",
+  status:"Available for Booking",
+  heroImg:"https://images.pexels.com/photos/14646749/pexels-photo-14646749.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  aboutImg:"https://images.pexels.com/photos/4717526/pexels-photo-4717526.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  description:"Grand Arena Event Center is Yola's premier destination for weddings, conferences, parties, and corporate events. Established in 2015, our venue features four distinct halls with capacities ranging from 100 to 1,000 guests. We offer full-service event support including catering, decoration, sound systems, and event coordination. Our experienced team ensures every event is seamless, memorable, and perfectly executed from start to finish.",
+  highlights:[
+    {icon:"\u{1F465}",val:"1,000",label:"Max Capacity"},
+    {icon:"\u{1F3E2}",val:"4",label:"Event Halls"},
+    {icon:"\u{1F4B0}",val:"\u20A6150K",label:"Starting Price"},
+    {icon:"\u{1F697}",val:"300",label:"Parking Spaces"}
+  ],
+  facts:[
+    {label:"Established",value:"2015"},
+    {label:"Total Space",value:"4,500 sqm"},
+    {label:"Halls",value:"4"},
+    {label:"Largest Hall",value:"1,000 guests"},
+    {label:"On-site Parking",value:"300 spaces"},
+    {label:"Staff",value:"25+ team members"}
+  ],
+  halls:[
+    {img:"https://images.pexels.com/photos/14646749/pexels-photo-14646749.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",name:"Grand Ballroom",capacity:"500-1000 guests",area:"2,000 sqm",price:"from \u20A6450K"},
+    {img:"https://images.pexels.com/photos/19658083/pexels-photo-19658083.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",name:"Conference Hall",capacity:"200-400 guests",area:"800 sqm",price:"from \u20A6200K"},
+    {img:"https://images.pexels.com/photos/30311728/pexels-photo-30311728.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",name:"Garden Pavilion",capacity:"150-300 guests",area:"1,200 sqm",price:"from \u20A6180K"},
+    {img:"https://images.pexels.com/photos/3866658/pexels-photo-3866658.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",name:"Exhibition Hall",capacity:"300-600 guests",area:"1,500 sqm",price:"from \u20A6280K"}
+  ],
+  amenities:[
+    {icon:"\u{1F3A4}",name:"Stage"},
+    {icon:"\u{1F50A}",name:"Sound System"},
+    {icon:"\u{1F4A1}",name:"Projector"},
+    {icon:"\u{1F373}",name:"Catering Kitchen"},
+    {icon:"\u2744\uFE0F",name:"Air Conditioning"},
+    {icon:"\u{1F697}",name:"Parking"},
+    {icon:"\u{1F6BE}",name:"Restrooms"},
+    {icon:"\u26A1",name:"Generator"},
+    {icon:"\u{1F4F6}",name:"WiFi"},
+    {icon:"\u{1F6CB}\uFE0F",name:"Tables & Chairs"},
+    {icon:"\u{1F388}",name:"Decoration"},
+    {icon:"\u{1F512}",name:"Security"}
+  ],
+  eventTypes:[
+    {name:"Weddings",icon:"\u{1F48D}"},
+    {name:"Conferences",icon:"\u{1F4C4}"},
+    {name:"Birthdays",icon:"\u{1F382}"},
+    {name:"Corporate Events",icon:"\u{1F4BC}"},
+    {name:"Concerts",icon:"\u{1F3B5}"},
+    {name:"Exhibitions",icon:"\u{1F3A8}"},
+    {name:"Town Halls",icon:"\u{1F3E2}"},
+    {name:"Graduations",icon:"\u{1F393}"}
+  ],
+  events:[
+    {date:"12",month:"OCT",title:"Aisha & Musa Wedding",time:"2:00 PM",hall:"Grand Ballroom"},
+    {date:"19",month:"OCT",title:"Tech Conference 2024",time:"9:00 AM",hall:"Conference Hall"},
+    {date:"26",month:"OCT",title:"Annual Charity Gala",time:"6:00 PM",hall:"Grand Ballroom"},
+    {date:"02",month:"NOV",title:"Product Exhibition",time:"10:00 AM",hall:"Exhibition Hall"},
+    {date:"09",month:"NOV",title:"Birthday Celebration",time:"4:00 PM",hall:"Garden Pavilion"},
+    {date:"16",month:"NOV",title:"Corporate Retreat",time:"8:00 AM",hall:"Conference Hall"}
+  ],
+  packages:[
+    {name:"Basic",price:"\u20A6150K",unit:"per event",features:["4-hour venue rental","Tables & chairs","Sound system","Basic lighting","Parking","Security"],featured:false},
+    {name:"Standard",price:"\u20A6350K",unit:"per event",features:["8-hour venue rental","Tables & chairs","Premium sound system","Stage & lighting","Air conditioning","Catering setup","Decoration package","Generator backup"],featured:true},
+    {name:"Premium",price:"\u20A6650K",unit:"per event",features:["Full-day venue rental","All amenities included","Premium catering service","Full decoration","Event coordinator","Photography setup","VIP parking","Live band stage","Generator & WiFi"],featured:false}
+  ],
+  gallery:[
+    {url:"https://images.pexels.com/photos/14646749/pexels-photo-14646749.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Grand Ballroom decorated for a wedding",cls:"feature"},
+    {url:"https://images.pexels.com/photos/4717526/pexels-photo-4717526.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Banquet hall setup"},
+    {url:"https://images.pexels.com/photos/19658083/pexels-photo-19658083.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Conference hall"},
+    {url:"https://images.pexels.com/photos/30311728/pexels-photo-30311728.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Garden Pavilion event"},
+    {url:"https://images.pexels.com/photos/3866658/pexels-photo-3866658.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Exhibition hall"},
+    {url:"https://images.pexels.com/photos/16935999/pexels-photo-16935999.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Catering display"}
+  ],
+  ratings:[
+    {label:"Cleanliness",pct:92},
+    {label:"Sound Quality",pct:88},
+    {label:"Parking",pct:85},
+    {label:"Value",pct:80},
+    {label:"Service",pct:90}
+  ],
+  reviews:[
+    {name:"Ahmed T.",stars:"\u2605\u2605\u2605\u2605\u2605",text:"Outstanding venue for our wedding. The team handled everything perfectly from decoration to catering. Highly recommended!"},
+    {name:"Grace O.",stars:"\u2605\u2605\u2605\u2605\u2606",text:"Great conference facilities. Sound system was excellent and the hall was well organized. Will book again."},
+    {name:"Sani M.",stars:"\u2605\u2605\u2605\u2605\u2605",text:"Best event center in Yola. Spacious, clean, and the staff are very professional. Our corporate event was a success."}
+  ],
+  hours:[
+    {day:"Monday - Friday",time:"8:00 AM - 6:00 PM"},
+    {day:"Saturday",time:"9:00 AM - 8:00 PM"},
+    {day:"Sunday",time:"10:00 AM - 4:00 PM"},
+    {day:"Public Holidays",time:"By appointment"}
+  ],
+  contacts:[
+    {label:"Address",value:"12 Limawa Road, Jimeta, Yola, Adamawa State",icon:"\u{1F4CD}"},
+    {label:"Booking Phone",value:"+234 807 555 1000",icon:"\u260E"},
+    {label:"WhatsApp",value:"+234 807 555 1001",icon:"\u{1F4AC}"},
+    {label:"Email",value:" bookings@grandarena.ng",icon:"\u2709"},
+    {label:"Website",value:"www.grandarena.ng",icon:"\u{1F310}"}
+  ],
+  nearby:[
+    {img:"https://images.pexels.com/photos/32593148/pexels-photo-32593148.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",name:"Royal Palace Hall",desc:"Banquet \u00B7 1.5 km"},
+    {img:"https://images.pexels.com/photos/25857615/pexels-photo-25857615.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",name:"City Conference Center",desc:"Conference \u00B7 2.3 km"},
+    {img:"https://images.pexels.com/photos/5026349/pexels-photo-5026349.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",name:"Garden Events Hall",desc:"Outdoor \u00B7 3.8 km"},
+    {img:"https://images.pexels.com/photos/36900082/pexels-photo-36900082.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",name:"Prestige Auditorium",desc:"Auditorium \u00B7 4.1 km"}
+  ],
+  faqs:[
+    {q:"How do I book the venue?",a:"You can book by filling out the booking inquiry form on this page, calling us at +234 807 555 1000, or visiting our office during operating hours. A 30% deposit is required to secure your date."},
+    {q:"What is the minimum booking duration?",a:"The minimum booking is 4 hours for the Basic package. Standard and Premium packages offer 8-hour and full-day options respectively."},
+    {q:"Is catering included in the packages?",a:"Catering is included in the Premium package and available as an add-on for Standard. The Basic package does not include catering but our kitchen facilities are available for your caterer."},
+    {q:"Can I decorate the venue myself?",a:"Yes, you may bring your own decorator. However, we also offer in-house decoration packages. All decorations must comply with our venue guidelines and be approved by our event coordinator."},
+    {q:"Is there adequate parking?",a:"Yes, we have 300 parking spaces on-site with security personnel. VIP parking is available with the Premium package."},
+    {q:"What is the cancellation policy?",a:"Cancellations made 30 days before the event receive a 50% refund of the deposit. Cancellations within 30 days are non-refundable. Force majeure situations are handled case by case."}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" \u2014 Event Center";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('crumbName').textContent=d.name;
+  document.getElementById('vName').textContent=d.name;
+  document.getElementById('vType').textContent=d.type;
+  document.getElementById('heroImg').src=d.heroImg;
+  document.getElementById('aboutImg').src=d.aboutImg;
+  document.getElementById('aboutText').textContent=d.description;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('mapLabel').textContent=d.name;
+  if(d.contacts[0]){document.getElementById('footAddr').textContent=d.contacts[0].value;document.getElementById('footPhone').textContent=d.contacts[1]?d.contacts[1].value:'';document.getElementById('footEmail').textContent=d.contacts[3]?d.contacts[3].value:'';}
+  /* Hero badges */
+  var capacity=d.highlights.find(function(item){return /capacity/i.test(item.label||'');});
+  document.getElementById('heroBadges').innerHTML='<span class="pill open"><span class="dot"></span>'+d.status+'</span>'+(capacity?'<span class="pill">\u{1F465} '+capacity.val+' guests</span>':'')+'<span class="pill">\u{1F4CD} Yola, Adamawa</span>';
+  /* Highlights */
+  document.getElementById('hlRow').innerHTML=d.highlights.map(function(h){
+    return '<div class="hl-tile"><div class="hicon">'+h.icon+'</div><div class="hval">'+h.val+'</div><div class="hlabel">'+h.label+'</div></div>';
+  }).join('');
+  /* Facts */
+  document.getElementById('edFacts').innerHTML=d.facts.map(function(f){
+    return '<div class="ed-fact"><span>'+f.label+'</span><span>'+f.value+'</span></div>';
+  }).join('');
+  /* Halls */
+  document.getElementById('hallScroll').innerHTML=d.halls.map(function(h){
+    return '<div class="hall-card"><img src="'+h.img+'" alt="'+h.name+'" loading="lazy"><div class="hc-body"><b>'+h.name+'</b><div class="hc-meta"><span>\u{1F465} '+h.capacity+'</span><span>\u{1F4CF} '+h.area+'</span></div><div class="hc-price">'+h.price+'</div></div></div>';
+  }).join('');
+  /* Amenities */
+  document.getElementById('amenGrid').innerHTML=d.amenities.map(function(a){
+    return '<div class="amen-card"><span class="aico">'+a.icon+'</span><b>'+a.name+'</b></div>';
+  }).join('');
+  /* Event types */
+  document.getElementById('etypeScroll').innerHTML=d.eventTypes.map(function(e,i){
+    return '<span class="etype-chip'+(i===0?' active':'')+'" onclick="filterEvents('+i+',this)">'+e.icon+' '+e.name+'</span>';
+  }).join('');
+  /* Events */
+  document.getElementById('eventScroll').innerHTML=d.events.map(function(e){
+    return '<div class="event-card"><div class="ec-date"><b>'+e.date+'</b><small>'+e.month+'</small></div><div class="ec-body"><b>'+e.title+'</b><small>'+e.time+' \u00B7 '+e.hall+'</small></div></div>';
+  }).join('');
+  /* Packages */
+  document.getElementById('pkgGrid').innerHTML=d.packages.map(function(p){
+    return '<div class="pkg-card'+(p.featured?' featured':'')+'">'+(p.featured?'<span class="pkg-badge">Popular</span>':'')+'<h3>'+p.name+'</h3><div class="pkg-price">'+p.price+' <small>/ '+p.unit+'</small></div><ul class="pkg-features">'+p.features.map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div>';
+  }).join('');
+  /* Gallery */
+  document.getElementById('galleryGrid').innerHTML=d.gallery.map(function(g){
+    return '<div class="gal-item'+(g.cls?' '+g.cls:'')+'" onclick="openLb(\''+g.url+'\',\''+g.cap.replace(/'/g,"\\'")+'\')"><img src="'+g.url+'" alt="'+g.cap+'" loading="lazy"></div>';
+  }).join('');
+  /* Ratings */
+  document.getElementById('ratingBars').innerHTML=d.ratings.map(function(r){
+    return '<div class="bar"><span>'+r.label+'</span><i><b data-w="'+r.pct+'"></b></i><span>'+r.pct+'%</span></div>';
+  }).join('');
+  /* Reviews */
+  document.getElementById('reviewsList').innerHTML=d.reviews.map(function(r){
+    return '<div class="review"><header><strong>'+r.name+'</strong><span class="stars">'+r.stars+'</span></header><p>'+r.text+'</p></div>';
+  }).join('');
+  /* Hours */
+  document.getElementById('hoursTable').innerHTML=d.hours.map(function(h){
+    return '<tr><th>'+h.day+'</th><td>'+h.time+'</td></tr>';
+  }).join('');
+  /* Contacts */
+  document.getElementById('contactList').innerHTML=d.contacts.map(function(c){
+    return '<div class="contact-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+  }).join('');
+  /* Nearby */
+  document.getElementById('nearScroll').innerHTML=d.nearby.map(function(n){
+    return '<div class="near-card"><img src="'+n.img+'" alt="'+n.name+'" loading="lazy"><div class="nc-body"><b>'+n.name+'</b><small>'+n.desc+'</small></div></div>';
+  }).join('');
+  /* FAQ */
+  document.getElementById('faqList').innerHTML=d.faqs.map(function(f,i){
+    return '<div class="faq-item" id="faq'+i+'"><div class="faq-q" onclick="toggleFaq('+i+')">'+f.q+'<span class="toggle">+</span></div><div class="faq-a"><div class="faq-a-inner">'+f.a+'</div></div></div>';
+  }).join('');
+}
+
+function filterEvents(i,el){
+  document.querySelectorAll('.etype-chip').forEach(function(c){c.classList.remove('active');});
+  el.classList.add('active');
+}
+
+function toggleFaq(i){
+  var item=document.getElementById('faq'+i);
+  var a=item.querySelector('.faq-a');
+  if(item.classList.contains('open')){item.classList.remove('open');a.style.maxHeight='0';}
+  else{item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+}
+
+function openLb(src,cap){document.getElementById('lbImg').src=src;document.getElementById('lbCap').textContent=cap;document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+function closeLb(e){if(e&&e.target.closest('.lb-inner')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){
+      en.target.classList.add('visible');
+      if(en.target.id==='reviewsPanel'){
+        en.target.querySelectorAll('.bar i b').forEach(function(b){b.style.width=b.dataset.w+'%';});
+      }
+      ro.unobserve(en.target);
+    }
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  window.loadNaviTemplateProfile('eventCenterProfile',DATA,function(data){
+    if(data._profileFallback){
+      document.getElementById('bookPanel').hidden=true;
+      document.querySelector('.cta-section').hidden=true;
+      document.querySelector('.vh-actions .btn.primary').hidden=true;
+    }
+    render(data);
+    document.querySelectorAll('.panel,.hl-tile').forEach(function(p){ro.observe(p);});
+    setTimeout(function(){document.getElementById('loader').classList.add('hidden');},500);
+  });
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="../scripts/template-profile-loader.js"></script>
+</body>
+</html>

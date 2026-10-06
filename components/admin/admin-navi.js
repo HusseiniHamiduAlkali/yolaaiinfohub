@@ -20,8 +20,17 @@
   var state = { records: [], selected: null };
   var $ = function (id) { return document.getElementById(id); };
 
-  function apiBase() {
-    return typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE_URL || window.API_BASE || window.location.origin);
+  function apiBases() {
+    if (Array.isArray(window.API_BASE_CANDIDATES) && window.API_BASE_CANDIDATES.length) {
+      return window.API_BASE_CANDIDATES.slice();
+    }
+    var current = typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE_URL || window.API_BASE || window.location.origin);
+    var candidates = [current];
+    var host = window.location.hostname || 'localhost';
+    if (/^(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)$/.test(host)) {
+      [4002, 4001, 4000, 3000].forEach(function (port) { candidates.push('http://' + host + ':' + port); });
+    }
+    return candidates.filter(function (base, index) { return base && candidates.indexOf(base) === index; });
   }
 
   function escapeHtml(value) {
@@ -38,12 +47,29 @@
   }
 
   function request(url, options) {
-    return fetch(apiBase() + url, Object.assign({ credentials: 'include', headers: { 'Content-Type': 'application/json' } }, options || {})).then(function (response) {
-      return response.json().then(function (data) {
-        if (!response.ok) throw new Error(data.error || 'Request failed');
-        return data;
+    var candidates = apiBases();
+    var index = 0;
+    var requestOptions = Object.assign({ credentials: 'include' }, options || {});
+    requestOptions.headers = Object.assign({}, requestOptions.headers || {});
+    if (requestOptions.body && !requestOptions.headers['Content-Type']) requestOptions.headers['Content-Type'] = 'application/json';
+    function tryNext(lastError) {
+      if (index >= candidates.length) return Promise.reject(lastError || new Error('API unavailable'));
+      var base = candidates[index++];
+      return fetch(base + url, requestOptions).then(function (response) {
+        return response.json().then(function (data) {
+          if (!response.ok) {
+            var error = new Error(data.error || 'Request failed');
+            error.stopRetry = response.status === 401 || response.status === 403;
+            throw error;
+          }
+          window.API_BASE = base;
+          return data;
+        });
+      }).catch(function (error) {
+        return error.stopRetry ? Promise.reject(error) : tryNext(error);
       });
-    });
+    }
+    return tryNext();
   }
 
   function populateCategoryOptions() {
@@ -94,6 +120,14 @@
     $('technical-preview').hidden = true;
     $('learning-preview').hidden = true;
     $('healthcare-preview').hidden = true;
+    $('navigation-detail-preview').hidden = true;
+    $('generic-demo-preview').hidden = true;
+    $('flight-agent-profile').value = '{}';
+    $('filling-station-profile').value = '{}';
+    $('bank-profile').value = '{}';
+    $('navi-template-profile').value = '{}';
+    $('generic-demo-profile').value = '{}';
+    $('generic-demo-profile-wrap').hidden = true;
     renderAllProfileEditors({});
   }
 
@@ -143,6 +177,68 @@
     if (/\b(specialist hospital yola|adamawa german hospital|meddy specialists clinic|fortland orthopaedic|new boshang clinic|galbose specialists clinic|modibbo adama teaching hospital)\b/.test(value)) return 'secondaryHospital';
     if (/\b(specialists?|hospital|teaching)\b/.test(value)) return 'secondaryHospital';
     return 'primaryCare';
+  }
+
+  function navigationDetailType(record) {
+    var value = [record && record.category, record && record.subcategory, record && record.displayName, record && record.slug]
+      .filter(Boolean).join(' ').toLowerCase().replace(/[&_/-]+/g, ' ');
+    var category = String(record && record.category || '').toLowerCase().replace(/[&_/-]+/g, ' ');
+    var identity = [record && record.displayName, record && record.slug].filter(Boolean).join(' ').toLowerCase().replace(/[&_/-]+/g, ' ');
+    if (/\b(banks?|atms?|banking)\b/.test(value)) return 'bank';
+    if (/\b(filling stations?|fuel stations?|petrol stations?)\b/.test(value)) return 'fillingStation';
+    if (/\b(flights?|airlines?|travel agents?|travel and tours)\b/.test(value)) return 'flightAgent';
+    if (category === 'agents') return '';
+    if (/\b(judiciary|judicial|courts?)\b/.test(value)) return 'judiciary';
+    if (/\b(mosques?|masjids?|islamic centers?|islamic centres?)\b/.test(value)) return 'mosque';
+    if (/\bchurch(es)?\b|\bcathedrals?\b|\bchapels?\b|catholic secreteriat|catholic secretariat/.test(value)) return 'church';
+    if (/\b(commercial centers?|commercial centres?|markets?|shopping complexes?)\b/.test(value)) return 'commercialCenter';
+    if (/\b(event centers?|event centres?|event halls?)\b/.test(value)) return 'eventCenter';
+    if (/\b(restaurant|cafe|bakery|grill|suya|shawarma|ice ?cream|chicken cottage|exclusive spot)\b/.test(identity)) return '';
+    if (/\bparks?\b|\bgreen spaces?\b/.test(category)) return 'parksRecreation';
+    if (/\bhotels?\b/.test(category) || /\b(hotels?|hospitality|lodges?|resorts?|guest houses?)\b/.test(identity) || /\bhospitality\b/.test(value)) return 'hospitality';
+    if (/\b(parks?|recreation|green spaces?)\b/.test(value)) return 'parksRecreation';
+    if (/\b(iconic structures?|landmarks?|flyovers?|roundabouts?)\b/.test(value)) return 'iconicStructure';
+    if (/\b(sports?|spa|wellness|gyms?)\b/.test(value)) return 'sportsSpa';
+    return '';
+  }
+
+  var templateProfileFields = {
+    commercialCenter: 'commercialCenterProfile',
+    church: 'churchProfile',
+    mosque: 'mosqueProfile',
+    judiciary: 'judiciaryProfile',
+    parksRecreation: 'parksRecreationProfile',
+    eventCenter: 'eventCenterProfile',
+    hospitality: 'hospitalityProfile',
+    iconicStructure: 'iconicStructureProfile',
+    sportsSpa: 'sportsSpaProfile'
+  };
+
+  var templateProfileLabels = {
+    commercialCenter: 'Commercial center', church: 'Church', mosque: 'Mosque', judiciary: 'Judiciary',
+    parksRecreation: 'Parks and recreation', eventCenter: 'Event center', hospitality: 'Hospitality',
+    iconicStructure: 'Iconic structure', sportsSpa: 'Sports and SPA'
+  };
+
+  function profileKind(record) {
+    return navigationDetailType(record) || (isHealthcareRecord(record) ? 'healthcare' :
+      isSchoolRecord(record) ? 'school' : isLearningRecord(record) ? 'learning' :
+        isTechnicalRecord(record) ? 'technical' : isUniversityRecord(record) ? 'university' : '');
+  }
+
+  function readJsonProfile(id, label) {
+    var text = $(id).value.trim();
+    if (!text) return {};
+    var value;
+    try {
+      value = JSON.parse(text);
+    } catch (error) {
+      throw new Error(label + ' must contain valid JSON');
+    }
+    if (!value || Array.isArray(value) || typeof value !== 'object') {
+      throw new Error(label + ' must be a JSON object');
+    }
+    return value;
   }
 
   function parseMenuItems(value) {
@@ -206,7 +302,7 @@
   function addProfileItem(list, fields, item) { var card = document.createElement('div'); card.className = 'profile-item'; var head = document.createElement('div'); head.className = 'profile-item-head'; var count = list.children.length + 1; head.innerHTML = '<strong>Item ' + count + '</strong>'; var remove = document.createElement('button'); remove.type = 'button'; remove.className = 'button profile-remove'; remove.textContent = 'Remove'; remove.addEventListener('click', function () { card.remove(); }); head.appendChild(remove); card.appendChild(head); var grid = document.createElement('div'); grid.className = 'profile-fields'; var primitive = !item || typeof item !== 'object'; fields.forEach(function (field) { var value = primitive ? item : item[field[0]]; if (field[0] === 'examples' || field[0] === 'benefits' || field[0] === 'services') value = Array.isArray(value) ? value.join(', ') : value; grid.appendChild(profileInput(field[1], field[2] || (field[0] === 'description' || field[0] === 'desc' || field[0] === 'detail' || field[0] === 'bio' || field[0] === 'note' || field[0] === 'a' || field[0] === 'q' ? 'textarea' : 'text'), value, primitive ? '$value' : field[0])); }); card.appendChild(grid); list.appendChild(card); }
   function readProfileEditor(kind) { var config = profileConfigs[kind], container = $(kind + '-profile-editor'), result = {}; if (!container) return result; config.scalars.forEach(function (definition) { var input = container.querySelector('[data-profile-path="' + definition[0] + '"]'); if (input) setPath(result, definition[0], input.value.trim()); }); config.repeaters.forEach(function (definition) { var section = container.querySelector('[data-profile-repeater="' + definition[0] + '"]'); var values = []; if (section) section.querySelectorAll('[data-profile-list="true"] > .profile-item').forEach(function (card) { var item = {}; card.querySelectorAll('[data-profile-path]').forEach(function (input) { var path = input.dataset.profilePath, value = input.value.trim(); if (path === '$value') { item.$value = value; return; } if (path === 'examples' || path === 'benefits' || path === 'services') value = value.split(',').map(function (part) { return part.trim(); }).filter(Boolean); if (path === 'rx') value = /^(true|yes|1)$/i.test(value); item[path] = value; }); values.push(definition[3] ? item.$value || '' : item); }); setPath(result, definition[0], values); }); return result; }
   function renderAllProfileEditors(record) {
-    var active = isHealthcareRecord(record) ? 'healthcare' : isSchoolRecord(record) ? 'school' : isLearningRecord(record) ? 'learning' : isTechnicalRecord(record) ? 'technical' : isUniversityRecord(record) ? 'university' : '';
+    var active = profileKind(record);
     ['school', 'university', 'technical', 'learning'].forEach(function (kind) {
       var container = $(kind + '-profile-editor');
       if (container) container.hidden = active !== kind;
@@ -221,6 +317,19 @@
       if (container) container.hidden = $('healthcare-profile-type').value !== kind;
       renderProfileEditor(kind, healthProfile[kind] || {});
     });
+    ['flightAgent', 'fillingStation', 'bank'].forEach(function (kind) {
+      var editor = $(kind + '-profile-editor');
+      if (editor) editor.hidden = active !== kind;
+    });
+    var templateWrap = $('navi-template-profile-wrap');
+    var templateField = templateProfileFields[active];
+    if (templateWrap) templateWrap.hidden = !templateField;
+    if (templateField) {
+      $('navi-template-profile-title').textContent = templateProfileLabels[active] + ' detail profile';
+      $('navi-template-profile').value = JSON.stringify(record[templateField] || {}, null, 2);
+    } else {
+      $('navi-template-profile').value = '{}';
+    }
   }
 
   function fillForm(record) {
@@ -245,9 +354,13 @@
     $('lat').value = record.coordinates && record.coordinates.lat != null ? record.coordinates.lat : '';
     $('lng').value = record.coordinates && record.coordinates.lng != null ? record.coordinates.lng : '';
     $('record-status').value = record.status || 'draft';
+    $('demo-content').checked = record.demoContent === true;
+    $('generic-demo-profile').value = JSON.stringify(record.demoProfile || {}, null, 2);
+    $('generic-demo-profile-wrap').hidden = record.demoContent !== true;
     $('verification-status').value = record.verificationStatus || 'unverified';
     $('rating-average').value = record.ratingAverage != null ? record.ratingAverage : 0;
     $('review-count').value = record.reviewCount != null ? record.reviewCount : 0;
+    $('seed-review-required').checked = record.seedReviewRequired === true;
     $('tags').value = (record.tags || []).join(', ');
     $('services').value = (record.services || []).join(', ');
     $('description').value = record.description || '';
@@ -256,12 +369,16 @@
     $('technical-profile').value = JSON.stringify(record.technicalProfile || {}, null, 2);
     $('learning-profile').value = JSON.stringify(record.learningProfile || {}, null, 2);
     $('healthcare-profile').value = JSON.stringify(record.healthcareProfile || {}, null, 2);
+    $('flight-agent-profile').value = JSON.stringify(record.flightAgentProfile || {}, null, 2);
+    $('filling-station-profile').value = JSON.stringify(record.fillingStationProfile || {}, null, 2);
+    $('bank-profile').value = JSON.stringify(record.bankProfile || {}, null, 2);
     renderAllProfileEditors(record);
     updateSchoolPreview(record);
     updateUniversityPreview(record);
     updateTechnicalPreview(record);
     updateLearningPreview(record);
     updateHealthcarePreview(record);
+    updateNavigationDetailPreview(record);
     $('delete-record').hidden = false;
   }
 
@@ -322,6 +439,42 @@
     link.hidden = false;
   }
 
+  function updateNavigationDetailPreview(record) {
+    var link = $('navigation-detail-preview');
+    var genericLink = $('generic-demo-preview');
+    var item = record || {
+      category: $('category').value,
+      subcategory: $('subcategory').value,
+      displayName: $('display-name').value,
+      slug: $('slug').value.trim()
+    };
+    var kind = navigationDetailType(item);
+    var pages = {
+      flightAgent: 'flight-agents-details.html',
+      fillingStation: 'filling-stations-details.html',
+      bank: 'banks-details.html',
+      commercialCenter: 'commercial-center-details.html',
+      church: 'church-details.html',
+      mosque: 'mosque-details.html',
+      judiciary: 'judiciary-details.html',
+      parksRecreation: 'parks-recreation-details.html',
+      eventCenter: 'event-centers.html',
+      hospitality: 'hospitality-details.html',
+      iconicStructure: 'iconic-structures.html',
+      sportsSpa: 'sports-spa-details.html'
+    };
+    if (genericLink) {
+      genericLink.href = '/navi/' + encodeURIComponent(item.slug || '') + '?adminPreview=1';
+      genericLink.hidden = !item.slug || !(item.demoProfile || $('demo-content').checked);
+    }
+    if (!link || !kind || !item.slug) {
+      if (link) link.hidden = true;
+      return;
+    }
+    link.href = '/components/naviinfo/details/' + pages[kind] + '?id=' + encodeURIComponent(item.slug) + '&adminPreview=1';
+    link.hidden = false;
+  }
+
   function payload() {
     $('school-profile').value = JSON.stringify(readProfileEditor('school'));
     $('university-profile').value = JSON.stringify(readProfileEditor('university'));
@@ -366,7 +519,7 @@
         throw new Error('Learning profile must be a JSON object');
       }
     }
-    return {
+    var result = {
       displayName: $('display-name').value.trim(),
       slug: $('slug').value.trim(),
       category: $('category').value,
@@ -374,11 +527,6 @@
       area: $('area').value.trim() || 'Yola',
       address: $('address').value.trim(),
       description: $('description').value.trim(),
-      schoolProfile: schoolProfile,
-      universityProfile: universityProfile,
-      technicalProfile: technicalProfile,
-      learningProfile: learningProfile,
-      healthcareProfile: isHealthcareRecord({ category: $('category').value, subcategory: $('subcategory').value, displayName: $('display-name').value }) ? healthcareProfile : undefined,
       coordinates: {
         lat: $('lat').value === '' ? null : Number($('lat').value),
         lng: $('lng').value === '' ? null : Number($('lng').value)
@@ -399,9 +547,32 @@
       },
       status: $('record-status').value,
       verificationStatus: $('verification-status').value,
+      seedReviewRequired: $('seed-review-required').checked,
       ratingAverage: Number($('rating-average').value || 0),
       reviewCount: Number($('review-count').value || 0)
     };
+    var record = {
+      category: result.category,
+      subcategory: result.subcategory,
+      displayName: result.displayName,
+      slug: result.slug
+    };
+    var active = profileKind(record);
+    if (active === 'school') result.schoolProfile = schoolProfile;
+    if (active === 'university') result.universityProfile = universityProfile;
+    if (active === 'technical') result.technicalProfile = technicalProfile;
+    if (active === 'learning') result.learningProfile = learningProfile;
+    if (active === 'healthcare') result.healthcareProfile = healthcareProfile;
+    if (active === 'flightAgent') result.flightAgentProfile = readJsonProfile('flight-agent-profile', 'Flight agent profile');
+    if (active === 'fillingStation') result.fillingStationProfile = readJsonProfile('filling-station-profile', 'Filling station profile');
+    if (active === 'bank') result.bankProfile = readJsonProfile('bank-profile', 'Bank profile');
+    if (templateProfileFields[active]) {
+      result[templateProfileFields[active]] = readJsonProfile('navi-template-profile', templateProfileLabels[active] + ' profile');
+    }
+    if ($('demo-content').checked) {
+      result.demoProfile = readJsonProfile('generic-demo-profile', 'Generic demo profile');
+    }
+    return result;
   }
 
   function loadRecords() {
@@ -456,6 +627,24 @@
     });
   });
 
+  $('publish-demo-profiles').addEventListener('click', function () {
+    if (!window.confirm('Publish all prepared Navi demo profiles? They will be visibly labeled as demo content and remain unverified.')) return;
+    var button = $('publish-demo-profiles');
+    button.disabled = true;
+    status('Publishing labeled demo profiles...', '');
+    request('/api/admin/content/navigation-places/publish-demos', {
+      method: 'POST',
+      body: JSON.stringify({})
+    }).then(function (data) {
+      status(data.message + ' Published: ' + data.published + '. Verification remains unverified.', 'success');
+      return loadRecords();
+    }).catch(function (error) {
+      status(error.message, 'error');
+    }).finally(function () {
+      button.disabled = false;
+    });
+  });
+
   $('new-record').addEventListener('click', function () {
     clearForm();
     renderRecords();
@@ -478,7 +667,7 @@
     try {
       body = payload();
     } catch (error) {
-      status('Menu items must be valid JSON: ' + error.message, 'error');
+      status(error.message, 'error');
       return;
     }
 
@@ -494,12 +683,14 @@
   });
 
   function updatePreviewFromForm() {
-    var record = { category: $('category').value, subcategory: $('subcategory').value, slug: $('slug').value.trim() };
+    var record = { category: $('category').value, subcategory: $('subcategory').value, displayName: $('display-name').value, slug: $('slug').value.trim() };
     updateSchoolPreview(record);
     updateUniversityPreview(record);
     updateTechnicalPreview(record);
     updateLearningPreview(record);
     updateHealthcarePreview(record);
+    updateNavigationDetailPreview(record);
+    if (!$('record-id').value) renderAllProfileEditors(record);
   }
 
   $('slug').addEventListener('input', updatePreviewFromForm);

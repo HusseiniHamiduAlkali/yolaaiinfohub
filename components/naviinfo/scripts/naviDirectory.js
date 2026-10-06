@@ -1,10 +1,32 @@
 (function () {
   'use strict';
 
-  function apiBase() {
-    return typeof window.getApiBase === 'function'
-      ? window.getApiBase()
-      : (window.API_BASE || 'http://localhost:4000');
+  function apiBases() {
+    if (Array.isArray(window.API_BASE_CANDIDATES) && window.API_BASE_CANDIDATES.length) {
+      return window.API_BASE_CANDIDATES.slice();
+    }
+    var current = typeof window.getApiBase === 'function' ? window.getApiBase() : (window.API_BASE || '');
+    var candidates = [current];
+    var host = window.location.hostname || 'localhost';
+    if (/^(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)$/.test(host)) {
+      [4002, 4001, 4000, 3000].forEach(function (port) { candidates.push('http://' + host + ':' + port); });
+    }
+    return candidates.filter(function (base, index) { return base && candidates.indexOf(base) === index; });
+  }
+
+  function fetchDirectory() {
+    var candidates = apiBases();
+    var index = 0;
+    function tryNext(lastError) {
+      if (index >= candidates.length) return Promise.reject(lastError || new Error('Navigation API unavailable'));
+      var base = candidates[index++];
+      return fetch(base + '/api/content/navigation-places?limit=200', { credentials: 'include' }).then(function (response) {
+        if (!response.ok) throw new Error('Navigation place directory request failed');
+        if (base) window.API_BASE = base;
+        return response.json();
+      }).catch(tryNext);
+    }
+    return tryNext();
   }
 
   function escapeHtml(value) {
@@ -22,10 +44,40 @@
   }
 
   function normalizedCategory(item) {
-    var values = [item && item.category, item && item.subcategory]
+    var values = [item && item.category, item && item.subcategory, item && item.displayName, item && item.slug]
       .filter(Boolean)
-      .map(function (value) { return String(value).trim().toLowerCase(); });
+      .map(function (value) { return String(value).trim().toLowerCase().replace(/[&_/-]+/g, ' '); });
     return values.join(' ');
+  }
+
+  function bindStaticDetailLinks() {
+    document.querySelectorAll('.section3[data-category] article[data-place-id]').forEach(function (article) {
+      var group = article.closest('.section3[data-category]');
+      var title = article.querySelector('h3');
+      var category = group && (group.dataset.detailCategory || group.dataset.category) || '';
+      var page = detailPageForCategory({ category: category, subcategory: category, displayName: title && title.textContent, slug: article.dataset.placeId });
+      var link = article.querySelector('a[data-i18n="learn_more"]');
+      if (!link) return;
+      if (!page) {
+        link.href = '/navi/' + encodeURIComponent(article.dataset.placeId);
+        return;
+      }
+      var meta = article.querySelectorAll('.place-meta .meta-item');
+      var image = article.querySelector('.place-img-placeholder img');
+      var description = article.querySelector('.card-body p');
+      var params = new URLSearchParams();
+      params.set('id', article.dataset.placeId);
+      params.set('name', title ? title.textContent.trim() : '');
+      params.set('category', category);
+      params.set('description', description ? description.textContent.trim() : '');
+      params.set('address', meta[0] ? meta[0].textContent.trim() : 'Yola, Adamawa State');
+      params.set('area', meta[0] ? meta[0].textContent.trim() : 'Yola');
+      params.set('openingHours', meta[1] ? meta[1].textContent.trim() : '');
+      params.set('image', image ? image.getAttribute('src') || '' : '');
+      if (article.dataset.lat) params.set('lat', article.dataset.lat);
+      if (article.dataset.lng) params.set('lng', article.dataset.lng);
+      link.href = page + '?' + params.toString();
+    });
   }
 
   function rememberDirectoryPosition() {
@@ -47,13 +99,13 @@
   }
 
   function isRestaurantRecord(item) {
-    var searchable = [item && item.slug, item && item.displayName, item && item.category, item && item.subcategory]
+    var searchable = [item && item.slug, item && item.displayName]
       .filter(Boolean)
       .join(' ')
       .toLowerCase();
     var restaurantSlugs = [
       'items7-restaurant', 'icecream-planet-yola', 'marwa-shawarma-and-grills-yola',
-      'mevish-cafe', 'oasis-bakery-yola', 'uptown-exclusive-spot-yola',
+      'aun-hotel-jabbama-restaurant', 'mevish-cafe', 'oasis-bakery-yola', 'uptown-exclusive-spot-yola',
       'yahuza-suya-spot-yola', 'chicken-cottage-yola'
     ];
 
@@ -105,10 +157,45 @@
 
   function detailPageForCategory(item) {
     var normalized = normalizedCategory(item);
+    var category = groupKey(item && item.category);
 
     if (!normalized) return null;
+    if (/\b(flights?|airlines?|travel agents?|travel and tours)\b/.test(normalized)) {
+      return '/components/naviinfo/details/flight-agents-details.html';
+    }
+    if (category === 'agents') return null;
+    if (/\b(filling stations?|fuel stations?|petrol stations?)\b/.test(normalized)) {
+      return '/components/naviinfo/details/filling-stations-details.html';
+    }
+    if (/\b(banks?|atms?)\b/.test(normalized)) {
+      return '/components/naviinfo/details/banks-details.html';
+    }
     if (isRestaurantRecord(item)) {
       return '/components/naviinfo/details/restaurant-details.html';
+    }
+    if (/\b(mosques?|masjids?|islamic centers?|islamic centres?)\b/.test(normalized)) {
+      return '/components/naviinfo/details/mosque-details.html';
+    }
+    if (/\bchurch(es)?\b|\bcathedrals?\b|\bchapels?\b|catholic secreteriat|catholic secretariat/.test(normalized)) {
+      return '/components/naviinfo/details/church-details.html';
+    }
+    if (/\b(judiciary|judicial|courts?)\b/.test(normalized)) {
+      return '/components/naviinfo/details/judiciary-details.html';
+    }
+    if (/\b(commercial centers?|commercial centres?|markets?|shopping complexes?)\b/.test(normalized)) {
+      return '/components/naviinfo/details/commercial-center-details.html';
+    }
+    if (/\b(event centers?|event centres?|event halls?)\b/.test(normalized)) {
+      return '/components/naviinfo/details/event-centers.html';
+    }
+    if (category === 'parks' || category === 'green spaces' || /\b(green spaces?|parks?|recreation)\b/.test(normalized)) {
+      return '/components/naviinfo/details/parks-recreation-details.html';
+    }
+    if (/\b(sports?|spa|wellness|gyms?)\b/.test(normalized)) {
+      return '/components/naviinfo/details/sports-spa-details.html';
+    }
+    if (/\b(iconic structures?|landmarks?|flyovers?|roundabouts?|toll gates?)\b/.test(normalized)) {
+      return '/components/naviinfo/details/iconic-structures.html';
     }
     var healthcarePage = healthcareDetailPage(item);
     if (healthcarePage) return healthcarePage;
@@ -136,13 +223,28 @@
     return null;
   }
 
+  function detailHref(page, item) {
+    var params = new URLSearchParams();
+    params.set('id', item.slug || '');
+    params.set('name', item.displayName || '');
+    params.set('category', item.subcategory || item.category || 'NaviInfo listing');
+    params.set('description', item.description || '');
+    params.set('address', item.address || item.area || 'Yola, Adamawa State');
+    params.set('area', item.area || 'Yola');
+    params.set('openingHours', item.openingHours || '');
+    params.set('image', item.image || item.heroImage || '');
+    if (item.coordinates && item.coordinates.lat != null) params.set('lat', item.coordinates.lat);
+    if (item.coordinates && item.coordinates.lng != null) params.set('lng', item.coordinates.lng);
+    return page + '?' + params.toString();
+  }
+
   function cardTemplate(item) {
     var imageHtml = item.image
       ? '<div class="img-placeholder place-img-placeholder"><img src="/' + escapeHtml(item.image).replace(/^\/+/, '') + '" alt="' + escapeHtml(item.displayName) + '" loading="lazy" onerror="this.style.display=\'none\'; this.parentElement.classList.add(\'empty\');" /></div>'
       : '<div class="img-placeholder place-img-placeholder empty"><span>' + escapeHtml((item.displayName || 'Y').slice(0, 2).toUpperCase()) + '</span></div>';
 
     var detailPage = detailPageForCategory(item);
-    var learnMoreHref = detailPage ? detailPage + '?id=' + encodeURIComponent(item.slug) : '/navi/' + encodeURIComponent(item.slug);
+    var learnMoreHref = detailPage ? detailHref(detailPage, item) : '/navi/' + encodeURIComponent(item.slug);
 
     return '<article class="section4 hiding place-article" data-place-id="' + escapeHtml(item.slug) + '" data-lat="' + (item.coordinates && item.coordinates.lat != null ? item.coordinates.lat : '') + '" data-lng="' + (item.coordinates && item.coordinates.lng != null ? item.coordinates.lng : '') + '">' +
       '<div class="place-card-head">' + imageHtml +
@@ -158,19 +260,33 @@
   function renderSections(items) {
     var groups = {};
     Array.prototype.forEach.call(document.querySelectorAll('.section3[data-category]'), function (group) {
-      var key = groupKey(group.dataset.category || '');
+      var key = groupKey(group.dataset.detailCategory || group.dataset.category || '');
       if (key) groups[key] = group;
-      var container = group.querySelector('.section4-container');
-      if (container) container.innerHTML = '';
     });
 
     (items || []).forEach(function (item) {
       var categoryKey = groupKey(item.category || 'Others');
       var subcategoryKey = groupKey(item.subcategory || '');
-      var group = groups[subcategoryKey] || groups[categoryKey] || groups.others;
+      var searchable = normalizedCategory(item);
+      var targetKey = /\b(banks?|atms?)\b/.test(searchable) ? 'banks' :
+        /\b(filling stations?|fuel stations?|petrol stations?)\b/.test(searchable) ? 'filling stations' :
+          /\b(flights?|airlines?|travel agents?|travel and tours)\b/.test(searchable) ? 'flights' :
+            /\b(primary healthcare|phccs?)\b/.test(searchable) ? 'phccs' :
+              /\b(secondary hospitals?|specialists?)\b/.test(searchable) ? 'specialists' :
+                /\b(teaching hospital|tertiary hospital)\b/.test(searchable) ? 'teaching hospital' :
+                  isRestaurantRecord(item) ? 'hotels' : '';
+      var group = (targetKey && groups[targetKey]) || groups[subcategoryKey] || groups[categoryKey] || groups.others;
       if (!group) return;
       var container = group.querySelector('.section4-container');
-      if (container) container.insertAdjacentHTML('beforeend', cardTemplate(item));
+      if (!container) return;
+      var existing = Array.prototype.find.call(container.querySelectorAll('article[data-place-id]'), function (card) {
+        return card.dataset.placeId === item.slug;
+      });
+      var holder = document.createElement('div');
+      holder.innerHTML = cardTemplate(item);
+      var nextCard = holder.firstElementChild;
+      if (existing) existing.replaceWith(nextCard);
+      else container.appendChild(nextCard);
     });
 
     if (window.initializeSearchHandlers) window.initializeSearchHandlers();
@@ -178,32 +294,10 @@
     bindDetailPositionSaving();
   }
 
-  function clearDatabaseBackedGroups() {
-    var supportedGroups = [
-      'universities', 'colleges', 'schools', 'religious', 'libraries',
-      'phccs', 'specialists', 'teaching hospital', 'pharmacies', 'hotels', 'restaurants'
-    ];
-    Array.prototype.forEach.call(document.querySelectorAll('.section3[data-category]'), function (group) {
-      if (supportedGroups.indexOf(groupKey(group.dataset.category || '')) === -1) return;
-      var container = group.querySelector('.section4-container');
-      if (!container) return;
-      container.querySelectorAll('a[data-i18n="learn_more"]').forEach(function (link) {
-        link.removeAttribute('href');
-        link.setAttribute('aria-disabled', 'true');
-        link.classList.add('database-link-pending');
-      });
-      container.innerHTML = '';
-    });
-  }
-
   function load() {
     bindDetailPositionSaving();
-    clearDatabaseBackedGroups();
-    return fetch(apiBase() + '/api/content/navigation-places?limit=200', { credentials: 'include' })
-      .then(function (response) {
-        if (!response.ok) throw new Error('Navigation place directory request failed');
-        return response.json();
-      })
+    bindStaticDetailLinks();
+    return fetchDirectory()
       .then(function (data) {
         renderSections((data && data.items) || []);
         return true;

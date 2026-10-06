@@ -9,7 +9,7 @@ autoInit();
 let CATEGORIES = [];
 let photos = []; // { name, dataUrl }
 
-loadJSON("data/waste-categories.json")
+loadJSON(new URL("../data/waste-categories.json", import.meta.url))
   .then((json) => {
     CATEGORIES = json.categories;
     renderExamples();

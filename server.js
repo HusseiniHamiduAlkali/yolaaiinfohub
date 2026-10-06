@@ -2300,6 +2300,13 @@ function toMenuItems(value) {
 
 function serializeNavigationPlace(place) {
   const raw = place.toObject ? place.toObject() : place;
+  const demoReleased = raw.demoContent === true && raw.demoPublished === true;
+  const visibleProfile = (key) => {
+    const profile = raw[key];
+    if (!profile) return undefined;
+    if ((raw.demoContent === true || profile.demoContent === true) && !demoReleased) return undefined;
+    return profile;
+  };
   return {
     id: raw._id,
     slug: raw.slug,
@@ -2325,13 +2332,58 @@ function serializeNavigationPlace(place) {
     technicalProfile: toTechnicalProfile(raw.technicalProfile),
     learningProfile: toLearningProfile(raw.learningProfile),
     healthcareProfile: toHealthcareProfile(raw.healthcareProfile),
+    flightAgentProfile: visibleProfile('flightAgentProfile'),
+    fillingStationProfile: visibleProfile('fillingStationProfile'),
+    bankProfile: visibleProfile('bankProfile'),
+    commercialCenterProfile: visibleProfile('commercialCenterProfile'),
+    churchProfile: visibleProfile('churchProfile'),
+    mosqueProfile: visibleProfile('mosqueProfile'),
+    judiciaryProfile: visibleProfile('judiciaryProfile'),
+    parksRecreationProfile: visibleProfile('parksRecreationProfile'),
+    eventCenterProfile: visibleProfile('eventCenterProfile'),
+    hospitalityProfile: visibleProfile('hospitalityProfile'),
+    iconicStructureProfile: visibleProfile('iconicStructureProfile'),
+    sportsSpaProfile: visibleProfile('sportsSpaProfile'),
+    demoProfile: visibleProfile('demoProfile'),
+    demoPublished: demoReleased,
+    demoContent: demoReleased,
+    demoNotice: demoReleased ? String(raw.demoNotice || 'Illustrative demo content. Not verified real-world details.') : '',
     verificationStatus: raw.verificationStatus,
     ratingAverage: raw.ratingAverage || 0,
     reviewCount: raw.reviewCount || 0,
     status: raw.status,
+    seedReviewRequired: raw.seedReviewRequired === true,
     createdAt: raw.createdAt,
     updatedAt: raw.updatedAt
   };
+}
+
+function toNavigationDetailProfile(value) {
+  if (value === null) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Navigation detail profile must be an object');
+  }
+  return value;
+}
+
+function assignNavigationDetailProfiles(payload, body) {
+  const templateKeys = [
+    'commercialCenterProfile', 'churchProfile', 'mosqueProfile', 'judiciaryProfile', 'parksRecreationProfile',
+    'eventCenterProfile', 'hospitalityProfile', 'iconicStructureProfile', 'sportsSpaProfile'
+  ];
+  [
+    'flightAgentProfile', 'fillingStationProfile', 'bankProfile', 'commercialCenterProfile', 'churchProfile',
+    'mosqueProfile', 'judiciaryProfile', 'parksRecreationProfile', 'eventCenterProfile', 'hospitalityProfile',
+    'iconicStructureProfile', 'sportsSpaProfile'
+  ].forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(body, key)) {
+      payload[key] = toNavigationDetailProfile(body[key]);
+      if (templateKeys.indexOf(key) !== -1 && body.seedReviewRequired === false) {
+        payload[key].seedReviewRequired = false;
+        payload[key].seededFromExample = false;
+      }
+    }
+  });
 }
 
 function toSchoolProfile(value = {}) {
@@ -2610,6 +2662,43 @@ app.get('/api/admin/content/navigation-places', requireContentAdmin, async (req,
   }
 });
 
+app.get('/api/admin/content/navigation-places/:slug', requireContentAdmin, async (req, res) => {
+  try {
+    const place = await NavigationPlace.findOne({ slug: req.params.slug });
+    if (!place) return res.status(404).json({ error: 'Navigation place not found' });
+    res.json({ item: place });
+  } catch (error) {
+    console.error('Admin navigation place detail error:', error);
+    res.status(500).json({ error: 'Unable to load navigation place' });
+  }
+});
+
+app.post('/api/admin/content/navigation-places/publish-demos', requireContentAdmin, async (req, res) => {
+  try {
+    const result = await NavigationPlace.updateMany(
+      { demoContent: true, demoPublished: { $ne: true }, demoProfile: { $exists: true }, status: { $in: ['draft', 'pending', 'published'] } },
+      {
+        $set: {
+          demoPublished: true,
+          demoNotice: 'Illustrative demo content. Details and images are not verified real-world information.',
+          status: 'published',
+          verificationStatus: 'unverified',
+          seedReviewRequired: false,
+          updatedBy: req.session.userId
+        }
+      }
+    );
+    res.json({
+      message: 'Demo profiles published with an unverified demo label.',
+      published: result.modifiedCount || 0,
+      verificationStatus: 'unverified'
+    });
+  } catch (error) {
+    console.error('Publish Navi demo profiles error:', error);
+    res.status(500).json({ error: 'Unable to publish demo profiles' });
+  }
+});
+
 app.post('/api/admin/content/navigation-places/seed-restaurant-media', requireContentAdmin, async (req, res) => {
   try {
     const force = req.body && req.body.force === true;
@@ -2676,20 +2765,38 @@ app.post('/api/admin/content/navigation-places', requireContentAdmin, async (req
         email: String(req.body.contact?.email || req.body.email || '').trim(),
         website: String(req.body.contact?.website || req.body.website || '').trim()
       },
-      schoolProfile: toSchoolProfile(req.body.schoolProfile),
-      universityProfile: toUniversityProfile(req.body.universityProfile),
-      technicalProfile: toTechnicalProfile(req.body.technicalProfile),
-      learningProfile: toLearningProfile(req.body.learningProfile),
-      healthcareProfile: toHealthcareProfile(req.body.healthcareProfile),
       verificationStatus: ['unverified', 'pending', 'verified'].includes(req.body.verificationStatus) ? req.body.verificationStatus : 'unverified',
       status: ['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status) ? req.body.status : 'draft',
+      seedReviewRequired: req.body.seedReviewRequired === true,
       ratingAverage: Number(req.body.ratingAverage || 0),
       reviewCount: Number(req.body.reviewCount || 0),
       legacySource: String(req.body.legacySource || '').trim(),
+      demoContent: Object.prototype.hasOwnProperty.call(req.body, 'demoProfile'),
+      demoPublished: false,
+      demoNotice: Object.prototype.hasOwnProperty.call(req.body, 'demoProfile')
+        ? 'Illustrative demo content. Details and images are not verified real-world information.'
+        : '',
       createdBy: req.session.userId,
       updatedBy: req.session.userId
     };
+    const profileNormalizers = {
+      schoolProfile: toSchoolProfile,
+      universityProfile: toUniversityProfile,
+      technicalProfile: toTechnicalProfile,
+      learningProfile: toLearningProfile,
+      healthcareProfile: toHealthcareProfile
+    };
+    Object.keys(profileNormalizers).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(req.body, key)) payload[key] = profileNormalizers[key](req.body[key]);
+    });
+    assignNavigationDetailProfiles(payload, req.body);
+    if (Object.prototype.hasOwnProperty.call(req.body, 'demoProfile')) {
+      payload.demoProfile = toNavigationDetailProfile(req.body.demoProfile);
+      payload.demoProfile.demoContent = true;
+      payload.demoProfile.demoNotice = payload.demoNotice;
+    }
     if (!payload.displayName) throw new Error('Display name is required');
+    if (payload.status === 'published' && payload.seedReviewRequired) throw new Error('Review seeded content before publishing');
     const place = await NavigationPlace.create(payload);
     res.status(201).json({ item: place });
   } catch (error) {
@@ -2726,7 +2833,6 @@ app.put('/api/admin/content/navigation-places/:id', requireContentAdmin, async (
         email: String(req.body.contact?.email || req.body.email || '').trim(),
         website: String(req.body.contact?.website || req.body.website || '').trim()
       },
-      schoolProfile: toSchoolProfile(req.body.schoolProfile),
       verificationStatus: ['unverified', 'pending', 'verified'].includes(req.body.verificationStatus) ? req.body.verificationStatus : 'unverified',
       status: ['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status) ? req.body.status : 'draft',
       ratingAverage: Number(req.body.ratingAverage || 0),
@@ -2734,17 +2840,32 @@ app.put('/api/admin/content/navigation-places/:id', requireContentAdmin, async (
       legacySource: String(req.body.legacySource || '').trim(),
       updatedBy: req.session.userId
     };
-    if (Object.prototype.hasOwnProperty.call(req.body, 'universityProfile')) {
-      payload.universityProfile = toUniversityProfile(req.body.universityProfile);
+    const profileNormalizers = {
+      schoolProfile: toSchoolProfile,
+      universityProfile: toUniversityProfile,
+      technicalProfile: toTechnicalProfile,
+      learningProfile: toLearningProfile,
+      healthcareProfile: toHealthcareProfile
+    };
+    Object.keys(profileNormalizers).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(req.body, key)) payload[key] = profileNormalizers[key](req.body[key]);
+    });
+    assignNavigationDetailProfiles(payload, req.body);
+    if (Object.prototype.hasOwnProperty.call(req.body, 'demoProfile')) {
+      payload.demoProfile = toNavigationDetailProfile(req.body.demoProfile);
+      payload.demoProfile.demoContent = true;
+      payload.demoProfile.demoNotice = 'Illustrative demo content. Details and images are not verified real-world information.';
+      payload.demoContent = true;
+      payload.demoNotice = payload.demoProfile.demoNotice;
     }
-    if (Object.prototype.hasOwnProperty.call(req.body, 'technicalProfile')) {
-      payload.technicalProfile = toTechnicalProfile(req.body.technicalProfile);
+    if (Object.prototype.hasOwnProperty.call(req.body, 'seedReviewRequired')) {
+      payload.seedReviewRequired = req.body.seedReviewRequired === true;
     }
-    if (Object.prototype.hasOwnProperty.call(req.body, 'learningProfile')) {
-      payload.learningProfile = toLearningProfile(req.body.learningProfile);
-    }
-    if (Object.prototype.hasOwnProperty.call(req.body, 'healthcareProfile')) {
-      payload.healthcareProfile = toHealthcareProfile(req.body.healthcareProfile);
+    if (payload.status === 'published') {
+      const existing = await NavigationPlace.findById(req.params.id).select('seedReviewRequired');
+      if (existing && existing.seedReviewRequired && payload.seedReviewRequired !== false) {
+        throw new Error('Review seeded content before publishing');
+      }
     }
     const place = await NavigationPlace.findByIdAndUpdate(req.params.id, payload, { new: true, runValidators: true });
     if (!place) return res.status(404).json({ error: 'Navigation place not found' });
@@ -2761,6 +2882,12 @@ app.patch('/api/admin/content/navigation-places/:id/moderation', requireContentA
     if (['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status)) updates.status = req.body.status;
     if (['unverified', 'pending', 'verified'].includes(req.body.verificationStatus)) updates.verificationStatus = req.body.verificationStatus;
     if (!Object.keys(updates).length) return res.status(400).json({ error: 'A valid status or verificationStatus is required' });
+    if (updates.status === 'published') {
+      const existing = await NavigationPlace.findById(req.params.id).select('seedReviewRequired demoContent demoPublished');
+      if (!existing) return res.status(404).json({ error: 'Navigation place not found' });
+      if (existing.seedReviewRequired) return res.status(409).json({ error: 'Review seeded content before publishing' });
+      if (existing.demoContent && !existing.demoPublished) return res.status(409).json({ error: 'Use the demo publish action to release demo content with its label' });
+    }
     updates.updatedBy = req.session.userId;
     const place = await NavigationPlace.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
     if (!place) return res.status(404).json({ error: 'Navigation place not found' });

@@ -8,7 +8,7 @@ let TIPS = [];
 let FACTORS = {};
 let category = "All";
 
-loadJSON("data/tips.json")
+loadJSON(new URL("../data/tips.json", import.meta.url))
   .then((d) => {
     TIPS = d.tips;
     FACTORS = d.carbonFactors;

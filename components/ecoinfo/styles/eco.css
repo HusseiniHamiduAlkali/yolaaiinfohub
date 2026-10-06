@@ -64,7 +64,7 @@ h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); }
 h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
 h3 { font-size: 1.15rem; }
 
-p { margin: 0 0 14px; color: var(--ink-soft); }
+p { margin: 0 0 14px; color: var(--ink-soft) !important; }
 
 a { color: var(--emerald-700); text-decoration: none; }
 a:hover { color: var(--emerald-600); }
@@ -108,7 +108,7 @@ img { max-width: 100%; display: block; }
 
 .lead { font-size: 1.05rem; max-width: 62ch; }
 
-.muted { color: var(--muted); }
+.muted { color: var(--muted) !important; }
 .small { font-size: 0.85rem; }
 .center { text-align: center; }
 .mt-0 { margin-top: 0; }
@@ -210,7 +210,7 @@ img { max-width: 100%; display: block; }
 .hero p { color: rgba(245, 240, 224, 0.82); }
 .hero .eyebrow { color: var(--gold-300); }
 .hero .eyebrow::before { background: linear-gradient(90deg, var(--gold-300), transparent); }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; justify-content: center;}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; justify-content: space-between;}
 
 /* ---------------- Buttons ---------------- */
 
@@ -236,11 +236,13 @@ img { max-width: 100%; display: block; }
   background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
   color: var(--emerald-900) !important;
   box-shadow: var(--shadow-gold);
+  
 }
 .btn-emerald {
   background: linear-gradient(135deg, var(--emerald-800), var(--emerald-700));
   color: var(--cream);
   box-shadow: var(--shadow-md);
+  height: 46px;
 }
 .btn-outline {
   background: transparent;
@@ -252,6 +254,7 @@ img { max-width: 100%; display: block; }
   background: var(--paper);
   border-color: var(--line);
   color: var(--emerald-800);
+  height: 46px;
 }
 .btn-ghost:hover { background: var(--cream-soft); }
 .btn-sm { padding: 8px 14px; font-size: 0.85rem; }
@@ -266,6 +269,9 @@ img { max-width: 100%; display: block; }
   box-shadow: var(--shadow-sm);
   padding: 22px;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .card-hover:hover {
   transform: translateY(-3px);
@@ -306,6 +312,7 @@ img { max-width: 100%; display: block; }
   font-size: 0.75rem; font-weight: 700;
   background: var(--cream-soft); color: var(--emerald-800);
   border: 1px solid var(--line);
+  text-wrap: nowrap;
 }
 .pill-good { background: rgba(23, 153, 122, 0.14); color: #0b6a53; border-color: rgba(23, 153, 122, 0.3); }
 .pill-fair { background: rgba(201, 168, 76, 0.18); color: #7d6316; border-color: rgba(201, 168, 76, 0.4); }

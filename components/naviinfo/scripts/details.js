@@ -71,34 +71,49 @@
 
   function normalizeRecord(raw, fallbackId) {
     var item = raw || {};
-    var category = item.category || item.subcategory || 'Others';
-    var contact = item.contact || {};
-    var rating = safeNumber(item.ratingAverage, safeNumber(item.rating, 4.5));
-    var reviews = safeNumber(item.reviewCount, safeNumber(item.reviews, 0));
-    var tags = Array.isArray(item.tags) && item.tags.length ? item.tags : [category];
-    var services = Array.isArray(item.services) && item.services.length ? item.services : [];
+    var demo = item.demoProfile || {};
+    var profile = item.hospitalityProfile || {};
+    var category = demo.category || profile.category || item.category || item.subcategory || 'Others';
+    var contact = profile.contact || item.contact || {};
+    var rating = safeNumber(profile.rating, safeNumber(item.ratingAverage, safeNumber(item.rating, 0)));
+    var profileReviews = Array.isArray(profile.reviews) ? profile.reviews : [];
+    var reviews = profileReviews.length || safeNumber(item.reviewCount, safeNumber(item.reviews, 0));
+    var amenities = Array.isArray(profile.amenities) ? profile.amenities : [];
+    var textList = function (items) {
+      return (Array.isArray(items) ? items : []).map(function (entry) {
+        return typeof entry === 'string' ? entry : entry && (entry.name || entry.title || entry.label) || '';
+      }).filter(Boolean);
+    };
+    var demoHighlights = textList(Array.isArray(demo.highlights) ? demo.highlights : []);
+    var demoServices = textList([].concat(demo.services || [], demo.facilities || []));
+    var tags = demoHighlights.length ? demoHighlights : (Array.isArray(item.tags) && item.tags.length ? item.tags : amenities.length ? amenities : [category]);
+    var services = demoServices.length ? demoServices : (Array.isArray(profile.services) && profile.services.length ? profile.services : (Array.isArray(item.services) ? item.services : amenities));
     var lists = [];
-    if (services.length) lists.push(['Services', services]);
+    if (services.length) lists.push(['Services', textList(services)]);
+    if (Array.isArray(profile.rooms) && profile.rooms.length) lists.push(['Rooms', textList(profile.rooms)]);
     if (tags.length) lists.push(['Highlights', tags]);
     if (!lists.length) lists.push(['Information', [item.description || 'Local listing information available on request.']]);
 
-    var hours = Array.isArray(item.hours) && item.hours.length ? item.hours : (
-      item.openingHours ? [['Hours', item.openingHours]] : [['Hours', 'Information available on request']]
-    );
+    var hours = demo.openingHours ? [['Hours', demo.openingHours]] : (Array.isArray(profile.hours) && profile.hours.length ? profile.hours.map(function (row) {
+      return Array.isArray(row) ? row : [row.day || 'Hours', row.time || row.hours || ''];
+    }) : (Array.isArray(item.hours) && item.hours.length ? item.hours : (
+      profile.openingHours || item.openingHours ? [['Hours', profile.openingHours || item.openingHours]] : []
+    )));
+    if (demo.visitorInfo) lists.push(['Visitor information', [demo.visitorInfo]]);
 
     return {
       id: item.slug || item.id || fallbackId || '',
-      name: item.displayName || item.name || 'Listing',
+      name: item.displayName || profile.name || item.name || 'Listing',
       category: category,
       area: item.area || 'Yola',
-      price: item.price || '',
+      price: profile.priceRange || item.price || '',
       ownership: item.ownership || '',
       rating: rating,
       reviews: reviews,
-      status: item.status || 'Open',
+      status: profile.status || item.businessStatus || 'Open',
       verified: !!(item.verificationStatus === 'verified' || item.verified),
-      about: item.description || item.about || 'Local listing in Yola, Adamawa State.',
-      address: item.address || 'Address not provided.',
+      about: demo.summary || item.description || profile.description || item.about || 'Local listing in Yola, Adamawa State.',
+      address: demo.location || profile.address || item.address || 'Address not provided.',
       phone: item.phone || contact.phone || '',
       email: item.email || contact.email || '',
       website: item.website || contact.website || '',
@@ -110,7 +125,12 @@
       ],
       tags: tags,
       lists: lists,
-      hours: hours
+      hours: hours,
+      ratingBars: Array.isArray(profile.ratingBars) ? profile.ratingBars : [],
+      profileReviews: profileReviews,
+      galleryImages: Array.isArray(demo.galleryImages) && demo.galleryImages.length ? demo.galleryImages : (Array.isArray(profile.galleryImages) ? profile.galleryImages : []),
+      demoContent: item.demoContent === true,
+      demoNotice: item.demoNotice || demo.demoNotice || ''
     };
   }
 
@@ -122,6 +142,23 @@
 
     el('found').hidden = false;
     document.title = record.name + ' — ' + config.section + ' · Yola AI Info Hub';
+    if (record.demoContent) {
+      var demoBanner = document.createElement('aside');
+      demoBanner.className = 'navi-demo-notice';
+      demoBanner.setAttribute('role', 'note');
+      demoBanner.style.cssText = 'padding:.8rem 1rem;margin:0 0 1rem;background:#fff2cc;border:1px solid #c28a00;color:#302000;font-weight:600';
+      demoBanner.textContent = record.demoNotice || 'Illustrative demo content. Details and images are not verified real-world information.';
+      el('found').prepend(demoBanner);
+    }
+
+    if (record.demoContent) {
+      var demoBanner = document.createElement('aside');
+      demoBanner.className = 'navi-demo-notice';
+      demoBanner.setAttribute('role', 'note');
+      demoBanner.style.cssText = 'padding:.8rem 1rem;margin:0 0 1rem;background:#fff2cc;border:1px solid #c28a00;color:#302000;font-weight:600';
+      demoBanner.textContent = record.demoNotice || 'Illustrative demo content. Details and images are not verified real-world information.';
+      el('found').prepend(demoBanner);
+    }
 
     el('crumbCat').textContent = record.category;
     el('name').textContent = record.name;
@@ -168,7 +205,12 @@
     var initials = record.name.split(/\s+/).filter(Boolean).slice(0, 2).map(function (word) {
       return word[0];
     }).join('').toUpperCase();
-    el('photos').innerHTML = [0, 1, 2].map(function () {
+    var photos = record.galleryImages.map(function (image) {
+      return typeof image === 'string' ? { image: image, caption: record.name } : { image: image.image || image.src || '', caption: image.caption || image.cap || record.name };
+    }).filter(function (image) { return /^(https?:\/\/|\/|Data\/|\.\.?\/)/i.test(image.image); });
+    el('photos').innerHTML = photos.length ? photos.map(function (image) {
+      return '<div class="photo"><img src="' + esc(image.image) + '" alt="' + esc(image.caption) + '" loading="lazy"></div>';
+    }).join('') : [0, 1, 2].map(function () {
       return '<div class="photo">' + esc(initials || 'Y') + '</div>';
     }).join('');
 
@@ -176,17 +218,18 @@
     var five = Math.round(record.rating / 5 * 78);
     var four = Math.round((100 - five) * 0.55);
     var three = Math.max(0, 100 - five - four - 6);
-    el('bars').innerHTML = [['5★', five], ['4★', four], ['3★', three], ['2★', 4], ['1★', 2]].map(function (bar) {
-      return '<div class="bar"><span>' + bar[0] + '</span><i><b style="width:' + bar[1] + '%"></b></i><span>' + bar[1] + '%</span></div>';
+    var ratingBars = record.ratingBars.length ? record.ratingBars.map(function (bar) { return [bar.label || '', safeNumber(bar.score, 0)]; }) : [];
+    el('bars').innerHTML = ratingBars.map(function (bar) {
+      return '<div class="bar"><span>' + esc(bar[0]) + '</span><i><b style="width:' + Math.max(0, Math.min(100, bar[1])) + '%"></b></i><span>' + bar[1] + '%</span></div>';
     }).join('');
 
-    var voices = [
-      ['Amina B.', 5, 'Helpful and easy to find. The information was clear and reliable.'],
-      ['Yusuf A.', 4, 'Good service overall. Worth calling ahead to confirm current details.'],
-      ['Grace T.', 5, 'Well organised and practical. I would recommend it to others in the area.']
-    ];
+    var voices = record.profileReviews;
     el('reviews').innerHTML = voices.map(function (voice) {
-      return '<article class="review"><header><strong>' + esc(voice[0]) + '</strong><span class="stars">' + '★'.repeat(voice[1]) + '☆'.repeat(5 - voice[1]) + '</span></header><p>' + esc(voice[2]) + '</p></article>';
+      var name = Array.isArray(voice) ? voice[0] : voice.name;
+      var stars = Array.isArray(voice) ? voice[1] : voice.stars;
+      var text = Array.isArray(voice) ? voice[2] : voice.text;
+      var count = Math.max(0, Math.min(5, safeNumber(stars, 0)));
+      return '<article class="review"><header><strong>' + esc(name) + '</strong><span class="stars">' + '★'.repeat(count) + '☆'.repeat(5 - count) + '</span></header><p>' + esc(text) + '</p></article>';
     }).join('');
 
     var rows = [['◉', 'Address', record.address], ['✆', 'Phone', record.phone], ['✉', 'Email', record.email], ['⌂', 'Website', record.website], ['◇', 'Area', record.area]];
@@ -245,13 +288,17 @@
   }
 
   function loadCurrentRecord() {
-    var id = new URLSearchParams(location.search).get('id');
+    var params = new URLSearchParams(location.search);
+    var id = params.get('id');
     if (!id) {
       el('missing').hidden = false;
       return Promise.resolve(false);
     }
 
-    return fetchApiJson('/api/content/navigation-places/' + encodeURIComponent(id))
+    var endpoint = params.get('adminPreview') === '1'
+      ? '/api/admin/content/navigation-places/' + encodeURIComponent(id)
+      : '/api/content/navigation-places/' + encodeURIComponent(id);
+    return fetchApiJson(endpoint)
       .then(function (payload) {
         var record = normalizeRecord(payload && payload.item ? payload.item : payload, id);
         renderRecord(record);

@@ -37,8 +37,13 @@ function list() {
   const origin = user || YOLA;
   return centres
     .filter(matches)
-    .map((c) => ({ ...c, distance: haversineKm(origin, { lat: c.lat, lon: c.lon }) }))
-    .sort((a, b) => a.distance - b.distance);
+    .map((c) => ({
+      ...c,
+      distance: Number.isFinite(c.lat) && Number.isFinite(c.lon)
+        ? haversineKm(origin, { lat: c.lat, lon: c.lon })
+        : null,
+    }))
+    .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
 }
 
 function render() {
@@ -50,18 +55,18 @@ function render() {
           (c) => `<article class="card card-hover" style="padding:22px">
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
           <h3 style="margin:0">${escapeHtml(c.name)}</h3>
-          <span class="pill ${c.pays ? "pill-gold" : ""}">${c.pays ? "Pays for waste" : "Free drop-off"}</span>
+          <span class="pill ${c.pays ? "pill-gold" : ""}">${c.pays === null ? "No payment info" : c.pays ? "PAID" : "FREE"}</span>
         </div>
-        <p class="small muted" style="margin:.35rem 0">${escapeHtml(c.type)} · ${c.distance.toFixed(1)} km away</p>
+        <p class="small muted" style="margin:.35rem 0">${escapeHtml(c.type)} · ${c.distance === null ? "Distance unavailable" : `${c.distance.toFixed(1)} km away`}</p>
         <p style="margin:.4rem 0">${escapeHtml(c.address)}</p>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin:.5rem 0">
           ${c.materials.map((m) => `<span class="pill">${escapeHtml(m)}</span>`).join("")}
         </div>
-        <p class="small muted" style="margin:.3rem 0">🕒 ${escapeHtml(c.hours)}</p>
+        <p class="small muted" style="margin:.3rem 0"><i class="fas fa-clock"></i> ${escapeHtml(c.hours)}</p>
         <p class="small" style="margin:.3rem 0">${escapeHtml(c.notes)}</p>
         <div class="hero-actions" style="margin-top:12px">
-          <a class="btn btn-emerald btn-sm" href="https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lon}" target="_blank" rel="noopener">Directions</a>
-          <a class="btn btn-ghost btn-sm" href="tel:${escapeHtml(c.phone.replace(/\s/g, ""))}">Call</a>
+          ${c.distance === null ? "" : `<a class="btn btn-emerald btn-sm" href="https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lon}" target="_blank" rel="noopener"><i class="fas fa-route"></i> Directions</a>`}
+          ${c.phone ? `<a class="btn btn-ghost btn-sm" href="tel:${escapeHtml(c.phone.replace(/\s/g, ""))}"><i class="fas fa-phone"></i> Call</a>` : ""}
         </div>
       </article>`,
         )
@@ -71,7 +76,7 @@ function render() {
   if (map) {
     markers.forEach((marker) => marker.setMap(null));
     markers = [];
-    rows.forEach((c) =>
+    rows.filter((c) => c.distance !== null).forEach((c) =>
       markers.push(new google.maps.Marker({
         map,
         position: { lat: c.lat, lng: c.lon },
@@ -86,9 +91,9 @@ function render() {
     }));
     if (rows.length) {
       const bounds = new google.maps.LatLngBounds();
-      rows.forEach((c) => bounds.extend({ lat: c.lat, lng: c.lon }));
+      rows.filter((c) => c.distance !== null).forEach((c) => bounds.extend({ lat: c.lat, lng: c.lon }));
       if (user) bounds.extend({ lat: user.lat, lng: user.lon });
-      map.fitBounds(bounds, 40);
+      if (rows.some((c) => c.distance !== null) || user) map.fitBounds(bounds, 40);
     }
   }
 }
@@ -121,7 +126,7 @@ $("#locate")?.addEventListener("click", () => {
 });
 
 initMap();
-loadJSON("data/recycling-centres.json")
+loadJSON(new URL("../data/recycling-centres.json", import.meta.url))
   .then((data) => {
     centres = data;
     renderFilters();

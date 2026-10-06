@@ -233,7 +233,7 @@
 
 
       // Common actions
-      learn_more: 'Learn More',
+      learn_more: 'Details →',
       read_more: 'Read More',
       view_all: 'View All',
       back: 'Back',
@@ -756,7 +756,7 @@
       Navi_section4_p_54: 'Professional polo field hosting tournaments and equestrian events.',
       Navi_section4_h3_55: 'Jabbama Jippu Jam (Yola Toll Gate)',
       Navi_section4_p_55: 'Historic toll gate serving as a major entrance point to Yola city.',
-      Navi_section4_h3_56: 'Police Roundabout Flyover, Jimeta Yola.',
+      Navi_section4_h3_56: 'Police Roundabout Flyover, Yola.',
       Navi_section4_p_56: 'Modern elevated roadway improving traffic flow in central Jimeta.',
       Navi_section4_h3_57: 'Yola main entrance gate',
       Navi_section4_p_57: 'Iconic welcome arch marking the main entrance to Yola city.',
@@ -818,7 +818,7 @@
       navi_section3_h3_8: 'Iconic Structures in Yola',
 
 
-      community_section3_h3_1: 'Yola Community Bulletin',
+      community_section3_h3_1: 'Top Stories this week in Yola',
       community_section3_h3_2: 'Community Organizations',
       community_section3_h3_3: 'Community Activities and Programs',
       community_section3_h3_4: 'Events in Yola',
@@ -1704,7 +1704,7 @@
       Navi_section4_p_54: 'Filin polo na kasuwa yana kafa gaba-gaba da kuma abubuwan wasanni na kiba.',
       Navi_section4_h3_55: 'Jabbama Jippu Jam (Yola Toll Gate)',
       Navi_section4_p_55: 'Sannu tsohon lokaci yana bin abubuwan shirya ga Yola gida ya kasua.',
-      Navi_section4_h3_56: 'Police Roundabout Flyover, Jimeta Yola.',
+      Navi_section4_h3_56: 'Police Roundabout Flyover, Yola.',
       Navi_section4_p_56: 'Hanya mai saba da zamani yana karbi tashin iska na kasuwa a tsakiyar Jimeta.',
       Navi_section4_h3_57: 'Yola main entrance gate',
       Navi_section4_p_57: 'Sanduku da sanu yana ba da shirya ga Yola gida kasua.',
@@ -2522,7 +2522,7 @@
       Navi_section4_p_54: 'ملعب بولو احترافي يستضيف البطولات والأحداث الفروسية.',
       Navi_section4_h3_55: 'Jabbama Jippu Jam (Yola Toll Gate)',
       Navi_section4_p_55: 'بوابة رسوم تاريخية تخدم كنقطة دخول رئيسية لمدينة يولا.',
-      Navi_section4_h3_56: 'Police Roundabout Flyover, Jimeta Yola.',
+      Navi_section4_h3_56: 'Police Roundabout Flyover, Yola.',
       Navi_section4_p_56: 'طريق مرتفع حديث يحسن تدفق حركة المرور في جيميتا المركزية.',
       Navi_section4_h3_57: 'Yola main entrance gate',
       Navi_section4_p_57: 'قوس ترحيب رمزي يشير إلى مدخل مدينة يولا الرئيسي.',
@@ -3316,7 +3316,7 @@
       Navi_section4_p_54: 'Terrain polo professionnel accueillant les tournois et événements équestres.',
       Navi_section4_h3_55: 'Jabbama Jippu Jam (Yola Toll Gate)',
       Navi_section4_p_55: 'Barrière de péage historique servant de principal point d\'entrée à la ville de Yola.',
-      Navi_section4_h3_56: 'Police Roundabout Flyover, Jimeta Yola.',
+      Navi_section4_h3_56: 'Police Roundabout Flyover, Yola.',
       Navi_section4_p_56: 'Route surélevée moderne améliorant la circulation routière à Jimeta central.',
       Navi_section4_h3_57: 'Yola main entrance gate',
       Navi_section4_p_57: 'Arche de bienvenue emblématique marquant l\'entrée principale de la ville de Yola.',
@@ -4959,7 +4959,7 @@
       Navi_section4_p_54: 'Ile iṣakoso polo ti o ṣe fun iwefun ati isiro ẹṣin loore.',
       Navi_section4_h3_55: 'Jabbama Jippu Jam (Yola Toll Gate)',
       Navi_section4_p_55: 'Gate owo ti o tun kan ti o ṣe fun ọna pataki si ilu Yola loore.',
-      Navi_section4_h3_56: 'Police Roundabout Flyover, Jimeta Yola.',
+      Navi_section4_h3_56: 'Police Roundabout Flyover, Yola.',
       Navi_section4_p_56: 'Ọna ti o gbe lorun ti n se ero ina ni Jimeta alabojowaju loore.',
       Navi_section4_h3_57: 'Yola main entrance gate',
       Navi_section4_p_57: 'Gate ti o mọ fun ibadandun ti n so ọna pataki ti ilu Yola loore.',
@@ -5772,7 +5772,7 @@
       Navi_section4_p_54: 'Ile iṣakoso polo ti o ṣe fun iwefun ati isiro ẹṣin.',
       Navi_section4_h3_55: 'Jabbama Jippu Jam (Yola Toll Gate)',
       Navi_section4_p_55: 'Gate owo ti o tun kan ti o ṣe fun ọna pataki si ilu Yola.',
-      Navi_section4_h3_56: 'Police Roundabout Flyover, Jimeta Yola.',
+      Navi_section4_h3_56: 'Police Roundabout Flyover, Yola.',
       Navi_section4_p_56: 'Ọna ti o gbe lorun ti n se ero ina ni Jimeta alabojowaju.',
       Navi_section4_h3_57: 'Yola main entrance gate',
       Navi_section4_p_57: 'Gate ti o mọ fun ibadandun ti n so ọna pataki ti ilu Yola.',
@@ -6110,7 +6110,7 @@
       about_key_features: 'Main Key Feature:',
 
       // Common actions
-      learn_more: 'Learn More',
+      learn_more: 'Details →',
       read_more: 'Read More',
       view_all: 'See All',
       back: 'Go Back',
@@ -6583,7 +6583,7 @@
       Navi_section4_p_54: 'Professional polo field hosting tournaments and equestrian events.',
       Navi_section4_h3_55: 'Jabbama Jippu Jam (Yola Toll Gate)',
       Navi_section4_p_55: 'Historic toll gate serving as a major entrance point to Yola city.',
-      Navi_section4_h3_56: 'Police Roundabout Flyover, Jimeta Yola.',
+      Navi_section4_h3_56: 'Police Roundabout Flyover, Yola.',
       Navi_section4_p_56: 'Modern elevated roadway improving traffic flow in central Jimeta.',
       Navi_section4_h3_57: 'Yola main entrance gate',
       Navi_section4_p_57: 'Iconic welcome arch marking the main entrance to Yola city.',
@@ -6694,7 +6694,7 @@
       navi_section3_h3_7: 'Waterways and Ferries',
       navi_section3_h3_8: 'Public Transit Maps',
 
-      community_section3_h3_1: 'Local Events',
+      community_section3_h3_1: 'Local Headlines',
       community_section3_h3_2: 'Volunteer Opportunities',
       community_section3_h3_3: 'Community Organizations',
       community_section3_h3_4: 'Support Groups',

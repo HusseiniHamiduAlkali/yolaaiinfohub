@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Church Details — Template</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Asymmetric hero */
+.asym-hero{display:grid;grid-template-columns:1fr;min-height:320px;position:relative;overflow:hidden}
+.asym-text{background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);padding:2rem 1.5rem;display:flex;flex-direction:column;justify-content:center;order:2}
+.asym-img{position:relative;overflow:hidden;min-height:220px;order:1;background:linear-gradient(135deg,var(--emerald-800),var(--forest))}
+.asym-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;animation:heroZoom 18s ease-in-out infinite alternate}
+.asym-img::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(3,42,35,.2),transparent)}
+@keyframes heroZoom{0%{transform:scale(1.05)}100%{transform:scale(1.15)}}
+.asym-crumbs{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.5rem;opacity:0;animation:fadeUp .6s .2s forwards}
+.asym-crumbs a{text-decoration:none}.asym-crumbs a:hover{text-decoration:underline}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.asym-text h1{font-size:clamp(1.5rem,5vw,2.6rem);margin-bottom:.2rem;opacity:0;animation:fadeUp .6s .35s forwards}
+.asym-text .h-type{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.4rem;opacity:0;animation:fadeUp .6s .45s forwards}
+.asym-badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.6rem;opacity:0;animation:fadeUp .6s .55s forwards}
+.pill{display:inline-flex;align-items:center;gap:.3rem;font-size:.74rem;padding:.3rem .65rem;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(242,214,129,.32);color:var(--cream)}
+.pill.open{background:rgba(120,230,170,.18);border-color:rgba(120,230,170,.5)}
+.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+.asym-actions{display:flex;gap:.4rem;flex-wrap:wrap;opacity:0;animation:fadeUp .6s .65s forwards}
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.6rem .9rem;border-radius:10px;text-decoration:none;font-size:.82rem;font-weight:600;border:1px solid rgba(242,214,129,.38);color:var(--cream);background:rgba(255,255,255,.08);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.16)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Weekly schedule strip */
+.week-strip{background:var(--white);border-bottom:1px solid var(--line);box-shadow:0 4px 16px -14px rgba(3,42,35,.25)}
+.week-inner{display:flex;gap:.4rem;overflow-x:auto;padding:.6rem 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.week-inner::-webkit-scrollbar{display:none}
+.week-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.4rem .7rem;border-radius:10px;border:1px solid var(--line);background:var(--cream);min-width:90px}
+.week-item .wd{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.week-item .we{font-size:.74rem;color:var(--emerald);font-weight:600;text-align:center}
+.week-item .wt{font-size:.68rem;color:var(--muted)}
+/* Main */
+main{padding:1.4rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* Editorial layout */
+.ed-layout{display:grid;gap:1rem;margin-top:.7rem}
+.ed-img{border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.ed-img img{width:100%;height:100%;min-height:180px;object-fit:cover;transition:transform .8s}
+.ed-img:hover img{transform:scale(1.06)}
+.ed-text p{font-size:.88rem;color:#324b42;line-height:1.7}
+/* Worship schedule board */
+.worship-board{background:linear-gradient(160deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.2rem;color:var(--cream);margin-top:.7rem}
+.worship-board h3{color:var(--gold-light);font-size:.95rem;margin-bottom:.7rem;text-align:center}
+.worship-grid{display:grid;gap:.5rem}
+.worship-day{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(242,214,129,.1)}
+.worship-day .wd-label{flex:0 0 auto;width:70px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-light)}
+.worship-day .wd-services{flex:1;display:flex;flex-wrap:wrap;gap:.35rem}
+.worship-service{font-size:.76rem;padding:.2rem .5rem;border-radius:6px;background:rgba(242,214,129,.15);color:var(--cream)}
+/* Ministry cards */
+.min-scroll{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.4rem;margin-top:.7rem;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--mint) transparent}
+.min-scroll::-webkit-scrollbar{height:4px}.min-scroll::-webkit-scrollbar-thumb{background:var(--mint);border-radius:4px}
+.min-card{flex:0 0 auto;min-width:130px;border-radius:14px;padding:.8rem .6rem;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.12));text-align:center;transition:transform .25s,box-shadow .25s;cursor:pointer}
+.min-card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.min-card .mico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--gold-light);font-size:1.2rem;margin:0 auto .4rem}
+.min-card b{font-size:.8rem;color:var(--emerald);display:block}
+.min-card small{font-size:.68rem;color:var(--muted);display:block;margin-top:.1rem}
+/* Events */
+.event-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem}
+.event-card{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--white);box-shadow:var(--shadow);transition:transform .25s}
+.event-card:hover{transform:translateY(-5px)}
+.event-card .ec-date{background:linear-gradient(135deg,var(--emerald),var(--forest));color:var(--gold-light);padding:.5rem .7rem;text-align:center;font-family:var(--serif)}
+.event-card .ec-date b{font-size:1.1rem;display:block}
+.event-card .ec-date small{font-size:.66rem;text-transform:uppercase;letter-spacing:.06em}
+.event-card .ec-body{padding:.6rem .7rem}
+.event-card .ec-body b{font-size:.84rem;color:var(--emerald);display:block;margin-bottom:.1rem}
+.event-card .ec-body small{font-size:.72rem;color:var(--muted)}
+/* Community timeline */
+.comm-path{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:.8rem}
+.cp-step{display:flex;align-items:center;gap:.7rem;width:100%;max-width:380px;padding:.65rem .8rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.15),rgba(245,240,224,.3));transition:transform .25s}
+.cp-step:hover{transform:translateX(6px)}
+.cp-step .cp-ico{width:38px;height:38px;flex:0 0 auto;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);font-size:1.05rem}
+.cp-step b{font-size:.86rem}.cp-step small{font-size:.74rem;color:var(--muted);display:block;margin-top:.05rem}
+.cp-conn{width:2px;height:20px;background:linear-gradient(to bottom,var(--gold),rgba(201,168,76,.2));margin:0 auto}
+/* Facilities */
+.fac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.7rem}
+.fac-card{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.6rem .3rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.1));transition:transform .2s}
+.fac-card:hover{transform:translateY(-3px)}
+.fac-card .fico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:1rem}
+.fac-card b{font-size:.72rem;text-align:center}
+/* Gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.7rem}
+.gal-item{border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:var(--shadow);aspect-ratio:1;position:relative}
+.gal-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.gal-item:hover img{transform:scale(1.1)}
+.gal-item.feature{grid-column:span 2;aspect-ratio:2/1}
+/* Announcements */
+.ann-list{display:grid;gap:.5rem;margin-top:.7rem}
+.ann-item{display:flex;align-items:flex-start;gap:.5rem;padding:.55rem .7rem;border-radius:10px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3));font-size:.82rem;transition:transform .2s}
+.ann-item:hover{transform:translateX(4px)}
+.ann-item .ann-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex:0 0 auto;margin-top:.35rem}
+.ann-item b{font-size:.82rem;display:block}
+.ann-item small{font-size:.72rem;color:var(--muted);display:block;margin-top:.05rem}
+/* Map */
+.map-box{height:190px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.6rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinB 2s ease-in-out infinite}
+@keyframes pinB{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinP 2s ease-in-out infinite}
+@keyframes pinP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:5px 11px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+/* Contact */
+.contact-list{display:grid;gap:.5rem;margin-top:.6rem}
+.contact-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.84rem;word-break:break-word}
+.contact-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* FAQ */
+.faq-list{display:grid;gap:.5rem;margin-top:.7rem}
+.faq-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:box-shadow .2s}
+.faq-item:hover{box-shadow:var(--shadow)}
+.faq-q{padding:.6rem .8rem;font-size:.84rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:rgba(204,235,221,.15)}
+.faq-q .toggle{color:var(--gold);font-size:1.1rem;transition:transform .3s}
+.faq-item.open .faq-q .toggle{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a-inner{padding:0 .8rem .6rem;font-size:.82rem;color:#324b42}
+/* Lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(3,42,35,.92);z-index:5000;display:none;align-items:center;justify-content:center;padding:40px;backdrop-filter:blur(6px)}
+.lightbox.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lb-inner{max-width:800px;max-height:85vh;position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lb-inner img{width:100%;max-height:75vh;object-fit:cover}
+.lb-close{position:absolute;top:-40px;right:0;width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:1.3rem;color:var(--emerald);cursor:pointer;transition:transform .2s}
+.lb-close:hover{transform:rotate(90deg);background:var(--gold)}
+.lb-cap{padding:14px 18px;background:var(--cream);font-family:var(--serif);font-size:.92rem;color:var(--emerald)}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem;border-top:2px solid rgba(242,214,129,.22)}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.asym-hero{grid-template-columns:1.2fr 1fr;min-height:380px}
+.asym-text{order:1;padding:2.4rem 2rem}
+.asym-img{order:2;min-height:380px}
+.ed-layout{grid-template-columns:1fr 1.3fr;align-items:start}
+.fac-grid{grid-template-columns:repeat(4,1fr)}
+.event-grid{grid-template-columns:repeat(3,1fr)}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:1rem}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#9962;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#9962;</div>
+<div><strong id="mbName">Church Name</strong><small>Church &amp; Community</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<section class="asym-hero">
+<div class="asym-text">
+<div class="asym-crumbs"><a href="#">Home</a> &rsaquo; <a href="#">Places of Worship</a> &rsaquo; <span id="crumbName">Church</span></div>
+<h1 id="chName">Christian Life Centre</h1>
+<div class="h-type" id="chType">Church &amp; Community Institution</div>
+<div class="asym-badges" id="heroBadges"></div>
+<div class="asym-actions">
+<button class="btn primary" onclick="document.getElementById('contactPanel').scrollIntoView({behavior:'smooth'})">Contact</button>
+<button class="btn" onclick="document.getElementById('locPanel').scrollIntoView({behavior:'smooth'})">Directions</button>
+<button class="btn" onclick="alert('Share')">Share</button>
+</div>
+</div>
+<div class="asym-img">
+<img src="https://images.pexels.com/photos/33231562/pexels-photo-33231562.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Church building" id="heroImg">
+</div>
+</section>
+
+<div class="week-strip">
+<div class="wrap week-inner" id="weekStrip"></div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="layout">
+      <div class="col">
+        <div class="panel" id="aboutPanel">
+          <h2>About the Church</h2>
+          <p class="sub">Our story and mission</p>
+          <div class="ed-layout">
+            <div class="ed-img"><img src="https://images.pexels.com/photos/29422232/pexels-photo-29422232.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Church interior" id="aboutImg" loading="lazy"></div>
+            <div class="ed-text"><p id="aboutText">Description goes here.</p></div>
+          </div>
+        </div>
+        <div class="panel" id="worshipPanel">
+          <h2>Worship &amp; Service Schedule</h2>
+          <p class="sub">Weekly service times</p>
+          <div class="worship-board">
+            <h3>Service Times</h3>
+            <div class="worship-grid" id="worshipGrid"></div>
+          </div>
+        </div>
+
+<div class="panel" id="minPanel">
+<h2>Ministries</h2>
+<p class="sub">Get involved</p>
+<div class="min-scroll" id="minScroll"></div>
+</div>
+
+<div class="panel" id="eventPanel">
+<h2>Upcoming Events</h2>
+<p class="sub">Join us at our next gathering</p>
+<div class="event-grid" id="eventGrid"></div>
+</div>
+
+<div class="panel" id="commPanel">
+<h2>Community Programs</h2>
+<p class="sub">How we serve</p>
+<div class="comm-path" id="commPath"></div>
+</div>
+
+<div class="panel" id="facPanel">
+<h2>Facilities</h2>
+<p class="sub">Our spaces</p>
+<div class="fac-grid" id="facGrid"></div>
+</div>
+
+<div class="panel" id="galleryPanel">
+<h2>Gallery</h2>
+<p class="sub">Life at our church</p>
+<div class="gallery" id="galleryGrid"></div>
+</div>
+
+<div class="panel" id="annPanel">
+<h2>Latest Announcements</h2>
+<p class="sub">Stay updated</p>
+<div class="ann-list" id="annList"></div>
+</div>
+
+<div class="panel" id="faqPanel">
+<h2>Frequently Asked Questions</h2>
+<p class="sub">Common questions</p>
+<div class="faq-list" id="faqList"></div>
+</div>
+
+</div>
+<div class="col side">
+
+<div class="panel" id="locPanel">
+<h2>Location</h2>
+<p class="sub">Find the church</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Church address</div>
+</div>
+<div class="contact-list" id="contactList" style="margin-top:.6rem"></div>
+</div>
+
+<div class="panel" id="contactPanel">
+<h2>Contact &amp; Office Hours</h2>
+<p class="sub">Reach out to us</p>
+<div class="contact-list" id="contactList2"></div>
+</div>
+
+</div>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Christian Life Centre</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">A community of faith, service, and fellowship welcoming all.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+<a href="#" aria-label="YouTube"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor"/></svg></a>
+</div>
+</div>
+<div><h3>Explore</h3><ul><li><a href="#aboutPanel">About</a></li><li><a href="#worshipPanel">Services</a></li><li><a href="#minPanel">Ministries</a></li><li><a href="#eventPanel">Events</a></li><li><a href="#galleryPanel">Gallery</a></li></ul></div>
+<div><h3>Get Involved</h3><ul><li><a href="#">Join a Ministry</a></li><li><a href="#">Community Outreach</a></li><li><a href="#">Youth Program</a></li><li><a href="#">Volunteer</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Christian Life Centre</span><span>Privacy Policy &middot; Terms</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<div class="lightbox" id="lightbox" onclick="closeLb(event)">
+<div class="lb-inner" onclick="event.stopPropagation()">
+<div class="lb-close" onclick="closeLb()">&times;</div>
+<img id="lbImg" src="" alt="">
+<div class="lb-cap" id="lbCap"></div>
+</div>
+</div>
+
+<script>
+var DATA={
+  name:"Christian Life Centre",
+  type:"Church & Community Institution",
+  status:"Open Today",
+  heroImg:"https://images.pexels.com/photos/33231562/pexels-photo-33231562.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  aboutImg:"https://images.pexels.com/photos/29422232/pexels-photo-29422232.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+  description:"Christian Life Centre is a vibrant, welcoming church community in Yola dedicated to worship, fellowship, and service. Founded in 1998, the church has grown to serve over 1,500 members with Sunday services, midweek gatherings, youth programs, and extensive community outreach. Our mission is to share God's love through practical service, spiritual growth, and meaningful relationships. Everyone is welcome, whether you're exploring faith or looking for a church home.",
+  weekStrip:[
+    {day:"Sun",event:"Service",time:"8:00 AM"},
+    {day:"Sun",event:"Main Service",time:"10:00 AM"},
+    {day:"Wed",event:"Midweek",time:"5:00 PM"},
+    {day:"Fri",event:"Prayer",time:"5:00 PM"},
+    {day:"Sat",event:"Youth",time:"4:00 PM"}
+  ],
+  worship:[
+    {day:"Sunday",services:["8:00 AM First Service","10:00 AM Main Service","6:00 PM Evening Service"]},
+    {day:"Wednesday",services:["5:00 PM Midweek Service"]},
+    {day:"Friday",services:["5:00 PM Prayer Meeting"]},
+    {day:"Saturday",services:["4:00 PM Youth Program"]}
+  ],
+  ministries:[
+    {icon:"\u{1F476}",name:"Children",desc:"Ages 3-12"},
+    {icon:"\u{1F9D1}",name:"Youth",desc:"Ages 13-25"},
+    {icon:"\u{1F469}",name:"Women",desc:"Fellowship & support"},
+    {icon:"\u{1F468}",name:"Men",desc:"Brotherhood"},
+    {icon:"\u{1F3B5}",name:"Music",desc:"Choir & worship"},
+    {icon:"\u{1F64F}",name:"Prayer",desc:"Intercession team"},
+    {icon:"\u{1F4E1}",name:"Evangelism",desc:"Outreach & missions"},
+    {icon:"\u{1F4BB}",name:"Media",desc:"Tech & production"},
+    {icon:"\u{1F91D}",name:"Outreach",desc:"Community service"}
+  ],
+  events:[
+    {date:"12",month:"OCT",title:"Community Outreach",time:"10:00 AM",desc:"Neighborhood service day"},
+    {date:"19",month:"OCT",title:"Youth Convention",time:"4:00 PM",desc:"Annual youth gathering"},
+    {date:"26",month:"OCT",title:"Harvest Thanksgiving",time:"10:00 AM",desc:"Celebration service"},
+    {date:"02",month:"NOV",title:"Marriage Seminar",time:"5:00 PM",desc:"Couples enrichment"},
+    {date:"09",month:"NOV",title:"Baptism Service",time:"8:00 AM",desc:"New believers baptism"},
+    {date:"16",month:"NOV",title:"Carol Practice",time:"6:00 PM",desc:"Christmas choir prep"}
+  ],
+  community:[
+    {icon:"\u{1F64F}",title:"Worship",desc:"Sunday & weekly services"},
+    {icon:"\u{1F91D}",title:"Fellowship",desc:"Small groups & gatherings"},
+    {icon:"\u{1F4DA}",title:"Education",desc:"Bible study & classes"},
+    {icon:"\u{1F9D2}",title:"Youth",desc:"Programs for young people"},
+    {icon:"\u{1F91D}",title:"Community Outreach",desc:"Serving those in need"}
+  ],
+  facilities:[
+    {icon:"\u{1F3AD}",name:"Main Auditorium"},{icon:"\u{1F476}",name:"Children's Area"},
+    {icon:"\u{1F697}",name:"Parking"},{icon:"\u{1F37D}",name:"Fellowship Hall"},
+    {icon:"\u{1F4DA}",name:"Classrooms"},{icon:"\u{1F3E2}",name:"Offices"},
+    {icon:"\u{1F39E}",name:"Event Space"},{icon:"\u267F",name:"Accessibility"}
+  ],
+  gallery:[
+    {url:"https://images.pexels.com/photos/33231562/pexels-photo-33231562.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Church exterior",cls:"feature"},
+    {url:"https://images.pexels.com/photos/29422232/pexels-photo-29422232.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Sunday service"},
+    {url:"https://images.pexels.com/photos/38274945/pexels-photo-38274945.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Worship gathering"},
+    {url:"https://images.pexels.com/photos/6071696/pexels-photo-6071696.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Church building"},
+    {url:"https://images.pexels.com/photos/6269056/pexels-photo-6269056.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Church community"},
+    {url:"https://images.pexels.com/photos/6646926/pexels-photo-6646926.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",cap:"Community outreach"}
+  ],
+  announcements:[
+    {title:"Sunday service schedule updated",time:"2 days ago"},
+    {title:"Youth meeting this Saturday at 4 PM",time:"5 days ago"},
+    {title:"Community outreach program starts October 12",time:"1 week ago"},
+    {title:"New Bible study group starting Wednesday",time:"2 weeks ago"}
+  ],
+  contacts:[
+    {label:"Address",value:"15 Church Road, Yola, Adamawa State",icon:"\u{1F4CD}"},
+    {label:"Phone",value:"+234 807 555 0700",icon:"\u260E"},
+    {label:"Email",value:"info@christianlife.ng",icon:"\u2709"},
+    {label:"Website",value:"www.christianlife.ng",icon:"\u{1F310}"},
+    {label:"Office Hours",value:"Mon-Fri 9:00 AM - 4:00 PM",icon:"\u{1F551}"}
+  ],
+  faqs:[
+    {q:"What time is Sunday service?",a:"We have three Sunday services: 8:00 AM (First Service), 10:00 AM (Main Service), and 6:00 PM (Evening Service). All are welcome."},
+    {q:"Is there a children's program?",a:"Yes, we have a dedicated children's ministry for ages 3-12 during the 10:00 AM Sunday service with trained teachers and safe activities."},
+    {q:"Are visitors welcome?",a:"Absolutely! We welcome everyone whether you're exploring faith, new to the area, or looking for a church home. Just come as you are."},
+    {q:"Is parking available?",a:"Yes, we have ample parking space on the church premises with security personnel on duty during all services."},
+    {q:"What ministries are available?",a:"We offer ministries for children, youth, women, men, music, prayer, evangelism, media, and community outreach. Visit the Ministries section for details."},
+    {q:"How can I contact the church?",a:"You can call us at +234 807 555 0700, email info@christianlife.ng, or visit the church office Monday to Friday, 9 AM to 4 PM."}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" — Church Details";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('crumbName').textContent=d.name;
+  document.getElementById('chName').textContent=d.name;
+  document.getElementById('chType').textContent=d.type;
+  document.getElementById('heroImg').src=d.heroImg;
+  document.getElementById('aboutImg').src=d.aboutImg;
+  document.getElementById('aboutText').textContent=d.description;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('mapLabel').textContent=d.name;
+  if(d.contacts[0]){document.getElementById('footAddr').textContent=d.contacts[0].value;document.getElementById('footPhone').textContent=d.contacts[1]?d.contacts[1].value:'';document.getElementById('footEmail').textContent=d.contacts[2]?d.contacts[2].value:'';}
+  /* Hero badges */
+  document.getElementById('heroBadges').innerHTML='<span class="pill open"><span class="dot"></span>'+d.status+'</span><span class="pill">&#128205; Yola, Adamawa</span>';
+  /* Week strip */
+  document.getElementById('weekStrip').innerHTML=d.weekStrip.map(function(w){
+    return '<div class="week-item"><span class="wd">'+w.day+'</span><span class="we">'+w.event+'</span><span class="wt">'+w.time+'</span></div>';
+  }).join('');
+  /* Worship schedule */
+  document.getElementById('worshipGrid').innerHTML=d.worship.map(function(w){
+    return '<div class="worship-day"><span class="wd-label">'+w.day+'</span><div class="wd-services">'+w.services.map(function(s){return '<span class="worship-service">'+s+'</span>';}).join('')+'</div></div>';
+  }).join('');
+  /* Ministries */
+  document.getElementById('minScroll').innerHTML=d.ministries.map(function(m){
+    return '<div class="min-card"><div class="mico">'+m.icon+'</div><b>'+m.name+'</b><small>'+m.desc+'</small></div>';
+  }).join('');
+  /* Events */
+  document.getElementById('eventGrid').innerHTML=d.events.map(function(e){
+    return '<div class="event-card"><div class="ec-date"><b>'+e.date+'</b><small>'+e.month+'</small></div><div class="ec-body"><b>'+e.title+'</b><small>'+e.time+' &bull; '+e.desc+'</small></div></div>';
+  }).join('');
+  /* Community path */
+  document.getElementById('commPath').innerHTML=d.community.map(function(c,i){
+    var conn=i<d.community.length-1?'<div class="cp-conn"></div>':'';
+    return '<div class="cp-step"><span class="cp-ico">'+c.icon+'</span><div><b>'+c.title+'</b><small>'+c.desc+'</small></div></div>'+conn;
+  }).join('');
+  /* Facilities */
+  document.getElementById('facGrid').innerHTML=d.facilities.map(function(f){
+    return '<div class="fac-card"><span class="fico">'+f.icon+'</span><b>'+f.name+'</b></div>';
+  }).join('');
+  /* Gallery */
+  document.getElementById('galleryGrid').innerHTML=d.gallery.map(function(g){
+    return '<div class="gal-item'+(g.cls?' '+g.cls:'')+'" onclick="openLb(\''+g.url+'\',\''+g.cap+'\')"><img src="'+g.url+'" alt="'+g.cap+'" loading="lazy"></div>';
+  }).join('');
+  /* Announcements */
+  document.getElementById('annList').innerHTML=d.announcements.map(function(a){
+    return '<div class="ann-item"><span class="ann-dot"></span><div><b>'+a.title+'</b><small>'+a.time+'</small></div></div>';
+  }).join('');
+  /* Contact */
+  var contactHtml=d.contacts.map(function(c){
+    return '<div class="contact-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+  }).join('');
+  document.getElementById('contactList').innerHTML=contactHtml;
+  document.getElementById('contactList2').innerHTML=contactHtml;
+  /* FAQ */
+  document.getElementById('faqList').innerHTML=d.faqs.map(function(f,i){
+    return '<div class="faq-item" id="faq'+i+'"><div class="faq-q" onclick="toggleFaq('+i+')">'+f.q+'<span class="toggle">+</span></div><div class="faq-a"><div class="faq-a-inner">'+f.a+'</div></div></div>';
+  }).join('');
+}
+
+function toggleFaq(i){
+  var item=document.getElementById('faq'+i);
+  var a=item.querySelector('.faq-a');
+  if(item.classList.contains('open')){item.classList.remove('open');a.style.maxHeight='0';}
+  else{item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+}
+
+function openLb(src,cap){document.getElementById('lbImg').src=src;document.getElementById('lbCap').textContent=cap;document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+function closeLb(e){if(e&&e.target.closest('.lb-inner')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb();});
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){en.target.classList.add('visible');ro.unobserve(en.target);}
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  window.loadNaviTemplateProfile('churchProfile',DATA,function(data){
+    render(data);
+    document.querySelectorAll('.panel').forEach(function(p){ro.observe(p);});
+    setTimeout(function(){document.getElementById('loader').classList.add('hidden');},500);
+  });
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="../scripts/template-profile-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Judiciary Courts & Chambers — Template</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+/* Mobile bar */
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Pillared header */
+.pillared-head{background:linear-gradient(135deg,var(--emerald-950),var(--emerald));color:var(--cream);padding:2rem 0 0;position:relative;overflow:hidden;border-bottom:3px solid var(--gold)}
+.pillared-head::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.pillar-inner{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;position:relative;z-index:1;opacity:0;animation:fadeUp .6s .2s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.court-seal{width:68px;height:68px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;background:linear-gradient(140deg,var(--gold),var(--gold-dark));color:var(--emerald-950);font-size:1.8rem;font-family:var(--serif);box-shadow:0 8px 24px -12px rgba(201,168,76,.4);border:2px solid rgba(242,214,129,.3)}
+.court-info{flex:1;min-width:200px}
+.court-info h1{font-size:clamp(1.4rem,4.5vw,2.4rem);margin-bottom:.15rem}
+.court-info .ctype{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.35rem}
+.court-info .cverify{display:inline-flex;align-items:center;gap:.35rem;font-size:.76rem;color:rgba(245,240,224,.7)}
+.court-info .cverify .dot{width:7px;height:7px;border-radius:50%;background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+.court-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.55rem .85rem;border-radius:8px;text-decoration:none;font-size:.8rem;font-weight:600;border:1px solid rgba(242,214,129,.35);color:var(--cream);background:rgba(255,255,255,.06);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.14)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Session status bar */
+.session-bar{background:var(--emerald-950);color:var(--cream);padding:.6rem 0;border-bottom:1px solid rgba(242,214,129,.15)}
+.session-inner{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;font-size:.82rem}
+.session-status{display:inline-flex;align-items:center;gap:.4rem;font-weight:600;color:var(--gold-light)}
+.session-status .sdot{width:9px;height:9px;border-radius:50%;background:#f0a050;box-shadow:0 0 8px #f0a050;animation:blink 2s ease-in-out infinite}
+.session-status.recess .sdot{background:#5b8def;box-shadow:0 0 8px #5b8def}
+.session-status.closed .sdot{background:#d4565b;box-shadow:0 0 8px #d4565b}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.session-divider{width:1px;height:16px;background:rgba(242,214,129,.2)}
+.session-item{color:rgba(245,240,224,.7)}
+.session-item b{color:var(--cream)}
+/* Quick stats */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;padding:1rem 0}
+.stat-tile{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:.7rem .8rem;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.stat-tile.visible{opacity:1;transform:translateY(0)}
+.stat-tile .sicon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);margin-bottom:.3rem}
+.stat-tile .sval{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--emerald)}
+.stat-tile .slabel{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Main */
+main{padding:1.4rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel>h2:not(:first-child){margin-top:1.2rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* Overview two-col */
+.overview{display:grid;gap:1rem;margin-top:.7rem}
+.overview-text p{font-size:.88rem;color:#324b42;line-height:1.7}
+.overview-facts{display:grid;gap:.4rem}
+.ov-fact{display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--line);font-size:.84rem}
+.ov-fact span:first-child{color:var(--muted)}
+.ov-fact span:last-child{font-weight:600}
+/* Court divisions list */
+.div-list{display:grid;gap:.5rem;margin-top:.7rem}
+.div-row{border-left:3px solid var(--gold);padding:.6rem .8rem;background:linear-gradient(160deg,rgba(204,235,221,.15),rgba(245,240,224,.3));border-radius:0 12px 12px 0;transition:transform .2s,border-color .2s}
+.div-row:hover{transform:translateX(4px);border-color:var(--emerald)}
+.div-row h3{font-size:.88rem;color:var(--emerald);margin-bottom:.1rem}
+.div-row p{font-size:.8rem;color:var(--muted);margin:0}
+.div-row .div-cases{display:inline-block;margin-top:.3rem;font-size:.68rem;font-weight:600;color:var(--gold-dark);background:rgba(201,168,76,.1);padding:.15rem .45rem;border-radius:6px}
+/* Case info board */
+.case-board{background:linear-gradient(160deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.2rem;color:var(--cream);margin-top:.7rem}
+.case-board h3{color:var(--gold-light);font-size:.95rem;margin-bottom:.7rem;text-align:center}
+.case-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem}
+.case-item{display:flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(242,214,129,.12);border-radius:10px;padding:.55rem .7rem;font-size:.78rem;color:rgba(245,240,224,.85)}
+.case-item .cico{flex:0 0 auto;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(201,168,76,.18);color:var(--gold-light);font-size:.85rem}
+.case-item b{display:block;font-size:.8rem;color:var(--cream)}
+.case-item small{display:block;font-size:.7rem;color:rgba(245,240,224,.55)}
+/* Presiding officers */
+.judge-list{display:grid;gap:.5rem;margin-top:.7rem}
+.judge-row{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.08));transition:transform .2s,box-shadow .2s}
+.judge-row:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.judge-avatar{width:42px;height:42px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;background:linear-gradient(140deg,var(--emerald),var(--forest));color:var(--gold-light);font-family:var(--serif);font-size:1rem;font-weight:700}
+.judge-info{flex:1;min-width:0}
+.judge-info b{font-size:.86rem;color:var(--emerald);display:block}
+.judge-info small{font-size:.76rem;color:var(--muted);display:block}
+.judge-info .j-div{font-size:.72rem;color:var(--gold-dark);font-weight:600}
+/* Sitting days table */
+.sit-table{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:.82rem}
+.sit-table th,.sit-table td{text-align:center;padding:.5rem .3rem;border:1px solid var(--line)}
+.sit-table th{background:linear-gradient(160deg,rgba(204,235,221,.3),rgba(245,240,224,.4));color:var(--emerald);font-weight:600;font-size:.74rem}
+.sit-table td{color:#324b42;font-weight:500}
+.sit-table td:first-child{text-align:left;font-weight:600;color:var(--muted);background:rgba(204,235,221,.1);padding-left:.7rem}
+.sit-table .active{background:rgba(201,168,76,.1);color:var(--gold-dark);font-weight:700}
+.sit-table .active::before{content:"\25CF";color:var(--gold);margin-right:.2rem}
+/* Procedures timeline */
+.proc-path{display:flex;flex-direction:column;gap:0;margin-top:.8rem}
+.proc-step{display:flex;align-items:flex-start;gap:.7rem;padding:.65rem .8rem;border-radius:12px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.15),rgba(245,240,224,.3));transition:transform .2s}
+.proc-step:hover{transform:translateX(6px)}
+.proc-step .pnum{width:32px;height:32px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);font-family:var(--serif);font-size:.9rem;font-weight:700}
+.proc-step b{font-size:.86rem}.proc-step small{font-size:.74rem;color:var(--muted);display:block;margin-top:.05rem}
+.proc-conn{width:2px;height:18px;background:linear-gradient(to bottom,var(--gold),rgba(201,168,76,.2));margin:0 auto}
+/* Facilities checkmark */
+.chk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem;margin-top:.7rem}
+.chk-item{display:flex;align-items:center;gap:.4rem;font-size:.82rem;padding:.45rem .6rem;border-radius:10px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.08));transition:transform .2s}
+.chk-item:hover{transform:translateY(-2px)}
+.chk-item .check{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#2eb27a;color:#fff;font-size:.62rem;flex:0 0 auto;font-weight:700}
+/* Visitor guidance */
+.guide-box{background:linear-gradient(135deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.3rem;color:var(--cream);margin-top:.7rem}
+.guide-box h3{color:var(--gold-light);font-size:1rem;margin-bottom:.5rem}
+.guide-box p{color:rgba(245,240,224,.7);font-size:.84rem;margin-bottom:.8rem}
+.guide-list{display:grid;gap:.4rem}
+.guide-item{display:flex;align-items:flex-start;gap:.45rem;font-size:.82rem;color:rgba(245,240,224,.85)}
+.guide-item .gico{flex:0 0 auto;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;background:rgba(201,168,76,.2);color:var(--gold-light);font-size:.7rem}
+/* Map */
+.map-box{height:200px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.7rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinB 2s ease-in-out infinite}
+@keyframes pinB{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinP 2s ease-in-out infinite}
+@keyframes pinP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:6px 12px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+.map-info{display:grid;gap:.4rem;margin-top:.7rem}
+.map-info-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem}
+.map-info-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.map-info-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Contact */
+.contact-grid{display:grid;gap:.8rem;margin-top:.7rem}
+.contact-section{border-top:1px solid var(--line);padding-top:.6rem}
+.contact-section h3{font-size:.86rem;color:var(--emerald);margin-bottom:.4rem}
+.contact-list{display:grid;gap:.4rem}
+.contact-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem;word-break:break-word}
+.contact-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Hours table */
+.hours{width:100%;border-collapse:collapse;margin-top:.6rem;font-size:.84rem}
+.hours th,.hours td{text-align:left;padding:.45rem 0;border-bottom:1px dashed var(--line)}
+.hours th{font-weight:600;color:var(--muted)}.hours td{text-align:right;font-weight:600}
+/* Nearby courts */
+.nearby{display:grid;gap:.5rem;margin-top:.7rem}
+.near-item{display:flex;gap:.6rem;align-items:center;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:.55rem .7rem;background:#fff;transition:transform .18s}
+.near-item:hover{transform:translateY(-2px)}
+.near-item .nico{width:38px;height:38px;flex:0 0 auto;border-radius:10px;display:grid;place-items:center;color:var(--cream);background:linear-gradient(140deg,var(--emerald),var(--forest));font-size:1rem}
+.near-item b{font-size:.82rem}.near-item small{font-size:.72rem;color:var(--muted);display:block;margin-top:.05rem}
+.near-item .ndist{margin-left:auto;font-size:.72rem;color:var(--gold);font-weight:600}
+/* FAQ */
+.faq-list{display:grid;gap:.5rem;margin-top:.7rem}
+.faq-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:box-shadow .2s}
+.faq-item:hover{box-shadow:var(--shadow)}
+.faq-q{padding:.6rem .8rem;font-size:.84rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:rgba(204,235,221,.15)}
+.faq-q .toggle{color:var(--gold);font-size:1.1rem;transition:transform .3s}
+.faq-item.open .faq-q .toggle{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a-inner{padding:0 .8rem .6rem;font-size:.8rem;color:#324b42}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem;border-top:2px solid var(--gold)}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.stats-row{grid-template-columns:repeat(4,1fr)}
+.overview{grid-template-columns:1.4fr 1fr;align-items:start}
+.case-grid{grid-template-columns:repeat(3,1fr)}
+.chk-grid{grid-template-columns:repeat(3,1fr)}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:3.5rem}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#9878;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#9878;</div>
+<div><strong id="mbName">Court Name</strong><small>Judiciary</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<header class="pillared-head">
+<div class="wrap pillar-inner">
+<div class="court-seal" id="courtSeal">&#9878;</div>
+<div class="court-info">
+<h1 id="courtName">Yola High Court Complex</h1>
+<div class="ctype" id="courtType">High Court &middot; State Judiciary</div>
+<div class="cverify"><span class="dot"></span> <span id="courtVerify">Official Judicial Institution</span></div>
+</div>
+<div class="court-actions">
+<button class="btn primary" onclick="document.getElementById('casePanel').scrollIntoView({behavior:'smooth'})">Case Info</button>
+<button class="btn" onclick="document.getElementById('locPanel').scrollIntoView({behavior:'smooth'})">Directions</button>
+<button class="btn" onclick="alert('Share')">Share</button>
+</div>
+</div>
+</header>
+
+<div class="session-bar">
+<div class="wrap session-inner">
+<span class="session-status" id="sessionStatus"><span class="sdot"></span> <span id="sessionLabel">In Session</span></span>
+<span class="session-divider"></span>
+<span class="session-item">Next hearing: <b id="nextHearing">Oct 5, 2024 &middot; 10:00 AM</b></span>
+<span class="session-divider"></span>
+<span class="session-item">Cause list: <b id="causeList">Available</b></span>
+</div>
+</div>
+
+<div class="wrap">
+<div class="stats-row" id="statsRow"></div>
+</div>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<div class="panel" id="overviewPanel">
+<h2>Court Overview</h2>
+<p class="sub">About this judicial institution</p>
+<div class="overview">
+<div class="overview-text"><p id="overviewText">Description goes here.</p></div>
+<div class="overview-facts" id="overviewFacts"></div>
+</div>
+</div>
+
+<div class="panel" id="divPanel">
+<h2>Court Divisions</h2>
+<p class="sub">Departments and case types</p>
+<div class="div-list" id="divList"></div>
+</div>
+
+<div class="panel" id="casePanel">
+<h2>Case Information</h2>
+<p class="sub">Filing, tracking, and court services</p>
+<div class="case-board">
+<h3>Court Services &amp; Case Management</h3>
+<div class="case-grid" id="caseGrid"></div>
+</div>
+</div>
+
+<div class="panel" id="judgePanel">
+<h2>Presiding Officers</h2>
+<p class="sub">Judges and magistrates</p>
+<div class="judge-list" id="judgeList"></div>
+</div>
+
+<div class="panel" id="sitPanel">
+<h2>Sitting Days Schedule</h2>
+<p class="sub">Weekly court calendar by division</p>
+<table class="sit-table" id="sitTable"></table>
+</div>
+
+<div class="panel" id="procPanel">
+<h2>Court Procedures</h2>
+<p class="sub">Step-by-step case process</p>
+<div class="proc-path" id="procPath"></div>
+</div>
+
+<div class="panel" id="facPanel">
+<h2>Court Facilities</h2>
+<p class="sub">On-site amenities and services</p>
+<div class="chk-grid" id="facGrid"></div>
+</div>
+
+<div class="panel" id="guidePanel">
+<h2>Visitor &amp; Litigant Guidance</h2>
+<p class="sub">Rules and conduct in court</p>
+<div class="guide-box">
+<h3>Courtroom Rules &amp; Conduct</h3>
+<p>Please follow these guidelines when visiting the court:</p>
+<div class="guide-list" id="guideList"></div>
+</div>
+</div>
+
+<div class="panel" id="faqPanel">
+<h2>Frequently Asked Questions</h2>
+<p class="sub">Common questions about court services</p>
+<div class="faq-list" id="faqList"></div>
+</div>
+
+</div>
+<div class="col side">
+
+<div class="panel" id="hoursPanel">
+<h2>Court Operating Hours</h2>
+<p class="sub">Registry and office schedule</p>
+<table class="hours" id="hoursTable"></table>
+</div>
+
+<div class="panel" id="locPanel">
+<h2>Court Location</h2>
+<p class="sub">Find the court complex</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Court address</div>
+</div>
+<div class="map-info" id="mapInfo"></div>
+</div>
+
+<div class="panel" id="contactPanel">
+<h2>Contact Information</h2>
+<p class="sub">Reach the court registry</p>
+<div class="contact-grid" id="contactGrid"></div>
+</div>
+
+<div class="panel" id="nearPanel">
+<h2>Nearby Courts</h2>
+<p class="sub">Other judicial institutions</p>
+<div class="nearby" id="nearList"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Yola High Court Complex</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">Serving justice with integrity, impartiality, and transparency for all.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></a>
+</div>
+</div>
+<div><h3>Services</h3><ul><li><a href="#casePanel">Case Filing</a></li><li><a href="#divPanel">Divisions</a></li><li><a href="#sitPanel">Sitting Days</a></li><li><a href="#procPanel">Procedures</a></li></ul></div>
+<div><h3>Resources</h3><ul><li><a href="#">Cause List</a></li><li><a href="#">Case Tracking</a></li><li><a href="#">Legal Aid</a></li><li><a href="#">E-Filing</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Yola High Court Complex</span><span>Privacy Policy &middot; Terms</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script>
+var DATA={
+  name:"Yola High Court Complex",
+  type:"High Court \u00B7 State Judiciary",
+  seal:"\u2696",
+  verify:"Official Judicial Institution",
+  sessionStatus:"in-session",
+  sessionLabel:"In Session",
+  nextHearing:"Oct 5, 2024 \u00B7 10:00 AM",
+  causeList:"Available",
+  description:"The Yola High Court Complex is the principal judicial institution in Adamawa State, handling civil, criminal, commercial, and appellate cases. Established in 1991, the complex houses multiple court divisions with qualified judges and modern facilities. The court is committed to delivering justice with integrity, impartiality, and transparency, ensuring access to justice for all citizens. Services include case filing, e-filing, legal aid, mediation, and public court records.",
+  stats:[
+    {icon:"\u2696",val:"5",label:"Court Divisions"},
+    {icon:"\u270D",val:"7",label:"Presiding Judges"},
+    {icon:"\u26D3",val:"1,240",label:"Active Cases"},
+    {icon:"\u2705",val:"890",label:"Cases Resolved (2024)"}
+  ],
+  facts:[
+    {label:"Established",value:"1991"},
+    {label:"Court Level",value:"High Court"},
+    {label:"Jurisdiction",value:"Adamawa State"},
+    {label:"Presiding Judge",value:"Hon. Justice A. Mohammed"},
+    {label:"Total Staff",value:"84"},
+    {label:"Courtrooms",value:"6"}
+  ],
+  divisions:[
+    {name:"Civil Division",desc:"Property disputes, contract claims, torts, and civil litigation",cases:"420 active cases"},
+    {name:"Criminal Division",desc:"Felonies, capital offenses, and criminal appeals",cases:"310 active cases"},
+    {name:"Family Division",desc:"Divorce, custody, inheritance, and domestic matters",cases:"180 active cases"},
+    {name:"Commercial Division",desc:"Business disputes, corporate litigation, and debt recovery",cases:"145 active cases"},
+    {name:"Appellate Division",desc:"Appeals from magistrate and lower courts",cases:"185 active cases"}
+  ],
+  caseInfo:[
+    {icon:"\u270D",title:"Case Filing",desc:"Mon-Fri, 9 AM - 3 PM"},
+    {icon:"\u{1F4C4}",title:"E-Filing",desc:"Available online 24/7"},
+    {icon:"\u{1F50D}",title:"Case Tracking",desc:"Search by case number"},
+    {icon:"\u{1F4D1}",title:"Cause List",desc:"Updated daily at 8 AM"},
+    {icon:"\u2696",title:"Legal Aid",desc:"Free for eligible persons"},
+    {icon:"\u{1F91D}",title:"Mediation",desc:"Alternative dispute resolution"}
+  ],
+  judges:[
+    {initials:"AM",name:"Hon. Justice A. Mohammed",title:"Chief Judge",div:"Administrative \u00B7 Appellate"},
+    {initials:"BS",name:"Hon. Justice B. Sani",title:"Justice",div:"Civil Division"},
+    {initials:"CO",name:"Hon. Justice C. Okeke",title:"Justice",div:"Criminal Division"},
+    {initials:"DI",name:"Hon. Justice D. Ibrahim",title:"Justice",div:"Family Division"},
+    {initials:"EN",name:"Hon. Justice E. Nwosu",title:"Justice",div:"Commercial Division"},
+    {initials:"FA",name:"Magistrate F. Audu",title:"Magistrate",div:"Magistrate Court I"},
+    {initials:"GM",name:"Magistrate G. Musa",title:"Magistrate",div:"Magistrate Court II"}
+  ],
+  sittingDays:{
+    headers:["Division","Mon","Tue","Wed","Thu","Fri"],
+    rows:[
+      {div:"Civil",days:["active","active","-","active","-"]},
+      {div:"Criminal",days:["active","-","active","-","active"]},
+      {div:"Family",days:["-","active","-","active","-"]},
+      {div:"Commercial",days:["-","-","active","active","-"]},
+      {div:"Appellate",days:["-","active","-","-","active"]}
+    ]
+  },
+  procedures:[
+    {num:"1",title:"File Your Case",desc:"Submit case documents at the registry or online via e-filing"},
+    {num:"2",title:"Case Assignment",desc:"Case is assigned to a division and presiding judge"},
+    {num:"3",title:"Summons & Hearing",desc:"Parties are summoned and hearings are scheduled"},
+    {num:"4",title:"Judgment",desc:"Court delivers ruling after hearing all parties"},
+    {num:"5",title:"Appeal (if applicable)",desc:"Dissatisfied parties may appeal to a higher court"}
+  ],
+  facilities:[
+    "Waiting area for litigants","Filing & registry office","Legal aid desk","Security screening",
+    "Parking available","Wheelchair accessible","Law library","Mediation room",
+    "Restrooms","Air-conditioned courtrooms"
+  ],
+  guidance:[
+    {icon:"\u270D",text:"Dress modestly and professionally. No sleeveless tops or shorts."},
+    {icon:"\u{1F6AB}",text:"No phones, cameras, or recording devices inside the courtroom."},
+    {icon:"\u{1F550}",text:"Arrive at least 30 minutes before your scheduled hearing."},
+    {icon:"\u{1F512}",text:"All bags are subject to security screening at the entrance."},
+    {icon:"\u{1F64F}",text:"Stand when the judge enters or leaves the courtroom."},
+    {icon:"\u2696",text:"Address the judge as 'Your Honor' or 'My Lord' at all times."}
+  ],
+  hours:[
+    {day:"Monday - Friday",time:"8:00 AM - 4:00 PM"},
+    {day:"Saturday",time:"Closed"},
+    {day:"Sunday",time:"Closed"},
+    {day:"Public Holidays",time:"Closed"}
+  ],
+  contacts:[
+    {label:"Address",value:"Court Road, Jimeta, Yola, Adamawa State",icon:"\u{1F4CD}"},
+    {label:"Registrar Phone",value:"+234 807 555 0900",icon:"\u260E"},
+    {label:"Info Desk",value:"+234 807 555 0901",icon:"\u{1F4DE}"},
+    {label:"Email",value:"registrar@yolacourt.gov.ng",icon:"\u2709"},
+    {label:"E-Filing Portal",value:"efiling.adamawajudiciary.gov.ng",icon:"\u{1F310}"}
+  ],
+  nearby:[
+    {icon:"\u2696",name:"Yola Magistrate Court",desc:"Jimeta \u00B7 1.2 km",dist:"1.2 km"},
+    {icon:"\u2696",name:"Sharia Court of Appeal",desc:"Yola Town \u00B7 2.8 km",dist:"2.8 km"},
+    {icon:"\u2696",name:"Customary Court of Appeal",desc:"Gwadabawa \u00B7 4.5 km",dist:"4.5 km"},
+    {icon:"\u2696",name:"Federal High Court",desc:"Yola \u00B7 3.1 km",dist:"3.1 km"}
+  ],
+  faqs:[
+    {q:"How do I file a case at the court?",a:"You can file a case by submitting your case documents at the registry office Monday to Friday, 9 AM to 3 PM. E-filing is also available 24/7 through the online portal at efiling.adamawajudiciary.gov.ng."},
+    {q:"What are the court sitting days?",a:"Sitting days vary by division. Civil sits Monday, Tuesday, and Thursday. Criminal sits Monday, Wednesday, and Friday. Check the Sitting Days Schedule section for the full calendar."},
+    {q:"Is legal aid available?",a:"Yes, free legal aid is available for eligible persons who cannot afford legal representation. Visit the legal aid desk at the court or call +234 807 555 0901 for more information."},
+    {q:"What documents do I need to file a case?",a:"You will need a statement of claim, supporting documents, identification, and filing fee receipt. The registry can provide a complete checklist based on your case type."},
+    {q:"Can I track my case online?",a:"Yes, the court offers online case tracking. Visit the court website and search by your case number to see hearing dates, status, and judgments."},
+    {q:"What is the dress code for visiting the court?",a:"Visitors must dress modestly and professionally. No sleeveless tops, shorts, or slippers. Failure to comply may result in denied entry to the courtroom."}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" \u2014 Judiciary Courts";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('courtName').textContent=d.name;
+  document.getElementById('courtType').textContent=d.type;
+  document.getElementById('courtSeal').textContent=d.seal;
+  document.getElementById('courtVerify').textContent=d.verify;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('mapLabel').textContent=d.name;
+  if(d.contacts[0]){document.getElementById('footAddr').textContent=d.contacts[0].value;document.getElementById('footPhone').textContent=d.contacts[1]?d.contacts[1].value:'';document.getElementById('footEmail').textContent=d.contacts[3]?d.contacts[3].value:'';}
+  /* Session status */
+  var ss=document.getElementById('sessionStatus');
+  if(d.sessionStatus==='recess'){ss.classList.add('recess');}
+  else if(d.sessionStatus==='closed'){ss.classList.add('closed');}
+  document.getElementById('sessionLabel').textContent=d.sessionLabel;
+  document.getElementById('nextHearing').textContent=d.nextHearing;
+  document.getElementById('causeList').textContent=d.causeList;
+  /* Stats */
+  document.getElementById('statsRow').innerHTML=d.stats.map(function(s){
+    return '<div class="stat-tile"><div class="sicon">'+s.icon+'</div><div class="sval">'+s.val+'</div><div class="slabel">'+s.label+'</div></div>';
+  }).join('');
+  /* Overview */
+  document.getElementById('overviewText').textContent=d.description;
+  document.getElementById('overviewFacts').innerHTML=d.facts.map(function(f){
+    return '<div class="ov-fact"><span>'+f.label+'</span><span>'+f.value+'</span></div>';
+  }).join('');
+  /* Divisions */
+  document.getElementById('divList').innerHTML=d.divisions.map(function(div){
+    return '<div class="div-row"><h3>'+div.name+'</h3><p>'+div.desc+'</p><span class="div-cases">'+div.cases+'</span></div>';
+  }).join('');
+  /* Case info */
+  document.getElementById('caseGrid').innerHTML=d.caseInfo.map(function(c){
+    return '<div class="case-item"><span class="cico">'+c.icon+'</span><div><b>'+c.title+'</b><small>'+c.desc+'</small></div></div>';
+  }).join('');
+  /* Judges */
+  document.getElementById('judgeList').innerHTML=d.judges.map(function(j){
+    return '<div class="judge-row"><div class="judge-avatar">'+j.initials+'</div><div class="judge-info"><b>'+j.name+'</b><small>'+j.title+'</small><span class="j-div">'+j.div+'</span></div></div>';
+  }).join('');
+  /* Sitting days */
+  var sd=d.sittingDays;
+  var thtml='<thead><tr><th>'+sd.headers.join('</th><th>')+'</th></tr></thead><tbody>';
+  sd.rows.forEach(function(r){
+    thtml+='<tr><td>'+r.div+'</td>';
+    r.days.forEach(function(day){
+      thtml+='<td'+(day==='active'?' class="active"':'')+'>'+(day==='active'?'Sitting':'-')+'</td>';
+    });
+    thtml+='</tr>';
+  });
+  thtml+='</tbody>';
+  document.getElementById('sitTable').innerHTML=thtml;
+  /* Procedures */
+  document.getElementById('procPath').innerHTML=d.procedures.map(function(p,i){
+    var conn=i<d.procedures.length-1?'<div class="proc-conn"></div>':'';
+    return '<div class="proc-step"><span class="pnum">'+p.num+'</span><div><b>'+p.title+'</b><small>'+p.desc+'</small></div></div>'+conn;
+  }).join('');
+  /* Facilities */
+  document.getElementById('facGrid').innerHTML=d.facilities.map(function(f){
+    return '<div class="chk-item"><span class="check">\u2713</span>'+f+'</div>';
+  }).join('');
+  /* Guidance */
+  document.getElementById('guideList').innerHTML=d.guidance.map(function(g){
+    return '<div class="guide-item"><span class="gico">'+g.icon+'</span>'+g.text+'</div>';
+  }).join('');
+  /* Hours */
+  document.getElementById('hoursTable').innerHTML=d.hours.map(function(h){
+    return '<tr><th>'+h.day+'</th><td>'+h.time+'</td></tr>';
+  }).join('');
+  /* Map info */
+  document.getElementById('mapInfo').innerHTML=d.contacts.slice(0,3).map(function(c){
+    return '<div class="map-info-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+  }).join('');
+  /* Contacts */
+  var cHtml='<div class="contact-section"><h3>Court Registry</h3><div class="contact-list">';
+  cHtml+=d.contacts.map(function(c){
+    return '<div class="contact-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+  }).join('');
+  cHtml+='</div></div>';
+  document.getElementById('contactGrid').innerHTML=cHtml;
+  /* Nearby */
+  document.getElementById('nearList').innerHTML=d.nearby.map(function(n){
+    return '<a href="#" class="near-item"><span class="nico">'+n.icon+'</span><div><b>'+n.name+'</b><small>'+n.desc+'</small></div><span class="ndist">'+n.dist+'</span></a>';
+  }).join('');
+  /* FAQ */
+  document.getElementById('faqList').innerHTML=d.faqs.map(function(f,i){
+    return '<div class="faq-item" id="faq'+i+'"><div class="faq-q" onclick="toggleFaq('+i+')">'+f.q+'<span class="toggle">+</span></div><div class="faq-a"><div class="faq-a-inner">'+f.a+'</div></div></div>';
+  }).join('');
+}
+
+function toggleFaq(i){
+  var item=document.getElementById('faq'+i);
+  var a=item.querySelector('.faq-a');
+  if(item.classList.contains('open')){item.classList.remove('open');a.style.maxHeight='0';}
+  else{item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+}
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){en.target.classList.add('visible');ro.unobserve(en.target);}
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  window.loadNaviTemplateProfile('judiciaryProfile',DATA,function(data){
+    render(data);
+    document.querySelectorAll('.panel,.stat-tile').forEach(function(p){ro.observe(p);});
+    setTimeout(function(){document.getElementById('loader').classList.add('hidden');},500);
+  });
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="../scripts/template-profile-loader.js"></script>
+</body>
+</html>

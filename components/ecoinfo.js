@@ -23,8 +23,15 @@ window.renderSection = function() {
     return fetch('templates/eco.html').then(r => r.text()).then(html => {
       // Eco is loaded as a fragment; scripts are initialized by the app shell.
       return html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
-    }).then(html => {
+    }).then(async html => {
       document.getElementById('main-content').innerHTML = html;
+
+      const ecoModules = ['atmosphere', 'classify', 'community', 'dashboard', 'learn', 'recycling', 'report', 'schedule'];
+      await Promise.all(ecoModules.map(moduleName =>
+        import(`./ecoinfo/scripts/${moduleName}.js`).catch(error => {
+          console.error(`Failed to initialize EcoInfo ${moduleName}:`, error);
+        })
+      ));
 
       const navToggle = document.getElementById('nav-toggle');
       const primaryNav = document.getElementById('primary-nav');

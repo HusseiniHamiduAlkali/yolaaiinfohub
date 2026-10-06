@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lamido Palace — Yola AI Info Hub</title>
+<meta name="description" content="Iconic Structure details — Lamido Palace, Yola. Architectural highlights, historical timeline, visitor experience zones, cultural significance, gallery, visitor information and location.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --emerald-900:#04322a;--emerald-800:#064e3b;--emerald-700:#0d7a5f;--emerald-600:#17997a;
+  --gold-500:#c9a84c;--gold-400:#d9bd6a;--gold-300:#e5cf7a;--gold-200:#f0d78c;
+  --cream:#f5f0e0;--cream-soft:#faf6ea;--cream-dark:#ede7d8;--paper:#fff;
+  --ink:#142520;--ink-soft:#3d4d47;--muted:#6b7a74;--line:rgba(6,78,59,.12);
+  --shadow-sm:0 2px 6px rgba(6,78,59,.06);--shadow-md:0 10px 30px -12px rgba(6,78,59,.25);
+  --shadow-lg:0 24px 60px -20px rgba(6,78,59,.35);--shadow-gold:0 12px 30px -14px rgba(201,168,76,.5);
+  --radius-sm:10px;--radius-md:16px;--radius-lg:22px;--radius-xl:28px;
+  --serif:"Fraunces",Georgia,serif;--sans:"Plus Jakarta Sans",system-ui,sans-serif;
+  --tr:all .35s cubic-bezier(.25,.46,.45,.94);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--sans);background:linear-gradient(180deg,var(--cream-soft) 0%,var(--paper) 30%);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}img{max-width:100%;display:block}button{font-family:inherit;cursor:pointer;border:none;background:none}ul{list-style:none}section{position:relative}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:14px 0;transition:var(--tr)}
+nav.scrolled{background:rgba(4,50,42,.96);backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(6,78,59,.3),var(--shadow-md);padding:10px 0}
+.nav-c{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.nav-logo{font-family:var(--serif);font-size:1.35rem;font-weight:700;color:var(--gold-300);display:flex;align-items:center;gap:10px;transition:var(--tr)}
+.nav-logo svg{width:28px;height:28px;color:var(--gold-400)}
+nav.scrolled .nav-logo{font-size:1.2rem}
+.nav-links{display:flex;gap:22px;align-items:center}
+.nav-links a{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,240,224,.7);position:relative;padding:4px 0;transition:var(--tr)}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold-400);transition:width .35s ease}
+.nav-links a:hover,.nav-links a.active{color:var(--gold-300)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-back{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:rgba(245,240,224,.55);transition:var(--tr)}
+.nav-back:hover{color:var(--gold-300)}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-burger span{width:26px;height:2px;background:var(--cream);transition:var(--tr);border-radius:2px}
+.nav-burger.open span:nth-child(1){transform:rotate(45deg) translate(2px,-2px)}
+.nav-burger.open span:nth-child(2){opacity:0}
+.nav-burger.open span:nth-child(3){transform:rotate(-45deg) translate(2px,2px)}
+
+#hero{position:relative;min-height:85vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;padding-top:60px}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;animation:heroZoom 30s ease-in-out infinite alternate}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,50,42,.55) 0%,rgba(6,78,59,.35) 40%,rgba(4,50,42,.7) 100%)}
+@keyframes heroZoom{0%{transform:scale(1)}100%{transform:scale(1.12)}}
+.hero-gold-line{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-400),transparent);z-index:1;animation:lineGlow 4s ease-in-out infinite}
+@keyframes lineGlow{0%,100%{opacity:.3;width:80px}50%{opacity:.8;width:160px}}
+.hero-content{position:relative;z-index:2;max-width:750px;padding:0 24px}
+.hero-eyebrow{display:inline-block;padding:8px 20px;border-radius:999px;background:rgba(245,240,224,.12);border:1px solid rgba(245,240,224,.2);color:var(--gold-200);font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;font-weight:700;margin-bottom:20px;opacity:0;animation:fadeUp 1s .3s forwards}
+.hero h1{font-family:var(--serif);font-size:clamp(2.5rem,7vw,4.8rem);font-weight:700;color:var(--cream);line-height:1.05;margin-bottom:12px;opacity:0;animation:fadeUp 1s .5s forwards;text-shadow:0 4px 30px rgba(0,0,0,.3)}
+.hero-tagline{font-family:var(--serif);font-style:italic;font-size:clamp(1.05rem,2.5vw,1.4rem);color:var(--gold-200);margin-bottom:28px;opacity:0;animation:fadeUp 1s .7s forwards}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp 1s .9s forwards}
+.btn{padding:14px 32px;border-radius:999px;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;transition:var(--tr);display:inline-flex;align-items:center;gap:10px}
+.btn-gold{background:linear-gradient(135deg,var(--gold-400),var(--gold-500));color:var(--emerald-900);box-shadow:0 4px 18px rgba(201,168,76,.35)}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(201,168,76,.5)}
+.btn-outline{border:2px solid rgba(245,240,224,.3);color:var(--cream);background:rgba(245,240,224,.05);backdrop-filter:blur(4px)}
+.btn-outline:hover{background:rgba(245,240,224,.12);border-color:var(--gold-400);color:var(--gold-300)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+#quick{background:var(--paper);border-bottom:1px solid var(--line);padding:24px 0}
+.quick-grid{max-width:900px;margin:0 auto;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:0 32px}
+.quick-item{display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:var(--cream-soft);border:1px solid var(--line);font-size:.85rem;font-weight:600;color:var(--ink);transition:var(--tr)}
+.quick-item:hover{border-color:rgba(201,168,76,.3);box-shadow:var(--shadow-sm)}
+.quick-item svg{width:20px;height:20px;color:var(--emerald-700)}
+
+.section-pad{padding:80px 0}
+.section-c{max-width:1200px;margin:0 auto;padding:0 32px}
+.section-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(13,122,95,.08);color:var(--emerald-700);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:12px}
+.section-eyebrow::before{content:'';width:20px;height:2px;background:linear-gradient(90deg,var(--gold-500),var(--emerald-700));border-radius:999px}
+.section-title{font-family:var(--serif);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;color:var(--emerald-800);line-height:1.2}
+.section-divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold-500),transparent);margin:16px 0 0}
+.section-head{text-align:center;margin-bottom:44px}
+.bg-cream{background:var(--cream-soft)}
+
+.about-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:40px;align-items:center;max-width:900px;margin:0 auto}
+.about-img{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);position:relative}
+.about-img::after{content:'';position:absolute;inset:0;border:3px solid var(--gold-400);border-radius:var(--radius-lg);opacity:.3;pointer-events:none}
+.about-img img{width:100%;height:340px;object-fit:cover;transition:transform 1s ease}
+.about-img:hover img{transform:scale(1.08)}
+.about-text p{color:var(--ink-soft);line-height:1.8;margin-bottom:14px}
+
+.highlights-scroll{display:flex;gap:18px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory}
+.highlights-scroll::-webkit-scrollbar{height:6px}.highlights-scroll::-webkit-scrollbar-track{background:var(--cream-soft);border-radius:999px}.highlights-scroll::-webkit-scrollbar-thumb{background:var(--emerald-700);border-radius:999px}
+.highlight-card{flex:0 0 340px;scroll-snap-align:start;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden;transition:var(--tr)}
+.highlight-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-6px)}
+.highlight-img{height:220px;overflow:hidden}
+.highlight-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.highlight-card:hover .highlight-img img{transform:scale(1.1)}
+.highlight-body{padding:18px}
+.highlight-body h3{font-family:var(--serif);font-size:1.15rem;color:var(--emerald-800);margin-bottom:6px}
+.highlight-body p{font-size:.86rem;color:var(--ink-soft);line-height:1.6}
+
+.historical-timeline{max-width:650px;margin:0 auto;position:relative}
+.historical-timeline::before{content:'';position:absolute;left:28px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold-400),var(--emerald-700),var(--gold-400));border-radius:999px}
+.milestone{display:flex;gap:24px;padding:20px 0;position:relative}
+.milestone-marker{width:56px;height:56px;border-radius:50%;background:var(--paper);border:3px solid var(--gold-400);display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;box-shadow:var(--shadow-sm);transition:var(--tr)}
+.milestone:hover .milestone-marker{background:var(--emerald-800);border-color:var(--emerald-800)}
+.milestone-marker .ms-year{font-family:var(--serif);font-size:.72rem;font-weight:700;color:var(--emerald-700);text-align:center;transition:var(--tr)}
+.milestone:hover .milestone-marker .ms-year{color:var(--gold-300)}
+.milestone-body{padding-top:6px}
+.milestone-body h3{font-family:var(--serif);font-size:1.1rem;color:var(--emerald-800);margin-bottom:4px}
+.milestone-body p{font-size:.86rem;color:var(--ink-soft);line-height:1.6}
+
+.zones-timeline{max-width:650px;margin:0 auto;position:relative}
+.zones-timeline::before{content:'';position:absolute;left:28px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--emerald-700),var(--gold-400),var(--emerald-700));border-radius:999px}
+.zone-step{display:flex;gap:24px;padding:18px 0;position:relative}
+.zone-marker{width:56px;height:56px;border-radius:50%;background:var(--paper);border:3px solid var(--emerald-700);display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;box-shadow:var(--shadow-sm);transition:var(--tr)}
+.zone-step:hover .zone-marker{background:var(--gold-400);border-color:var(--gold-400)}
+.zone-marker svg{width:26px;height:26px;color:var(--emerald-700);transition:var(--tr)}
+.zone-step:hover .zone-marker svg{color:var(--emerald-900)}
+.zone-body{padding-top:8px}
+.zone-body h3{font-family:var(--serif);font-size:1.15rem;color:var(--emerald-800);margin-bottom:4px}
+.zone-body p{font-size:.86rem;color:var(--ink-soft);line-height:1.6}
+
+.cultural-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:800px;margin:0 auto;align-items:center}
+.cultural-text p{color:var(--ink-soft);line-height:1.8;margin-bottom:14px}
+.cultural-quote{font-family:var(--serif);font-style:italic;font-size:1.2rem;color:var(--emerald-700);line-height:1.6;padding:24px;background:var(--cream-soft);border-left:4px solid var(--gold-400);border-radius:var(--radius-sm);position:relative}
+.cultural-quote::before{content:'"';font-size:3rem;color:var(--gold-400);position:absolute;top:-10px;left:12px;opacity:.3}
+
+.fac-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.fac-card{background:var(--cream-soft);border:1px solid var(--line);border-radius:var(--radius-sm);padding:18px;text-align:center;transition:var(--tr)}
+.fac-card:hover{box-shadow:var(--shadow-sm);border-color:rgba(201,168,76,.3);transform:translateY(-3px)}
+.fac-icon{width:44px;height:44px;border-radius:50%;background:rgba(13,122,95,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.fac-icon svg{width:22px;height:22px;color:var(--emerald-700)}
+.fac-card h3{font-size:.82rem;font-weight:700;color:var(--ink)}
+
+.gallery-masonry{columns:3;column-gap:14px}
+.gallery-item{break-inside:avoid;margin-bottom:14px;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;position:relative;box-shadow:var(--shadow-sm);transition:var(--tr)}
+.gallery-item:hover{box-shadow:var(--shadow-md);transform:scale(1.02)}
+.gallery-item img{width:100%;display:block;transition:transform .6s ease}
+.gallery-item:hover img{transform:scale(1.1)}
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,50,42,.8),transparent 60%);opacity:0;transition:opacity .4s;display:flex;align-items:flex-end;padding:14px}
+.gallery-item:hover .gallery-overlay{opacity:1}
+.gallery-overlay span{color:var(--cream);font-family:var(--serif);font-size:.85rem}
+.gallery-item.tall img{aspect-ratio:3/4;object-fit:cover}.gallery-item.wide img{aspect-ratio:4/3;object-fit:cover}
+
+.lightbox{position:fixed;inset:0;background:rgba(4,50,42,.95);z-index:5000;display:none;align-items:center;justify-content:center;padding:40px;backdrop-filter:blur(8px)}
+.lightbox.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lightbox-content{max-width:800px;max-height:85vh;position:relative;border-radius:var(--radius-md);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.lightbox-content img{width:100%;max-height:80vh;object-fit:contain}
+.lightbox-close{position:absolute;top:-44px;right:0;width:40px;height:40px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;color:var(--emerald-800);font-size:1.4rem;cursor:pointer;transition:var(--tr)}
+.lightbox-close:hover{background:var(--gold-400);color:var(--emerald-900);transform:rotate(90deg)}
+.lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:var(--cream);cursor:pointer;transition:var(--tr);border:1px solid rgba(255,255,255,.2)}
+.lightbox-nav:hover{background:var(--gold-400);color:var(--emerald-900)}
+.lightbox-nav.prev{left:20px}.lightbox-nav.next{right:20px}
+.lightbox-nav svg{width:24px;height:24px}
+
+.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:800px;margin:0 auto}
+.time-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;text-align:center;transition:var(--tr)}
+.time-card:hover{box-shadow:var(--shadow-sm);border-color:rgba(201,168,76,.3)}
+.time-card .t-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.time-card .t-icon svg{width:24px;height:24px}
+.time-card.excellent .t-icon{background:rgba(34,197,94,.1)}.time-card.excellent .t-icon svg{color:#16a34a}
+.time-card.moderate .t-icon{background:rgba(245,158,11,.1)}.time-card.moderate .t-icon svg{color:#d97706}
+.time-card.popular .t-icon{background:rgba(201,168,76,.1)}.time-card.popular .t-icon svg{color:var(--gold-500)}
+.time-card.busy .t-icon{background:rgba(220,38,38,.1)}.time-card.busy .t-icon svg{color:#dc2626}
+.time-card h3{font-weight:700;font-size:.92rem;color:var(--ink)}
+.time-card p{font-size:.8rem;color:var(--muted);margin-top:4px}
+
+.faq-list{max-width:760px;margin:0 auto}
+.faq-item{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);margin-bottom:10px;overflow:hidden;transition:var(--tr)}
+.faq-item:hover{border-color:rgba(201,168,76,.3)}
+.faq-item.active{border-color:var(--gold-400);box-shadow:var(--shadow-md)}
+.faq-q{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:14px;transition:var(--tr)}
+.faq-q:hover{background:var(--cream-soft)}
+.faq-q h3{font-weight:700;font-size:.94rem;color:var(--ink)}
+.faq-toggle{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;transition:var(--tr);color:var(--emerald-700);flex-shrink:0}
+.faq-item.active .faq-toggle{background:var(--gold-400);color:var(--emerald-900);border-color:var(--gold-400);transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s ease}
+.faq-a-inner{padding:0 22px 20px}
+.faq-a p{font-size:.9rem;color:var(--ink-soft);line-height:1.7}
+
+.location-grid{display:grid;grid-template-columns:3fr 2fr;gap:24px}
+.location-map{border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-md);min-height:380px;background:var(--cream-dark);position:relative}
+.location-map iframe{width:100%;height:100%;border:0;position:absolute;inset:0}
+.location-side{display:flex;flex-direction:column;gap:14px}
+.loc-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;box-shadow:var(--shadow-sm)}
+.loc-card h3{font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:6px}
+.loc-card p{font-size:.88rem;color:var(--ink-soft);line-height:1.6}
+.loc-copy{display:inline-flex;align-items:center;gap:6px;color:var(--emerald-600);font-size:.8rem;font-weight:600;cursor:pointer;margin-top:8px}
+.loc-copy svg{width:16px;height:16px}
+.loc-card .coords{font-size:.76rem;color:var(--muted);margin-top:6px}
+.btn-directions{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:var(--radius-sm);background:var(--emerald-800);color:var(--cream);font-weight:700;font-size:.86rem;transition:var(--tr)}
+.btn-directions:hover{background:var(--emerald-900);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+
+.nearby-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px}
+.nearby-card{flex:0 0 200px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-md);padding:16px;transition:var(--tr);cursor:pointer}
+.nearby-card:hover{box-shadow:var(--shadow-md);transform:translateY(-4px);border-color:rgba(201,168,76,.3)}
+.nearby-card .n-icon{width:40px;height:40px;border-radius:50%;background:rgba(13,122,95,.08);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.nearby-card .n-icon svg{width:20px;height:20px;color:var(--emerald-700)}
+.nearby-card h3{font-size:.9rem;font-weight:700;color:var(--ink)}
+.nearby-card p{font-size:.76rem;color:var(--muted);margin-top:4px}
+
+footer{background:var(--emerald-900);color:rgba(245,240,224,.7);padding:56px 0 0;border-top:1px solid rgba(13,122,95,.3)}
+.footer-grid{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:36px;padding:0 32px}
+.footer-brand h3{font-family:var(--serif);font-size:1.4rem;color:var(--gold-300);margin-bottom:10px}
+.footer-brand p{font-size:.86rem;line-height:1.7;max-width:300px}
+.footer-col h4{font-weight:700;font-size:.82rem;color:var(--gold-200);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.footer-col ul li{margin-bottom:8px}
+.footer-col a{font-size:.84rem;opacity:.7;transition:var(--tr);cursor:pointer}
+.footer-col a:hover{opacity:1;color:var(--gold-200);padding-left:4px}
+.footer-bottom{max-width:1300px;margin:44px auto 0;padding:22px 32px;border-top:1px solid rgba(13,122,95,.3);text-align:center}
+.footer-bottom p{font-size:.78rem;opacity:.5}
+
+.back-to-top{position:fixed;bottom:30px;right:30px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--gold-400),var(--gold-500));color:var(--emerald-900);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-gold);z-index:900;opacity:0;visibility:hidden;transform:translateY(20px);transition:var(--tr);cursor:pointer}
+.back-to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+.back-to-top:hover{transform:translateY(-4px)}
+.back-to-top svg{width:22px;height:22px}
+
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}
+@media(prefers-reduced-motion:reduce){.reveal{transition:none!important;opacity:1!important;transform:none!important}.hero-gold-line{animation:none!important}html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+@media(max-width:1024px){
+  .about-grid{grid-template-columns:1fr;gap:28px}
+  .cultural-grid{grid-template-columns:1fr;gap:24px}
+  .fac-grid{grid-template-columns:repeat(3,1fr)}
+  .time-grid{grid-template-columns:repeat(2,1fr)}
+  .gallery-masonry{columns:2}
+  .location-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:28px}
+}
+@media(max-width:768px){
+  .nav-links{position:fixed;top:0;right:-100%;height:100vh;width:280px;background:var(--emerald-900);flex-direction:column;justify-content:center;padding:40px;gap:18px;transition:right .4s ease;box-shadow:var(--shadow-lg)}
+  .nav-links.open{right:0}.nav-links a{font-size:.9rem}.nav-burger{display:flex}.nav-back{display:none}
+  .fac-grid{grid-template-columns:repeat(2,1fr)}
+  .time-grid{grid-template-columns:1fr 1fr}
+  .gallery-masonry{columns:1}
+  .historical-timeline::before,.zones-timeline::before{left:20px}.milestone-marker,.zone-marker{width:44px;height:44px}.milestone-marker .ms-year{font-size:.62rem}.zone-marker svg{width:20px;height:20px}
+  .footer-grid{grid-template-columns:1fr;gap:24px;padding:0 24px}
+  .section-pad{padding:56px 0}.section-c{padding:0 24px}
+  #hero{min-height:70vh}
+}
+@media(max-width:480px){
+  .fac-grid{grid-template-columns:1fr 1fr}
+  .hero-actions{flex-direction:column;width:100%}.hero-actions .btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav"><div class="nav-c">
+  <a href="#" class="nav-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/><path d="M12 7v8M8 11h8"/></svg>Yola AI Info Hub</a>
+  <a href="#" class="nav-back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back to Hub</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about" class="nav-link">About</a></li>
+    <li><a href="#highlights" class="nav-link">Architecture</a></li>
+    <li><a href="#history" class="nav-link">History</a></li>
+    <li><a href="#experience" class="nav-link">Experience</a></li>
+    <li><a href="#culture" class="nav-link">Culture</a></li>
+    <li><a href="#facilities" class="nav-link">Facilities</a></li>
+    <li><a href="#gallery" class="nav-link">Gallery</a></li>
+    <li><a href="#visit" class="nav-link">Visit Info</a></li>
+    <li><a href="#location" class="nav-link">Location</a></li>
+  </ul>
+  <div class="nav-burger" id="navBurger"><span></span><span></span><span></span></div>
+</div></nav>
+
+<section id="hero">
+  <div class="hero-bg"><img src="https://images.pexels.com/photos/25961549/pexels-photo-25961549.jpeg?auto=compress&cs=tinysrgb&h=900&w=1400" alt="Iconic structure" loading="eager"></div>
+  <div class="hero-gold-line"></div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">Iconic Structure</span>
+    <h1>Lamido Palace</h1>
+    <p class="hero-tagline">Heritage · Architecture · Legacy</p>
+    <div class="hero-actions">
+      <a href="#about" class="btn btn-gold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Explore Structure</a>
+      <a href="https://www.google.com/maps/search/?api=1&query=9.2035,12.4955" target="_blank" rel="noopener" class="btn btn-outline"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Directions</a>
+    </div>
+  </div>
+</section>
+
+<section id="quick"><div class="quick-grid">
+  <span class="quick-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13"/></svg>Historic Palace</span>
+  <span class="quick-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Est. 1841</span>
+  <span class="quick-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/></svg>Visitor Access</span>
+  <span class="quick-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M2 20l4-8h12l4 8"/></svg>Traditional Architecture</span>
+</div></section>
+
+<section id="about" class="section-pad"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Discover</span><h2 class="section-title">About the Structure</h2><div class="section-divider"></div></div>
+  <div class="about-grid">
+    <div class="about-img reveal"><img src="https://images.pexels.com/photos/25961549/pexels-photo-25961549.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Palace exterior" loading="lazy"></div>
+    <div class="about-text reveal reveal-delay-1">
+      <p>The Lamido Palace is the seat of the traditional ruler of the Adamawa Emirate, one of the oldest and most influential traditional institutions in northeastern Nigeria. The palace stands as a living monument to the region's rich cultural and political heritage.</p>
+      <p>The current palace structure combines traditional Fulani architectural elements with modern design, featuring ornate facades, ceremonial halls, and expansive courtyards that have witnessed centuries of history.</p>
+      <p>As both a functioning royal residence and a cultural landmark, the palace serves as a symbol of unity and continuity for the people of Adamawa State and beyond.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="highlights" class="section-pad bg-cream"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Key Features</span><h2 class="section-title">Architectural Highlights</h2><div class="section-divider"></div></div>
+  <div class="highlights-scroll reveal" id="highlightsScroll"></div>
+</div></section>
+
+<section id="history" class="section-pad"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Through the Ages</span><h2 class="section-title">Historical Timeline</h2><div class="section-divider"></div></div>
+  <div class="historical-timeline reveal" id="historyTimeline"></div>
+</div></section>
+
+<section id="experience" class="section-pad bg-cream"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Your Visit</span><h2 class="section-title">Visitor Experience Zones</h2><div class="section-divider"></div></div>
+  <div class="zones-timeline reveal" id="zonesTimeline"></div>
+</div></section>
+
+<section id="culture" class="section-pad"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Significance</span><h2 class="section-title">Cultural Significance</h2><div class="section-divider"></div></div>
+  <div class="cultural-grid">
+    <div class="cultural-text reveal">
+      <p>The Lamido Palace is more than an architectural landmark — it is the spiritual and cultural heart of the Adamawa Emirate. For over 180 years, it has been the centre of traditional governance, cultural preservation, and community gatherings.</p>
+      <p>The palace plays a central role in major cultural events, including the annual Eid celebrations, traditional council meetings, and community assemblies that bring together people from across the state.</p>
+    </div>
+    <div class="cultural-quote reveal reveal-delay-1">
+      A living monument where the past meets the present, and tradition continues to guide the future.
+    </div>
+  </div>
+</div></section>
+
+<section id="facilities" class="section-pad bg-cream"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">On-Site Amenities</span><h2 class="section-title">Facilities</h2><div class="section-divider"></div></div>
+  <div class="fac-grid reveal" id="facGrid"></div>
+</div></section>
+
+<section id="gallery" class="section-pad"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Visual Tour</span><h2 class="section-title">Gallery</h2><div class="section-divider"></div></div>
+  <div class="gallery-masonry reveal" id="galleryMasonry"></div>
+</div></section>
+
+<section id="visit" class="section-pad bg-cream"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Plan Ahead</span><h2 class="section-title">Best Time to Visit</h2><div class="section-divider"></div></div>
+  <div class="time-grid reveal" id="timeGrid"></div>
+  <div style="max-width:760px;margin:32px auto 0" class="reveal">
+    <div class="faq-list" id="faqList"></div>
+  </div>
+</div></section>
+
+<section id="location" class="section-pad"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Find Us</span><h2 class="section-title">Location & Directions</h2><div class="section-divider"></div></div>
+  <div class="location-grid">
+    <div class="location-map reveal"><iframe title="Structure map" src="https://www.openstreetmap.org/export/embed.html?bbox=12.4855,9.1935,12.5055,9.2135&layer=mapnik&marker=9.2035,12.4955" loading="lazy"></iframe></div>
+    <div class="location-side">
+      <div class="loc-card reveal reveal-delay-1"><h3>Address</h3><p>Palace Road, Jimeta<br>Yola, Adamawa State</p>
+        <div class="loc-copy" id="copyAddr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span id="copyLbl">Copy address</span></div>
+      </div>
+      <div class="loc-card reveal reveal-delay-2"><h3>Landmark</h3><p>Opposite Central Mosque, Jimeta</p><p class="coords">Coordinates: 9.2035°N, 12.4955°E</p></div>
+      <a href="https://www.google.com/maps/search/?api=1&query=9.2035,12.4955" target="_blank" rel="noopener" class="btn-directions reveal reveal-delay-2"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Get Directions</a>
+    </div>
+  </div>
+</div></section>
+
+<section id="nearby" class="section-pad bg-cream"><div class="section-c">
+  <div class="section-head reveal"><span class="section-eyebrow">Explore More</span><h2 class="section-title">Nearby Attractions</h2><div class="section-divider"></div></div>
+  <div class="nearby-scroll reveal" id="nearbyScroll"></div>
+</div></section>
+
+<footer><div class="footer-grid">
+  <div class="footer-brand"><h3>Yola AI Info Hub</h3><p>Your trusted directory for iconic structures, landmarks, and heritage sites across Yola and Adamawa State.</p></div>
+  <div class="footer-col"><h4>Directory</h4><ul><li><a href="iconic-structure-details.html">Iconic Structures</a></li><li><a href="sports-spa-details.html">Sports & SPA</a></li><li><a href="commercial-center-details.html">Commercial Centers</a></li><li><a href="park-recreation-details.html">Parks & Recreation</a></li></ul></div>
+  <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#highlights">Architecture</a></li><li><a href="#history">History</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#location">Location</a></li></ul></div>
+  <div class="footer-col"><h4>About This Data</h4><p style="font-size:.84rem;opacity:.7;line-height:1.6">Visitor access and tour availability may change. Please confirm with the facility before visiting.</p></div>
+</div><div class="footer-bottom"><p>© 2026 Yola AI Info Hub · Heritage Directory · Golden Emerald Design System</p></div></footer>
+
+<button class="back-to-top" id="backToTop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<div class="lightbox" id="lightbox" onclick="closeLb(event)">
+  <div class="lightbox-close" id="lbClose">&times;</div>
+  <div class="lightbox-nav prev" id="lbPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+  <div class="lightbox-content"><img id="lbImg" src="" alt=""></div>
+  <div class="lightbox-nav next" id="lbNext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+</div>
+
+<script>
+function ic(n){var i={building:'<path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 11h.01M15 11h.01"/>',dome:'<path d="M12 2C8 6 6 10 6 14h12c0-4-2-8-6-12z"/><path d="M6 14h12v7H6z"/>',columns:'<path d="M3 21h18M5 21V10M9 21V10M15 21V10M19 21V10M3 10h18M5 10V7h14v3"/>',hall:'<path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/>',grounds:'<path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/>',gate:'<path d="M3 21h18M5 21V8a7 7 0 0114 0v13M3 12h18M9 12v9M15 12v9"/>',tour:'<circle cx="12" cy="5" r="2"/><path d="M12 7v6M8 22l4-5 4 5M6 13l6-1 6 1"/>',info:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',gift:'<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>',shield:'<path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/>',parking:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 010 6H9"/>',toilet:'<path d="M7 2a3 3 0 00-3 3v14a2 2 0 002 2h2a2 2 0 002-2V5a3 3 0 00-3-3z"/>',access:'<circle cx="12" cy="4" r="2"/><path d="M19 13v-2a7 7 0 00-14 0v2"/>',cafe:'<path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>',security:'<path d="M12 2L3 7v6c0 5 3.5 9 9 11 5.5-2 9-6 9-11V7l-9-5z"/><path d="M9 12l2 2 4-4"/>',sun:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>',sunset:'<path d="M17 18a5 5 0 00-10 0"/><line x1="12" y1="9" x2="12" y2="2"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/><line x1="23" y1="22" x2="1" y2="22"/><polyline points="8 6 12 2 16 6"/>',users:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>',pin:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>',mosque:'<path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6M12 5l-2-2a2 2 0 014 0z"/>',market:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',park:'<path d="M12 2L8 8h2L6 14h2L3 20h18l-5-6h2l-4-6h2z"/>',landmark:'<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="22"/><line x1="18" y1="18" x2="18" y2="22"/><line x1="12" y1="18" x2="12" y2="22"/><path d="M12 2L3 18h18z"/>'};return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+i[n]+'</svg>';}
+
+var highlights=[
+  {name:'Grand Facade',desc:'The ornate main entrance featuring traditional Fulani geometric patterns and gold-accented arches.',img:'https://images.pexels.com/photos/25961549/pexels-photo-25961549.jpeg?auto=compress&cs=tinysrgb&h=300&w=400'},
+  {name:'Ceremonial Hall',desc:'The main audience hall where the Lamido receives visitors and holds traditional council meetings.',img:'https://images.pexels.com/photos/25693620/pexels-photo-25693620.jpeg?auto=compress&cs=tinysrgb&h=300&w=400'},
+  {name:'Palace Courtyard',desc:'Expansive open courtyard used for gatherings, ceremonies, and community events.',img:'https://images.pexels.com/photos/25961549/pexels-photo-25961549.jpeg?auto=compress&cs=tinysrgb&h=300&w=400'},
+  {name:'Royal Quarters',desc:'The private residential section featuring traditional architecture and modern amenities.',img:'https://images.pexels.com/photos/25693620/pexels-photo-25693620.jpeg?auto=compress&cs=tinysrgb&h=300&w=400'},
+  {name:'Palace Grounds',desc:'Beautifully maintained gardens and grounds surrounding the main palace structure.',img:'https://images.pexels.com/photos/25961549/pexels-photo-25961549.jpeg?auto=compress&cs=tinysrgb&h=300&w=400'}
+];
+var milestones=[
+  {year:'1841',title:'Foundation',desc:'The palace was established as the seat of the Adamawa Emirate under the first Lamido.'},
+  {year:'1920s',title:'Colonial Era',desc:'The palace underwent renovations during the colonial period while maintaining its traditional character.'},
+  {year:'1960s',title:'Post-Independence',desc:'Following Nigerian independence, the palace continued as the centre of traditional governance.'},
+  {year:'2010',title:'Modern Restoration',desc:'Major restoration work preserved the historical architecture while upgrading facilities.'},
+  {year:'Today',title:'Living Heritage',desc:'The palace remains an active centre of traditional leadership and cultural preservation.'}
+];
+var zoneSteps=[
+  {name:'Main Entrance',desc:'Grand gate with traditional guards and visitor registration',icon:'gate'},
+  {name:'Ceremonial Hall',desc:'The main audience hall with historical displays and seating',icon:'hall'},
+  {name:'Palace Gallery',desc:'Exhibition area showcasing artefacts, photographs, and historical documents',icon:'building'},
+  {name:'Courtyard',desc:'Open courtyard with traditional architecture and ceremonial space',icon:'grounds'},
+  {name:'Palace Grounds',desc:'Gardens and walking areas surrounding the main structure',icon:'park'}
+];
+var facilities=[
+  {name:'Guided Tours',icon:'tour'},{name:'Information Desk',icon:'info'},{name:'Gift Shop',icon:'gift'},
+  {name:'Parking',icon:'parking'},{name:'Restrooms',icon:'toilet'},{name:'Accessibility',icon:'access'},
+  {name:'Cafe',icon:'cafe'},{name:'Security',icon:'security'},{name:'Photo Points',icon:'building'},{name:'Gardens',icon:'park'}
+];
+var galleryImgs=[
+  {src:'https://images.pexels.com/photos/25961549/pexels-photo-25961549.jpeg?auto=compress&cs=tinysrgb&h=600&w=600',cap:'Palace Exterior',cls:'wide'},
+  {src:'https://images.pexels.com/photos/25693620/pexels-photo-25693620.jpeg?auto=compress&cs=tinysrgb&h=800&w=600',cap:'Ceremonial Hall',cls:'tall'},
+  {src:'https://images.pexels.com/photos/25961549/pexels-photo-25961549.jpeg?auto=compress&cs=tinysrgb&h=500&w=700',cap:'Main Gate',cls:''},
+  {src:'https://images.pexels.com/photos/25693620/pexels-photo-25693620.jpeg?auto=compress&cs=tinysrgb&h=600&w=600',cap:'Courtyard',cls:''},
+  {src:'https://images.pexels.com/photos/25961549/pexels-photo-25961549.jpeg?auto=compress&cs=tinysrgb&h=800&w=600',cap:'Architectural Detail',cls:'tall'},
+  {src:'https://images.pexels.com/photos/25693620/pexels-photo-25693620.jpeg?auto=compress&cs=tinysrgb&h=500&w=700',cap:'Palace Grounds',cls:'wide'}
+];
+var bestTimes=[
+  {label:'Morning',desc:'Excellent — quiet & cool',icon:'sun',cls:'excellent'},
+  {label:'Afternoon',desc:'Moderate — guided tours',icon:'sun',cls:'moderate'},
+  {label:'Evening',desc:'Popular — golden hour photos',icon:'sunset',cls:'popular'},
+  {label:'Weekend',desc:'Busy — family visitors',icon:'users',cls:'busy'}
+];
+var faqs=[
+  {q:'Is the palace open to visitors?',a:'Yes, designated areas of the palace are open to visitors during scheduled hours. Guided tours are available. Please check the current visiting schedule before planning your trip.'},
+  {q:'Are there guided tours?',a:'Yes, guided tours are available and recommended for a full understanding of the palace history and architecture. Tours can be arranged at the information desk or booked in advance by phone.'},
+  {q:'Is photography allowed?',a:'Photography is permitted in designated areas. Some sections, particularly the private quarters, may be restricted. Please ask your guide about photography rules during your visit.'},
+  {q:'Is there an entry fee?',a:'Entry to the public areas is free. Guided tours may have a small fee to support maintenance and preservation efforts. Group bookings should be arranged in advance.'},
+  {q:'Can groups book a private tour?',a:'Yes, group and school tours can be arranged in advance. Contact the palace information office at least one week before your planned visit to make arrangements.'}
+];
+var nearby=[
+  {name:'Yola Central Mosque',type:'Religious Site',icon:'mosque'},
+  {name:'Central Market',type:'Commercial Centre',icon:'market'},
+  {name:'Girei Recreation Park',type:'Parks & Recreation',icon:'park'},
+  {name:'Ribadu Square',type:'Historic Landmark',icon:'landmark'}
+];
+
+(function(){var h='';highlights.forEach(function(hl){h+='<div class="highlight-card"><div class="highlight-img"><img src="'+hl.img+'" alt="'+hl.name+'" loading="lazy"></div><div class="highlight-body"><h3>'+hl.name+'</h3><p>'+hl.desc+'</p></div></div>';});document.getElementById('highlightsScroll').innerHTML=h;})();
+(function(){var h='';milestones.forEach(function(m){h+='<div class="milestone"><div class="milestone-marker"><div class="ms-year">'+m.year+'</div></div><div class="milestone-body"><h3>'+m.title+'</h3><p>'+m.desc+'</p></div></div>';});document.getElementById('historyTimeline').innerHTML=h;})();
+(function(){var h='';zoneSteps.forEach(function(z){h+='<div class="zone-step"><div class="zone-marker">'+ic(z.icon)+'</div><div class="zone-body"><h3>'+z.name+'</h3><p>'+z.desc+'</p></div></div>';});document.getElementById('zonesTimeline').innerHTML=h;})();
+(function(){var h='';facilities.forEach(function(f){h+='<div class="fac-card"><div class="fac-icon">'+ic(f.icon)+'</div><h3>'+f.name+'</h3></div>';});document.getElementById('facGrid').innerHTML=h;})();
+(function(){var h='';galleryImgs.forEach(function(img,i){h+='<div class="gallery-item '+(img.cls||'')+'" onclick="openLb('+i+')"><img src="'+img.src+'" alt="'+img.cap+'" loading="lazy"><div class="gallery-overlay"><span>'+img.cap+'</span></div></div>';});document.getElementById('galleryMasonry').innerHTML=h;})();
+(function(){var h='';bestTimes.forEach(function(t){h+='<div class="time-card '+t.cls+'"><div class="t-icon">'+ic(t.icon)+'</div><h3>'+t.label+'</h3><p>'+t.desc+'</p></div>';});document.getElementById('timeGrid').innerHTML=h;})();
+(function(){var h='';faqs.forEach(function(f,i){h+='<div class="faq-item'+(i===0?' active':'')+'"><div class="faq-q" onclick="toggleFaq(this)"><h3>'+f.q+'</h3><div class="faq-toggle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="faq-a"'+(i===0?' style="max-height:300px"':'')+'><div class="faq-a-inner"><p>'+f.a+'</p></div></div></div>';});document.getElementById('faqList').innerHTML=h;})();
+(function(){var h='';nearby.forEach(function(n){h+='<div class="nearby-card"><div class="n-icon">'+ic(n.icon)+'</div><h3>'+n.name+'</h3><p>'+n.type+'</p></div>';});document.getElementById('nearbyScroll').innerHTML=h;})();
+
+function toggleFaq(q){var item=q.parentElement;var a=item.querySelector('.faq-a');var isActive=item.classList.contains('active');document.querySelectorAll('.faq-item.active').forEach(function(f){f.classList.remove('active');f.querySelector('.faq-a').style.maxHeight='0';});if(!isActive){item.classList.add('active');a.style.maxHeight=a.scrollHeight+'px';}}
+
+var lbIdx=0;
+function openLb(i){lbIdx=i;document.getElementById('lbImg').src=galleryImgs[i].src;document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+function closeLb(e){if(e&&e.target.closest('.lightbox-content')&&!e.target.closest('.lightbox-nav'))return;document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('lbClose').addEventListener('click',function(){closeLb();});
+document.getElementById('lbPrev').addEventListener('click',function(e){e.stopPropagation();lbIdx=(lbIdx-1+galleryImgs.length)%galleryImgs.length;openLb(lbIdx);});
+document.getElementById('lbNext').addEventListener('click',function(e){e.stopPropagation();lbIdx=(lbIdx+1)%galleryImgs.length;openLb(lbIdx);});
+document.addEventListener('keydown',function(e){if(!document.getElementById('lightbox').classList.contains('open'))return;if(e.key==='Escape')closeLb();if(e.key==='ArrowLeft'){lbIdx=(lbIdx-1+galleryImgs.length)%galleryImgs.length;openLb(lbIdx);}if(e.key==='ArrowRight'){lbIdx=(lbIdx+1)%galleryImgs.length;openLb(lbIdx);}});
+
+var nav=document.getElementById('nav'),bt=document.getElementById('backToTop');
+window.addEventListener('scroll',function(){if(window.scrollY>60){nav.classList.add('scrolled');bt.classList.add('show');}else{nav.classList.remove('scrolled');bt.classList.remove('show');}updateNav();});
+var ns=document.querySelectorAll('section[id]'),nl=document.querySelectorAll('.nav-link');
+function updateNav(){var p=window.scrollY+120;ns.forEach(function(s){if(p>=s.offsetTop&&p<s.offsetTop+s.offsetHeight){nl.forEach(function(l){l.classList.remove('active');});var a=document.querySelector('.nav-link[href="#'+s.id+'"]');if(a)a.classList.add('active');}});}
+var bg=document.getElementById('navBurger'),nle=document.getElementById('navLinks');
+bg.addEventListener('click',function(){bg.classList.toggle('open');nle.classList.toggle('open');});
+nle.querySelectorAll('a').forEach(function(l){l.addEventListener('click',function(){bg.classList.remove('open');nle.classList.remove('open');});});
+var ro=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(function(el){ro.observe(el);});
+bt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+document.querySelectorAll('a[href^="#"]').forEach(function(l){l.addEventListener('click',function(e){var h=this.getAttribute('href');if(h==='#')return;var t=document.querySelector(h);if(t){e.preventDefault();window.scrollTo({top:t.offsetTop-70,behavior:'smooth'});}});});
+document.getElementById('copyAddr').addEventListener('click',function(){navigator.clipboard.writeText('Palace Road, Jimeta, Yola, Adamawa State');var l=document.getElementById('copyLbl');l.textContent='Copied!';setTimeout(function(){l.textContent='Copy address';},2000);});
+</script>
+<script src="../scripts/template-profile-loader.js"></script>
+<script>
+window.addEventListener('load',function(){
+  window.loadNaviTemplateProfile('iconicStructureProfile',null,function(profile){
+    function text(selector,value){var node=document.querySelector(selector);if(node&&value)node.textContent=value;}
+    if(profile.name){text('#hero h1',profile.name);document.title=profile.name+' — Yola AI Info Hub';}
+    if(profile.tagline)text('.hero-tagline',profile.tagline);
+    if(profile.heroImage){var hero=document.querySelector('#hero .hero-bg img');if(hero)hero.src=profile.heroImage;}
+    if(profile.aboutImage){var aboutImage=document.querySelector('#about .about-img img');if(aboutImage)aboutImage.src=profile.aboutImage;}
+    if(Array.isArray(profile.quickInfo)){
+      var quick=document.querySelector('#quick .quick-grid');
+      if(quick)quick.innerHTML=profile.quickInfo.map(function(item){return '<span class="quick-item">'+(item.title||item.name||'')+'</span>';}).join('');
+    }
+    if(Array.isArray(profile.aboutParagraphs)){
+      var about=document.querySelector('#about .about-text');
+      if(about)about.innerHTML=profile.aboutParagraphs.map(function(paragraph){return '<p>'+paragraph+'</p>';}).join('');
+    }
+    if(Array.isArray(profile.highlights)){
+      highlights=profile.highlights;
+      document.getElementById('highlightsScroll').innerHTML=highlights.map(function(item){return '<div class="highlight-card"><div class="highlight-img"><img src="'+(item.img||'')+'" alt="'+(item.name||'')+'" loading="lazy"></div><div class="highlight-body"><h3>'+(item.name||'')+'</h3><p>'+(item.desc||'')+'</p></div></div>';}).join('');
+    }
+    if(Array.isArray(profile.milestones)){
+      milestones=profile.milestones;
+      document.getElementById('historyTimeline').innerHTML=milestones.map(function(item){return '<div class="milestone"><div class="milestone-marker"><div class="ms-year">'+(item.year||'')+'</div></div><div class="milestone-body"><h3>'+(item.title||'')+'</h3><p>'+(item.desc||'')+'</p></div></div>';}).join('');
+    }
+    if(Array.isArray(profile.zoneSteps)){
+      zoneSteps=profile.zoneSteps;
+      document.getElementById('zonesTimeline').innerHTML=zoneSteps.map(function(item){return '<div class="zone-step"><div class="zone-marker">'+ic(item.icon||'info')+'</div><div class="zone-body"><h3>'+(item.name||'')+'</h3><p>'+(item.desc||'')+'</p></div></div>';}).join('');
+    }
+    if(Array.isArray(profile.facilities)){
+      facilities=profile.facilities;
+      document.getElementById('facGrid').innerHTML=facilities.map(function(item){return '<div class="fac-card"><div class="fac-icon">'+ic(item.icon||'info')+'</div><h3>'+(item.name||'')+'</h3></div>';}).join('');
+    }
+    if(Array.isArray(profile.galleryImages)){
+      galleryImgs=profile.galleryImages.map(function(item){return {src:item.image||item.src||'',cap:item.caption||item.cap||'',cls:item.cls||''};});
+      document.getElementById('galleryMasonry').innerHTML=galleryImgs.map(function(item,index){return '<div class="gallery-item '+(item.cls||'')+'" onclick="openLb('+index+')"><img src="'+item.src+'" alt="'+item.cap+'" loading="lazy"><div class="gallery-overlay"><span>'+item.cap+'</span></div></div>';}).join('');
+    }
+    if(Array.isArray(profile.bestTimes)){
+      bestTimes=profile.bestTimes;
+      document.getElementById('timeGrid').innerHTML=bestTimes.map(function(item){return '<div class="time-card '+(item.cls||'')+'"><div class="t-icon">'+ic(item.icon||'sun')+'</div><h3>'+(item.label||'')+'</h3><p>'+(item.desc||'')+'</p></div>';}).join('');
+    }
+    if(Array.isArray(profile.faqs)){
+      faqs=profile.faqs;
+      document.getElementById('faqList').innerHTML=faqs.map(function(item,index){return '<div class="faq-item'+(index===0?' active':'')+'"><div class="faq-q" onclick="toggleFaq(this)"><h3>'+(item.q||'')+'</h3><div class="faq-toggle">+</div></div><div class="faq-a"'+(index===0?' style="max-height:300px"':'')+'><div class="faq-a-inner"><p>'+(item.a||'')+'</p></div></div></div>';}).join('');
+    }
+    if(Array.isArray(profile.nearby)){
+      nearby=profile.nearby;
+      document.getElementById('nearbyScroll').innerHTML=nearby.map(function(item){return '<div class="nearby-card"><div class="n-icon">'+ic(item.icon||'landmark')+'</div><h3>'+(item.name||'')+'</h3><p>'+(item.type||'')+'</p></div>';}).join('');
+    }
+    if(Array.isArray(profile.culturalParagraphs)){
+      var culture=document.querySelector('#culture .cultural-text');
+      if(culture)culture.innerHTML=profile.culturalParagraphs.map(function(paragraph){return '<p>'+paragraph+'</p>';}).join('');
+    }
+    text('.cultural-quote',profile.culturalQuote);
+    var locationSection=document.getElementById('location');
+    if(locationSection){
+      var locationCards=locationSection.querySelectorAll('.loc-card');
+      if(locationCards[0]&&profile.address)locationCards[0].querySelector('p').textContent=profile.address;
+      if(locationCards[1]&&profile.landmark)locationCards[1].querySelector('p').textContent=profile.landmark;
+      if(locationCards[1]&&profile.coordinates)locationCards[1].querySelector('.coords').textContent='Coordinates: '+profile.coordinates.lat+'°N, '+profile.coordinates.lng+'°E';
+        if(profile.coordinates&&profile.coordinates.lat!=null&&profile.coordinates.lng!=null&&Number.isFinite(Number(profile.coordinates.lat))&&Number.isFinite(Number(profile.coordinates.lng))){
+        var lat=Number(profile.coordinates.lat),lng=Number(profile.coordinates.lng);
+        var mapUrl='https://www.openstreetmap.org/export/embed.html?bbox='+(lng-.01)+','+(lat-.01)+','+(lng+.01)+','+(lat+.01)+'&layer=mapnik&marker='+lat+','+lng;
+        locationSection.querySelector('iframe').src=mapUrl;
+        locationSection.querySelectorAll('a[target="_blank"]').forEach(function(link){link.href='https://www.google.com/maps/search/?api=1&query='+lat+','+lng;});
+      }
+      var copy=locationSection.querySelector('#copyAddr');
+      if(copy)copy.addEventListener('click',function(){navigator.clipboard.writeText(profile.address||'');var label=document.getElementById('copyLbl');if(label)label.textContent='Copied!';});
+    }
+  });
+});
+</script>
+</body>
+</html>

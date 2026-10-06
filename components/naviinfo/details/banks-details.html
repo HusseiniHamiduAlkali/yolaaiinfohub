@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bank Institution Details — Template</title>
+<script src="/scripts/apiConfig.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{
+--emerald:#064e3b;--emerald-950:#032a23;--emerald-800:#075c46;--forest:#0d7a5f;
+--mint:#ccebdd;--gold:#c9a84c;--gold-light:#f2d681;--gold-dark:#a5821f;
+--cream:#f5f0e0;--ink:#10231d;--muted:#5b7269;--line:rgba(6,78,59,.12);--white:#fff;
+--radius:18px;--shadow:0 18px 40px -26px rgba(3,42,35,.55);
+--serif:"Fraunces",Georgia,"Times New Roman",serif;
+--sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3{font-family:var(--serif);line-height:1.2;letter-spacing:-.01em}
+.wrap{width:min(1140px,100% - 2rem);margin-inline:auto}
+#loader{position:fixed;inset:0;background:var(--cream);display:grid;place-items:center;z-index:9999;transition:opacity .6s,visibility .6s}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-badge{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1.5rem;font-family:var(--serif);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
+/* Mobile bar */
+.mobile-bar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;background:linear-gradient(120deg,var(--emerald-950),var(--emerald));color:var(--cream);box-shadow:0 8px 24px -18px #000}
+.mobile-bar a.back{margin-left:auto;font-size:.78rem;text-decoration:none;color:var(--gold-light);border:1px solid rgba(242,214,129,.4);padding:.35rem .7rem;border-radius:999px;transition:background .2s}
+.mobile-bar a.back:hover{background:rgba(242,214,129,.15)}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;flex:0 0 auto;background:linear-gradient(140deg,var(--gold),#9c7c22);color:var(--emerald-950);font-size:1rem}
+.mobile-bar strong{display:block;font-family:var(--serif);font-size:.98rem;line-height:1.1}
+.mobile-bar small{display:block;font-size:.68rem;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+/* Corporate header */
+.corp-head{background:linear-gradient(135deg,var(--emerald-950),var(--emerald));color:var(--cream);padding:1.6rem 0;border-bottom:3px solid var(--gold);position:relative;overflow:hidden}
+.corp-head:after{content:"";position:absolute;inset:auto -5% -40% 60%;height:120px;border-radius:50%;background:rgba(242,214,129,.06);filter:blur(15px)}
+.corp-inner{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;position:relative;z-index:1;opacity:0;animation:fadeUp .6s .2s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.corp-logo{width:64px;height:64px;flex:0 0 auto;border-radius:16px;display:grid;place-items:center;background:linear-gradient(140deg,var(--gold),var(--gold-dark));color:var(--emerald-950);font-size:1.8rem;font-family:var(--serif);box-shadow:0 8px 24px -12px rgba(201,168,76,.4)}
+.corp-info{flex:1;min-width:200px}
+.corp-info h1{font-size:clamp(1.4rem,4.5vw,2.4rem);margin-bottom:.15rem}
+.corp-info .ctype{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:.35rem}
+.corp-info .cverify{display:inline-flex;align-items:center;gap:.35rem;font-size:.76rem;color:rgba(245,240,224,.7)}
+.corp-info .cverify .dot{width:7px;height:7px;border-radius:50%;background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+.corp-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.55rem .85rem;border-radius:8px;text-decoration:none;font-size:.8rem;font-weight:600;border:1px solid rgba(242,214,129,.35);color:var(--cream);background:rgba(255,255,255,.06);cursor:pointer;font-family:inherit;transition:transform .18s,background .18s}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.14)}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);border-color:transparent}
+/* Quick-access bar */
+.qa-bar{background:var(--white);border-bottom:1px solid var(--line);box-shadow:0 4px 16px -14px rgba(3,42,35,.25);position:sticky;top:0;z-index:20}
+.qa-inner{display:flex;gap:.3rem;overflow-x:auto;padding:.55rem 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.qa-inner::-webkit-scrollbar{display:none}
+.qa-tab{flex:0 0 auto;font-size:.78rem;font-weight:600;letter-spacing:.03em;padding:.35rem .7rem;border-radius:8px;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;border:none;background:none;font-family:inherit}
+.qa-tab:hover{color:var(--emerald)}
+.qa-tab.active{color:var(--emerald-950);background:var(--mint)}
+/* Main */
+main{padding:1.4rem 0 3rem}
+.layout{display:grid;gap:1.1rem}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.panel.visible{opacity:1;transform:translateY(0)}
+.panel h2{font-size:1.1rem;margin-bottom:.2rem}
+.panel h2+p.sub{color:var(--muted);font-size:.82rem;margin-bottom:.8rem}
+.panel>h2:not(:first-child){margin-top:1.2rem}
+.panel p{font-size:.88rem;color:#324b42;margin-bottom:.5rem}.panel p:last-child{margin-bottom:0}
+/* Overview two-col */
+.overview{display:grid;gap:1rem;margin-top:.7rem}
+.overview-text p{font-size:.88rem;color:#324b42;line-height:1.7}
+.overview-facts{display:grid;gap:.4rem}
+.ov-fact{display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--line);font-size:.84rem}
+.ov-fact span:first-child{color:var(--muted)}
+.ov-fact span:last-child{font-weight:600}
+/* Service directory */
+.svc-dir{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:.7rem}
+.svc-cat{border-left:3px solid var(--gold);padding-left:.8rem}
+.svc-cat h3{font-size:.88rem;color:var(--emerald);margin-bottom:.5rem;letter-spacing:.02em}
+.svc-cat ul{list-style:none;display:grid;gap:.3rem}
+.svc-cat li{font-size:.82rem;color:#324b42;display:flex;align-items:center;gap:.35rem;padding:.2rem 0;transition:color .2s;cursor:default}
+.svc-cat li:before{content:"\2014";color:var(--gold);font-size:.7rem}
+.svc-cat li:hover{color:var(--emerald)}
+/* Branch info */
+.branch-info{display:grid;gap:.5rem;margin-top:.7rem}
+.br-row{display:flex;justify-content:space-between;padding:.5rem .7rem;border-radius:10px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3));font-size:.84rem;transition:transform .2s}
+.br-row:hover{transform:translateX(4px)}
+.br-row span:first-child{color:var(--muted);font-weight:600}
+.br-row span:last-child{font-weight:600;color:var(--ink)}
+/* ATM section */
+.atm-box{background:linear-gradient(160deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.2rem;color:var(--cream);margin-top:.7rem}
+.atm-box h3{color:var(--gold-light);font-size:.95rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem}
+.atm-status{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;font-weight:600;margin-bottom:.8rem}
+.atm-status .dot{width:8px;height:8px;border-radius:50%;background:#2eb27a;box-shadow:0 0 6px #2eb27a}
+.atm-features{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem}
+.atm-feat{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:rgba(245,240,224,.85)}
+.atm-feat:before{content:"\2713";color:var(--gold-light);font-weight:700;flex:0 0 auto}
+/* Banking hours table */
+.bh-table{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:.82rem}
+.bh-table th,.bh-table td{text-align:center;padding:.5rem .3rem;border:1px solid var(--line)}
+.bh-table th{background:linear-gradient(160deg,rgba(204,235,221,.3),rgba(245,240,224,.4));color:var(--emerald);font-weight:600;font-size:.74rem}
+.bh-table td{color:#324b42;font-weight:500}
+.bh-table td:first-child{text-align:left;font-weight:600;color:var(--muted);background:rgba(204,235,221,.1)}
+.bh-table .atm-row td{color:var(--gold-dark);font-weight:600}
+/* Branch services checkmark grid */
+.chk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem;margin-top:.7rem}
+.chk-item{display:flex;align-items:center;gap:.4rem;font-size:.82rem;padding:.45rem .6rem;border-radius:10px;border:1px solid var(--line);background:linear-gradient(160deg,#fff,rgba(204,235,221,.08));transition:transform .2s}
+.chk-item:hover{transform:translateY(-2px)}
+.chk-item .check{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--ok,#2eb27a);color:#fff;font-size:.62rem;flex:0 0 auto;font-weight:700}
+/* Digital banking */
+.digital-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.7rem}
+.digital-card{border:1px solid var(--line);border-radius:12px;padding:.6rem .7rem;background:linear-gradient(160deg,rgba(204,235,221,.2),rgba(245,240,224,.3));transition:transform .2s}
+.digital-card:hover{transform:translateY(-3px)}
+.digital-card .dico{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--mint);color:var(--emerald);font-size:.9rem;margin-bottom:.35rem}
+.digital-card b{font-size:.84rem;display:block}
+.digital-card small{font-size:.74rem;color:var(--muted);display:block;margin-top:.05rem}
+/* Security section */
+.security-box{background:linear-gradient(135deg,var(--emerald-950),var(--emerald));border-radius:var(--radius);padding:1.3rem;color:var(--cream);margin-top:.7rem}
+.security-box h2{color:var(--gold-light);font-size:1.05rem;margin-bottom:.5rem}
+.security-box p{color:rgba(245,240,224,.75);font-size:.84rem;margin-bottom:.8rem}
+.sec-list{display:grid;gap:.4rem}
+.sec-item{display:flex;align-items:flex-start;gap:.45rem;font-size:.82rem;color:rgba(245,240,224,.85)}
+.sec-item .sico{flex:0 0 auto;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;background:rgba(201,168,76,.2);color:var(--gold-light);font-size:.7rem}
+/* Map */
+.map-box{height:200px;border-radius:14px;background:linear-gradient(135deg,var(--emerald),var(--forest));position:relative;overflow:hidden;margin-top:.7rem;border:1px solid var(--line)}
+.map-grid-bg{position:absolute;inset:0;opacity:.2;background-image:linear-gradient(var(--cream) 1px,transparent 1px),linear-gradient(90deg,var(--cream) 1px,transparent 1px);background-size:30px 30px}
+.map-pin{position:absolute;top:45%;left:50%;transform:translate(-50%,-100%);z-index:2}
+.map-pin-dot{width:22px;height:22px;background:var(--gold);border:3px solid var(--white);border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:pinB 2s ease-in-out infinite}
+@keyframes pinB{0%,100%{transform:rotate(-45deg) translateY(0)}50%{transform:rotate(-45deg) translateY(-6px)}}
+.map-pin-pulse{position:absolute;top:45%;left:50%;width:22px;height:22px;background:var(--gold);border-radius:50%;transform:translate(-50%,-50%);opacity:.3;animation:pinP 2s ease-in-out infinite}
+@keyframes pinP{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
+.map-label{position:absolute;bottom:10px;left:10px;background:var(--white);padding:6px 12px;border-radius:8px;font-size:.76rem;color:var(--emerald);box-shadow:var(--shadow);font-family:var(--serif)}
+.map-info{display:grid;gap:.4rem;margin-top:.7rem}
+.map-info-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem}
+.map-info-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.map-info-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Contact */
+.contact-grid{display:grid;gap:1rem;margin-top:.7rem}
+.contact-section{border-top:1px solid var(--line);padding-top:.6rem}
+.contact-section h3{font-size:.86rem;color:var(--emerald);margin-bottom:.4rem}
+.contact-list{display:grid;gap:.4rem}
+.contact-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem;word-break:break-word}
+.contact-row .ico{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--mint);color:var(--emerald)}
+.contact-row small{display:block;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* Nearby branches */
+.nearby{display:grid;gap:.5rem;margin-top:.7rem}
+.near-item{display:flex;gap:.6rem;align-items:center;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:.55rem .7rem;background:#fff;transition:transform .18s}
+.near-item:hover{transform:translateY(-2px)}
+.near-item .nico{width:38px;height:38px;flex:0 0 auto;border-radius:10px;display:grid;place-items:center;color:var(--cream);background:linear-gradient(140deg,var(--emerald),var(--forest));font-size:1rem}
+.near-item b{font-size:.82rem}.near-item small{font-size:.72rem;color:var(--muted);display:block;margin-top:.05rem}
+.near-item .ndist{margin-left:auto;font-size:.72rem;color:var(--gold);font-weight:600}
+/* FAQ */
+.faq-list{display:grid;gap:.5rem;margin-top:.7rem}
+.faq-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:box-shadow .2s}
+.faq-item:hover{box-shadow:var(--shadow)}
+.faq-q{padding:.6rem .8rem;font-size:.84rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:rgba(204,235,221,.15)}
+.faq-q .toggle{color:var(--gold);font-size:1.1rem;transition:transform .3s}
+.faq-item.open .faq-q .toggle{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-a-inner{padding:0 .8rem .6rem;font-size:.8rem;color:#324b42}
+/* Footer */
+footer.site{background:linear-gradient(140deg,var(--emerald-950),var(--emerald));color:rgba(245,240,224,.86);padding:2rem 0 1.2rem;margin-top:2rem;border-top:2px solid var(--gold)}
+footer.site .cols{display:grid;gap:1.4rem}
+footer.site h3{font-size:1rem;color:var(--gold-light);margin-bottom:.5rem}
+footer.site ul{list-style:none;display:grid;gap:.35rem;font-size:.85rem}
+footer.site a{text-decoration:none;opacity:.88}footer.site a:hover{opacity:1;text-decoration:underline}
+.socials{display:flex;gap:.5rem;margin-top:.7rem}
+.socials a{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(242,214,129,.3);transition:transform .2s,border-color .2s}
+.socials a:hover{transform:translateY(-3px);border-color:var(--gold)}
+.legal{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid rgba(242,214,129,.22);font-size:.76rem;display:grid;gap:.4rem}
+.btt{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--emerald-950);display:grid;place-items:center;box-shadow:var(--shadow);z-index:900;opacity:0;visibility:hidden;transform:translateY(15px);transition:all .3s;cursor:pointer;border:none}
+.btt.show{opacity:1;visibility:visible;transform:translateY(0)}.btt:hover{transform:translateY(-4px)}
+@media(min-width:760px){
+.mobile-bar{display:none}
+.overview{grid-template-columns:1.4fr 1fr;align-items:start}
+.svc-dir{grid-template-columns:repeat(2,1fr)}
+.chk-grid{grid-template-columns:repeat(3,1fr)}
+.digital-grid{grid-template-columns:repeat(3,1fr)}
+.atm-features{grid-template-columns:repeat(3,1fr)}
+.layout{grid-template-columns:1.6fr 1fr;align-items:start;gap:1.3rem}
+.layout .col{display:grid;gap:1.1rem}.layout .col.side{position:sticky;top:3.5rem}
+.panel{padding:1.4rem}
+footer.site .cols{grid-template-columns:1.4fr repeat(3,1fr)}
+.legal{grid-template-columns:1fr auto;align-items:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div id="loader"><div class="loader-badge">&#127974;</div></div>
+
+<div class="mobile-bar">
+<div class="brand-mark">&#127974;</div>
+<div><strong id="mbName">Bank Name</strong><small id="mbType">Banking Institution</small></div>
+<a href="#" class="back">&larr; Back</a>
+</div>
+
+<header class="corp-head">
+<div class="wrap corp-inner">
+<div class="corp-logo" id="corpLogo">Z</div>
+<div class="corp-info">
+<h1 id="bankName">Zenith Bank</h1>
+<div class="ctype" id="bankType">Banking Institution</div>
+<div class="cverify"><span class="dot"></span> <span id="bankVerify">Verified Institution</span></div>
+</div>
+<div class="corp-actions">
+<button class="btn primary" onclick="document.getElementById('locPanel').scrollIntoView({behavior:'smooth'})">Directions</button>
+<button class="btn" onclick="alert('Call')">Call</button>
+<button class="btn" onclick="alert('Share')">Share</button>
+</div>
+</div>
+</header>
+
+<div class="qa-bar">
+<div class="wrap qa-inner" id="qaBar"></div>
+</div>
+
+<main>
+<div class="wrap">
+<div class="layout">
+<div class="col">
+
+<div class="panel" id="overviewPanel">
+<h2>Institution Overview</h2>
+<p class="sub">About this banking institution</p>
+<div class="overview">
+<div class="overview-text"><p id="overviewText">Description goes here.</p></div>
+<div class="overview-facts" id="overviewFacts"></div>
+</div>
+</div>
+
+<div class="panel" id="servicesPanel">
+<h2>Banking Services</h2>
+<p class="sub">Services available at this institution</p>
+<div class="svc-dir" id="svcDir"></div>
+</div>
+
+<div class="panel" id="branchPanel">
+<h2>Branch Information</h2>
+<p class="sub">This branch at a glance</p>
+<div class="branch-info" id="branchInfo"></div>
+</div>
+
+<div class="panel" id="atmPanel">
+<h2>ATM Services</h2>
+<p class="sub">Automated teller machine availability</p>
+<div class="atm-box">
+<h3>&#127974; ATM Available at This Branch</h3>
+<div class="atm-status"><span class="dot"></span> Operational &bull; 24 Hours</div>
+<div class="atm-features" id="atmFeatures"></div>
+</div>
+</div>
+
+<div class="panel" id="hoursPanel">
+<h2>Banking Hours</h2>
+<p class="sub">Customer service and ATM schedule</p>
+<table class="bh-table" id="bhTable"></table>
+</div>
+
+<div class="panel" id="branchSvcPanel">
+<h2>Services Available at This Branch</h2>
+<p class="sub">What you can do at this location</p>
+<div class="chk-grid" id="chkGrid"></div>
+</div>
+
+<div class="panel" id="digitalPanel">
+<h2>Digital Banking</h2>
+<p class="sub">Bank from anywhere, anytime</p>
+<div class="digital-grid" id="digitalGrid"></div>
+</div>
+
+<div class="panel" id="securityPanel">
+<h2>Security &amp; Customer Guidance</h2>
+<p class="sub">Protect your banking information</p>
+<div class="security-box">
+<h2>Protect Your Banking Information</h2>
+<p>Follow these guidelines to keep your accounts safe:</p>
+<div class="sec-list" id="secList"></div>
+</div>
+</div>
+
+<div class="panel" id="faqPanel">
+<h2>Frequently Asked Questions</h2>
+<p class="sub">Common questions about this branch</p>
+<div class="faq-list" id="faqList"></div>
+</div>
+
+</div>
+<div class="col side">
+
+<div class="panel" id="locPanel">
+<h2>Branch Location</h2>
+<p class="sub">Find this branch</p>
+<div class="map-box">
+<div class="map-grid-bg"></div>
+<div class="map-pin"><div class="map-pin-dot"></div></div>
+<div class="map-pin-pulse"></div>
+<div class="map-label" id="mapLabel">Branch address</div>
+</div>
+<div class="map-info" id="mapInfo"></div>
+</div>
+
+<div class="panel" id="contactPanel">
+<h2>Contact</h2>
+<p class="sub">Reach out to us</p>
+<div class="contact-grid" id="contactGrid"></div>
+</div>
+
+<div class="panel" id="nearbyPanel">
+<h2>Nearby Branches &amp; ATMs</h2>
+<p class="sub">Other locations close by</p>
+<div class="nearby" id="nearbyList"></div>
+</div>
+
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site">
+<div class="wrap">
+<div class="cols">
+<div>
+<h3 id="footName">Zenith Bank</h3>
+<p style="font-size:.85rem;opacity:.8;max-width:38ch">A trusted banking institution committed to financial excellence and customer service.</p>
+<div class="socials">
+<a href="#" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+<a href="#" aria-label="Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+<a href="#" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+</div>
+</div>
+<div><h3>Explore</h3><ul><li><a href="#overviewPanel">Overview</a></li><li><a href="#servicesPanel">Services</a></li><li><a href="#branchPanel">Branch Info</a></li><li><a href="#hoursPanel">Hours</a></li><li><a href="#faqPanel">FAQs</a></li></ul></div>
+<div><h3>Banking</h3><ul><li><a href="#">Personal Banking</a></li><li><a href="#">Business Banking</a></li><li><a href="#">Digital Banking</a></li><li><a href="#">Cards</a></li><li><a href="#">Loans</a></li></ul></div>
+<div><h3>Contact</h3><ul><li><a href="#" id="footAddr">Address</a></li><li><a href="#" id="footPhone">Phone</a></li><li><a href="#" id="footEmail">Email</a></li><li><a href="#" id="footWeb">Website</a></li></ul></div>
+</div>
+<div class="legal"><span id="footCopy">&copy; 2024 Zenith Bank</span><span>Privacy Policy &middot; Terms &middot; Security</span></div>
+</div>
+</footer>
+
+<button class="btt" id="btt"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script>
+var DATA={
+  name:"Zenith Bank",
+  badge:"Z",
+  type:"Banking Institution",
+  verified:"Verified Institution",
+  description:"Zenith Bank is one of Nigeria's leading financial institutions, providing a comprehensive range of financial services including personal banking, business banking, corporate banking, and digital banking solutions. The Yola Main Branch offers full-service banking with modern facilities, ATM access, and a dedicated customer service team.",
+  qaTabs:["Branches","ATMs","Services","Hours","Contact"],
+  overviewFacts:[
+    {label:"Institution Type",value:"Commercial Bank"},
+    {label:"Branch Type",value:"Full Service"},
+    {label:"Location",value:"Yola, Adamawa"},
+    {label:"Branch Code",value:"ZB-YL-001"},
+    {label:"Established",value:"1990"},
+    {label:"Total Branches",value:"500+ nationwide"}
+  ],
+  services:[
+    {cat:"Personal Banking",items:["Savings Accounts","Current Accounts","Fixed Deposits","Debit & Credit Cards","Fund Transfers","Personal Loans","Mortgage Loans"]},
+    {cat:"Business Banking",items:["Business Accounts","Corporate Banking","POS Services","Merchant Services","Trade Finance","Payroll Services","Business Loans"]}
+  ],
+  branch:[
+    {label:"Branch Name",value:"Yola Main Branch"},
+    {label:"Branch Type",value:"Full Service"},
+    {label:"Address",value:"123 Bank Road, Yola, Adamawa State"},
+    {label:"Phone",value:"+234 700 555 0300"},
+    {label:"Opening Hours",value:"Mon-Fri 8:00 AM - 4:00 PM"},
+    {label:"Branch Code",value:"ZB-YL-001"}
+  ],
+  atmFeatures:["Cash Withdrawal","Balance Enquiry","Fund Transfers","Mini Statement","Card Services","Bill Payments","Airtime Purchase","Cheque Deposit"],
+  bankingHours:{
+    days:["MON","TUE","WED","THU","FRI","SAT"],
+    customer:["8:00-4:00","8:00-4:00","8:00-4:00","8:00-4:00","8:00-4:00","9:00-1:00"],
+    atm:["24 HRS","24 HRS","24 HRS","24 HRS","24 HRS","24 HRS"]
+  },
+  branchServices:["Account Opening","Cash Deposit","Cash Withdrawal","Fund Transfers","Card Services","Customer Support","Cheque Services","Business Banking","POS Services","Loan Applications","FX Services","Investment Advisory"],
+  digital:[
+    {icon:"\u{1F4F1}",name:"Mobile Banking",desc:"iOS & Android app with full banking features"},
+    {icon:"\u{1F4BB}",name:"Internet Banking",desc:"Web-based banking for all transactions"},
+    {icon:"\u{1F4F2}",name:"USSD Banking",desc:"Bank using any phone with *966#"},
+    {icon:"\u{1F3E6}",name:"ATM Network",desc:"500+ ATMs nationwide, 24/7 access"},
+    {icon:"\u{1F4B3}",name:"Card Services",desc:"Verve, Visa, Mastercard available"},
+    {icon:"\u{1F4F1}",name:"POS Terminal",desc:"Merchant payment solutions"}
+  ],
+  security:[
+    "Never share your PIN or password with anyone, including bank staff",
+    "Never share OTP (One-Time Password) sent to your phone",
+    "Beware of impersonation calls or emails claiming to be from the bank",
+    "Always use official bank channels for transactions",
+    "Report suspicious activity immediately to customer service",
+    "Cover the keypad when entering your PIN at ATMs"
+  ],
+  mapInfo:[
+    {label:"Address",value:"123 Bank Road, Yola, Adamawa State"},
+    {label:"Landmark",value:"Opposite Yola Market"},
+    {label:"Distance from City Center",value:"1.5 km"}
+  ],
+  contacts:[
+    {section:"Customer Service",items:[
+      {label:"Phone",value:"+234 700 555 0300",icon:"\u260E"},
+      {label:"Email",value:"customercare@zenithbank.ng",icon:"\u2709"},
+      {label:"Website",value:"www.zenithbank.ng",icon:"\u{1F310}"}
+    ]},
+    {section:"Branch",items:[
+      {label:"Branch Phone",value:"+234 807 555 0301",icon:"\u260E"},
+      {label:"Address",value:"123 Bank Road, Yola",icon:"\u{1F4CD}"},
+      {label:"WhatsApp",value:"+234 807 555 0302",icon:"\u{1F4AC}"}
+    ]}
+  ],
+  nearby:[
+    {name:"Zenith Bank ATM Gallery",desc:"ATM only &bull; 0.5 km away",dist:"0.5 km"},
+    {name:"Zenith Bank Jimeta Branch",desc:"Full service &bull; 2.3 km away",dist:"2.3 km"},
+    {name:"Zenith Bank Girei Branch",desc:"Full service &bull; 5.1 km away",dist:"5.1 km"}
+  ],
+  faqs:[
+    {q:"What are the branch opening hours?",a:"The branch is open Monday to Friday from 8:00 AM to 4:00 PM, and Saturday from 9:00 AM to 1:00 PM. The ATM is available 24 hours daily."},
+    {q:"Does this branch offer account opening?",a:"Yes, you can open savings, current, and fixed deposit accounts at this branch. Bring a valid ID and utility bill."},
+    {q:"Is an ATM available at this branch?",a:"Yes, there are multiple ATMs available 24 hours a day with cash withdrawal, transfer, and bill payment features."},
+    {q:"What services are available at this branch?",a:"This is a full-service branch offering account opening, deposits, withdrawals, transfers, card services, loans, and business banking."},
+    {q:"Where is the nearest branch?",a:"The nearest branches are Jimeta Branch (2.3 km) and Girei Branch (5.1 km). Check the Nearby Branches section for details."},
+    {q:"How can I contact customer service?",a:"Call 700 555 0300, email customercare@zenithbank.ng, or use the mobile banking app for live chat support."}
+  ]
+};
+
+function render(d){
+  document.title=d.name+" — Bank Details";
+  document.getElementById('mbName').textContent=d.name;
+  document.getElementById('mbType').textContent=d.type;
+  document.getElementById('bankName').textContent=d.name;
+  document.getElementById('bankType').textContent=d.type;
+  document.getElementById('bankVerify').textContent=d.verified;
+  document.getElementById('corpLogo').textContent=d.badge;
+  document.getElementById('overviewText').textContent=d.description;
+  document.getElementById('footName').textContent=d.name;
+  document.getElementById('footCopy').textContent='\u00A9 2024 '+d.name;
+  document.getElementById('mapLabel').textContent=d.name+" — Yola Branch";
+  /* Quick-access tabs */
+  document.getElementById('qaBar').innerHTML=d.qaTabs.map(function(t,i){
+    return '<button class="qa-tab'+(i===0?' active':'')+'" onclick="document.getElementById(\'overviewPanel\').scrollIntoView({behavior:\'smooth\'})">'+t+'</button>';
+  }).join('');
+  /* Overview facts */
+  document.getElementById('overviewFacts').innerHTML=d.overviewFacts.map(function(f){
+    return '<div class="ov-fact"><span>'+f.label+'</span><span>'+f.value+'</span></div>';
+  }).join('');
+  /* Services */
+  document.getElementById('svcDir').innerHTML=d.services.map(function(s){
+    return '<div class="svc-cat"><h3>'+s.cat+'</h3><ul>'+s.items.map(function(it){return '<li>'+it+'</li>';}).join('')+'</ul></div>';
+  }).join('');
+  /* Branch info */
+  document.getElementById('branchInfo').innerHTML=d.branch.map(function(b){
+    return '<div class="br-row"><span>'+b.label+'</span><span>'+b.value+'</span></div>';
+  }).join('');
+  /* ATM features */
+  document.getElementById('atmFeatures').innerHTML=d.atmFeatures.map(function(f){
+    return '<div class="atm-feat">'+f+'</div>';
+  }).join('');
+  /* Banking hours table */
+  var bh=d.bankingHours;
+  var ht='<thead><tr><th></th>'+bh.days.map(function(dy){return '<th>'+dy+'</th>';}).join('')+'</tr></thead><tbody>';
+  ht+='<tr><td>Customer Service</td>'+bh.customer.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';
+  ht+='<tr class="atm-row"><td>ATM</td>'+bh.atm.map(function(a){return '<td>'+a+'</td>';}).join('')+'</tr>';
+  ht+='</tbody>';
+  document.getElementById('bhTable').innerHTML=ht;
+  /* Branch services checkmarks */
+  document.getElementById('chkGrid').innerHTML=d.branchServices.map(function(s){
+    return '<div class="chk-item"><span class="check">\u2713</span>'+s+'</div>';
+  }).join('');
+  /* Digital banking */
+  document.getElementById('digitalGrid').innerHTML=d.digital.map(function(di){
+    return '<div class="digital-card"><div class="dico">'+di.icon+'</div><b>'+di.name+'</b><small>'+di.desc+'</small></div>';
+  }).join('');
+  /* Security */
+  document.getElementById('secList').innerHTML=d.security.map(function(s){
+    return '<div class="sec-item"><span class="sico">\u26A0</span>'+s+'</div>';
+  }).join('');
+  /* Map info */
+  document.getElementById('mapInfo').innerHTML=d.mapInfo.map(function(m){
+    return '<div class="map-info-row"><span class="ico">\u25C6</span><div><small>'+m.label+'</small>'+m.value+'</div></div>';
+  }).join('');
+  /* Contact */
+  document.getElementById('contactGrid').innerHTML=d.contacts.map(function(cs){
+    return '<div class="contact-section"><h3>'+cs.section+'</h3><div class="contact-list">'+cs.items.map(function(c){
+      return '<div class="contact-row"><span class="ico">'+c.icon+'</span><div><small>'+c.label+'</small>'+c.value+'</div></div>';
+    }).join('')+'</div></div>';
+  }).join('');
+  var allContacts=(d.contacts[0]&&d.contacts[0].items||[]).concat(d.contacts[1]&&d.contacts[1].items||[]);
+  if(allContacts[1])document.getElementById('footAddr').textContent=allContacts[1].value;
+  if(allContacts[0])document.getElementById('footPhone').textContent=allContacts[0].value;
+  if(allContacts[1])document.getElementById('footEmail').textContent=allContacts[1].value;
+  if(allContacts[2])document.getElementById('footWeb').textContent=allContacts[2].value;
+  /* Nearby */
+  document.getElementById('nearbyList').innerHTML=d.nearby.map(function(n){
+    return '<a href="#" class="near-item"><span class="nico">'+n.name.charAt(0)+'</span><div><b>'+n.name+'</b><small>'+n.desc+'</small></div><span class="ndist">'+n.dist+'</span></a>';
+  }).join('');
+  /* FAQs */
+  document.getElementById('faqList').innerHTML=d.faqs.map(function(f,i){
+    return '<div class="faq-item" id="faq'+i+'"><div class="faq-q" onclick="toggleFaq('+i+')">'+f.q+'<span class="toggle">+</span></div><div class="faq-a"><div class="faq-a-inner">'+f.a+'</div></div></div>';
+  }).join('');
+}
+
+function toggleFaq(i){
+  var item=document.getElementById('faq'+i);
+  var a=item.querySelector('.faq-a');
+  if(item.classList.contains('open')){
+    item.classList.remove('open');a.style.maxHeight='0';
+  }else{
+    item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';
+  }
+}
+
+var ro=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){en.target.classList.add('visible');ro.unobserve(en.target);}
+  });
+},{threshold:0.1});
+
+window.addEventListener('load',function(){
+  if(window.naviProfileLoaded||!document.getElementById('loader'))return;
+  render(DATA);
+  document.querySelectorAll('.panel').forEach(function(p){ro.observe(p);});
+});
+
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){if(window.scrollY>400)btt.classList.add('show');else btt.classList.remove('show');});
+btt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="/components/naviinfo/details/database-detail.js"></script>
+</body>
+</html>
+

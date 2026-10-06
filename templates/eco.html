@@ -8,15 +8,41 @@
     <div class="hero-glow" aria-hidden="true"></div>
 </header>
 
-  <header class="site-header controls">
+<!--<header class="site-header controls">
     <div class="header-inner">
       <a class="brand" style="display: none;" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z" stroke="#f5f0e0" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="#c9a84c"/></svg></span><span class="brand-text"><span class="brand-name">Yola EcoInfo</span><span class="brand-tag">Adamawa · Nigeria</span></span></a>
       <nav class="nav" id="primary-nav" aria-label="Primary"><a href="index.html" class="active" aria-current="page">Dashboard</a><a href="/components/ecoinfo/atmosphere.html">Atmosphere</a><a href="/components/ecoinfo/classify.html">AI Classifier</a><a href="/components/ecoinfo/report.html">Report Dumping</a><a href="/components/ecoinfo/recycling.html">Recycling</a><a href="/components/ecoinfo/schedule.html">Schedule</a><a href="/components/ecoinfo/learn.html">Learn</a><a href="/components/ecoinfo/community.html">Community</a><a href="/components/admin/admin-eco.html">Admin</a></nav>
     </div>
-  </header>
+  </header>-->
+
+  <section class="info-section">
+
+  
+    <div class="controls">
+        <!--<div class="search-bar">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input id="searchInput" placeholder="Search news, organizations, events, or programs..." type="text" aria-label="Search community information" />
+            <button type="button" class="clear-btn" id="clearBtn" aria-label="Clear search" hidden>
+                <i class="fas fa-times"></i>
+            </button>
+        </div>-->
+        <div class="filter-chips" role="tablist" aria-label="Filter by category" style="border-radius: inherit; margin: 4px 6px 0px 6px;">
+            <button class="chip active" data-filter="Dashboard" role="tab" aria-selected="true">Dashboard</button>
+            <button class="chip" data-filter="Atmosphere" role="tab">Atmospheric conditions</button>
+            <button class="chip" data-filter="Classifier" role="tab">AI Classifier</button>
+            <button class="chip" data-filter="Report" role="tab">Report dumping</button>
+            <button class="chip" data-filter="Recycling" role="tab">Recycling waste</button>
+            <button class="chip" data-filter="Schedule" role="tab">Schedule pick-ups</button>
+            <button class="chip" data-filter="Learn" role="tab">Learn tips</button>
+            <button class="chip" data-filter="Community" role="tab">Community</button>
+            <!--<button class="chip" data-filter="Initiatives" role="tab">Initiatives</button>
+            <button class="chip" data-filter="Radio and TV stations" role="tab">Radio & TV stations</button>-->
+        </div>
+    </div>
 
 
-<section class="info-section">
+
+<div class="section3" data-category="Dashboard">
 
   <section class="hero" style="margin-top: 200px; border-radius: 40px;">
     <div class="container" style="padding: 20px !important;">
@@ -118,6 +144,839 @@
       </div>
     </div>
   </section>
+  
+</div>
+
+
+<div class="section3" data-category="Atmosphere">
+
+    
+  <header class="hero" style="border-radius: 50px; margin-top: 50px; padding: 50px;" aria-label="About Yola AI Info Hub">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner" style="margin-bottom: 35px; justify-items: center; justify-self: center; text-align: center;">
+        <span class="eyebrow">Live from Open-Meteo · Yola 9.20°N, 12.50°E</span>
+        <h1>Atmospheric conditions</h1>
+        <p class="lead">Everything happening in the air above Yola right now — and what it means for your commute, your health and your work outdoors.</p>
+        <div class="hero-actions">
+          <button class="btn btn-gold" id="refresh">Refresh now</button>
+          <a class="btn btn-outline" href="#air">Jump to air quality</a>
+        </div>
+    </div>
+  </header>
+
+  <section class="hero" style="display: none;">
+    <div class="container">
+      
+      <div class="now-card" id="now" style="margin-top:30px">
+        <div class="skeleton" style="height:28px;width:45%"></div>
+        <div class="skeleton" style="height:70px;margin-top:14px"></div>
+      </div>
+      <p class="small" id="status" style="color:rgba(245,240,224,0.6);margin-top:14px">Loading live conditions…</p>
+    </div>
+  </section>
+
+  <div class="">
+      <!-- AetherFlow Weather Dashboard -->
+    <div style="flex-direction: column; margin-top: 100px;" class="section-eco aetherflow-container">
+      <!--<h2 class="section-eco-h2" >Weather and Atmospheric conditions</h2>-->
+      
+      <!--<div class="dashboard" id="dashboard" style="display: none;">-->
+      <div class="dashboard" id="dashboard" >
+        <!-- Hero Section -->
+        <section class="bento-card hero-card">
+          <div class="hero-bg-icon">
+            <svg fill="currentColor" height="240" viewBox="0 0 24 24" width="240"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+          </div>
+          <div class="hero-header">
+            <div class="location-info">
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path></svg>
+              <h2>Yola, Adamawa</h2>
+            </div>
+            <p class="current-date" id="current-date">Monday, 12 June</p>
+          </div>
+          <div class="weather-main">
+            <div class="temp-display">
+              <span class="temp-val" id="hero-temp">22°</span>
+              <div class="temp-details">
+                <span class="weather-desc" id="weather-desc">Partly Cloudy</span>
+                <span class="feels-like" id="feels-like">Feels like 24° • H: 26° L: 18°</span>
+              </div>
+            </div>
+            <div class="quick-stats">
+              <div class="stat-item">
+                <svg class="icon icon-sm" style="color: var(--primary); margin-bottom: 4px;" viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.47-8 11.72 0 4.44 3.58 8.03 8 8.03s8-3.58 8-8.03c0-3.25-2.67-7.17-8-11.72z"></path></svg>
+                <span class="stat-val" id="precip-val">12%</span>
+                <span class="stat-label">Precip</span>
+              </div>
+              <div class="stat-item">
+                <svg class="icon icon-sm" style="color: var(--primary); margin-bottom: 4px;" viewBox="0 0 24 24"><path d="M13.96 16.04c.8 0 1.5-.3 2.11-.91.61-.61.91-1.31.91-2.11s-.3-1.5-.91-2.11c-.61-.61-1.31-.91-2.11-.91-.8 0-1.5.3-2.11.91-.61.61-.91 1.31-.91 2.11s.3 1.5.91 2.11c.61.61 1.31.91 2.11.91zM7 11h3V9H7v2zm0 4h10v-2H7v2zm0 4h7v-2H7v2z"></path></svg>
+                <span class="stat-val" id="wind-val">14 km/h</span>
+                <span class="stat-label">Wind</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5-Day Forecast -->
+        <section class="bento-card forecast-card">
+          <span class="card-label">5-Day Forecast</span>
+          <div class="forecast-list" id="forecast-list">
+            <div class="forecast-row">
+              <span class="day-name">Tue</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">24°</span>
+            </div>
+            <div class="forecast-row">
+              <span class="day-name">Wed</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">24°</span>
+            </div>
+            <div class="forecast-row">
+              <span class="day-name">Thurs</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">33°</span>
+            </div>
+            <div class="forecast-row">
+              <span class="day-name">Fri</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">37°</span>
+            </div>
+            <div class="forecast-row">
+              <span class="day-name">Sat</span>
+              <svg class="icon-sm" style="color: #eab308" viewBox="0 0 24 24"><circle cx="12" cy="12" fill="currentColor" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"></path></svg>
+              <div class="temp-bar"><div class="temp-range" style="left: 25%; right: 25%"></div></div>
+              <span class="day-temp">21°</span>
+            </div>
+          </div>
+          <a href="#daily">
+          <button class="view-report">
+            
+              View full report 
+              <svg class="icon-sm" style="fill:none; stroke:currentColor; stroke-width:2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7"></path></svg>
+            
+          </button>
+          </a>
+        </section>
+
+        
+        <!-- Sunrise & Sunset -->
+        <section class="bento-card sun-card">
+          <span class="card-label">Sunrise &amp; Sunset</span>
+          <div class="sun-grid">
+            <div class="sun-item">
+              <div class="sun-icon sunrise-icon">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.92h-2V3.5h2V.58zm1.28 5.67l1.79-1.8 1.41 1.41-1.8 1.79-1.4-1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6h12c0-3.31-2.69-6-6-6zm-8 11h16c0-4.42-3.58-8-8-8s-8 3.58-8 8z" fill="currentColor"></path></svg>
+              </div>
+              <div class="sun-info">
+                <span>Sunrise</span>
+                <span class="sun-time" id="sunrise-time">05:42 AM</span>
+              </div>
+            </div>
+            <div class="sun-item">
+              <div class="sun-icon sunset-icon">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12.12 2.02a10.01 10.01 0 0 0-4.03 9.47 10.01 10.01 0 0 0 8.43 8.43 10 10 0 0 0 9.47-4.03 10.1 10.1 0 0 1-7.91-7.91 10.1 10.1 0 0 1-5.96-5.96z" fill="currentColor"></path></svg>
+              </div>
+              <div class="sun-info">
+                <span>Sunset</span>
+                <span class="sun-time" id="sunset-time">06:14 PM</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Hourly Forecast -->
+        <section class="bento-card hourly-card">
+          <span class="card-label">Hourly Forecast</span>
+          <div class="hourly-scroll" id="hourly-scroll">
+            <div class="hour-item">
+              <span class="hour-time">NOW</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">22°</span>
+            </div>
+            <div class="hour-item">
+              <span class="hour-time">--</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">--°</span>
+            </div>
+            <div class="hour-item">
+              <span class="hour-time">--</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">--°</span>
+            </div>
+            <div class="hour-item">
+              <span class="hour-time">--</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">--°</span>
+            </div>
+            <div class="hour-item">
+              <span class="hour-time">--</span>
+              <svg class="icon" style="color: var(--primary)" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"></path></svg>
+              <span class="hour-temp">--°</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- UV Index -->
+        <section class="bento-card metric-card">
+          <span class="card-label">UV Index</span>
+          <div style="display: flex; flex-direction: column; ">
+            <span class="metric-val" id="uv-index">4</span>
+            <span class="metric-desc" id="uv-status">Moderate</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="uv-progress" style="width: 33%"></div>
+          </div>
+        </section>
+
+
+        <!-- Visibility -->
+        <section class="bento-card metric-card">
+          <span class="card-label">Visibility</span>
+          <div style="display: flex; flex-direction: column; ">
+            <span class="metric-val" id="visibility-val">10 km</span>
+            <span class="metric-desc">Perfectly clear sky</span>
+          </div>
+          <div class="metric-tag" style="color: var(--secondary)">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"></path></svg>
+            <span>Optimal</span>
+          </div>
+        </section>
+
+        <!-- Air Quality -->
+        <section class="bento-card metric-card">
+          <span class="card-label">Air Quality</span>
+          <div style="display: flex; flex-direction: column; ">
+            <span class="metric-val" id="air-quality-val">42</span>
+            <span class="metric-desc" id="air-quality-status">Good (PM2.5)</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="air-quality-progress" style="width: 42%; background-color: var(--secondary);"></div>
+          </div>
+        </section>
+
+        
+        <!-- Humidity -->
+        <section class="bento-card metric-card">
+          <span class="card-label">Humidity</span>
+          <div style="display: flex; flex-direction: column; ">
+            <span class="metric-val" id="humidity-val">64%</span>
+            <span class="metric-desc" id="dew-point">The dew point is 15°</span>
+          </div>
+          <div class="metric-tag" style="color: var(--primary)">
+            <svg class="icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" fill="currentColor"></path></svg>
+            <span>Normal Range</span>
+          </div>
+        </section>
+        
+        <!-- Pressure -->
+        <section class="bento-card pressure-card pressure-card-desktop" style="gap:0;">
+          <span class="card-label">Pressure</span>
+          <div class="pressure-content">
+            <div class="gauge-container">
+              <svg height="128" style="transform: rotate(-90deg)" width="128">
+                <circle cx="64" cy="64" fill="none" r="58" stroke="var(--surface-container)" stroke-dasharray="270 360" stroke-linecap="round" stroke-width="4"></circle>
+                <circle cx="64" cy="64" fill="none" r="58" stroke="var(--primary)" stroke-dasharray="180 360" stroke-linecap="round" stroke-width="4"></circle>
+              </svg>
+              <div class="gauge-text" style="position: absolute;">
+                <span class="gauge-val" id="pressure-val">1012</span>
+                <span class="gauge-unit">hPa</span>
+              </div>
+            </div>
+            <p class="pressure-text">The atmospheric pressure is stable and within normal ranges for the current season.</p>
+          </div>
+        </section>
+
+        
+        <!-- Pressure Mobile -->
+        <section class="bento-card pressure-card pressure-card-mobile" style="gap:0;">
+          <span class="card-label">Pressure</span>
+          <div class="pressure-content">
+            <div class="gauge-container">
+              <svg height="128" style="transform: rotate(-90deg)" width="128">
+                <circle cx="64" cy="64" fill="none" r="58" stroke="var(--surface-container)" stroke-dasharray="270 360" stroke-linecap="round" stroke-width="4"></circle>
+                <circle cx="64" cy="64" fill="none" r="58" stroke="var(--primary)" stroke-dasharray="180 360" stroke-linecap="round" stroke-width="4"></circle>
+              </svg>
+              <div class="gauge-text" style="position: absolute;">
+                <span class="gauge-val" id="pressure-val">1012</span>
+                <span class="gauge-unit">hPa</span>
+              </div>
+            </div>
+            <p class="pressure-text">The atmospheric pressure is stable and within normal ranges for the current season.</p>
+          </div>
+        </section>
+
+        
+      </div>
+      
+    </div>
+  </div>
+
+  <section class="section-tight">
+    <div class="container" id="alerts" style="display:grid;gap:12px; padding: 50px"></div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="padding: 50px;">
+      <div class="eyebrow">Next few hours</div>
+      <h2>Hour-by-hour outlook</h2>
+      <p class="lead">Tempreature trend analytic</p>
+      <div class="hourly-strip" id="hourly" aria-label="Hourly forecast"></div>
+      <div class="card" style="padding:20px;margin-top:20px" id="chart"></div>
+    </div>
+  </section>
+
+  <section class="section" id="aq" style="background:var(--cream-soft)">
+    <div class="container">
+      <div class="eyebrow">Breathing &amp; visibility</div>
+      <h2>Air quality and atmospheric clarity</h2>
+      <div class="grid grid-2" style="margin-top:22px;align-items:start">
+        <div class="card" style="padding:26px">
+          <h3 style="margin-top:0">Air quality</h3>
+          <div id="air"></div>
+        </div>
+        <div class="card" style="padding:26px">
+          <h3 style="margin-top:0">Clarity for driving</h3>
+          <div id="clarity"></div>
+          <label class="checkline" style="margin-top:16px">
+            <input type="checkbox" id="dust-sim">
+            <span class="small">Preview a heavy harmattan dust event (what the score looks like at 1.5&nbsp;km visibility)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow">Week ahead</div>
+      <h2>7-day outlook for Yola</h2>
+      <div class="grid grid-4" id="daily" style="margin-top:22px"></div>
+      <p class="help">Data: Open-Meteo forecast and air-quality APIs. Driving clarity is an EcoInfo index combining visibility, dust, precipitation and PM10.</p>
+    </div>
+  </section>
+
+</div>
+
+
+
+<div class="section3" data-category="Classifier">
+
+  <header class="hero" style="border-radius: 50px; margin-top: 50px; padding: 50px;" aria-label="About Yola AI Info Hub">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner" style="margin-bottom: 35px; justify-items: center; justify-self: center; text-align: center;">
+        <span class="eyebrow">AI-assisted · works offline with local rules</span>
+        <h1>Your AI objects classifier</h1>
+        <h3>What is this, and how do I get rid of it safely?</h3>
+        <p class="lead">Photograph the item, describe it, or both. EcoInfo classifies it as recyclable, biodegradable or hazardous and gives you step-by-step disposal guidance tuned to what Yola's centres actually accept.</p>
+        <div class="hero-actions">
+          <a href="#dropzone"><button class="btn btn-gold" id="">Classify now</button></a>
+          <a class="btn btn-outline" href="../../index.html">Return home</a>
+        </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-2" style="gap:30px;align-items:start">
+
+        <form class="card" style="padding:26px" id="classify-form" novalidate>
+          <div class="eyebrow">Step 1 — evidence</div>
+          <h2 style="margin:.4rem 0 1rem">Tell EcoInfo about the item</h2>
+
+          <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload photos of the item">
+            <div style="font-size:1.8rem">📷</div>
+            <p style="margin:.4rem 0 0"><strong>Tap to add a photo</strong> or drag one here</p>
+            <p class="small muted" style="margin:.2rem 0 0">Up to 3 images · resized on your device before upload</p>
+          </div>
+          <input type="file" id="photos" accept="image/*" capture="environment" multiple hidden>
+          <div class="thumbs" id="thumbs"></div>
+
+          <div class="field" style="margin-top:20px">
+            <label class="label" for="description">Describe the item</label>
+            <textarea class="textarea" id="description" placeholder="e.g. an empty plastic bottle with a metal cap, or a cracked phone charger"></textarea>
+            <p class="help">Mention the material, size and whether it held food, chemicals or medicine.</p>
+          </div>
+
+          <div class="field">
+            <span class="label">Quick examples</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap" id="examples"></div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="context">Where is it from?</label>
+            <select class="select" id="context">
+              <option value="household">Household</option>
+              <option value="market or shop">Market or shop</option>
+              <option value="construction site">Construction site</option>
+              <option value="clinic or pharmacy">Clinic or pharmacy</option>
+              <option value="workshop or garage">Workshop or garage</option>
+              <option value="farm">Farm</option>
+              <option value="street or public space">Street or public space</option>
+            </select>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn btn-gold" type="submit" id="classify-btn">Classify item</button>
+            <button class="btn btn-ghost" type="button" id="reset-btn">Start over</button>
+          </div>
+          <p class="help">Photos are processed for classification only. Nothing is published or shared with other users.</p>
+        </form>
+
+        <div>
+          <div id="result"></div>
+          <div class="card" style="padding:22px;margin-top:18px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <h3 style="margin:0">Recent items</h3>
+              <button class="btn btn-ghost btn-sm" id="clear-history">Clear</button>
+            </div>
+            <div id="history" class="grid" style="gap:10px;margin-top:12px"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--cream-soft)">
+    <div class="container">
+      <div class="eyebrow">Golden rules</div>
+      <h2>Four habits that make every classification easier</h2>
+      <div class="grid grid-4" style="margin-top:22px">
+        <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-soap" aria-hidden="true"></i></div><h3>Clean and dry</h3><p class="small muted">Rinse containers. Food residue contaminates whole batches of recyclables and kills their value.</p></div>
+        <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-shuffle" aria-hidden="true"></i></div><h3>Separate materials</h3><p class="small muted">Remove metal lids from glass, caps from bottles, batteries from devices before drop-off.</p></div>
+        <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-fire" aria-hidden="true"></i></div><h3>Never burn</h3><p class="small muted">Burning plastics, nylon and e-waste releases dioxins and heavy metals into the air you breathe.</p></div>
+        <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i></div><h3>Isolate hazards</h3><p class="small muted">Medicines, sharps, paints, pesticides and batteries always go to the specialist intake point.</p></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+
+<div class="section3" data-category="Report">
+
+  <header class="hero" style="border-radius: 50px; margin-top: 50px; padding: 50px;" aria-label="About Yola AI Info Hub">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner" style="margin-bottom: 35px; justify-items: center; justify-self: center; text-align: center;">
+      <span class="eyebrow">Community waste enforcement</span>
+      <h1>Report illegal dumping</h1>
+      <p class="lead">Fresh dump sites are cheap to clear; ignored ones become permanent. Send photo evidence and an exact location, and follow the clean-up with your tracking code.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#form-card">File a report</a>
+        <a class="btn btn-outline" href="#track">Track an existing report</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-3" style="margin-bottom:34px">
+        <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-camera" aria-hidden="true"></i></div><h3>1. Capture evidence</h3><p class="small muted">Photograph the site from a safe distance. Include a landmark so the crew can identify it.</p></div>
+        <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-location-dot" aria-hidden="true"></i></div><h3>2. Pin the location</h3><p class="small muted">Use your GPS or tap the map. Accurate pins cut response time dramatically.</p></div>
+        <div class="card" style="padding:22px"><div class="icon-badge feature-icon"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></div><h3>3. Track the action</h3><p class="small muted">Your code shows review, crew assignment and the resolved date once the site is cleared.</p></div>
+      </div>
+
+      <div class="grid grid-2" style="gap:30px;align-items:start">
+        <div class="card" style="padding:26px" id="form-card">
+          <div class="eyebrow">Report details</div>
+          <h2 style="margin:.4rem 0 1rem">Tell us what you found</h2>
+          <form id="report-form" novalidate>
+            <div class="field">
+              <label class="label" for="wasteType">Type of waste <span class="muted">(required)</span></label>
+              <select class="select" id="wasteType" aria-describedby="err-wasteType">
+                <option value="">Select…</option>
+                <option>Household mixed</option>
+                <option>Plastic and nylon</option>
+                <option>Organic market waste</option>
+                <option>Construction rubble</option>
+                <option>E-waste</option>
+                <option>Medical waste</option>
+                <option>Chemical / oil</option>
+                <option>Abandoned vehicle or scrap</option>
+                <option>Animal carcass</option>
+              </select>
+              <p class="error" id="err-wasteType"></p>
+            </div>
+
+            <div class="field">
+              <span class="label">Severity</span>
+              <div class="radio-row">
+                <label class="radio-chip"><input type="radio" name="severity" value="low"> Low — a few bags</label>
+                <label class="radio-chip"><input type="radio" name="severity" value="medium" checked> Medium — a growing pile</label>
+                <label class="radio-chip"><input type="radio" name="severity" value="high"> High — blocking a drain or road</label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="landmark">Nearest landmark <span class="muted">(required)</span></label>
+              <input class="input" id="landmark" placeholder="e.g. behind Karewa market drainage" aria-describedby="err-landmark">
+              <p class="error" id="err-landmark"></p>
+            </div>
+
+            <div class="field">
+              <label class="label" for="ward">Ward / area</label>
+              <select class="select" id="ward">
+                <option>Jimeta North</option>
+                <option>Doubeli</option>
+                <option>Luggere</option>
+                <option>Yola Town</option>
+                <option>Yolde Pate</option>
+                <option>MAUTECH / Girei Road</option>
+                <option>Damilu</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="label" for="occurred">When did you see it?</label>
+              <input class="input" type="datetime-local" id="occurred">
+            </div>
+
+            <div class="field">
+              <label class="label" for="description">Description <span class="muted">(required)</span></label>
+              <textarea class="textarea" id="description" placeholder="What is dumped, how large is it, is it burning, is it blocking anything?" aria-describedby="err-description"></textarea>
+              <p class="error" id="err-description"></p>
+            </div>
+
+            <div class="field">
+              <span class="label">Photo evidence</span>
+              <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Add evidence photos">
+                <div style="font-size:1.7rem">🖼️</div>
+                <p style="margin:.4rem 0 0"><strong>Add up to 4 photos</strong></p>
+                <p class="small muted" style="margin:.2rem 0 0">Resized on your device — safe on mobile data</p>
+              </div>
+              <input type="file" id="evidence" accept="image/*" capture="environment" multiple hidden>
+              <div class="thumbs" id="thumbs"></div>
+            </div>
+
+            <div class="field">
+              <span class="label">Location</span>
+              <div id="map" class="map map-sm"></div>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px">
+                <button class="btn btn-ghost btn-sm" type="button" id="locate">Use my location</button>
+                <span class="small muted">Pinned: <strong id="coord-readout">not set</strong></span>
+              </div>
+              <input type="hidden" id="lat"><input type="hidden" id="lon">
+              <p class="help">Tap the map to place or move the pin. Coordinates are optional but speed up response a lot.</p>
+            </div>
+
+            <div class="grid grid-2">
+              <div class="field">
+                <label class="label" for="name">Your name <span class="muted">(optional)</span></label>
+                <input class="input" id="name" placeholder="Leave blank to stay anonymous">
+              </div>
+              <div class="field">
+                <label class="label" for="phone">Phone <span class="muted">(optional)</span></label>
+                <input class="input" id="phone" placeholder="0800 000 0000" aria-describedby="err-phone">
+                <p class="error" id="err-phone"></p>
+              </div>
+            </div>
+
+            <label class="checkline" style="margin-bottom:12px">
+              <input type="checkbox" id="anonymous"> <span>Hide my details from crews — contact me only if essential</span>
+            </label>
+            <label class="checkline" style="margin-bottom:18px">
+              <input type="checkbox" id="consent"> <span>I confirm this report is accurate to the best of my knowledge</span>
+            </label>
+
+            <div class="hero-actions">
+              <button class="btn btn-gold" type="submit" id="submit-btn">Submit report</button>
+              <button class="btn btn-ghost" type="reset">Clear form</button>
+            </div>
+            <p class="help">No connection? The report is saved on your device and can be resubmitted later.</p>
+          </form>
+        </div>
+
+        <div>
+          <div id="success" class="hidden" aria-live="polite"></div>
+
+          <div class="card" style="padding:24px" id="track">
+            <div class="eyebrow">Tracking</div>
+            <h3 style="margin:.4rem 0 1rem">Check a report</h3>
+            <form id="track-form" style="display:flex;gap:10px;flex-wrap:wrap">
+              <input class="input" id="track-code" placeholder="YEC-2026-XXXXX" style="flex:1;min-width:180px">
+              <button class="btn btn-emerald" type="submit">Track</button>
+            </form>
+            <div id="track-result" style="margin-top:16px"></div>
+          </div>
+
+          <div class="card" style="padding:24px;margin-top:18px">
+            <h3 style="margin:0 0 12px">Your reports on this device</h3>
+            <div id="my-reports" class="grid" style="gap:10px"></div>
+          </div>
+
+          <div class="card card-emerald" style="padding:24px;margin-top:18px">
+            <h3>Emergencies</h3>
+            <p>For burning waste, chemical spills or medical waste in a public space, call the environmental hotline immediately rather than waiting for a scheduled crew.</p>
+            <a class="btn btn-gold btn-sm" href="tel:+2348000000000">Call the hotline</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+
+
+<div class="section3" data-category="Recycling">
+
+  <header class="hero" style="border-radius: 50px; margin-top: 50px; padding: 50px;" aria-label="About Yola AI Info Hub">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner" style="margin-bottom: 35px; justify-items: center; justify-self: center; text-align: center;">
+      <span class="eyebrow">Directory · updated for Yola North, Yola South &amp; Girei</span>
+      <h1>Where your waste is worth something</h1>
+      <p class="lead">Buy-back hubs that pay per kilogram, free e-waste intake, composting sites and the specialist point for hazardous material — with hours, phone numbers and directions.</p>
+      <div class="hero-actions">
+        <button class="btn btn-gold" id="locate">Sort by distance from me</button>
+        <a class="btn btn-outline" href="classify.html">Not sure what it is? Ask the AI</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="filters"></div>
+      <p class="small muted" id="count" style="margin-top:12px"></p>
+      <div id="map" class="map" style="margin:18px 0 26px"></div>
+      <div class="grid grid-3" id="centres"></div>
+      <p class="help">Hours can change during public holidays and the peak of the rains — call ahead for large loads. Spotted a centre we are missing? Tell us from the community page.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--cream-soft)">
+    <div class="container">
+      <div class="eyebrow">Get more for your waste</div>
+      <h2>Prepare before you go</h2>
+      <div class="grid grid-3" style="margin-top:20px">
+        <div class="card" style="padding:22px"><h3>Sort by material</h3><p class="small muted">Mixed bags get rejected or downgraded. Keep PET, nylon, metal, paper and glass in separate sacks.</p></div>
+        <div class="card" style="padding:22px"><h3>Rinse and dry</h3><p class="small muted">Clean material weighs less and sells for more. Wet cardboard is usually refused outright.</p></div>
+        <div class="card" style="padding:22px"><h3>Bulk up first</h3><p class="small muted">Accumulate a few kilograms before a trip — one journey with 10 kg beats five with 2 kg.</p></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+
+
+<div class="section3" data-category="Schedule">
+
+  <header class="hero" style="border-radius: 50px; margin-top: 50px; padding: 50px;" aria-label="About Yola AI Info Hub">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner" style="margin-bottom: 35px; justify-items: center; justify-self: center; text-align: center;">
+      <span class="eyebrow">Waste management</span>
+      <h1>Collection schedule &amp; household tracking</h1>
+      <p class="lead" id="provider">Loading provider…</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#zone-picker">Find my pickup days</a>
+        <a class="btn btn-outline" href="#log">Log my household waste</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section" id="zone-picker">
+  <div class="container">
+    <div class="field" style="max-width:460px">
+      <label class="label" for="zone">Your area</label>
+      <select class="select" id="zone"></select>
+      <p class="help" id="note"></p>
+    </div>
+    <div id="zone-detail" style="margin-top:20px"></div>
+  </div>
+  </section>
+
+  <section class="section" style="background:var(--cream-soft)">
+  <div class="container">
+    <div class="eyebrow">All wards</div>
+    <h2>Full city schedule</h2>
+    <div class="table-wrap" style="margin-top:18px">
+      <table>
+        <thead><tr><th>Area</th><th>General</th><th>Recyclables</th><th>Organic</th><th>Window</th></tr></thead>
+        <tbody id="all-zones"></tbody>
+      </table>
+    </div>
+  </div>
+  </section>
+
+  <section class="section" id="log">
+  <div class="container">
+    <div class="grid grid-2" style="gap:30px;align-items:start">
+      <form class="card" style="padding:26px" id="log-form">
+        <div class="eyebrow">Household tracking</div>
+        <h2 style="margin:.4rem 0 1rem">Log a bag of waste</h2>
+        <div class="field">
+          <label class="label" for="log-stream">Stream</label>
+          <select class="select" id="log-stream">
+            <option>General waste</option>
+            <option>Plastic</option>
+            <option>Paper &amp; cardboard</option>
+            <option>Metal</option>
+            <option>Glass</option>
+            <option>Organic</option>
+            <option>E-waste</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="log-kg">Approximate weight (kg)</label>
+          <input class="input" id="log-kg" type="number" min="0.1" step="0.1" placeholder="e.g. 3.5">
+          <p class="help">A full standard bin bag is roughly 5–8 kg.</p>
+        </div>
+        <label class="checkline" style="margin-bottom:16px">
+          <input type="checkbox" id="log-recycled"> <span>This was recycled, composted or sold — not sent to a dump</span>
+        </label>
+        <div class="hero-actions">
+          <button class="btn btn-gold" type="submit">Add entry</button>
+          <button class="btn btn-ghost" type="button" id="clear-log">Clear log</button>
+        </div>
+        <p class="help">Stored on this device only.</p>
+      </form>
+
+      <div class="card" style="padding:26px">
+        <h3 style="margin-top:0">Your recycling performance</h3>
+        <div class="grid grid-3" id="log-stats" style="margin:14px 0"></div>
+        <h4>Recent entries</h4>
+        <div id="log-list"></div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+</div>
+
+
+
+<div class="section3" data-category="Learn">
+
+  <header class="hero" style="border-radius: 50px; margin-top: 50px; padding: 50px;" aria-label="About Yola AI Info Hub">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner" style="margin-bottom: 35px; justify-items: center; justify-self: center; text-align: center;">
+      <span class="eyebrow">Knowledge base</span>
+      <h1>Learn, measure &amp; improve</h1>
+      <p class="lead">Guidance written for Yola's climate and waste streams, a carbon calculator built on local emission factors, and a quiz to sharpen what you know.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#calculator">Calculate my footprint</a>
+        <a class="btn btn-outline" href="#quiz-section">Take the quiz</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+  <div class="container">
+    <div class="eyebrow">Eco library</div>
+    <h2>Practical tips that actually apply here</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:18px 0" id="tip-filters"></div>
+    <div class="grid grid-3" id="tips"></div>
+  </div>
+  </section>
+
+  <section class="section" id="calculator" style="background:var(--cream-soft)">
+  <div class="container">
+    <div class="grid grid-2" style="gap:30px;align-items:start">
+      <form class="card" style="padding:26px" id="carbon-form">
+        <div class="eyebrow">Carbon calculator</div>
+        <h2 style="margin:.4rem 0 1rem">Your monthly household footprint</h2>
+        <div class="grid grid-2">
+          <div class="field"><label class="label" for="kwh">Grid electricity (kWh)</label><input class="input" id="kwh" type="number" min="0" step="1" placeholder="120"></div>
+          <div class="field"><label class="label" for="petrol">Generator petrol (litres)</label><input class="input" id="petrol" type="number" min="0" step="1" placeholder="40"></div>
+          <div class="field"><label class="label" for="carKm">Car travel (km)</label><input class="input" id="carKm" type="number" min="0" step="1" placeholder="300"></div>
+          <div class="field"><label class="label" for="bikeKm">Okada / keke (km)</label><input class="input" id="bikeKm" type="number" min="0" step="1" placeholder="150"></div>
+          <div class="field"><label class="label" for="lpg">Cooking gas (kg)</label><input class="input" id="lpg" type="number" min="0" step="0.5" placeholder="12"></div>
+          <div class="field"><label class="label" for="firewood">Firewood / charcoal (kg)</label><input class="input" id="firewood" type="number" min="0" step="1" placeholder="0"></div>
+          <div class="field"><label class="label" for="wasteKg">Waste sent to dump (kg)</label><input class="input" id="wasteKg" type="number" min="0" step="1" placeholder="45"></div>
+          <div class="field"><label class="label" for="burnKg">Waste burned (kg)</label><input class="input" id="burnKg" type="number" min="0" step="1" placeholder="0"></div>
+          <div class="field"><label class="label" for="water">Water used (m³)</label><input class="input" id="water" type="number" min="0" step="0.5" placeholder="9"></div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-gold" type="submit">Calculate</button>
+          <button class="btn btn-ghost" type="reset">Reset</button>
+        </div>
+        <p class="help">Estimates use published emission factors for Nigeria's grid, fuels and waste handling. Figures are indicative, not audited.</p>
+      </form>
+      <div id="carbon-result"></div>
+    </div>
+  </div>
+  </section>
+
+  <section class="section" id="quiz-section">
+  <div class="container" style="max-width:760px">
+    <div class="eyebrow">Test yourself</div>
+    <h2>Five questions on waste and air in Yola</h2>
+    <div id="quiz" style="margin-top:18px"></div>
+  </div>
+  </section>
+
+</div>
+
+
+<div class="section3" data-category="Community">
+
+  <header class="hero" style="border-radius: 50px; margin-top: 50px; padding: 50px;" aria-label="About Yola AI Info Hub">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner" style="margin-bottom: 35px; justify-items: center; justify-self: center; text-align: center;">
+      <span class="eyebrow">Togetherness</span>
+      <h1>The community half of the work</h1>
+      <p class="lead">Alerts from officials, clean-ups you can join this month, and a friendly ward rivalry over how much waste we keep out of drains and open plots.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="#events-section">Join a clean-up</a>
+        <a class="btn btn-outline" href="report.html">Report a dump site</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="section-tight">
+    <div class="container" id="alerts" style="display:grid;gap:12px"></div>
+  </section>
+
+  <section class="section" id="events-section">
+    <div class="container">
+      <div class="eyebrow">Upcoming</div>
+      <h2>Clean-ups and workshops</h2>
+      <div class="grid grid-4" id="events" style="margin-top:20px"></div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--cream-soft)">
+    <div class="container">
+      <div class="grid grid-2" style="gap:30px;align-items:start">
+        <div class="card" style="padding:26px">
+          <div class="eyebrow">Ward leaderboard</div>
+          <h3 style="margin:.4rem 0 1rem">Reports cleared and waste diverted</h3>
+          <div id="leaderboard"></div>
+          <p class="help">Score = resolved reports × 10 + kilograms diverted ÷ 50, refreshed monthly.</p>
+        </div>
+        <div>
+          <div class="card" style="padding:26px">
+            <div class="eyebrow">Your standing</div>
+            <div id="points" style="margin-top:10px"></div>
+            <p class="help">Points are calculated from your activity on this device — reports, classifications, clean-ups and pledges.</p>
+          </div>
+          <div class="card card-emerald" style="padding:26px;margin-top:18px">
+            <h3>Start a clean-up on your street</h3>
+            <p>Gather five neighbours, pick a Saturday morning, and tell us the location — we will list it here and ask for a collection truck at the end.</p>
+            <a class="btn btn-gold btn-sm" href="mailto:hello@yolaaiinfohub.ng?subject=Community%20clean-up">Propose an event</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width:760px">
+      <div class="eyebrow">Pledges</div>
+      <h2>Pick the habits you will keep this season</h2>
+      <div class="grid" id="pledges" style="gap:10px;margin-top:18px"></div>
+    </div>
+  </section>
+
+</div>
+
+
+
 
 </section>
 

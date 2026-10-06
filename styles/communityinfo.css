@@ -1,0 +1,225 @@
+.card-body > a {align-self: flex-start !important; margin-left: 10px;}
+
+
+/* =========================================================
+   COMMON ELEMENTS
+   ========================================================= */
+
+.news-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--white);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: .35s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+}
+
+.news-card img {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+}
+
+.news-card h3 {
+    margin: 0;
+    color: var(--emerald-dark);
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+.news-card p {
+    margin: 10px 0 18px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+.learn-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-decoration: none;
+    background: var(--emerald);
+    color: white;
+    padding: 7px 12px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .25s ease;
+}
+
+.learn-btn:hover {
+    background: var(--emerald-dark);
+}
+
+.learn-gold {
+    background: var(--gold);
+    color: #fff;
+}
+
+.learn-gold:hover {
+    background: #a98714;
+}
+
+
+
+/* =========================================================
+   14 — INTERACTIVE HOVER
+   ========================================================= */
+
+.card-interactive {
+    height: 320px;
+}
+
+.card-interactive img {
+    height: 100%;
+    transition: 1.5s ease;
+}
+
+.card-interactive .content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 22px;
+    background: rgba(255,255,255,.80);
+    transform: translateY(155px);
+    transition: .4s ease;
+}
+
+.card-interactive:hover img {
+    transform: scale(1.08);
+}
+
+.card-interactive:hover .content {
+    transform: translateY(0);
+}
+
+
+
+
+/* =========================================================
+   13 — FLOATING BUTTON
+   ========================================================= */
+
+.card-floating-btn img {
+    height: 220px;
+}
+
+.card-floating-btn .content {
+    padding: 20px;
+}
+
+.card-floating-btn .round-btn {
+    position: absolute;
+    right: 18px;
+    top: 194px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gold);
+    color: white;
+    text-decoration: none;
+    font-size: 22px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.2);
+    transition: .3s ease;
+}
+
+.news-cards-container {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 2rem) / 3);
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 1rem;
+    scrollbar-width: thin;
+    background: transparent;
+}
+
+
+.cycle-card {
+    border-radius: 445px 445px 75px 75px !important;
+}
+.cycle-card a {margin-left: 20px;}
+.cycle-img-placeholder {
+    height: 300px !important;
+    width: 300px !important;
+    align-self: center;
+    margin: 30px auto 18px !important;
+    border-radius: 50% !important;
+    border: 5px solid var(--gold-light) !important;
+}
+.cycle-img {
+    width: 300px !important;
+    height: 280px !important;
+    
+    
+    
+    
+}
+
+/* =========================================================
+   02 — FLOATING IMAGE
+   ========================================================= */
+
+.card-floating {
+    overflow: visible !important;
+    margin-top: 35px;
+}
+
+.card-floating img {
+    width: 78%;
+    height: 170px;
+    margin: -35px auto 0;
+    border-radius: 17px;
+    position: relative;
+    box-shadow: 0 12px 25px rgba(0,0,0,.15);
+}
+
+.card-floating .content {
+    padding: 22px;
+}
+
+.section4 .content h3 {
+    margin: 0;
+    font-family: "Fraunces", serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--emerald-800, #064e3b);
+    line-height: 1.35;
+    margin-bottom: 30px;
+}
+.section4 .content p {
+    margin: 0;
+    color: var(--ink-soft, #3d4d47);
+    font-size: 13px;
+    line-height: 1.3;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 900px) {
+    .news-cards-container {grid-auto-columns: calc((100% - 1rem) / 2);}
+}
+
+
+@media (max-width: 600px) {
+    .news-cards-container {grid-auto-columns: 85%;}
+    .cycle-img-placeholder { height: 120px !important; width: 120px !important; margin: 12px !important; }
+    .cycle-img {width: 100% !important; height: 100% !important;}
+    .cycle-card {border-radius: 85px 22px 22px 85px !important;}
+    .section4 .content h3 {margin-bottom: 10px;}
+    .learn-btn {padding: 5px 12px; font-size: 9px !important;}
+    .card-floating img {width: 85%; height: 185px;}
+    .content h3 {display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+    .content p {display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 11px !important;}
+}

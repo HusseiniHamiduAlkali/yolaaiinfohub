@@ -47,7 +47,7 @@ async function loadWeather() {
 
 async function loadTips() {
   try {
-    const { tips } = await loadJSON("data/tips.json");
+    const { tips } = await loadJSON(new URL("../data/tips.json", import.meta.url));
     const day = new Date().getDate();
     const picks = [tips[day % tips.length], tips[(day + 5) % tips.length], tips[(day + 9) % tips.length]];
     $("#tips").innerHTML = picks

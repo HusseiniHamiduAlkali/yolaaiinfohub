@@ -14,10 +14,14 @@
 
     loadingPromise = fetch(apiBase() + '/api/maps-key')
       .then(function (response) {
-        return response.json().then(function (body) {
-          if (!response.ok || !body.apiKey) throw new Error(body.error || 'Google Maps API key is not configured.');
-          return body.apiKey;
-        });
+        if (!response.ok) {
+          throw new Error('Google Maps API key endpoint returned HTTP ' + response.status + '. Start the Node backend to use maps.');
+        }
+        return response.json();
+      })
+      .then(function (body) {
+        if (!body.apiKey) throw new Error(body.error || 'Google Maps API key is not configured.');
+        return body.apiKey;
       })
       .then(function (apiKey) {
         return new Promise(function (resolve, reject) {

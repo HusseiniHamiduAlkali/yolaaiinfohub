@@ -169,7 +169,7 @@ $("#clear-log")?.addEventListener("click", () => {
   renderLog();
 });
 
-loadJSON("data/schedule.json")
+loadJSON(new URL("../data/schedule.json", import.meta.url))
   .then((data) => {
     schedule = data;
     $("#provider").textContent = data.provider;
