@@ -2,18 +2,13 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const NavigationPlace = require('../server/navigationPlaceModel');
+const { prepareReviewableProfileUpdate, profileFieldsToUnset } = require('../server/navigationProfileSeedPolicy');
 
 async function run() {
   if (!process.env.MONGO_URI) throw new Error('MONGO_URI is required');
   await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 10000 });
 
-  const schoolFilter = {
-    $or: [
-      { category: /school/i },
-      { category: /religious/i, subcategory: /school|primary|secondary|academy/i },
-      { subcategory: /primary|secondary|nursery|elementary|high school|grammar school|academy/i }
-    ]
-  };
+  const schoolFilter = { subcategory: 'Primary and Secondary Schools' };
   const defaults = {
     tagline: 'Nurturing curious minds and confident futures.',
     schoolType: 'Primary and secondary school',
@@ -64,8 +59,10 @@ async function run() {
       { image: '', caption: 'Activities' }
     ]
   };
-  const schools = await NavigationPlace.find(schoolFilter).select('schoolProfile');
+  const schools = await NavigationPlace.find(schoolFilter).select('schoolProfile status verificationStatus');
   let updated = 0;
+  let skipped = 0;
+  const demotePublished = process.argv.includes('--demote-published');
   for (const school of schools) {
     const current = school.schoolProfile ? school.schoolProfile.toObject() : {};
     const profile = {
@@ -84,10 +81,22 @@ async function run() {
       testimonials: current.testimonials && current.testimonials.length ? current.testimonials : defaults.testimonials,
       gallery: current.gallery && current.gallery.length ? current.gallery : defaults.gallery
     };
-    await NavigationPlace.updateOne({ _id: school._id }, { $set: { schoolProfile: profile } });
+    const changes = prepareReviewableProfileUpdate(school, {
+      schoolProfile: profile,
+      detailProfileType: 'school',
+      subcategory: 'Primary and Secondary Schools'
+    }, { demotePublished });
+    if (!changes) {
+      skipped += 1;
+      continue;
+    }
+    await NavigationPlace.updateOne(
+      { _id: school._id },
+      { $set: changes, $unset: profileFieldsToUnset('schoolProfile') }
+    );
     updated += 1;
   }
-  console.log(`School profile initialization complete: ${updated} records updated.`);
+  console.log(`School profile initialization complete: ${updated} records updated, ${skipped} records skipped.`);
   await mongoose.disconnect();
 }
 

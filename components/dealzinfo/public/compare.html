@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Compare commodity prices across Yola markets — DealzInfo</title>
+    <meta
+      name="description"
+      content="Compare one commodity across every Yola market at a glance: cheapest, highest, average price and the spread between markets."
+    />
+    <base href="/dealzinfo/" />
+    <link rel="canonical" href="/dealzinfo/compare.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../fontawesome/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/dealz.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+
+    <main id="main">
+      <div class="wrap stack-lg">
+        <section class="stack">
+          <h1>Market comparison</h1>
+          <p class="muted">Pick a commodity to see where it is cheapest today and how much you could save.</p>
+        </section>
+
+        <section class="card stack" aria-label="Choose commodity">
+          <div class="filters">
+            <div class="field field-wide">
+              <label for="commodity">Commodity</label>
+              <select id="commodity"></select>
+            </div>
+            <div class="field" style="align-self: end">
+              <button class="button button-outline" id="export" type="button">Export CSV</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid grid-4" id="summary" aria-live="polite"></section>
+        <section class="stack" id="best"></section>
+        <section class="stack">
+          <h2>All markets</h2>
+          <div class="table-scroll">
+            <table>
+              <caption class="sr-only">
+                Price of the selected commodity in each market, cheapest first
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Market</th>
+                  <th scope="col">Area</th>
+                  <th scope="col" class="num">Price</th>
+                  <th scope="col" class="num">Change</th>
+                  <th scope="col">Updated</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+    <script type="module" src="js/shell.js"></script>
+    <script type="module" src="js/pages/compare.js"></script>
+  </body>
+</html>

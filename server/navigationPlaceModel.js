@@ -284,11 +284,11 @@ const hospitalityProfileSchema = templateProfileSchema([
 ]);
 const iconicStructureProfileSchema = templateProfileSchema([
   'name', 'category', 'heroImage', 'aboutImage', 'tagline', 'quickInfo', 'aboutParagraphs', 'highlights', 'milestones', 'zoneSteps', 'culturalParagraphs',
-  'culturalQuote', 'facilities', 'galleryImages', 'bestTimes', 'faqs', 'nearby', 'address', 'landmark', 'coordinates'
+  'culturalQuote', 'facilities', 'galleryImages', 'bestTimes', 'faqs', 'nearby', 'address', 'area', 'landmark', 'coordinates', 'contact'
 ]);
 const sportsSpaProfileSchema = templateProfileSchema([
   'name', 'category', 'type', 'status', 'heroImage', 'aboutImage', 'statusItems', 'aboutParagraphs', 'facts', 'services', 'zoneSteps', 'pricing', 'trainers',
-  'weeklySchedule', 'facilities', 'galleryImages', 'hours', 'faqs', 'address', 'landmark', 'coordinates', 'contact'
+  'weeklySchedule', 'facilities', 'galleryImages', 'hours', 'faqs', 'address', 'area', 'landmark', 'coordinates', 'contact'
 ]);
 
 const navigationPlaceSchema = new mongoose.Schema({
@@ -328,10 +328,10 @@ const navigationPlaceSchema = new mongoose.Schema({
     email: { type: String, trim: true, lowercase: true, default: '' },
     website: { type: String, trim: true, default: '' }
   },
-  schoolProfile: { type: schoolProfileSchema, default: () => ({}) },
-  universityProfile: { type: universityProfileSchema, default: () => ({}) },
-  technicalProfile: { type: technicalProfileSchema, default: () => ({}) },
-  learningProfile: { type: learningProfileSchema, default: () => ({}) },
+  schoolProfile: { type: schoolProfileSchema, default: undefined },
+  universityProfile: { type: universityProfileSchema, default: undefined },
+  technicalProfile: { type: technicalProfileSchema, default: undefined },
+  learningProfile: { type: learningProfileSchema, default: undefined },
   healthcareProfile: { type: healthcareProfileSchema, default: undefined },
   flightAgentProfile: { type: flightAgentProfileSchema, default: undefined },
   fillingStationProfile: { type: fillingStationProfileSchema, default: undefined },
@@ -346,6 +346,14 @@ const navigationPlaceSchema = new mongoose.Schema({
   hospitalityProfile: { type: hospitalityProfileSchema, default: undefined },
   iconicStructureProfile: { type: iconicStructureProfileSchema, default: undefined },
   sportsSpaProfile: { type: sportsSpaProfileSchema, default: undefined },
+  detailProfileType: {
+    type: String,
+    enum: ['generic', 'flightAgent', 'fillingStation', 'bank', 'commercialCenter', 'church', 'mosque', 'judiciary',
+      'parksRecreation', 'eventCenter', 'hospitality', 'iconicStructure', 'sportsSpa', 'school', 'university',
+      'technical', 'learning', 'healthcare'],
+    default: 'generic',
+    index: true
+  },
   verificationStatus: { type: String, enum: ['unverified', 'pending', 'verified'], default: 'unverified', index: true },
   ratingAverage: { type: Number, min: 0, max: 5, default: 0 },
   reviewCount: { type: Number, min: 0, default: 0 },

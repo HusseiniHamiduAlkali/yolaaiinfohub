@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Commodity prices in Yola markets — DealzInfo</title>
+    <meta
+      name="description"
+      content="Search current commodity prices across Yola Main Market, Jimeta, Kasuwan Tike, Girei, Ngurore and Numan, with change indicators and verification status."
+    />
+    <base href="/dealzinfo/" />
+    <link rel="canonical" href="/dealzinfo/prices.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../fontawesome/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/dealz.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+
+    <main id="main">
+      <div class="wrap stack-lg">
+        <section class="stack">
+          <h1>Commodity prices</h1>
+          <p class="muted">
+            The most recent recorded price for every commodity and market pair. Follow any pair to see it on your
+            watchlist.
+          </p>
+        </section>
+
+        <section class="card stack" aria-label="Filters">
+          <div class="filters">
+            <div class="field field-wide">
+              <label for="q">Search</label>
+              <input id="q" type="search" placeholder="Rice, tomatoes, cement…" />
+            </div>
+            <div class="field">
+              <label for="market">Market</label>
+              <select id="market"></select>
+            </div>
+            <div class="field">
+              <label for="category">Category</label>
+              <select id="category"></select>
+            </div>
+          </div>
+          <div class="row row-between">
+            <div class="chip-row" role="group" aria-label="View mode">
+              <button class="chip active" type="button" data-view="cards">Cards</button>
+              <button class="chip" type="button" data-view="table">Table</button>
+            </div>
+            <div class="row">
+              <p class="small muted" id="result-count" aria-live="polite"></p>
+              <button class="button button-outline button-sm" id="export" type="button">Export CSV</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="results" class="grid grid-3" aria-live="polite"></section>
+        <div class="center" id="more-wrap" hidden>
+          <button class="button button-outline" id="more" type="button">Show more prices</button>
+        </div>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+    <script type="module" src="js/shell.js"></script>
+    <script type="module" src="js/pages/prices.js"></script>
+  </body>
+</html>

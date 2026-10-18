@@ -15,7 +15,7 @@
 .home-frost {
   position: relative; 
   background: #3f272566; 
-  backdrop-filter: blur(9px); 
+  backdrop-filter: blur(7px); 
   top: 360px; right: -33px; 
   display: flex; flex-direction: column; 
   border-radius: 15px; width: 470px; 
@@ -36,7 +36,7 @@
   width: fit-content;
   border: 1px solid #222;}
 
-.home-frost button:hover {transform: translateX(3px); translate: ease .2s;}
+.home-frost button:hover {transform: translateX(4px); transition:transform .2s,background .2s,color .2s;}
 .section2-home-image-placeholder {
   overflow: hidden;
   border-radius: 10px 10px 0px 0px;
@@ -56,6 +56,7 @@
   height: 500px; 
   position: absolute; 
   object-fit: fill; 
+  border: 2px solid #1b4731;
 }
 .section4-home {
     border-radius: 15px;

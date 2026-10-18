@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <base href="/dealzinfo/" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Market details and current prices — DealzInfo</title>
+    <meta
+      name="description"
+      content="Full profile for a Yola market: address, opening hours, contact, current commodity prices and nearby businesses."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="../../../fontawesome/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/dealz.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+
+    <main id="main">
+      <div class="wrap stack-lg">
+        <p class="small"><a href="markets.html">← All markets</a></p>
+        <section id="profile" class="stack" aria-live="polite"></section>
+        <section class="stack">
+          <div class="row row-between">
+            <h2>Current prices here</h2>
+            <button class="button button-outline button-sm" id="export" type="button">Export CSV</button>
+          </div>
+          <div class="grid grid-3" id="prices"></div>
+        </section>
+        <section class="stack">
+          <h2>Businesses nearby</h2>
+          <div class="grid grid-3" id="nearby"></div>
+        </section>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+    <script type="module" src="js/shell.js"></script>
+    <script type="module" src="js/pages/market.js"></script>
+  </body>
+</html>

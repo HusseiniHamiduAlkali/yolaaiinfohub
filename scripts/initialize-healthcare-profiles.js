@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const NavigationPlace = require('../server/navigationPlaceModel');
+const { prepareReviewableProfileUpdate, profileFieldsToUnset } = require('../server/navigationProfileSeedPolicy');
 
 const primarySlugs = [
   'yola-central-dispensary', 'valli-clinic-jimeta-yola', 'malamre-phcc-yola', 'bako-phcc-yola',
@@ -187,6 +188,8 @@ async function run() {
   if (!process.env.MONGO_URI) throw new Error('MONGO_URI is required');
   await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 10000 });
   let updated = 0;
+  let skipped = 0;
+  const demotePublished = process.argv.includes('--demote-published');
   const groups = [
     [primarySlugs, 'primaryCare', primaryProfile], [hospitalSlugs, 'secondaryHospital', hospitalProfile], [pharmacySlugs, 'pharmacy', pharmacyProfile]
   ];
@@ -194,11 +197,23 @@ async function run() {
     for (const slug of slugs) {
       const record = await NavigationPlace.findOne({ slug });
       if (!record) continue;
+      const reviewableRecord = prepareReviewableProfileUpdate(record, {}, { demotePublished });
+      if (!reviewableRecord) {
+        skipped += 1;
+        continue;
+      }
       const root = record.healthcareProfile && record.healthcareProfile.toObject ? record.healthcareProfile.toObject() : (record.healthcareProfile || {});
       const defaults = buildProfile(record.displayName || slug);
       const profile = fillMissing(root[type], defaults);
-      const healthcareProfile = { ...root, type: root.type || type, [type]: profile };
-      const changes = { healthcareProfile };
+      const healthcareProfile = { type, [type]: profile };
+      const subcategory = type === 'primaryCare'
+        ? 'Primary Healthcare'
+        : type === 'secondaryHospital' ? 'Secondary Healthcare' : 'Pharmacies';
+      const changes = {
+        healthcareProfile,
+        subcategory,
+        detailProfileType: 'healthcare'
+      };
       if (!record.description) changes.description = `${record.displayName} healthcare information. Contact the facility to confirm current services and hours.`;
       if (!record.address) changes.address = `${record.displayName}, Yola, Adamawa State`;
       if (!record.area) changes.area = 'Yola';
@@ -211,11 +226,15 @@ async function run() {
         email: contact.email || `contact@${slug}.example`,
         website: contact.website || 'https://example.org'
       };
-      await NavigationPlace.updateOne({ _id: record._id }, { $set: changes });
+      const reviewableChanges = prepareReviewableProfileUpdate(record, changes, { demotePublished });
+      await NavigationPlace.updateOne(
+        { _id: record._id },
+        { $set: reviewableChanges, $unset: profileFieldsToUnset('healthcareProfile') }
+      );
       updated += 1;
     }
   }
-  console.log(`Healthcare profile initialization complete: ${updated} records updated.`);
+  console.log(`Healthcare profile initialization complete: ${updated} records updated, ${skipped} records skipped.`);
   await mongoose.disconnect();
 }
 

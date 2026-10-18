@@ -151,15 +151,6 @@
       el('found').prepend(demoBanner);
     }
 
-    if (record.demoContent) {
-      var demoBanner = document.createElement('aside');
-      demoBanner.className = 'navi-demo-notice';
-      demoBanner.setAttribute('role', 'note');
-      demoBanner.style.cssText = 'padding:.8rem 1rem;margin:0 0 1rem;background:#fff2cc;border:1px solid #c28a00;color:#302000;font-weight:600';
-      demoBanner.textContent = record.demoNotice || 'Illustrative demo content. Details and images are not verified real-world information.';
-      el('found').prepend(demoBanner);
-    }
-
     el('crumbCat').textContent = record.category;
     el('name').textContent = record.name;
     el('about').textContent = record.about;

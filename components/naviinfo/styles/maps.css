@@ -24,7 +24,7 @@
 .mobile-intro .lead { max-width: 520px; margin: 0 auto; font-size: 16px; color: var(--ink-soft); }
 
 .section {margin-bottom: 24px;}
-.section p {color: #959da2;}
+.section p {color: #959da2 !important;}
 .cta-text
 
 

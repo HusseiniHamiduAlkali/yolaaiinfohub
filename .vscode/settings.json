@@ -29,6 +29,10 @@
         "/^git status --short && printf '\\\\n--- package ---\\\\n' && sed -n '1,220p' package\\.json && printf '\\\\n--- relevant files ---\\\\n' && rg --files components/serviinfo components/admin server test \\| sort$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^node -e 'const fs=require\\(\"fs\"\\); const s=fs\\.readFileSync\\(\"templates/navi\\.html\",\"utf8\"\\); let mismatches=0; for\\(const m of s\\.matchAll\\(/<article\\\\b\\[\\\\s\\\\S\\]\\*\\?<\\\\/article>/g\\)\\)\\{const id=m\\[0\\]\\.match\\(/data-place-id=\"\\(\\[\\^\"\\]\\+\\)\"/\\); if\\(!id\\)continue; for\\(const a of m\\[0\\]\\.matchAll\\(/<a\\\\b\\[\\^>\\]\\*href=\"\\(\\[\\^\"\\]\\+\\)\"\\[\\^>\\]\\*>/g\\)\\)\\{const q=a\\[1\\]\\.match\\(/\\[\\?&\\]id=\\(\\[\\^&\"\\]\\+\\)/\\); if\\(q&&decodeURIComponent\\(q\\[1\\]\\)!==id\\[1\\]\\)\\{console\\.error\\(`\\$\\{id\\[1\\]\\} -> \\$\\{a\\[1\\]\\}`\\);mismatches\\+\\+;\\}\\}\\} console\\.log\\(`Mismatched card detail IDs: \\$\\{mismatches\\}`\\); if\\(mismatches\\)process\\.exitCode=1;'$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }

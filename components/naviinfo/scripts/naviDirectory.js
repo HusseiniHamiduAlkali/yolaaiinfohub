@@ -56,27 +56,29 @@
       var title = article.querySelector('h3');
       var category = group && (group.dataset.detailCategory || group.dataset.category) || '';
       var page = detailPageForCategory({ category: category, subcategory: category, displayName: title && title.textContent, slug: article.dataset.placeId });
-      var link = article.querySelector('a[data-i18n="learn_more"]');
-      if (!link) return;
+      var links = article.querySelectorAll('.place-details-actions a');
+      if (!links.length) return;
+      var href;
       if (!page) {
-        link.href = '/navi/' + encodeURIComponent(article.dataset.placeId);
-        return;
+        href = '/navi/' + encodeURIComponent(article.dataset.placeId);
+      } else {
+        var meta = article.querySelectorAll('.place-meta .meta-item');
+        var image = article.querySelector('.place-img-placeholder img');
+        var description = article.querySelector('.card-body p');
+        var params = new URLSearchParams();
+        params.set('id', article.dataset.placeId);
+        params.set('name', title ? title.textContent.trim() : '');
+        params.set('category', category);
+        params.set('description', description ? description.textContent.trim() : '');
+        params.set('address', meta[0] ? meta[0].textContent.trim() : 'Yola, Adamawa State');
+        params.set('area', meta[0] ? meta[0].textContent.trim() : 'Yola');
+        params.set('openingHours', meta[1] ? meta[1].textContent.trim() : '');
+        params.set('image', image ? image.getAttribute('src') || '' : '');
+        if (article.dataset.lat) params.set('lat', article.dataset.lat);
+        if (article.dataset.lng) params.set('lng', article.dataset.lng);
+        href = page + '?' + params.toString();
       }
-      var meta = article.querySelectorAll('.place-meta .meta-item');
-      var image = article.querySelector('.place-img-placeholder img');
-      var description = article.querySelector('.card-body p');
-      var params = new URLSearchParams();
-      params.set('id', article.dataset.placeId);
-      params.set('name', title ? title.textContent.trim() : '');
-      params.set('category', category);
-      params.set('description', description ? description.textContent.trim() : '');
-      params.set('address', meta[0] ? meta[0].textContent.trim() : 'Yola, Adamawa State');
-      params.set('area', meta[0] ? meta[0].textContent.trim() : 'Yola');
-      params.set('openingHours', meta[1] ? meta[1].textContent.trim() : '');
-      params.set('image', image ? image.getAttribute('src') || '' : '');
-      if (article.dataset.lat) params.set('lat', article.dataset.lat);
-      if (article.dataset.lng) params.set('lng', article.dataset.lng);
-      link.href = page + '?' + params.toString();
+      links.forEach(function (link) { link.href = href; });
     });
   }
 
@@ -91,7 +93,7 @@
   }
 
   function bindDetailPositionSaving() {
-    document.querySelectorAll('a[data-i18n="learn_more"]').forEach(function (link) {
+    document.querySelectorAll('.section3[data-category] article[data-place-id] .place-details-actions a').forEach(function (link) {
       if (link.dataset.positionBound === 'true') return;
       link.dataset.positionBound = 'true';
       link.addEventListener('click', rememberDirectoryPosition);
@@ -262,6 +264,8 @@
     Array.prototype.forEach.call(document.querySelectorAll('.section3[data-category]'), function (group) {
       var key = groupKey(group.dataset.detailCategory || group.dataset.category || '');
       if (key) groups[key] = group;
+      var container = group.querySelector('.section4-container');
+      if (container) container.innerHTML = '';
     });
 
     (items || []).forEach(function (item) {
@@ -299,7 +303,12 @@
     bindStaticDetailLinks();
     return fetchDirectory()
       .then(function (data) {
-        renderSections((data && data.items) || []);
+        if (!data || !Array.isArray(data.items) || data.items.some(function (item) {
+          return !item || typeof item !== 'object' || Array.isArray(item);
+        })) {
+          throw new Error('Navigation place directory returned an invalid response');
+        }
+        renderSections(data.items);
         return true;
       })
       .catch(function (error) {

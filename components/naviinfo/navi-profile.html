@@ -80,6 +80,8 @@
           <h2>Address</h2>
           <p id="placeAddress">Loading address…</p>
         </div>
+
+        <div class="profile-card" id="demoExtras" hidden></div>
       </div>
 
       <aside class="contact-panel" aria-label="Contact this place">
@@ -131,30 +133,91 @@
       });
     }
 
+    function renderDemoExtras(profile) {
+      const card = document.getElementById('demoExtras');
+      if (!card || !profile || typeof profile !== 'object') return;
+      const sections = [];
+      if (profile.visitorInfo) sections.push(['Visitor information', [profile.visitorInfo]]);
+      if (Array.isArray(profile.faqs) && profile.faqs.length) {
+        sections.push(['Frequently asked questions', profile.faqs.map((faq) => (faq.question || faq.q ? (faq.question || faq.q) + ': ' + (faq.answer || faq.a || '') : String(faq))) ]);
+      }
+      if (Array.isArray(profile.galleryImages) && profile.galleryImages.length) {
+        const gallery = document.createElement('div');
+        gallery.className = 'tag-row';
+        profile.galleryImages.forEach((entry) => {
+          const image = typeof entry === 'string' ? entry : entry && (entry.image || entry.src);
+          if (!image) return;
+          const caption = typeof entry === 'string' ? 'Illustrative directory image' : (entry.caption || entry.cap || 'Illustrative directory image');
+          const figure = document.createElement('figure');
+          figure.style.margin = '0';
+          const img = document.createElement('img');
+          img.src = image;
+          img.alt = caption;
+          img.loading = 'lazy';
+          img.style.cssText = 'width:140px;height:90px;object-fit:cover;border-radius:10px';
+          const figcaption = document.createElement('figcaption');
+          figcaption.textContent = caption;
+          figcaption.style.fontSize = '12px';
+          figure.append(img, figcaption);
+          gallery.appendChild(figure);
+        });
+        if (gallery.children.length) sections.push(['Illustrative gallery', [gallery]]);
+      }
+      if (!sections.length) return;
+      card.hidden = false;
+      card.innerHTML = '';
+      sections.forEach(([heading, values]) => {
+        const title = document.createElement('h2');
+        title.textContent = heading;
+        card.appendChild(title);
+        if (values.length && values[0] instanceof HTMLElement) {
+          card.appendChild(values[0]);
+          return;
+        }
+        const list = document.createElement('ul');
+        values.forEach((value) => { const item = document.createElement('li'); item.textContent = value; list.appendChild(item); });
+        card.appendChild(list);
+      });
+    }
+
     async function loadPlace() {
       const slug = queryParam('slug') || window.location.pathname.split('/').filter(Boolean).pop();
       if (!slug) return;
-      const response = await fetch('/api/content/navigation-places/' + encodeURIComponent(slug), { credentials: 'include' });
+      const adminPreview = new URLSearchParams(window.location.search).get('adminPreview') === '1';
+      const endpoint = adminPreview
+        ? '/api/admin/content/navigation-places/' + encodeURIComponent(slug)
+        : '/api/content/navigation-places/' + encodeURIComponent(slug);
+      const response = await fetch(endpoint, { credentials: 'include' });
       if (!response.ok) {
         document.getElementById('placeName').textContent = 'Place not found';
         return;
       }
       const data = await response.json();
       const item = data.item || {};
+      const profile = item.demoProfile || {};
       const name = item.displayName || 'Navigation place';
       document.title = name + ' | NaviInfo';
       document.getElementById('crumbName').textContent = name;
       document.getElementById('placeName').textContent = name;
-      document.getElementById('placeCategory').textContent = item.category || 'Navigation place';
+      document.getElementById('placeCategory').textContent = profile.category || item.category || 'Navigation place';
       document.getElementById('placeArea').textContent = item.area || 'Yola';
-      document.getElementById('placeHours').textContent = item.openingHours || 'Hours vary';
-      document.getElementById('placeDescription').textContent = item.description || 'No description provided yet.';
-      document.getElementById('placeAddress').textContent = item.address || 'Address not yet available.';
+      document.getElementById('placeHours').textContent = profile.openingHours || item.openingHours || 'Hours vary';
+      document.getElementById('placeDescription').textContent = profile.summary || item.description || 'No description provided yet.';
+      document.getElementById('placeAddress').textContent = profile.location || item.address || 'Address not yet available.';
       document.getElementById('placeAvatar').textContent = initials(name);
       document.getElementById('contactTitle').textContent = 'Contact ' + name;
       document.getElementById('contactSummary').textContent = (item.address || 'Local place details') + ' · ' + (item.area || 'Yola');
-      renderTagList(item.tags || []);
-      renderServices(item.services && item.services.length ? item.services : [item.category || 'Navigation service']);
+      renderTagList(profile.highlights && profile.highlights.length ? profile.highlights : (item.tags || []));
+      renderServices(profile.services && profile.services.length ? profile.services : (item.services && item.services.length ? item.services : [item.category || 'Navigation service']));
+      renderDemoExtras(profile);
+
+      if (item.demoContent === true) {
+        const notice = document.createElement('aside');
+        notice.setAttribute('role', 'note');
+        notice.style.cssText = 'padding:.8rem 1rem;margin:0 0 1rem;background:#fff2cc;border:1px solid #c28a00;color:#302000;font-weight:600';
+        notice.textContent = item.demoNotice || 'Illustrative demo content. Details and images are not verified real-world information.';
+        document.querySelector('.profile-layout').prepend(notice);
+      }
 
       const callLink = document.getElementById('placeCall');
       const websiteLink = document.getElementById('placeWebsite');

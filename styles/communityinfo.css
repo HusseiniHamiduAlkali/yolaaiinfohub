@@ -158,6 +158,7 @@
     margin: 30px auto 18px !important;
     border-radius: 50% !important;
     border: 5px solid var(--gold-light) !important;
+    background: #fff !important;
 }
 .cycle-img {
     width: 300px !important;

@@ -82,9 +82,10 @@ img { max-width: 100%; display: block; }
   max-width: var(--container);
   margin: 0 auto;
   padding: 0 20px;
+  /*background: linear-gradient(180deg, #faf6ea 0%, #f0e8d1 100%);*/
 }
 
-.section { padding: 56px 0; }
+.section { padding: 56px 0; background-color: linear-gradient(180deg, #faf6ea 0%, #f0e8d1 100%);}
 .section-tight { padding: 32px 0; }
 
 .eyebrow {
@@ -310,7 +311,7 @@ img { max-width: 100%; display: block; }
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 12px; border-radius: 999px;
   font-size: 0.75rem; font-weight: 700;
-  background: var(--cream-soft); color: var(--emerald-800);
+  background: rgba(245, 240, 224, 0.14); color: var(--emerald-700);
   border: 1px solid var(--line);
   text-wrap: nowrap;
 }

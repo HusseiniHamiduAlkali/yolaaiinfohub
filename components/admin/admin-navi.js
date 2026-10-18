@@ -56,10 +56,10 @@
       if (index >= candidates.length) return Promise.reject(lastError || new Error('API unavailable'));
       var base = candidates[index++];
       return fetch(base + url, requestOptions).then(function (response) {
-        return response.json().then(function (data) {
+        return response.json().catch(function () { return {}; }).then(function (data) {
           if (!response.ok) {
-            var error = new Error(data.error || 'Request failed');
-            error.stopRetry = response.status === 401 || response.status === 403;
+            var error = new Error(data.error || data.message || 'Request failed with status ' + response.status);
+            error.stopRetry = true;
             throw error;
           }
           window.API_BASE = base;
@@ -86,14 +86,19 @@
 
   function renderRecords() {
     var filter = $('status-filter').value;
+    var search = $('record-search').value.trim().toLowerCase();
     var records = state.records.filter(function (record) {
-      return !filter || record.status === filter;
+      if (filter && record.status !== filter) return false;
+      if (!search) return true;
+      return [record.displayName, record.category, record.subcategory, record.slug]
+        .some(function (value) { return String(value || '').toLowerCase().indexOf(search) !== -1; });
     });
 
     var container = $('records');
+    $('records-count').textContent = records.length + ' of ' + state.records.length + ' listings';
     if (!container) return;
     container.innerHTML = records.length ? records.map(function (record) {
-      return '<button class="record ' + (state.selected && state.selected._id === record._id ? 'active' : '') + '" data-id="' + record._id + '" type="button"><strong>' + escapeHtml(record.displayName || 'Unnamed place') + '</strong><span>' + escapeHtml(record.status || 'draft') + ' · ' + escapeHtml(record.category || 'Others') + '</span></button>';
+      return '<button class="record ' + (state.selected && state.selected._id === record._id ? 'active' : '') + '" data-id="' + escapeHtml(record._id) + '" type="button"><strong>' + escapeHtml(record.displayName || 'Unnamed place') + '</strong><span>' + escapeHtml(record.status || 'draft') + ' · ' + escapeHtml(record.category || 'Others') + '</span></button>';
     }).join('') : '<p class="muted">No listings found.</p>';
 
     Array.prototype.forEach.call(container.querySelectorAll('[data-id]'), function (button) {
@@ -110,6 +115,7 @@
     $('navi-form').reset();
     $('record-id').value = '';
     $('editor-title').textContent = 'New listing';
+    $('navi-form').querySelector('button[type="submit"]').textContent = 'Create listing';
     $('record-status').value = 'draft';
     $('verification-status').value = 'unverified';
     $('rating-average').value = '0';
@@ -335,6 +341,7 @@
   function fillForm(record) {
     $('record-id').value = record._id;
     $('editor-title').textContent = 'Edit ' + (record.displayName || 'place');
+    $('navi-form').querySelector('button[type="submit"]').textContent = 'Update listing';
     $('display-name').value = record.displayName || '';
     $('slug').value = record.slug || '';
     $('category').value = record.category || 'Others';
@@ -575,55 +582,68 @@
     return result;
   }
 
-  function loadRecords() {
-    return request('/api/admin/content/navigation-places').then(function (data) {
-      state.records = data.items || [];
+  function loadRecords(successMessage) {
+    var endpoint = '/api/admin/content/navigation-places?limit=200&page=';
+    function fetchPages(page, pages, records) {
+      if (page > pages) return Promise.resolve(records);
+      return request(endpoint + page).then(function (data) {
+        if (!data || !Array.isArray(data.items)) throw new Error('The listings response was incomplete.');
+        return fetchPages(page + 1, pages, records.concat(data.items));
+      });
+    }
+
+    return request(endpoint + '1').then(function (data) {
+      if (!data || !Array.isArray(data.items)) throw new Error('The listings response was incomplete.');
+      var total = Number(data.total);
+      var limit = Number(data.limit) || 200;
+      var pageCount = Number.isFinite(total) && total >= 0 ? Math.ceil(total / limit) : 1;
+      return fetchPages(2, pageCount, data.items);
+    }).then(function (records) {
+      state.records = records;
+      if (state.selected) {
+        state.selected = records.find(function (record) { return record._id === state.selected._id; }) || null;
+      }
       populateCategoryOptions();
       renderRecords();
-      status('Loaded ' + state.records.length + ' listings.', 'success');
+      status(successMessage || 'Loaded ' + state.records.length + ' listings.', 'success');
     });
   }
-
-  function seedRestaurantMedia(force) {
-    if (force && !window.confirm('Replace existing restaurant gallery and menu media with the seed data?')) return;
-    var button = force ? $('replace-restaurant-media') : $('seed-restaurant-media');
-    if (button) button.disabled = true;
-    status(force ? 'Replacing restaurant media...' : 'Filling missing restaurant media...', '');
-    request('/api/admin/content/navigation-places/seed-restaurant-media', {
-      method: 'POST',
-      body: JSON.stringify({ force: force })
-    }).then(function (data) {
-      status(data.message + ' Updated: ' + data.updated.length + ', skipped: ' + data.skipped.length + ', missing records: ' + data.missing.length + '.', 'success');
-      return loadRecords();
-    }).catch(function (error) {
-      status(error.message, 'error');
-    }).finally(function () {
-      if (button) button.disabled = false;
-    });
-  }
-
-  $('seed-restaurant-media').addEventListener('click', function () { seedRestaurantMedia(false); });
-  $('replace-restaurant-media').addEventListener('click', function () { seedRestaurantMedia(true); });
 
   $('approve-pending').addEventListener('click', function () {
-    var pending = state.records.filter(function (record) { return record.status === 'pending' || record.status === 'draft'; });
+    var pending = state.records.filter(function (record) { return record.status === 'pending'; });
     if (!pending.length) {
-      status('There are no pending or draft listings to approve.', 'success');
+      status('There are no pending listings to approve.', 'success');
       return;
     }
 
-    if (!window.confirm('Publish ' + pending.length + ' pending/draft listings?')) return;
+    if (!window.confirm('Publish ' + pending.length + ' pending listings?')) return;
 
+    var button = $('approve-pending');
+    button.disabled = true;
+    status('Reviewing ' + pending.length + ' pending listings…', 'info');
     Promise.all(pending.map(function (record) {
       return request('/api/admin/content/navigation-places/' + encodeURIComponent(record._id) + '/moderation', {
         method: 'PATCH',
         body: JSON.stringify({ status: 'published' })
+      }).then(function () {
+        return { record: record, error: null };
+      }, function (error) {
+        return { record: record, error: error };
       });
-    })).then(function () {
-      status('Approved ' + pending.length + ' listings.', 'success');
-      return loadRecords();
+    })).then(function (results) {
+      var approved = results.filter(function (result) { return !result.error; }).length;
+      var failures = results.filter(function (result) { return result.error; });
+      var summary = 'Approved ' + approved + ' of ' + pending.length + ' pending listings.';
+      if (failures.length) {
+        summary += ' Could not publish: ' + failures.map(function (result) {
+          return result.record.displayName + ' (' + result.error.message + ')';
+        }).join('; ');
+      }
+      return loadRecords(summary);
     }).catch(function (error) {
       status(error.message, 'error');
+    }).finally(function () {
+      button.disabled = false;
     });
   });
 
@@ -636,8 +656,7 @@
       method: 'POST',
       body: JSON.stringify({})
     }).then(function (data) {
-      status(data.message + ' Published: ' + data.published + '. Verification remains unverified.', 'success');
-      return loadRecords();
+      return loadRecords(data.message + ' Published: ' + data.published + '. Verification remains unverified.');
     }).catch(function (error) {
       status(error.message, 'error');
     }).finally(function () {
@@ -659,6 +678,7 @@
   });
 
   $('status-filter').addEventListener('change', renderRecords);
+  $('record-search').addEventListener('input', renderRecords);
 
   $('navi-form').addEventListener('submit', function (event) {
     event.preventDefault();
@@ -671,14 +691,19 @@
       return;
     }
 
+    var saveButton = $('navi-form').querySelector('button[type="submit"]');
+    saveButton.disabled = true;
+    status(id ? 'Updating listing…' : 'Creating listing…', 'info');
     request(id ? '/api/admin/content/navigation-places/' + encodeURIComponent(id) : '/api/admin/content/navigation-places', {
       method: id ? 'PUT' : 'POST',
       body: JSON.stringify(body)
     }).then(function () {
       status('Listing saved.', 'success');
-      return loadRecords();
+      return loadRecords('Listing saved.');
     }).catch(function (error) {
       status(error.message, 'error');
+    }).finally(function () {
+      saveButton.disabled = false;
     });
   });
 
@@ -713,22 +738,28 @@
 
   $('delete-record').addEventListener('click', function () {
     var id = $('record-id').value;
-    if (!id || !window.confirm('Delete this navigation place permanently?')) return;
+    var name = $('display-name').value.trim() || 'this navigation place';
+    if (!id || !window.confirm('Permanently delete "' + name + '"? This cannot be undone.')) return;
 
+    var button = $('delete-record');
+    button.disabled = true;
+    status('Deleting listing…', 'info');
     request('/api/admin/content/navigation-places/' + encodeURIComponent(id), { method: 'DELETE' })
       .then(function () {
         clearForm();
-        return loadRecords();
-      })
-      .then(function () {
-        status('Listing deleted.', 'success');
+        return loadRecords('Listing deleted.');
       })
       .catch(function (error) {
         status(error.message, 'error');
+      })
+      .finally(function () {
+        button.disabled = false;
       });
   });
 
   loadRecords().catch(function (error) {
+    $('records-count').textContent = 'Listings unavailable';
+    $('records').innerHTML = '<p class="muted">Listings could not be loaded. Check your admin access and try reloading.</p>';
     var message = error.message === 'Content administrator access required'
       ? 'This account is signed in but is not a content-admin. Sign out and use the account created at /admin/setup.html, or ask an existing admin to promote this account.'
       : error.message + '. Sign in with a content-admin account first.';

@@ -295,17 +295,17 @@ body.dark-mode .model-label {
     color: #fff;
 }
 
-body.dark-mode .section4 {
-    background-color: #484343;
+body.dark-mode .section4, .dark-mode .pro-card {
+    background: #021511 !important; 
     
 }
 
 body.dark-mode .section4 p {
-    color: #b9acac;
+    color: #eae5e5 !important;
 }
 
 body.dark-mode .section-eco {
-    background-color: #333;
+    background-color: #021511;
     color: #fff;
 }
 
@@ -371,7 +371,7 @@ body.dark-mode .exchange-amount {
 .dark-mode .info-section h2 {color: #bfc9c7 !important;}
 .dark-mode .search-bar {background: #d7ded6;}
 .dark-mode .controls {background: linear-gradient(180deg, rgb(35 63 43 / 92%) 60%, rgba(250, 246, 234, 0))}
-.dark-mode .chip {background: #c2cfc0;}
+.dark-mode .chip, .dark-mode .toggle, .dark-mode  #ratingSelect, .dark-mode  #sortSelect, .dark-mode .see-all {background: #c2cfc0;}
 .dark-mode .chip.active {background: #0c2621;}
 .dark-mode .chip svg {color: var(--emerald-800);}
 .dark-mode .chip.active svg {color: var(--cream);}
@@ -388,3 +388,18 @@ body.dark-mode .exchange-amount {
 .dark-mode .cta-inner {background: radial-gradient(800px 400px at 90% -20%, rgba(201, 168, 76, 0.35), transparent 60%), linear-gradient(135deg, #06100e 0%, #05251c 100%);}
 .dark-mode .map-chip {background: #c2cfc0;}
 .dark-mode .card {background: #021511 !important;}
+.dark-mode .img-placeholder::after {background: none !important;}
+.dark-mode .place-img-placeholder, .img-placeholder {background: #021511 !important;}
+.dark-mode .meta-item {color:#bac9c4 !important;}
+.dark-mode .section4 .content h3 {color: #2e967a !important;}
+.dark-mode .news-card h3 {color: var(--emerald-dark) !important;}
+.dark-mode .bento-card {background: linear-gradient(135deg, #0058bc15 0%, #0070eb15 100%) !important;}
+.dark-mode .container, .dark-mode .section {background: #072823c9;}
+.dark-mode .search-panel-select {background: none; border: none;}
+.dark-mode .stats-band {background: #021511 !important;}
+.dark-mode .step {background: #021511 ;}
+.dark-mode .filter-bar {background: #021511 ;}
+.dark-mode .stats-band .stat-value {color: #bfc9c7 ;}
+.dark-mode .filter-group label, .dark-mode .result-count strong {color: var(--cream, #f5f0e0);}
+.dark-mode .pro-meta {color: #5b7b6e;}
+.dark-mode .tag {background: #294037; color: #9ba298;}

@@ -45,7 +45,7 @@ const { sendEmailWithGmailSmtp } = require('./services/gmailMailer');
 const ContentItem = require('./server/contentItemModel');
 const Professional = require('./server/professionalModel');
 const NavigationPlace = require('./server/navigationPlaceModel');
-const restaurantMediaSeed = require('./Data/Images/restaurants/restaurant-media.json');
+const { PROFILE_FIELDS, detailProfileType } = require('./server/navigationProfileTypes');
 const { categories: professionalCategories, areas: professionalAreas, normalizeArea, slugify } = require('./server/professionalTaxonomy');
 
 
@@ -2301,7 +2301,11 @@ function toMenuItems(value) {
 function serializeNavigationPlace(place) {
   const raw = place.toObject ? place.toObject() : place;
   const demoReleased = raw.demoContent === true && raw.demoPublished === true;
+  const profileType = raw.detailProfileType || detailProfileType(raw);
+  const selectedProfileField = PROFILE_FIELDS[profileType];
   const visibleProfile = (key) => {
+    const isGenericProfile = selectedProfileField === null && key === 'demoProfile';
+    if (key !== selectedProfileField && !isGenericProfile) return undefined;
     const profile = raw[key];
     if (!profile) return undefined;
     if ((raw.demoContent === true || profile.demoContent === true) && !demoReleased) return undefined;
@@ -2327,11 +2331,11 @@ function serializeNavigationPlace(place) {
     galleryCaptions: raw.galleryCaptions || [],
     menuItems: raw.menuItems || [],
     contact: raw.contact || {},
-    schoolProfile: toSchoolProfile(raw.schoolProfile),
-    universityProfile: toUniversityProfile(raw.universityProfile),
-    technicalProfile: toTechnicalProfile(raw.technicalProfile),
-    learningProfile: toLearningProfile(raw.learningProfile),
-    healthcareProfile: toHealthcareProfile(raw.healthcareProfile),
+    schoolProfile: profileType === 'school' ? toSchoolProfile(raw.schoolProfile) : undefined,
+    universityProfile: profileType === 'university' ? toUniversityProfile(raw.universityProfile) : undefined,
+    technicalProfile: profileType === 'technical' ? toTechnicalProfile(raw.technicalProfile) : undefined,
+    learningProfile: profileType === 'learning' ? toLearningProfile(raw.learningProfile) : undefined,
+    healthcareProfile: profileType === 'healthcare' ? toHealthcareProfile(raw.healthcareProfile) : undefined,
     flightAgentProfile: visibleProfile('flightAgentProfile'),
     fillingStationProfile: visibleProfile('fillingStationProfile'),
     bankProfile: visibleProfile('bankProfile'),
@@ -2344,6 +2348,7 @@ function serializeNavigationPlace(place) {
     hospitalityProfile: visibleProfile('hospitalityProfile'),
     iconicStructureProfile: visibleProfile('iconicStructureProfile'),
     sportsSpaProfile: visibleProfile('sportsSpaProfile'),
+    detailProfileType: profileType,
     demoProfile: visibleProfile('demoProfile'),
     demoPublished: demoReleased,
     demoContent: demoReleased,
@@ -2676,7 +2681,15 @@ app.get('/api/admin/content/navigation-places/:slug', requireContentAdmin, async
 app.post('/api/admin/content/navigation-places/publish-demos', requireContentAdmin, async (req, res) => {
   try {
     const result = await NavigationPlace.updateMany(
-      { demoContent: true, demoPublished: { $ne: true }, demoProfile: { $exists: true }, status: { $in: ['draft', 'pending', 'published'] } },
+      {
+        demoContent: true,
+        demoPublished: { $ne: true },
+        status: { $in: ['draft', 'pending', 'published'] },
+        'demoProfile.title': { $regex: /\S/ },
+        'demoProfile.summary': { $regex: /\S/ },
+        'demoProfile.category': { $regex: /\S/ },
+        'demoProfile.location': { $regex: /\S/ }
+      },
       {
         $set: {
           demoPublished: true,
@@ -2696,44 +2709,6 @@ app.post('/api/admin/content/navigation-places/publish-demos', requireContentAdm
   } catch (error) {
     console.error('Publish Navi demo profiles error:', error);
     res.status(500).json({ error: 'Unable to publish demo profiles' });
-  }
-});
-
-app.post('/api/admin/content/navigation-places/seed-restaurant-media', requireContentAdmin, async (req, res) => {
-  try {
-    const force = req.body && req.body.force === true;
-    const results = { updated: [], skipped: [], missing: [] };
-
-    for (const entry of restaurantMediaSeed) {
-      const existing = await NavigationPlace.findOne({ slug: entry.slug }).select('heroImage galleryImages menuItems');
-      if (!existing) {
-        results.missing.push(entry.slug);
-        continue;
-      }
-
-      const update = {};
-      if (force || !existing.heroImage) update.heroImage = entry.heroImage;
-      if (force || !existing.galleryImages?.length) {
-        update.galleryImages = entry.galleryImages;
-        update.galleryCaptions = entry.galleryCaptions;
-      }
-      if (force || !existing.menuItems?.length) update.menuItems = entry.menuItems;
-      if (!Object.keys(update).length) {
-        results.skipped.push(entry.slug);
-        continue;
-      }
-
-      await NavigationPlace.updateOne({ slug: entry.slug }, { $set: update });
-      results.updated.push(entry.slug);
-    }
-
-    res.json({
-      message: force ? 'Restaurant media replaced for seeded listings.' : 'Missing restaurant media filled.',
-      ...results
-    });
-  } catch (error) {
-    console.error('Restaurant media seed error:', error);
-    res.status(500).json({ error: 'Unable to update restaurant media' });
   }
 });
 
@@ -2765,6 +2740,7 @@ app.post('/api/admin/content/navigation-places', requireContentAdmin, async (req
         email: String(req.body.contact?.email || req.body.email || '').trim(),
         website: String(req.body.contact?.website || req.body.website || '').trim()
       },
+      detailProfileType: detailProfileType(req.body),
       verificationStatus: ['unverified', 'pending', 'verified'].includes(req.body.verificationStatus) ? req.body.verificationStatus : 'unverified',
       status: ['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status) ? req.body.status : 'draft',
       seedReviewRequired: req.body.seedReviewRequired === true,
@@ -2833,6 +2809,7 @@ app.put('/api/admin/content/navigation-places/:id', requireContentAdmin, async (
         email: String(req.body.contact?.email || req.body.email || '').trim(),
         website: String(req.body.contact?.website || req.body.website || '').trim()
       },
+      detailProfileType: detailProfileType(req.body),
       verificationStatus: ['unverified', 'pending', 'verified'].includes(req.body.verificationStatus) ? req.body.verificationStatus : 'unverified',
       status: ['draft', 'pending', 'published', 'rejected', 'suspended'].includes(req.body.status) ? req.body.status : 'draft',
       ratingAverage: Number(req.body.ratingAverage || 0),
@@ -3888,6 +3865,30 @@ app.get('/api/config', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({ apiBaseUrl: API_BASE_URL || origin, port: PORT });
 });
+
+function requireDealzAdmin(req, res, next) {
+  return requireAdmin(req, res, () => {
+    req.user = {
+      id: req.admin._id.toString(),
+      name: req.admin.name || req.admin.username,
+      role: req.admin.role
+    };
+    next();
+  });
+}
+
+let dealzRouterPromise;
+app.use('/api/dealz', (req, res, next) => {
+  if (!dealzRouterPromise) {
+    dealzRouterPromise = import('./components/dealzinfo/integration.js')
+      .then(({ default: createDealzRouter }) => createDealzRouter(requireDealzAdmin));
+  }
+
+  dealzRouterPromise.then(router => router(req, res, next)).catch(next);
+});
+
+const dealzPublicDir = path.join(__dirname, 'components', 'dealzinfo', 'public');
+app.use('/dealzinfo', express.static(dealzPublicDir, { extensions: ['html'] }));
 app.use(express.static(__dirname));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

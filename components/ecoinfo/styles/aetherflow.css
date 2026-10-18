@@ -137,7 +137,7 @@
 
 .current-date {
     font-size: 0.875rem;
-    color: var(--on-surface-variant);
+    color: var(--on-surface-variant) !important;
     margin: 0;
 }
 
@@ -159,7 +159,7 @@
 .temp-val {
     font-size: 3.5rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--emerald-700);
     line-height: 1;
 }
 
@@ -172,7 +172,7 @@
 .weather-desc {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--on-surface);
+    color: var(--on-surface-variant);
 }
 
 .feels-like {
@@ -197,7 +197,7 @@
 .stat-val {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--on-surface);
+    color: var(--on-surface-variant);
 }
 
 .stat-label {
@@ -235,7 +235,7 @@
 
 .day-name {
     font-weight: 600;
-    color: var(--on-surface);
+    color: var(--on-surface-variant);
     font-size: 0.875rem;
 }
 
@@ -247,7 +247,7 @@
 .temp-bar {
     display: flex;
     height: 24px;
-    background-color: var(--surface-container);
+    background-color: #92a59d;
     border-radius: var(--radius-lg);
     position: relative;
     overflow: hidden;
@@ -261,7 +261,7 @@
 
 .day-temp {
     font-weight: 600;
-    color: var(--on-surface);
+    color: var(--on-surface-variant);
     font-size: 0.875rem;
     text-align: right;
 }
@@ -366,7 +366,7 @@
 .metric-val {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--emerald-700);
 }
 
 .metric-desc {
@@ -395,7 +395,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
-    background-color: var(--surface-container);
+    background-color: #b8c7d6;
     border-radius: var(--radius-lg);
     font-size: 0.75rem;
     font-weight: 600;
@@ -483,11 +483,11 @@
 }
 
 .sunrise-icon {
-    background-color: var(--tertiary-fixed);
+    background-color: #c2603a;
 }
 
 .sunset-icon {
-    background-color: var(--primary-fixed);
+    background-color: #6a7699;
 }
 
 .sun-icon svg {

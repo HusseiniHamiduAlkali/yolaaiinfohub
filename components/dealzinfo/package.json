@@ -1,0 +1,6 @@
+{
+  "name": "dealzinfo-module",
+  "private": true,
+  "type": "module",
+  "description": "DealzInfo module loaded by the Yola AI Info Hub server."
+}

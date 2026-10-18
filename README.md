@@ -8,6 +8,7 @@ The project has two runtime surfaces:
 
 - **Frontend:** static HTML, CSS, JavaScript, templates, and local data. It runs through Five Server or Netlify.
 - **Backend:** Express and MongoDB in `server.js`. It provides authentication, sessions, AI/API proxies, content APIs, and ServiInfo administration.
+- **DealzInfo:** Market prices, listings, and submissions are integrated into the same backend and served at `/dealzinfo/`. It uses the main app's MongoDB connection and signed-in administrator accounts.
 
 ### Main directories
 
@@ -53,6 +54,8 @@ Standalone public pages are under `pages/`, including authentication, help, priv
 
 The backend listens only on the `PORT` environment variable (default `4000`). If that port is occupied, startup fails rather than silently switching ports. When the backend serves the frontend, browser API calls use the current origin. For a separately hosted frontend, configure/inject `API_BASE_URL` with the backend's public base URL and allow that frontend origin in `CORS_ORIGINS`.
 
+DealzInfo's public API is under `/api/dealz/` and its admin API is under `/api/dealz/admin/`. Open `/dealzinfo/` after starting the main server; administer it from `/components/admin/admin-dealz.html`. It shares the main `.env`, MongoDB database (`MONGO_URI`), session, and admin sign-in. To load its sample market data, run `npm run seed:dealz` from the repository root.
+
 ## Local development
 
 This project uses Node.js and npm. Node is managed with `nvm` in the current development setup.
@@ -86,14 +89,47 @@ After reviewing the inventory and configuring `MONGO_URI` for the intended datab
 npm run import-navigation-places:write
 ```
 
-The profile initializer reads the current database and reports the 63 template-backed records without writing by default. It skips existing published records. Run it after the base import, inspect the report, then opt into profile writes:
+The importer assigns both `subcategory` and `detailProfileType` from each card's linked detail-page template. Cards sharing a detail HTML page receive the same values; existing records are updated to match. On write, it also removes profile families that do not belong to that card's detail page. The current import preview covers 194 cards with no duplicate IDs.
+
+The detail-page mapping and stored profile fields are:
+
+| Detail page | Subcategory | Profile field |
+| --- | --- | --- |
+| `flight-agents-details.html` | Flights | `flightAgentProfile` |
+| `filling-stations-details.html` | Filling Stations | `fillingStationProfile` |
+| `parks-recreation-details.html` | Parks and Recreation | `parksRecreationProfile` |
+| `commercial-center-details.html` | Commercial Centers | `commercialCenterProfile` |
+| `hospitality-details.html` | Hospitality | `hospitalityProfile` |
+| `restaurant-details.html` | Restaurants | Base `NavigationPlace` fields |
+| `mosque-details.html` | Mosques | `mosqueProfile` |
+| `church-details.html` | Churches | `churchProfile` |
+| `event-centers.html` | Event Centers | `eventCenterProfile` |
+| `banks-details.html` | Banks | `bankProfile` |
+| `university-details.html` | Universities | `universityProfile` |
+| `technical-institution-details.html` | Technical Institutions | `technicalProfile` |
+| `primary-secondaryschool-details.html` | Primary and Secondary Schools | `schoolProfile` |
+| `learning-hub-details.html` | Learning Hubs | `learningProfile` |
+| `primary-healthcare-details.html` | Primary Healthcare | `healthcareProfile.primaryCare` |
+| `secondary-healthcare-details.html` | Secondary Healthcare | `healthcareProfile.secondaryHospital` |
+| `pharmacy-details.html` | Pharmacies | `healthcareProfile.pharmacy` |
+| `judiciary-details.html` | Judiciary | `judiciaryProfile` |
+| `sports-spa-details.html` | Sports and Wellness | `sportsSpaProfile` |
+| `iconic-structures.html` | Iconic Structures | `iconicStructureProfile` |
+
+Run the relevant profile initializers after importing records to populate the fields each details page consumes. Each initializer is restricted to its subcategory/profile family and removes unrelated profile families. Healthcare records contain only the active branch (`primaryCare`, `secondaryHospital`, or `pharmacy`). The nine venue-template initializer prunes extra top-level and nested keys to the linked page's supported profile shape while preserving matching administrator values and the profile review/demo flags. The flight, filling-station, and bank initializer and the nine venue-template initializer provide dry-run previews before `--write`:
 
 ```bash
+npm run initialize-navigation-detail-profiles
+npm run initialize-navigation-detail-profiles:write
 npm run initialize-navigation-template-profiles
 npm run initialize-navigation-template-profiles:write
 ```
 
-If you explicitly intend to add template examples to existing published records, use `npm run initialize-navigation-template-profiles:write -- --demote-published`; those records are moved to draft for review. New seeded records are drafts and unverified. Template-derived profiles are marked for review; the base importer also skips existing published records. In the Navi admin, review the base fields and profile JSON, clear the seed-review checkbox, and deliberately publish the record only after confirming its details.
+School, university, technical-institution, learning-hub, and healthcare profiles are generated by `initialize-school-profiles`, `initialize-university-profiles`, `initialize-technical-profiles`, `initialize-learning-profiles`, and `initialize-healthcare-profiles`. These legacy commands write directly to the configured database, but skip published records by default and mark seeded data for review. Pass `--demote-published` to explicitly move published records to draft and mark them unverified before adding samples. The base importer removes unrelated profile families from existing published records but does not change their moderation status or overwrite the profile family matched to their detail page. In the Navi admin, review base fields and profile JSON, clear the seed-review checkbox, and deliberately publish only after confirming details.
+
+The flight, filling-station, and bank initializer also skips published records by default and creates new records as drafts requiring review. To explicitly seed an existing published record, use `npm run initialize-navigation-detail-profiles:write -- --demote-published`; the record is moved to draft and marked unverified for review.
+
+Transport-agent and motor-park cards use the base `NavigationPlace` fields. Restaurant cards also use the base record, including the existing gallery and menu fields; the removed restaurant media-seeding controls are not part of this import.
 
 ### Navi demo profile seeding
 

@@ -7,6 +7,8 @@ const path = require('path');
 const vm = require('vm');
 const mongoose = require('mongoose');
 const NavigationPlace = require('../server/navigationPlaceModel');
+const { detailProfileType } = require('../server/navigationProfileTypes');
+const { profileFieldsToUnset } = require('../server/navigationProfileSeedPolicy');
 
 const root = path.join(__dirname, '..');
 const directoryTemplate = fs.readFileSync(path.join(root, 'templates/navi.html'), 'utf8');
@@ -195,8 +197,10 @@ function makePlace(card, profile) {
     verificationStatus: 'unverified',
     ratingAverage: 0,
     reviewCount: 0,
-    status: 'published',
+    status: 'draft',
+    seedReviewRequired: true,
     legacySource: 'templates/navi.html',
+    detailProfileType: detailProfileType(card),
     [profileFields[card.kind]]: profile
   };
 }
@@ -227,7 +231,8 @@ async function main() {
     existingByName.get(key).push(record);
   });
   const write = process.argv.includes('--write');
-  const summary = { mode: write ? 'write' : 'dry-run', cardCount: cards.length, counts, matched: [], matchedByName: [], ambiguous: [], missing: [], wouldUpdate: [], updated: [], unchanged: [] };
+  const demotePublished = process.argv.includes('--demote-published');
+  const summary = { mode: write ? 'write' : 'dry-run', cardCount: cards.length, counts, matched: [], matchedByName: [], ambiguous: [], missing: [], publishedSkipped: [], wouldUpdate: [], updated: [], unchanged: [] };
 
   for (const card of cards) {
     let existing = existingBySlug.get(card.slug);
@@ -254,12 +259,34 @@ async function main() {
     }
 
     summary.matched.push(card.slug);
-    if (JSON.stringify(profile) === JSON.stringify(existing[key] || {})) {
+    if (existing.status === 'published' && !demotePublished) {
+      summary.publishedSkipped.push(card.slug);
+      continue;
+    }
+    const profileUnchanged = JSON.stringify(profile) === JSON.stringify(existing[key] || {});
+    const metadataUnchanged = existing.subcategory === card.subcategory &&
+      existing.detailProfileType === detailProfileType(card);
+    const statusUnchanged = existing.status !== 'published' || !demotePublished;
+    if (profileUnchanged && metadataUnchanged && statusUnchanged) {
       summary.unchanged.push(card.slug);
       continue;
     }
     if (write) {
-      await NavigationPlace.updateOne({ _id: existing._id }, { $set: { [key]: profile } }, { runValidators: true });
+      const updates = {
+        [key]: profile,
+        subcategory: card.subcategory,
+        detailProfileType: detailProfileType(card),
+        seedReviewRequired: true
+      };
+      if (existing.status === 'published') {
+        updates.status = 'draft';
+        updates.verificationStatus = 'unverified';
+      }
+      await NavigationPlace.updateOne(
+        { _id: existing._id },
+        { $set: updates, $unset: profileFieldsToUnset(key) },
+        { runValidators: true }
+      );
       summary.updated.push(card.slug);
     } else {
       summary.wouldUpdate.push(card.slug);

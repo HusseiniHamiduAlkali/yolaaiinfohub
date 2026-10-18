@@ -17,6 +17,7 @@
       naviinfo: 'NaviInfo',
       communityinfo: 'CommunityInfo',
       serviinfo: 'ServiInfo',
+      dealzinfo:'DealzInfo',
       aboutinfo: 'About',
       app_title: 'Yola AI Info Hub',
       sign_in: 'Sign in',

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interactive map of Yola markets and businesses — DealzInfo</title>
+    <meta
+      name="description"
+      content="Find the nearest market or listed business in Yola on an interactive map, with directions and contact details."
+    />
+    <base href="/dealzinfo/" />
+    <link rel="canonical" href="/dealzinfo/map.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="../../../fontawesome/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/dealz.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+
+    <main id="main">
+      <div class="wrap stack-lg">
+        <section class="stack">
+          <h1>Market &amp; business map</h1>
+          <p class="muted">Green pins are markets, gold pins are listed businesses.</p>
+        </section>
+
+        <section class="card stack">
+          <div class="row row-between">
+            <div class="chip-row" role="group" aria-label="Map layers">
+              <button class="chip active" type="button" id="toggle-markets" aria-pressed="true">Markets</button>
+              <button class="chip active" type="button" id="toggle-businesses" aria-pressed="true">Businesses</button>
+            </div>
+            <button class="button button-outline button-sm" id="locate" type="button">Find nearest to me</button>
+          </div>
+          <p class="small muted" id="status" aria-live="polite"></p>
+          <div id="map"></div>
+        </section>
+
+        <section class="stack">
+          <h2>Closest markets</h2>
+          <div class="grid grid-3" id="nearest"></div>
+        </section>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+    <script type="module" src="js/shell.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="js/pages/map.js"></script>
+  </body>
+</html>

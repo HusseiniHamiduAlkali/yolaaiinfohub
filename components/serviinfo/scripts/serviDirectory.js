@@ -52,19 +52,23 @@
     var directory = document.getElementById('directory');
     if (!directory || directory.dataset.apiLoaded === 'true') return Promise.resolve(false);
     var errorState = document.getElementById('directoryError');
-    Array.prototype.forEach.call(directory.querySelectorAll('.section4-container'), function (container) {
-      container.innerHTML = '';
-    });
     return fetch(apiBase() + '/api/content/professionals?limit=200', { credentials: 'include' })
       .then(function (response) {
         if (!response.ok) throw new Error('Professional directory request failed');
         return response.json();
       })
       .then(function (data) {
+        if (!data || !Array.isArray(data.items) || data.items.some(function (item) {
+          return !item || typeof item !== 'object' || Array.isArray(item);
+        })) {
+          throw new Error('Professional directory returned an invalid response');
+        }
+        Array.prototype.forEach.call(directory.querySelectorAll('.section4-container'), function (container) {
+          container.innerHTML = '';
+        });
         var groups = {};
         Array.prototype.forEach.call(directory.querySelectorAll('.section3[data-category]'), function (group) {
           groups[group.dataset.category] = group;
-          var container = group.querySelector('.section4-container');
         });
         (data.items || []).forEach(function (item) {
           var group = groups[item.category];
@@ -78,9 +82,6 @@
         return true;
       })
       .catch(function (error) {
-        Array.prototype.forEach.call(directory.querySelectorAll('.section4-container'), function (container) {
-          container.innerHTML = '';
-        });
         if (errorState) {
           errorState.hidden = false;
           errorState.textContent = 'The professional directory is temporarily unavailable. Please try again shortly.';

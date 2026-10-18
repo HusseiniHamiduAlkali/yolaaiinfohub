@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DealzInfo — Yola Market Pulse: live commodity prices</title>
+    <meta
+      name="description"
+      content="Track commodity prices, compare Yola markets, follow price trends and find trusted local businesses across Yola and Adamawa State."
+    />
+    <base href="/dealzinfo/" />
+    <link rel="canonical" href="/dealzinfo/index.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../fontawesome/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/components/dealzinfo/public/css/dealz.css"/>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+
+    <main id="main">
+      <div class="wrap stack-lg">
+        <section class="hero">
+          <p class="eyebrow">Yola Market Pulse</p>
+          <h1>Know today's market price <span class="gold-text">before you leave home</span></h1>
+          <p>
+            DealzInfo tracks commodity prices across Yola's markets, compares them side by side and connects
+            you to verified local businesses.
+          </p>
+          <form class="row" id="search-form" role="search" style="margin-top: 1rem; gap: 0.5rem">
+            <label class="sr-only" for="search-input">Search commodities, markets or businesses</label>
+            <input
+              id="search-input"
+              type="search"
+              placeholder="Search rice, Jimeta market, grains depot…"
+              style="flex: 1 1 16rem"
+            />
+            <button class="button button-gold" type="submit">Search</button>
+          </form>
+          <div class="chip-row" id="quick-links" style="margin-top: 0.75rem"></div>
+        </section>
+
+        <section aria-labelledby="stats-heading" class="stack">
+          <h2 id="stats-heading">Market snapshot</h2>
+          <div class="grid grid-4" id="stats"></div>
+        </section>
+
+        <section aria-labelledby="latest-heading" class="stack">
+          <div class="row row-between">
+            <h2 id="latest-heading">Latest prices</h2>
+            <a class="button button-outline button-sm" href="prices.html">View all prices</a>
+          </div>
+          <div class="grid grid-3" id="latest"></div>
+        </section>
+
+        <section aria-labelledby="alerts-heading" class="stack">
+          <div class="row row-between">
+            <h2 id="alerts-heading">Movements &amp; alerts</h2>
+            <a class="button button-outline button-sm" href="alerts.html">All alerts</a>
+          </div>
+          <div class="grid grid-2" id="alerts"></div>
+        </section>
+
+        <section aria-labelledby="featured-heading" class="stack">
+          <h2 id="featured-heading">Featured markets</h2>
+          <div class="grid grid-3" id="featured-markets"></div>
+        </section>
+
+        <section aria-labelledby="biz-heading" class="stack">
+          <div class="row row-between">
+            <h2 id="biz-heading">Featured businesses</h2>
+            <a class="button button-outline button-sm" href="businesses.html">Business directory</a>
+          </div>
+          <div class="grid grid-3" id="featured-businesses"></div>
+        </section>
+
+        <section aria-labelledby="ann-heading" class="stack">
+          <h2 id="ann-heading">Notices</h2>
+          <div class="grid grid-2" id="announcements"></div>
+        </section>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+    <script src="/components/dealzinfo/public/js/shell.js"></script>
+    <script src="/components/dealzinfo/public/js/pages/overview.js"></script>
+    <script type="module" src="/js/shell.js"></script>
+    <script type="module" src="js/pages/overview.js"></script>
+  </body>
+</html>

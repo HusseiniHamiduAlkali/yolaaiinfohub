@@ -29,6 +29,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { min-height: 100vh; margin: 0; background: var(--cream); color: var(--ink); font: 15px/1.5 "Plus Jakarta Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 button, input, select, textarea { font: inherit; }
 h1, h2, h3, h4, p { margin-top: 0; }
@@ -52,15 +53,21 @@ h1, h2, h3, h4, p { margin-top: 0; }
 .panel-heading h2 { margin: 0; color: var(--emerald-900); font: 600 1.13rem/1.3 Fraunces, Georgia, serif; }
 .panel-heading .muted { margin: .2rem 0 0; color: var(--muted); font-size: .78rem; }
 .panel-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-.records-panel { position: sticky; top: 112px; display: flex; max-height: calc(100vh - 132px); flex-direction: column; }
+.records-panel { position: sticky; top: 112px; display: flex; max-height: calc(100vh - 132px); flex-direction: column; overflow: scroll; border-right: 1px solid var(--line); background: var(--paper); box-shadow: var(--shadow-sm); }
 .records-panel > label { display: grid; gap: .45rem; padding: 1rem 1.35rem 0; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .records-panel > label select { width: 100%; }
-.records-list { display: grid; flex: 1; gap: .55rem; overflow-y: auto; padding: .7rem 1.35rem 1.35rem; }
+.records-toolbar { display: grid; gap: .5rem; padding: .8rem 1.35rem 0; }
+.records-search { display: grid; gap: .4rem; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.records-search input { width: 100%; min-height: 42px; padding: .6rem .8rem; border: 1.5px solid var(--line); border-radius: var(--radius-sm); color: var(--ink); background: #fff; font: 400 .82rem/1.45 "Plus Jakarta Sans", system-ui, sans-serif; }
+.records-search input:focus { border-color: var(--emerald-500); outline: 0; box-shadow: 0 0 0 4px rgba(16,185,129,.12); }
+.records-count { margin: 0; color: var(--muted); font-size: .75rem; font-weight: 700; }
+.records-list { display: grid; flex: 1; gap: .55rem; overflow-y: auto; padding: .7rem 1.35rem 1.35rem; min-height: fit-content; }
 .records-list .muted { margin: 0; padding: .8rem 0; color: var(--muted); font-size: .84rem; }
 .record { display: grid; width: 100%; gap: .2rem; padding: .75rem .85rem; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink); background: #fff; text-align: left; cursor: pointer; transition: var(--transition); }
 .record:hover, .record.active { border-color: var(--emerald-500); background: var(--emerald-50); }
 .record strong { color: var(--emerald-900); font-size: .85rem; }
 .record span { color: var(--muted); font-size: .72rem; }
+.record:focus-visible, .button:focus-visible, .back-link:focus-visible { outline: 3px solid var(--gold-400); outline-offset: 2px; }
 .admin-tools { display: grid; gap: .55rem; margin: 1rem 1.35rem .4rem; padding: 1rem; border: 1px solid var(--gold-200); border-radius: var(--radius-sm); background: var(--gold-50); }
 .admin-tools h3 { margin: 0; color: var(--emerald-900); font: 600 .95rem Fraunces, Georgia, serif; }
 .admin-tools .muted { margin: 0 0 .15rem; color: var(--muted); font-size: .75rem; }
@@ -119,6 +126,7 @@ h1, h2, h3, h4, p { margin-top: 0; }
   .panel-actions .button { flex: 1 1 130px; }
   .editor-panel form { padding: 1rem; }
   .records-panel > label { padding-right: 1rem; padding-left: 1rem; }
+  .records-toolbar { padding-right: 1rem; padding-left: 1rem; }
   .records-list { padding-right: 1rem; padding-left: 1rem; }
   .admin-tools { margin-right: 1rem; margin-left: 1rem; }
   .button { white-space: normal; }

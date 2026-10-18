@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const NavigationPlace = require('../server/navigationPlaceModel');
+const { prepareReviewableProfileUpdate, profileFieldsToUnset } = require('../server/navigationProfileSeedPolicy');
 
 const defaults = {
   tagline: 'Knowledge, character and service for a changing world.',
@@ -80,17 +81,16 @@ const defaults = {
 };
 
 const universityFilter = {
-  $or: [
-    { category: /universit/i },
-    { subcategory: /universit|polytechnic|institute of technology/i }
-  ]
+  subcategory: 'Universities'
 };
 
 async function run() {
   if (!process.env.MONGO_URI) throw new Error('MONGO_URI is required');
   await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 10000 });
-  const records = await NavigationPlace.find(universityFilter).select('displayName description image heroImage galleryImages galleryCaptions contact universityProfile');
+  const records = await NavigationPlace.find(universityFilter).select('displayName description image heroImage galleryImages galleryCaptions contact universityProfile status verificationStatus');
   let updated = 0;
+  let skipped = 0;
+  const demotePublished = process.argv.includes('--demote-published');
   for (const record of records) {
     const current = record.universityProfile ? record.universityProfile.toObject() : {};
     const hasContent = value => typeof value === 'string' ? value.trim().length > 0 : Boolean(value);
@@ -134,10 +134,20 @@ async function run() {
       email: contact.email || `admissions@${record.displayName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.example`,
       website: contact.website || 'https://www.example.edu.ng'
     };
-    await NavigationPlace.updateOne({ _id: record._id }, { $set: updates });
+    updates.detailProfileType = 'university';
+    updates.subcategory = 'Universities';
+    const reviewableChanges = prepareReviewableProfileUpdate(record, updates, { demotePublished });
+    if (!reviewableChanges) {
+      skipped += 1;
+      continue;
+    }
+    await NavigationPlace.updateOne(
+      { _id: record._id },
+      { $set: reviewableChanges, $unset: profileFieldsToUnset('universityProfile') }
+    );
     updated += 1;
   }
-  console.log(`University profile initialization complete: ${updated} records updated.`);
+  console.log(`University profile initialization complete: ${updated} records updated, ${skipped} records skipped.`);
   await mongoose.disconnect();
 }
 

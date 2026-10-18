@@ -1,0 +1,56 @@
+.dealz-header-links { display: flex; flex: 0 0 auto; gap: .6rem; }
+.dealz-admin { display: grid; gap: 1rem; }
+.dealz-admin-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.dealz-admin-toolbar p { margin: 0; color: var(--muted); font-size: .8rem; }
+.dealz-admin-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; }
+.dealz-admin-stat { min-width: 0; padding: 1rem 1.15rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); box-shadow: var(--shadow-sm); }
+.dealz-admin-stat span { display: block; color: var(--muted); font-size: .72rem; font-weight: 700; }
+.dealz-admin-stat strong { display: block; margin-top: .2rem; color: var(--emerald-900); font: 600 1.65rem/1.2 Fraunces, Georgia, serif; }
+.dealz-admin-tabs { display: flex; gap: .4rem; overflow-x: auto; padding: .35rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
+.dealz-admin-tab { flex: 0 0 auto; min-height: 38px; padding: .55rem .9rem; border: 1px solid transparent; border-radius: 7px; color: var(--muted); background: transparent; font: 700 .76rem "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer; }
+.dealz-admin-tab:hover, .dealz-admin-tab[aria-selected="true"] { border-color: var(--gold-200); color: var(--emerald-900); background: var(--gold-50); }
+.dealz-admin-tab:focus-visible, .dealz-admin-toggle:focus-visible { outline: 3px solid var(--gold-400); outline-offset: 2px; }
+.dealz-admin-panels { display: grid; gap: 1rem; }
+.dealz-admin-record, .dealz-admin-form { padding: 1.1rem 1.25rem; }
+.dealz-admin-record { display: grid; gap: .75rem; }
+.dealz-admin-record > :last-child, .dealz-admin-record p { margin-bottom: 0; }
+.dealz-admin-record-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.dealz-admin-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
+.dealz-admin .button-sm { min-height: 34px; padding: .4rem .7rem; font-size: .7rem; }
+.dealz-admin .button-outline { color: var(--emerald-900); }
+.dealz-admin-badge { display: inline-flex; align-items: center; padding: .25rem .55rem; border-radius: 999px; color: var(--emerald-900); background: var(--emerald-50); font-size: .68rem; font-weight: 800; text-transform: uppercase; }
+.dealz-admin-badge.is-pending { color: #846317; background: var(--gold-50); }
+.dealz-admin-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.dealz-admin-field { display: grid; min-width: 0; gap: .35rem; color: var(--emerald-900); font-size: .72rem; font-weight: 700; }
+.dealz-admin-field input, .dealz-admin-field select, .dealz-admin-field textarea { width: 100%; min-height: 40px; padding: .55rem .7rem; border: 1.5px solid var(--line); border-radius: 8px; color: var(--ink); background: #fff; font: 400 .78rem/1.4 "Plus Jakarta Sans", system-ui, sans-serif; }
+.dealz-admin-field textarea { min-height: 92px; resize: vertical; }
+.dealz-admin-field input:focus, .dealz-admin-field select:focus, .dealz-admin-field textarea:focus { border-color: var(--emerald-500); outline: 0; box-shadow: 0 0 0 3px rgba(16,185,129,.12); }
+.dealz-admin-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.dealz-admin-table-wrap table { width: 100%; border-collapse: collapse; font-size: .75rem; }
+.dealz-admin-table-wrap th, .dealz-admin-table-wrap td { padding: .65rem .75rem; border-bottom: 1px solid var(--line-soft); text-align: left; white-space: nowrap; }
+.dealz-admin-table-wrap th { color: var(--emerald-900); background: var(--cream); font-size: .68rem; text-transform: uppercase; }
+.dealz-admin-toggle { min-height: 34px; padding: .4rem .65rem; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); background: #fff; font-size: .72rem; font-weight: 700; cursor: pointer; }
+.dealz-admin-toggle[aria-pressed="true"] { border-color: var(--gold-400); color: var(--emerald-900); background: var(--gold-50); }
+.dealz-admin-empty { padding: 1.5rem; border: 1px dashed var(--line); border-radius: var(--radius-sm); color: var(--muted); text-align: center; }
+#toast-region { position: fixed; right: 1rem; bottom: 1rem; z-index: 50; display: grid; gap: .5rem; width: min(26rem, calc(100vw - 2rem)); }
+#toast-region .toast { padding: .8rem 1rem; border: 1px solid var(--emerald-500); border-radius: 8px; color: var(--emerald-900); background: #fff; box-shadow: var(--shadow-md); font-size: .8rem; }
+#toast-region .toast-error { border-color: var(--danger-border); color: var(--danger); }
+.dealz-admin .empty { padding: 1.5rem; border: 1px dashed var(--line); border-radius: var(--radius-sm); color: var(--muted); text-align: center; }
+.dealz-admin-note { width: 100%; min-height: 40px; padding: .55rem .7rem; border: 1.5px solid var(--line); border-radius: 8px; color: var(--ink); background: #fff; font: 400 .78rem/1.4 "Plus Jakarta Sans", system-ui, sans-serif; }
+.dealz-admin-featured { display: flex; align-items: center; gap: .5rem; color: var(--emerald-900); font-size: .75rem; font-weight: 700; }
+.dealz-admin-featured input { width: 1rem; height: 1rem; accent-color: var(--emerald-700); }
+.dealz-admin-record > h2, .dealz-admin-form > h2 { margin: 0; color: var(--emerald-900); font: 600 1.13rem/1.3 Fraunces, Georgia, serif; }
+
+@media (max-width: 800px) {
+  .dealz-admin-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dealz-admin-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .dealz-header-links { width: 100%; }
+  .dealz-header-links .back-link { flex: 1 1 auto; }
+  .dealz-admin-stats, .dealz-admin-fields { grid-template-columns: 1fr; }
+  .dealz-admin-toolbar { align-items: stretch; flex-direction: column; }
+  .dealz-admin-record, .dealz-admin-form { padding: 1rem; }
+  .dealz-admin-record-head { align-items: flex-start; flex-direction: column; }
+  .dealz-admin-toolbar .button { width: 100%; }
+}

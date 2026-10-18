@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const NavigationPlace = require('../server/navigationPlaceModel');
+const { prepareReviewableProfileUpdate, profileFieldsToUnset } = require('../server/navigationProfileSeedPolicy');
 
 const slugs = [
   'national-library-of-nigeria-nln-yola-branch',
@@ -60,20 +61,38 @@ async function run() {
   if (!process.env.MONGO_URI) throw new Error('MONGO_URI is required');
   await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 10000 });
   let updated = 0;
+  let skipped = 0;
+  const demotePublished = process.argv.includes('--demote-published');
   for (const slug of slugs) {
-    const record = await NavigationPlace.findOne({ slug }).select('displayName description address openingHours image heroImage galleryImages galleryCaptions contact learningProfile');
+    const record = await NavigationPlace.findOne({ slug }).select('displayName description address openingHours image heroImage galleryImages galleryCaptions contact learningProfile status verificationStatus');
     if (!record) continue;
     const profile = profileFor(record);
-    const updates = { learningProfile: profile, address: record.address || `${record.displayName}, Yola, Adamawa State`, openingHours: record.openingHours || 'Monday-Friday, 9:00 am-6:00 pm', image: record.image || profile.heroImage, heroImage: record.heroImage || profile.heroImage };
+    const updates = {
+      learningProfile: profile,
+      detailProfileType: 'learning',
+      subcategory: 'Learning Hubs',
+      address: record.address || `${record.displayName}, Yola, Adamawa State`,
+      openingHours: record.openingHours || 'Monday-Friday, 9:00 am-6:00 pm',
+      image: record.image || profile.heroImage,
+      heroImage: record.heroImage || profile.heroImage
+    };
     if (!record.description) updates.description = `${record.displayName} is a fictional library and learning hub profile. Verify information before publication.`;
     if (!record.galleryImages?.length) updates.galleryImages = profile.gallery.map(item => item.image);
     if (!record.galleryCaptions?.length) updates.galleryCaptions = profile.gallery.map(item => item.caption);
     const contact = record.contact && record.contact.toObject ? record.contact.toObject() : (record.contact || {});
     updates.contact = { phone: contact.phone || '+234 800 000 0310', email: contact.email || `hello@${slug}.example`, website: contact.website || 'https://example.com/learning-hub' };
-    await NavigationPlace.updateOne({ _id: record._id }, { $set: updates });
+    const reviewableChanges = prepareReviewableProfileUpdate(record, updates, { demotePublished });
+    if (!reviewableChanges) {
+      skipped += 1;
+      continue;
+    }
+    await NavigationPlace.updateOne(
+      { _id: record._id },
+      { $set: reviewableChanges, $unset: profileFieldsToUnset('learningProfile') }
+    );
     updated += 1;
   }
-  console.log(`Learning hub profile initialization complete: ${updated} records updated.`);
+  console.log(`Learning hub profile initialization complete: ${updated} records updated, ${skipped} records skipped.`);
   await mongoose.disconnect();
 }
 

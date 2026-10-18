@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Yola market directory — opening hours and coverage — DealzInfo</title>
+    <meta
+      name="description"
+      content="Every market DealzInfo tracks in Yola and greater Adamawa: location, market days, opening hours, goods traded and current prices."
+    />
+    <base href="/dealzinfo/" />
+    <link rel="canonical" href="/dealzinfo/markets.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../fontawesome/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/dealz.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div id="site-header"></div>
+
+    <main id="main">
+      <div class="wrap stack-lg">
+        <section class="stack">
+          <h1>Markets we track</h1>
+          <p class="muted">Opening hours, market days and the commodities recorded at each location.</p>
+        </section>
+
+        <section class="card">
+          <label for="q">Search markets</label>
+          <input id="q" type="search" placeholder="Jimeta, Ngurore, livestock…" />
+        </section>
+
+        <section class="grid grid-2" id="results" aria-live="polite"></section>
+      </div>
+    </main>
+
+    <div id="site-footer"></div>
+    <script type="module" src="js/shell.js"></script>
+    <script type="module" src="js/pages/markets.js"></script>
+  </body>
+</html>

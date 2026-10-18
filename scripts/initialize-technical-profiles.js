@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const mongoose = require('mongoose');
 const NavigationPlace = require('../server/navigationPlaceModel');
+const { prepareReviewableProfileUpdate, profileFieldsToUnset } = require('../server/navigationProfileSeedPolicy');
 
 const seeds = {
   'federal-college-of-education': { type: 'College of Education', established: '1977', programmes: ['NCE Primary Education', 'NCE English Education', 'NCE Mathematics Education'], departments: ['Arts and Social Sciences Education', 'Science Education', 'Vocational Education'] },
@@ -45,11 +46,17 @@ async function run() {
   if (!process.env.MONGO_URI) throw new Error('MONGO_URI is required');
   await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 10000 });
   let updated = 0;
+  let skipped = 0;
+  const demotePublished = process.argv.includes('--demote-published');
   for (const [slug, seed] of Object.entries(seeds)) {
-    const record = await NavigationPlace.findOne({ slug }).select('displayName description address openingHours image heroImage galleryImages galleryCaptions contact technicalProfile');
+    const record = await NavigationPlace.findOne({ slug }).select('displayName description address openingHours image heroImage galleryImages galleryCaptions contact technicalProfile status verificationStatus');
     if (!record) continue;
     const profile = profileFor(record, seed);
-    const updates = { technicalProfile: profile };
+    const updates = {
+      technicalProfile: profile,
+      detailProfileType: 'technical',
+      subcategory: 'Technical Institutions'
+    };
     if (!record.description) updates.description = `${record.displayName} offers practical, professional and technical education. Verify institutional information before publication.`;
     if (!record.image) updates.image = profile.heroImage;
     if (!record.heroImage) updates.heroImage = profile.heroImage;
@@ -63,10 +70,18 @@ async function run() {
       email: contact.email || `admissions@${slug}.example`,
       website: contact.website || 'https://example.com/technical-institution'
     };
-    await NavigationPlace.updateOne({ _id: record._id }, { $set: updates });
+    const reviewableChanges = prepareReviewableProfileUpdate(record, updates, { demotePublished });
+    if (!reviewableChanges) {
+      skipped += 1;
+      continue;
+    }
+    await NavigationPlace.updateOne(
+      { _id: record._id },
+      { $set: reviewableChanges, $unset: profileFieldsToUnset('technicalProfile') }
+    );
     updated += 1;
   }
-  console.log(`Technical institution profile initialization complete: ${updated} records updated.`);
+  console.log(`Technical institution profile initialization complete: ${updated} records updated, ${skipped} records skipped.`);
   await mongoose.disconnect();
 }
 

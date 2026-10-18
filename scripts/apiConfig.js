@@ -3,7 +3,13 @@
 (function(){
   const injected = typeof __API_BASE__ !== 'undefined' ? __API_BASE__ : '';
   const configuredBase = window.API_BASE_URL || window.__API_BASE__ || injected;
-  const initialBase = String(configuredBase || location.origin).replace(/\/$/, '');
+  const host = (location.hostname || '').replace(/^\[|\]$/g, '');
+  const isLocalDevelopmentHost = host === 'localhost' || host === '::1' || host === '0.0.0.0' ||
+    /^127\./.test(host) || /^192\./.test(host) || /^10\./.test(host);
+  const localBackend = isLocalDevelopmentHost
+    ? location.protocol + '//' + (host.indexOf(':') !== -1 && host !== 'localhost' ? '[' + host + ']' : host) + ':4000'
+    : location.origin;
+  const initialBase = String(configuredBase || localBackend).replace(/\/$/, '');
   window.API_BASE = initialBase;
   window.getApiBase = function() { return window.API_BASE; };
 

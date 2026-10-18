@@ -5,7 +5,9 @@ const path = require('path');
 const vm = require('vm');
 const mongoose = require('mongoose');
 const NavigationPlace = require('../server/navigationPlaceModel');
+const { profileFieldsToUnset } = require('../server/navigationProfileSeedPolicy');
 const { parseCards } = require('./import-navigation-places');
+const { detailProfileType } = require('../server/navigationProfileTypes');
 
 const root = path.join(__dirname, '..');
 const templateFiles = {
@@ -246,16 +248,55 @@ function hasProfileContent(profile) {
 }
 
 function mergeTemplateProfile(existing, seeded) {
+  if (seeded === undefined) return existing;
   if (existing === undefined || existing === null) return seeded;
-  if (Array.isArray(existing)) return existing;
+  if (Array.isArray(seeded)) {
+    if (!Array.isArray(existing)) return seeded;
+    if (!existing.length) return existing;
+    const objectTemplate = seeded.find(function (item) { return item && typeof item === 'object' && !Array.isArray(item); });
+    if (!objectTemplate) return existing;
+    return existing.map(function (item, index) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return item;
+      return mergeTemplateProfile(item, seeded[index] && typeof seeded[index] === 'object' ? seeded[index] : objectTemplate);
+    });
+  }
+  if (Array.isArray(existing)) return seeded;
   if (!existing || !seeded || typeof existing !== 'object' || typeof seeded !== 'object') return existing;
-  const merged = Object.assign({}, existing);
-  Object.keys(seeded).forEach(function (key) {
+  return Object.keys(seeded).reduce(function (merged, key) {
     merged[key] = Object.prototype.hasOwnProperty.call(existing, key)
       ? mergeTemplateProfile(existing[key], seeded[key])
       : seeded[key];
-  });
-  return merged;
+    return merged;
+  }, {});
+}
+
+function imageSlots(value, path, result) {
+  const currentPath = path || '';
+  const output = result || [];
+  if (Array.isArray(value)) {
+    value.forEach(function (item, index) { imageSlots(item, currentPath + '[' + index + ']', output); });
+    return output;
+  }
+  if (!value || typeof value !== 'object') {
+    if (typeof value === 'string' && /(?:hero|about)?(?:image|img)|(?:^|\.)(?:src|url)$/.test(currentPath.toLowerCase())) output.push(currentPath);
+    return output;
+  }
+  Object.keys(value).forEach(function (key) { imageSlots(value[key], currentPath ? currentPath + '.' + key : key, output); });
+  return output;
+}
+
+function validateProfileAgainstTemplate(profile, template) {
+  const expectedFields = Object.keys(template || {});
+  const actual = profile || {};
+  const missingFields = expectedFields.filter(function (field) { return !Object.prototype.hasOwnProperty.call(actual, field); });
+  const expectedImages = imageSlots(template || {}, '', []).length;
+  const actualImages = imageSlots(actual, '', []).length;
+  return {
+    missingFields: missingFields,
+    expectedImageSlots: expectedImages,
+    actualImageSlots: actualImages,
+    imageSlotsMatch: expectedImages === actualImages
+  };
 }
 
 function prepareProfileUpdates(cards, existingRecords, templates, options) {
@@ -279,22 +320,36 @@ function prepareProfileUpdates(cards, existingRecords, templates, options) {
     const field = profileFields[kind];
     const seeded = makeProfile(card, kind, templates);
     const existingProfile = existing[field];
-    if (existingProfile && existingProfile.seededFromExample === true) {
-      summary.skippedExistingProfile.push(card.slug);
-      return;
-    }
     if (hasProfileContent(existingProfile) && existingProfile.seedReviewRequired === false) {
-      summary.skippedExistingProfile.push(card.slug);
+      const pruned = mergeTemplateProfile(existingProfile, seeded);
+      pruned.demoContent = Boolean(existingProfile.demoContent);
+      pruned.demoNotice = existingProfile.demoNotice || '';
+      pruned.seededFromExample = kind !== 'hospitality';
+      pruned.seedReviewRequired = false;
+      if (JSON.stringify(pruned) === JSON.stringify(existingProfile)) {
+        summary.skippedExistingProfile.push(card.slug);
+        return;
+      }
+      summary.updates.push({
+        slug: card.slug,
+        field: field,
+        profile: pruned,
+        detailProfileType: detailProfileType(card),
+        demote: false,
+        reviewRequired: false
+      });
       return;
     }
     const merged = mergeTemplateProfile(existingProfile, seeded);
+    merged.demoContent = Boolean(existingProfile && existingProfile.demoContent);
+    merged.demoNotice = existingProfile && existingProfile.demoNotice || '';
     merged.seededFromExample = kind !== 'hospitality';
     merged.seedReviewRequired = true;
     if (JSON.stringify(merged) === JSON.stringify(existing[field] || {})) {
       summary.skippedExistingProfile.push(card.slug);
       return;
     }
-    summary.updates.push({ slug: card.slug, field: field, profile: merged, demote: existing.status === 'published' });
+    summary.updates.push({ slug: card.slug, field: field, profile: merged, detailProfileType: detailProfileType(card), demote: existing.status === 'published', reviewRequired: true });
   });
   return summary;
 }
@@ -312,10 +367,14 @@ async function main() {
     for (const update of summary.updates) {
       const changes = {
         [update.field]: update.profile,
-        seedReviewRequired: true
+        detailProfileType: update.detailProfileType,
+        seedReviewRequired: update.reviewRequired
       };
       if (update.demote) changes.status = 'draft';
-      await NavigationPlace.updateOne({ slug: update.slug }, { $set: changes });
+      await NavigationPlace.updateOne(
+        { slug: update.slug },
+        { $set: changes, $unset: profileFieldsToUnset(update.field) }
+      );
     }
     console.log('Updated ' + summary.updates.length + ' template profiles; published records receiving sample profile data were moved to draft.');
   }
@@ -330,4 +389,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { profileKind, makeTemplateProfiles, makeProfile, mergeTemplateProfile, prepareProfileUpdates };
+module.exports = { profileKind, makeTemplateProfiles, makeProfile, mergeTemplateProfile, imageSlots, validateProfileAgainstTemplate, prepareProfileUpdates };

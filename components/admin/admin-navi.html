@@ -47,11 +47,11 @@
           </select>
         </label>
 
-        <div class="admin-tools" aria-labelledby="restaurant-tools-title">
-          <h3 id="restaurant-tools-title">Restaurant content</h3>
-          <p class="muted">Add sample gallery and menu data to restaurant listings.</p>
-          <button id="seed-restaurant-media" class="button button-primary" type="button">Fill missing restaurant media</button>
-          <button id="replace-restaurant-media" class="button button-danger" type="button">Replace seeded media</button>
+        <div class="records-toolbar">
+          <label class="records-search" for="record-search">Search listings
+            <input id="record-search" type="search" placeholder="Name, category, or slug" autocomplete="off">
+          </label>
+          <p id="records-count" class="records-count" aria-live="polite">Loading listings…</p>
         </div>
 
         <div id="records" class="records-list"><p class="muted">Loading listings...</p></div>
@@ -63,7 +63,7 @@
             <h2 id="editor-title">New listing</h2>
             <p class="muted">Required fields are marked by the browser.</p>
           </div>
-          <button id="delete-record" class="button button-danger" type="button" hidden>Delete</button>
+          <button id="delete-record" class="button button-danger" type="button" hidden>Delete listing</button>
         </div>
 
         <form id="navi-form">
@@ -139,7 +139,7 @@
           </div>
 
           <div class="form-actions">
-            <button class="button button-primary" type="submit">Save listing</button>
+            <button class="button button-primary" type="submit">Create listing</button>
             <button id="reset-form" class="button" type="button">Reset</button>
             <a id="school-preview" class="button" href="#" target="_blank" rel="noopener" hidden>Preview school details</a>
             <a id="university-preview" class="button" href="#" target="_blank" rel="noopener" hidden>Preview university details</a>

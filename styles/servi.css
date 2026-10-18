@@ -37,7 +37,7 @@
 .section4 .img-placeholder {
   position: relative;
   min-height: 180px;
-  background: transparent;
+  background: transparent !important;
   overflow: hidden;
 }
 
@@ -341,7 +341,7 @@
 }
 .toggle input { accent-color: #0d7a5f; width: 16px; height: 16px; }
 .toggle:has(input:checked) {
-    background: rgba(201, 168, 76, 0.18);
+    /*background: rgba(201, 168, 76, 0.18);*/
     border-color: var(--gold-500, #c9a84c);
 }
 

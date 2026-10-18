@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const NavigationPlace = require('../server/navigationPlaceModel');
 const { parseCards } = require('./import-navigation-places');
 const { profileKind, makeTemplateProfiles, makeProfile } = require('./initialize-navigation-template-profiles');
+const { detailProfileType } = require('../server/navigationProfileTypes');
 
 const DEMO_NOTICE = 'Illustrative demo content. Details and images are not verified real-world information.';
 const profileFields = {
@@ -78,6 +79,7 @@ function buildDemoUpdates(cards, records, templates) {
 
     const changes = {
       demoProfile: markDemo(mergeDemoValue(existing.demoProfile, makeGenericDemoProfile(card))),
+      detailProfileType: detailProfileType(card),
       demoContent: true,
       demoPublished: false,
       demoNotice: DEMO_NOTICE,
